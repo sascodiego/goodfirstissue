@@ -11,7 +11,7 @@
     "state": "CLOSED",
     "state_reason": "NOT_PLANNED",
     "label_strength": "weak",
-    "label_note": "closed as not planned with nothing in the text to read"
+    "label_note": "cerrada como no planeada sin nada que leer"
   },
   "issue": {
     "title": "\"default\" netrc authorization results in \"403 Forbidden\" errors",

@@ -1,0 +1,43 @@
+{
+  "id": "c-cli-2244",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2244,
+    "url": "https://github.com/urfave/cli/issues/2244"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Required global flags are breaking help and completion commands",
+    "body": "## My urfave/cli version is\n\nv3.6.1\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n<!--\n  Delete any of the following that do not apply:\n-->\n\n- My project is using go modules.\n\n## Describe the bug\nWhen adding a global flag with `Required: true`, the `help` and the `completion` subcommands are no longer working if the flag is not set. I expect global required flags to be required only for user defined commands, not to default one's.\n\n## To reproduce\n```golang\npackage main\n                                                                    \nimport (\n        \"context\"                                  \n        \"log\"                                      \n        \"os\"                                    \n                                                                    \n        \"github.com/urfave/cli/v3\"\n)\n\nfunc main() {\n        cmd := &cli.Command{\n                EnableShellCompletion: true,\n                Flags: []cli.Flag{\n                        &cli.StringFlag{\n                                Name:     \"lang\",\n                                Requi",
+    "comments": [],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

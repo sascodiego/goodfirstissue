@@ -1,0 +1,104 @@
+{
+  "id": "c-cli-1883",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1883,
+    "url": "https://github.com/urfave/cli/issues/1883"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "How do I define Usage for BoolWithInverseFlag?",
+    "body": "I defined a \"summary\" boolean flag as a `BoolWithInverseFlag`.\r\n\r\nBut the help/usage text doesn't look very helpful to me:\r\n\r\n```go\r\npackage main\r\n\r\nimport (\r\n\t\"context\"\r\n\r\n\t\"github.com/urfave/cli/v3\"\r\n)\r\n\r\nfunc main() {\r\n\tcmd := &cli.Command{\r\n\t\tName:                   \"sendsomething\",\r\n\t\tUsage:                  \"report some stuff\",\r\n\t\tArgsUsage:              \"\",\r\n\t\tHideHelpCommand:        true,\r\n\t\tUseShortOptionHandling: true,\r\n\t\tFlags: []cli.Flag{\r\n\t\t\t&cli.BoolFlag{\r\n\t\t\t\tName:    \"verbose\",\r\n\t\t\t\tAliases: []string{\"v\"},\r\n\t\t\t\tUsage:   \"Show more output.\",\r\n\t\t\t},\r\n\t\t\t&cli.BoolFlag{\r\n\t\t\t\tName:    \"dry-run\",\r\n\t\t\t\tAliases: []string{\"dryrun\", \"d\"},\r\n\t\t\t\tUsage:   \"Do a dry-run.\",\r\n\t\t\t},\r\n\t\t\t&cli.StringSliceFlag{\r\n\t\t\t\tName:  \"to\",\r\n\t\t\t\tUsage: \"Define alternative recipients.\",\r\n\t\t\t},\r\n\t\t\t&cli.BoolWithInverseFlag{\r\n\t\t\t\tBoolFlag: &cli.BoolFlag{\r\n\t\t\t\t\tName:  \"summary\",\r\n\t\t\t\t\tUsage: \"default is, to send a summary to all subscribers.\",\r\n\t\t\t\t},\r\n\t\t\t},\r\n\t\t},\r\n\t}\r\n\t_ = cmd.Run(context.Background(), []string{\"prog\", \"--help\"})\r\n}\r\n```\r\n\r\n[See on Go Playground](https://play.golang.com/p/c-Mu2cSv4pd)\r\n\r\n### Actual output\r\n\r\n```\r\nNAME:\r\n   sendsomething - report some stuff\r\n\r\nUSAGE:\r\n   sendsomething [global options] [arguments...]\r\n\r\nGLOBAL OPTIONS:\r\n   --verbose, -v              Show more output. (default: false)\r\n   --dry-run, --dryrun, -d    Do a dry-run. (default: false)\r\n   --to value [ --to value ]  Define alternative recipients.\r\n   --summary                  default is, to send a summa",
+    "comments": [
+      {
+        "author": "Skeeve",
+        "body": "Yes. On a different line and with a different text.\r\n",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "bartekpacia",
+        "body": "I am changing labels on this issue to target v3, because that's what the code in the issue uses. I think this issue was classified as v2 by mistake.\r\n\r\nI also reworded the issue a bit.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "bartekpacia",
+        "body": "@Skeeve, would this be OK for you? This is how Dart's [`package:args`](https://pub.dev/packages/args) does this, and I quite like it:\r\n\r\n```\r\nNAME:\r\n   sendsomething - report some stuff\r\n\r\nUSAGE:\r\n   sendsomething [global options] [arguments...]\r\n\r\nGLOBAL OPTIONS:\r\n   --verbose, -v              Show more output. (default: false)\r\n   --dry-run, --dryrun, -d    Do a dry-run. (default: false)\r\n   --to value [ --to value ]  Define alternative recipients.\r\n   --[no-]summary             Only send the ",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "Skeeve",
+        "body": "You are right with your assumption.\r\n\r\n- `--summary`: send only the summary, i.e. suppress the other mails\r\n- `--no-summary`: send no summary, i.e. send only the other mails\r\n- none of them: Send everything\r\n\r\nSo I think I have to stick with defining two flags.\r\n\r\nBut to answer your question: I think, that option would be better than what cli has now.\r\n",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "bartekpacia",
+        "body": "Would you be up to submit a Pull Request with a fix?",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "Skeeve",
+        "body": "> Would you be up to submit a Pull Request with a fix?\r\n\r\nI didn't change anything in cli, so no. I cannot submit a pull request. It's just that I define two normal bool flags in my program.",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "bartekpacia",
+        "body": "Yeah yeah – I meant \"are you willing to modify urfave/cli code that fixes how help is displayed?\".",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "Skeeve",
+        "body": "Sorry, I don't get it. I'm not a native speaker, so I think I need more explanation what you want me to do.",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "bartekpacia",
+        "body": "No problem :) That's okay.\r\n\r\nWould you like to make an open-source contribution? More specifically:\r\n1. You fork `urfave/cli`\r\n2. You fix the bug in `urfave/cli` you described (so BoolWithInverseFlag will display correctly as `--[no-]summary` in `--help`)\r\n3. You submit a Pull Request in this GitHub repository with the bugfix.\r\n\r\nThis is what I mean. I hope it's easier to understand now.\r\n\r\nAh, and I don't want you to do anything. I'm only asking.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "Skeeve",
+        "body": "Okay. Understood. Will think about it. I will try to find some time on Sunday to look into that. Will be a good training in understanding GO for me.",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "Skeeve",
+        "body": "@bartekpacia I thought a bit about it and in fact, I wouldn't need to define two variables as the BoolWithInversFlag already has three states:\r\n\r\nhttps://play.golang.com/p/MetA6KyQmM_f\r\n\r\n* not set\r\n* set to true\r\n* set to false\r\n\r\nwhich is exactly what I want. Remains the issue: how to define different texts. But I think this is just a case of proper wording.\r\n\r\nAdditionally the `(default: false)` shouldn't be shown in the help unless a default was explicitly set.\r\n\r\nIf that's okay with you, I'",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "bartekpacia",
+        "body": "That's an interesting find. If it solves your problem, that's great.\r\n\r\nBut I'm not sure if it's \"the way\" to solve this problem – I think it's no longer \"declarative\" then.\r\n\r\nMaybe a new `BoolWithInverseFlag` (or `OptionalBool`?) function should be created to allow for retrieval of the information you need:\r\n\r\n<details><summary>Example</summary>\r\n\r\n```go\r\npackage main\r\n\r\nimport (\r\n\t\"context\"\r\n\t\"fmt\"\r\n\r\n\tcli \"github.com/urfave/cli/v3\"\r\n)\r\n\r\nfunc main() {\r\n\tcmd := &cli.Command{\r\n\t\tFlags: []cli.F",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "area/v3",
+      "good first issue"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

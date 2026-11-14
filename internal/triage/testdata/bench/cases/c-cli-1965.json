@@ -1,0 +1,53 @@
+{
+  "id": "c-cli-1965",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1965,
+    "url": "https://github.com/urfave/cli/issues/1965"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Update docs for HideHelpCommands",
+    "body": "## Checklist\r\n\r\n* [ ] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [ ] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/index.md).\r\n* [x] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\n\r\nSometimes the user of `cli` would like their app to not have any subcommands. The `help` subcommand is only useful when the app actually has other subcommands. Users of the app may find the usage of the `help` subcommand misleading that other subcommands exist. Even though the `help` subcommand does not list any subcommands, the docs / help message even lead you to believe in the usage section there are subcommands to be used beyond a simple `help` command.\r\n\r\n## Solution description\r\n\r\nThere should be an option of some sort to disable subcommands. When disabled, the `help` subcommand should be removed. Also, the docs and help messages should be adjusted accordingly. This means the \"commands\" section should be removed entirely. And the usage section will show something along the lines of:\r\n```\r\nUSAGE:\r\n   <name> [options]\r\n```\r\n...instead of:\r\n```\r\nUSAGE:\r\n   <name> [global options] command [command options]\r\n ```\r\n\r\nNot only should `command` be removed along with its corre",
+    "comments": [
+      {
+        "author": "midischwarz12",
+        "body": "Oh, I did not see HideHelpCommand. I think I assumed it did not exist since it was not in the [full api example docs](https://cli.urfave.org/v2/examples/full-api-example/). Do you mind if we change the name of this issue and repurpose it to update the API docs then?",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "midischwarz12",
+        "body": "Yeah, sure. It is 21:03 here. So it'll have to be tomorrow.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

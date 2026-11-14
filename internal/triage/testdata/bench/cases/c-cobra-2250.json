@@ -11,7 +11,7 @@
     "state": "CLOSED",
     "state_reason": "NOT_PLANNED",
     "label_strength": "strong",
-    "label_note": "a maintainer explained why it will not be done"
+    "label_note": "un mantenedor explicó por qué no se hace"
   },
   "issue": {
     "title": "How do you use one - instead of two -- ?",

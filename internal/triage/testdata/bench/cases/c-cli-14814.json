@@ -1,0 +1,43 @@
+{
+  "id": "c-cli-14814",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14814,
+    "url": "https://github.com/cli/cli/issues/14814"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "`gh auth status --no-refresh` shows a misleading error for expired tokens",
+    "body": "### Describe the bug\n\nWhen the active account uses an expiring OAuth token (`gh auth login --expiring`) and the access token has expired, `gh auth status --no-refresh` reports the token as invalid and suggests `gh auth refresh`. Running `gh auth status` without `--no-refresh` immediately refreshes the token and reports success, so the credential was never invalid; it had just expired.\n\nThe output is misleading in three ways:\n\n1. It says \"The token in keyring is invalid\", although the token has only expired and gh can renew it automatically.\n2. It suggests `gh auth refresh -h github.com`, which runs the full interactive OAuth flow again (it is meant for changing scopes). Simply dropping `--no-refresh`, or running any other gh command, is enough to renew the token.\n3. It hides the expiry details (token expiry and refresh token expiry) that are shown for a healthy expiring token, so there is no hint about why the check failed.\n\n### Affected version\n\n`gh` v2.103.1 (trunk at `64d175234`).\n\n### Steps to reproduce the behavior\n\nThis is how I ran into it:\n\n1. Logged in with an expiring token: `gh auth login --expiring`\n2. Did not run any gh command for longer than the access token lifetime (about 8 hours), so the token expired.\n3. Ran `gh auth status --no-refresh`, which reported the token as invalid (see below).\n4. Ran `gh auth status`, which refreshed the token and reported success.\n\n### Expected vs actual behavior\n\nActual:\n\n```\n$ gh auth status --no-refresh\ngithub.com\n  X Failed t",
+    "comments": [],
+    "labels": [
+      "bug",
+      "priority-3",
+      "gh-auth"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -11,7 +11,7 @@
     "state": "CLOSED",
     "state_reason": "COMPLETED",
     "label_strength": "strong",
-    "label_note": "a merged pull request closed it: the work really happened"
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
   },
   "issue": {
     "title": "Unable to See Status Code in Output",
@@ -38,13 +38,7 @@
     ],
     "github_state": "OPEN",
     "github_state_reason": "",
-    "linked_prs": [
-      {
-        "number": 1301,
-        "state": "MERGED",
-        "merged": true
-      }
-    ]
+    "linked_prs": []
   },
   "duplicates": [],
   "expected": {

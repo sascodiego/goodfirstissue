@@ -1,0 +1,39 @@
+{
+  "id": "c-cli-2478",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2478,
+    "url": "https://github.com/urfave/cli/issues/2478"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "HandleExitCoder does not see an ExitCoder wrapped with %w",
+    "body": "### What happened\n\n`HandleExitCoder` looks for an `ExitCoder` (and for a `MultiError`) with a **bare type assertion**, so an exit error that has been wrapped with `fmt.Errorf(\"%w\")` is not recognised. Nothing calls `OsExiter` and nothing is written to `ErrWriter`; the process then exits with the default code `1`.\n\n```go\ncmd.Action = func(ctx context.Context, cmd *cli.Command) error {\n    return fmt.Errorf(\"deploy failed: %w\", cli.Exit(\"galactic perimeter breach\", 9))\n}\n```\n\nRunning that command prints nothing, and the exit code is `1` instead of `9`.\n\n### Why it matters\n\n`Exit` documents that the underlying error stays reachable through the standard wrapping helpers, and `exitError` implements `Unwrap()` (that is what #1090 and #2444 added). Adding context to an `Action` error with `%w` is the ordinary way to do it, and the only consumer of that promise — `HandleExitCoder` — did not follow.\n\nThe same happens inside a `MultiError`: the last exit code is read with a bare assertion, so `newMultiError(errors.New(\"wowsa\"), fmt.Errorf(\"...: %w\", Exit(\"boom\", 11)))` exits with `1` instead of `11`.\n\n### Expected\n\nA wrapped `ExitCoder` should be handled exactly like an unwrapped one: the message goes to `ErrWriter`, `OsExiter` is called, and the exit code is preserved.\n\n### Environment\n\n`urfave/cli` v3 (`main`), Go 1.27.1 on Windows. Reproduced on 2026-10-19.\n",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

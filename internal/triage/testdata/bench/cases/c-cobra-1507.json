@@ -1,0 +1,60 @@
+{
+  "id": "c-cobra-1507",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 1507,
+    "url": "https://github.com/spf13/cobra/issues/1507"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Hide auto-generated completion command",
+    "body": "Is there a way to hide the  `completion` cmd?  I like having it, but don't want it to show up in --help\r\n\r\nThanks!",
+    "comments": [
+      {
+        "author": "marckhouzam",
+        "body": "Hi @blacktop, there is currently no way to hide the `completion` command provided by Cobra. You would need to define your own `completion` and mark it hidden.\r\n\r\nI think it would be nice to add such an option to Cobra.",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "jpmcb",
+        "body": "@marckhouzam - is this something we could tackle in the next release? That would be great",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "marckhouzam",
+        "body": "I was hoping to make the command public so that people could adapt it any way they want, but IIRC it is not that easy.\r\n\r\nI'll try again and if I can't figure it out, I'll add an new completionOption to allow hiding the command.\r\n\r\nGlad to have you back @jpmcb 😄 ",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "marckhouzam",
+        "body": "@abs007  here you go: https://github.com/spf13/cobra/blob/main/site/content/completions/_index.md#adapting-the-default-completion-command",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

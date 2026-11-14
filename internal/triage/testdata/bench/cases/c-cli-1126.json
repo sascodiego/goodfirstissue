@@ -1,0 +1,58 @@
+{
+  "id": "c-cli-1126",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1126,
+    "url": "https://github.com/httpie/cli/issues/1126"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Session file with cookie cannot be parsed",
+    "body": "**Checklist**\r\n\r\n- [Y] I've searched for similar issues.\r\n- [Y] I'm using the the latest version of HTTPie.\r\n\r\n- httpie version, 2.4.0\r\n- python version, 3.9\r\n\r\nI prepared the **my-session-cookie.json** file, the request parameters are placed in **query.json**, and the expected response results are placed in the **result.json** file.\r\n\r\n **my-session-cookie.json** like this:\r\n`\r\n{\r\n      \"__meta__\": {\r\n            \"about\": \"HTTPie session file\",\r\n            \"help\": \"https://httpie.org/doc#sessions\",\r\n            \"httpie\": \"2.4.0\"\r\n       },\r\n       \"headers\": {\r\n            \"Content-Type\": \"application/json\",\r\n            \"cookie\": \"12345\"\r\n      }\r\n}\r\n`\r\n\r\nAnd command like this:\r\n![2021813-22044](https://user-images.githubusercontent.com/26968137/129248791-748008ad-9ce5-4fae-bcdf-c9ed312a8997.png)\r\n<img width=\"816\" alt=\"Xnip2021-08-13_02-22-22\" src=\"https://user-images.githubusercontent.com/26968137/129248846-2614c7bb-afd3-472c-86f8-0429d183cf60.png\">\r\n\r\n`http --verify=no -v  --session-read-only=~/Desktop/my-session-cookie.json POST http://localhost:8301/test < ~/Desktop/query.json -d >>~/Desktop/result.json`\r\n\r\nAnd I got error like this:\r\n`http: error: RuntimeError: OrderedDict mutated during iteration`\r\n\r\nThen I did some test and the request can be executed\r\n- remove cookie field\r\n- OR remove `-d >>~/Desktop/result.json` in the command\r\n\r\nSo what's wrong？",
+    "comments": [
+      {
+        "author": "caofanCPU",
+        "body": "@BoboTiG \r\nJust a normal json data like this:\r\n```json\r\n{\r\n  \"data\": {\r\n    \r\n  },\r\n  \"pageNum\": 1,\r\n  \"pageSize\": 100\r\n}\r\n```",
+        "author_association": ""
+      },
+      {
+        "author": "caofanCPU",
+        "body": "Sry, I missed this msg.\r\nIn debug mode:\r\n\r\n### **CASE 1:**\r\n```shell\r\nhttp --debug  --verify=no -v  --session-read-only=~/Desktop/my-session-cookie.json POST http://localhost:8301/test < ~/Desktop/query.json -d >>~/Desktop/result.json`\r\n\r\nHTTPie 2.4.0\r\nRequests 2.25.1\r\nPygments 2.7.4\r\nPython 3.9.5 (default, May  4 2021, 03:33:11)\r\n[Clang 12.0.0 (clang-1200.0.32.29)]\r\n/usr/local/Cellar/httpie/2.4.0/libexec/bin/python3.9\r\nDarwin 19.6.0\r\n\r\n<Environment {'colors': 256,\r\n 'config': {'default_options'",
+        "author_association": ""
+      },
+      {
+        "author": "caofanCPU",
+        "body": "@BoboTiG @jokull \r\nThank you for your timely handling work, my **httpie** util is online again, ✌️!\r\n‘cause can’t wait for the release version,  I directly install the latest versio from the master. 😎\r\nOf course, I am looking forward to the next release version! 🤝",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "bug",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

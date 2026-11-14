@@ -1,0 +1,58 @@
+{
+  "id": "c-cli-1927",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1927,
+    "url": "https://github.com/urfave/cli/issues/1927"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Ability to add context values",
+    "body": "## Checklist\r\n\r\n* [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [x] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/manual.md).\r\n* [x] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\n\r\nIn old versions we could add context fields in Before function like this\r\n```\r\n  Before: func(c *cli.Context) error {\r\n      db := \"example\"\r\n      c.Context = context.WithValue(c.Context, \"db\", db)\r\n      return nil\r\n  },\r\n```\r\nIt's useful for example for passing logger through all commands.\r\n\r\n## Solution description\r\nAdd some middleware layer to command with signature\r\n```\r\nfunc(ctx context.Context, command *cli.Command) func(ctx context.Context, command *cli.Command)\r\n```\r\nwhere we could modify passing ctx\r\n\r\n\r\n## Describe alternatives you've considered\r\n\r\nReturn back Context field to command\r\n",
+    "comments": [
+      {
+        "author": "bartekpacia",
+        "body": "It seems to be a valid feature request. @nejtr0n, could you show an API you'd like (just like you demonstrated what it looked like in \"old\"/v2 version of this module)?",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "BlackHole1",
+        "body": "I just encountered this problem as well and hope that the CLI can have this capability.\r\n\r\nBased on my needs, the API usage scenario I hope for:\r\n\r\n```go\r\nvar name string\r\ncmd := &cli.Command{\r\n\tCommands: []*cli.Command{\r\n\t\t{\r\n\t\t\tName: \"config\",\r\n\t\t\tFlags: []cli.Flag{\r\n\t\t\t\t&cli.StringFlag{\r\n\t\t\t\t\tName:        \"name\",\r\n\t\t\t\t\tDestination: &name,\r\n\t\t\t\t},\r\n\t\t\t},\r\n\t\t\tBefore: func(ctx context.Context, command *cli.Command) (context.Context, error) {\r\n\t\t\t\tswitch {\r\n\t\t\t\tcase strings.HasPrefix(name, \"good-",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "BlackHole1",
+        "body": "> @BlackHole1 Can you submit a PR ?\r\n\r\n@dearchap Of course, but before submitting a PR, I need to know which one urfave/cli currently prefers?\r\n\r\n1.\r\n\r\n```go\r\nvar name string\r\ncmd := &cli.Command{\r\n\tCommands: []*cli.Command{\r\n\t\t{\r\n\t\t\tName: \"config\",\r\n\t\t\tFlags: []cli.Flag{\r\n\t\t\t\t&cli.StringFlag{\r\n\t\t\t\t\tName:        \"name\",\r\n\t\t\t\t\tDestination: &name,\r\n\t\t\t\t},\r\n\t\t\t},\r\n\t\t\tBefore: func(ctx context.Context, command *cli.Command) (context.Context, error) {\r\n\t\t\t\tswitch {\r\n\t\t\t\tcase strings.HasPrefix(name, \"g",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,48 @@
+{
+  "id": "c-cli-2126",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2126,
+    "url": "https://github.com/urfave/cli/issues/2126"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Help fails when a command argument is specified",
+    "body": "## My urfave/cli version is\n\nv3.3.2\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Describe the bug\n\nThe `--help` argument causes an error when specified in a command with arguments.\n\n## To reproduce\n\n```go\npackage main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"os\"\n\n\t\"github.com/urfave/cli/v3\"\n)\n\nfunc main() {\n\tapp := &cli.Command{\n\t\tName:  \"My CLI\",\n\t\tUsage: \"My Usage\",\n\t\tFlags: []cli.Flag{\n\t\t\t&cli.StringFlag{\n\t\t\t\tName:    \"profile\",\n\t\t\t\tAliases: []string{\"p\"},\n\t\t\t\tUsage:   \"Name of the profile to use\",\n\t\t\t\tValue:   \"default\",\n\t\t\t},\n\t\t},\n\t\tCommands: []*cli.Command{\n\t\t\t{\n\t\t\t\tName: \"command\",\n\t\t\t\tArguments: []cli.Argument{\n\t\t\t\t\t&cli.StringArg{\n\t\t\t\t\t\tName:      \"arg1\",\n\t\t\t\t\t\tUsageText: \"ARG1\",\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\tAction: func(ctx context.Context, cmd *cli.Command) error {\n\t\t\t\t\tfmt.Printf(\"My profile: %s\\n\", cmd.String(\"profile\"))\n\t\t\t\t\tfmt.Printf(\"My command: arg1=%s\\n\", cmd.StringArg(\"arg1\"))\n\t\t\t\t\treturn nil\n\t\t\t\t},\n\t\t\t\tUsage: \"Show the version of My CLI\",\n\t\t\t},\n\t\t},\n\t}\n\n\terr := app.Run(context.Background(), os.Args)\n\tif err != nil {\n\t\tfmt.Println(\"Error:\", err)\n\t\tos.Exit(1)\n\t}\n}\n```\n\n##",
+    "comments": [
+      {
+        "author": "meatballhat",
+        "body": "Thank you for your thoughtful and thorough issue @bigluck 💖 !",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

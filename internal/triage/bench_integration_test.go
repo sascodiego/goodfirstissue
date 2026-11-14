@@ -329,6 +329,9 @@ func TestBenchMeasuresWording(t *testing.T) {
 	briefs := loadBriefs(t)
 	ctx := t.Context()
 
+	closedByTrap := map[string][]string{}
+	intentByTrap := map[string]int{}
+	treeByTrap := map[string]int{}
 	var (
 		closed       int
 		strong       int
@@ -416,6 +419,16 @@ func TestBenchMeasuresWording(t *testing.T) {
 
 		if c.ClosedLabel {
 			closed++
+			closedByTrap[c.Trap] = append(closedByTrap[c.Trap], c.ID)
+			if run.Intent == c.Expected.Intent {
+				intentByTrap[c.Trap]++
+			}
+			if run.TreeOutcome == c.Expected.Outcome {
+				treeByTrap[c.Trap]++
+			} else {
+				t.Logf("FALLA %-22s %-28s esperaba %-12s árbol=%-12s intent=%-9s :: %s",
+					c.Trap, c.ID, c.Expected.Outcome, run.TreeOutcome, run.Intent, c.Issue.Title)
+			}
 			if c.Closure.LabelStrength == "strong" {
 				strong++
 				if run.Intent == c.Expected.Intent {
@@ -494,6 +507,13 @@ func TestBenchMeasuresWording(t *testing.T) {
 				alignedHits++
 			}
 		}
+	}
+	for _, trap := range []string{"closed_completed_merged_pr", "closed_refused_with_reason", "closed_refused_without_reason"} {
+		n := len(closedByTrap[trap])
+		if n == 0 {
+			continue
+		}
+		t.Logf("%-30s n=%3d · árbol %3d/%3d · intent %3d/%3d", trap, n, treeByTrap[trap], n, intentByTrap[trap], n)
 	}
 	t.Logf("cerradas con etiqueta real: %d (fuertes %d · débiles %d)", closed, strong, weak)
 	t.Logf("  intent  fuerte %d/%d · débil %d/%d", strongIntent, strong, weakIntent, weak)

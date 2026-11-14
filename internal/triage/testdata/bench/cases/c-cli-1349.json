@@ -1,0 +1,52 @@
+{
+  "id": "c-cli-1349",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1349,
+    "url": "https://github.com/httpie/cli/issues/1349"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Stdin warning makes programs stuck",
+    "body": "Context: https://discord.com/channels/725351238698270761/799982808122523648/962805007248392192",
+    "comments": [
+      {
+        "author": "isidentical",
+        "body": "> httpie has stopped working for me, even after this fix (I installed it with brew install --HEAD httpie).\r\n\r\nHey @NachoSoto thanks for the report! I can't seem to reproduce your issue (on a fresh environment). When did you start experiencing these problems? (it seems like your issue is irrelevant from this by the way, as this issue was for POST/PUT etc. that was originating from stdin).\r\n",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "isidentical",
+        "body": "For future reference, you might want to specify `--timeout=30` (or something like that) in your `~/.config/httpie/config.json` so that it won't make you want indefinietely and let you know about the potential issue. ",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [
+      "bug"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

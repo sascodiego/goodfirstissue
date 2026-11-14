@@ -1,0 +1,54 @@
+{
+  "id": "c-cli-2174",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2174,
+    "url": "https://github.com/urfave/cli/issues/2174"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Repeated similarly named flags & Before() doesn't go before --help global option.",
+    "body": "> A new case to use beforeFun() before --help flag is to set up a language for that help-information. \n> And also it is really strange, that help as a function calls befireFuns(), but help as a flag - is not, imho.\n> \n> UPDATE: \n> Version: github.com/urfave/cli/v3 v3.3.8\n> Also, if i add new BoolFlag with Name = \"help\", it adds without problems. And it is shown in help-message, but you can't call it, cause standard --help is in prior. And you can do it for every command, not only for app. And copied flag several types.\n> ```\n> &cli.Command{\n> \tName: \"comand1\",\n> \tFlags: []cli.Flag{\n> \t\t&cli.BoolFlag{\n> \t\t\tName: \"help\",\n> \t\t},\n> \t\t&cli.BoolFlag{\n> \t\t\tName: \"help\",\n> \t\t},\n> \t},\n> }\n> ```\n> \n> and if you call\n> `app command1 --help`\n> you will see:\n> \n> ```\n> OPTIONS:\n>    --help      (default: false)\n>    --help      (default: false)\n>    --help, -h  show help\n> ```\n> \n> And you can create similarly named flags of any type or name. \n> I think it's a bug... \n\n _Originally posted by @Olimpian in [#1719](https://github.com/urfave/cli/issues/1719#issuecomment-3133336511)_",
+    "comments": [
+      {
+        "author": "seipan",
+        "body": "Hi, can I work on this issue?\n\n",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "coilysiren",
+        "body": "I'm closing everything whose last update was in 2025 or earlier, to reduce maintainer burden while we coordinate a roll-over of who is doing the primary work day to day. You are highly encouraged to re-open this if it's still live for you!",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

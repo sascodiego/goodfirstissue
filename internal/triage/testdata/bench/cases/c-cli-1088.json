@@ -1,0 +1,90 @@
+{
+  "id": "c-cli-1088",
+  "provenance": "real-closed",
+  "trap": "closed_refused_with_reason",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1088,
+    "url": "https://github.com/urfave/cli/issues/1088"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "strong",
+    "label_note": "un mantenedor explicó por qué no se hace"
+  },
+  "issue": {
+    "title": "Flag errors are not `ExitCoder`",
+    "body": "## my urfave/cli version is\r\n\r\nv2.2.0\r\n\r\n## Checklist\r\n\r\n* [x] Are you running the latest v2 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [x] Did you check the manual for your release? The v2 manual is [here](https://github.com/urfave/cli/blob/master/docs/v2/manual.md)\r\n* [x] Did you perform a search about this problem? Here's the [Github guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## Dependency Management\r\n\r\n- [x] My project is using go modules.\r\n- [x] My project is using vendoring.\r\n- [ ] My project is automatically downloading the latest version.\r\n- [ ] I am unsure of what my dependency management setup is.\r\n\r\n## Describe the bug\r\n\r\nIf you mark a flag as \"required\" for instance and it is missing, then the error that is bubbled up to the root `cli.App.Run(..)` call does not satisfy the required interfaces for `HandleExitCoder`. \r\n\r\n## To reproduce\r\n\r\n1. Have a required flag\r\n2. Have a panic after the call to `HandleExitCoder`\r\n2. Call the CLI without it\r\n\r\n## Observed behavior\r\n\r\nThe panic is called\r\n\r\n## Expected behavior\r\n\r\nHandleExitCoder calls `os.Exit(..)`\r\n\r\n## Additional context\r\n\r\nIt should be possible to define the exit code for a specific flag (or for the application in general) if there are flag errors. Be them required, or not defined as a flag.\r\n",
+    "comments": [
+      {
+        "author": "coilysiren",
+        "body": "Makes sense! I would be happy to review a PR from anyone that fixes this 🙏 ",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "Nokel81",
+        "body": "Would you prefer it to be a global setting for the whole App or Command or one specific to a flag?",
+        "author_association": ""
+      },
+      {
+        "author": "coilysiren",
+        "body": "I'm not quite sure I'm understanding where a setting is coming into play here? I think my expectation is that the existing required flags error satisfies that `HandleExitCoder` interface.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "Nokel81",
+        "body": "Yes but what should that exit code be? Should it be static and unchanging? I think that it should be able to be set by users of this library. ",
+        "author_association": ""
+      },
+      {
+        "author": "coilysiren",
+        "body": "Ah, gotcha! I'm of the opinion that we should either:\r\n\r\n- exit `0` with a global setting for configuring that\r\n- return when hitting required flags errors, in which a way that an explicit `os.Exit` isn't required\r\n\r\nI'd be interested in more opinions from @urfave/cli though!",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "Nokel81",
+        "body": "I think returning an `ExitCoder` should be part of it.\r\n\r\nAnother option (I like this one because it is the most customization while still having a fast path for global setting):\r\n- Have a hierarchy of exit codes: use app setting or, if set, command setting or, if set, flag setting\r\n\r\n",
+        "author_association": ""
+      },
+      {
+        "author": "Nokel81",
+        "body": "Though, now that I have looked more deeply at the code, there is a slight problem with having the flags define their own exit codes. What happens if multiple flags produce errors (currently only required). \r\n\r\n- Should the first win?\r\n- Should the last win?\r\n- Should the highest value win?\r\n- Should the lowest non-zero win? (What about negative values?)\r\n\r\nI have looked at some what other programs do (such as posix `exit`). It seems to be undefined if you try and use a negative number, or if you",
+        "author_association": ""
+      },
+      {
+        "author": "coilysiren",
+        "body": "Nice investigative work ✨ ",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "Nokel81",
+        "body": "bump",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "help wanted",
+      "status/confirmed",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

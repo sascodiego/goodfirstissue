@@ -1,0 +1,49 @@
+{
+  "id": "c-cli-1733",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1733,
+    "url": "https://github.com/urfave/cli/issues/1733"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Ordering of arguments and flags impact one another",
+    "body": "## My urfave/cli version is\r\n\r\n_** v2.25.3**_\r\n\r\n## Checklist\r\n\r\n- [x] Are you running the latest v2 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n- [x] Did you check the manual for your release? The v2 manual is [here](https://github.com/urfave/cli/blob/main/docs/v2/manual.md)\r\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## Dependency Management\r\n- My project is using go modules.\r\n\r\n## Describe the bug\r\n\r\nOrdering of arguments and flags impact one another, causing a flag value to be set or unset depending on whether it comes before or after an argument. This can result in a silent error where the flag name is recognized but the value isn't set.\r\n\r\n## To reproduce\r\n\r\nUsing the flag example from https://cli.urfave.org/v2/examples/flags/ (copying below for ease of reference)\r\n\r\n```go\r\npackage main\r\n\r\nimport (\r\n\t\"fmt\"\r\n\t\"log\"\r\n\t\"os\"\r\n\r\n\t\"github.com/urfave/cli/v2\"\r\n)\r\n\r\nfunc main() {\r\n\tapp := &cli.App{\r\n\t\tFlags: []cli.Flag{\r\n\t\t\t&cli.StringFlag{\r\n\t\t\t\tName:  \"lang\",\r\n\t\t\t\tValue: \"english\",\r\n\t\t\t\tUsage: \"language for the greeting\",\r\n\t\t\t},\r\n\t\t},\r\n\t\tAction: func(cCtx *cli.Context) error {\r\n\t\t\tname := \"Nefertiti\"\r\n\t\t\tif cCtx.NArg() > 0 {\r\n\t\t\t\tname = cCtx.Args().Get(0)\r\n\t\t\t}\r\n\t\t\tif cCtx.String(\"lang\") == \"spanish\" {\r\n\t\t\t\tfmt.Println(\"Hola\", name)\r\n\t\t\t} else {\r\n\t\t\t\tfmt.Println(\"Hello\", name)\r",
+    "comments": [
+      {
+        "author": "mntlty",
+        "body": "@dearchap in that case, looking forward to V3!\n\nI was confused by the part in your response about subcommands - in the example there are no subcommands, only flags and arguments to defined commands. \n",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "area/v2",
+      "status/triage"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

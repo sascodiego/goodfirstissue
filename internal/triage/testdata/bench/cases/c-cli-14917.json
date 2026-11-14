@@ -1,0 +1,41 @@
+{
+  "id": "c-cli-14917",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14917,
+    "url": "https://github.com/cli/cli/issues/14917"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "weak",
+    "label_note": "cerrada como no planeada sin nada que leer"
+  },
+  "issue": {
+    "title": "https://github.com/cli/cli/issues/new/choose",
+    "body": "### Describe the feature or problem you’d like to solve\n\nA clear and concise description of what the feature or problem is.\n\n### Proposed solution\n\nHow will it benefit CLI and its users?\n\n### Additional context\n\nAdd any other context like screenshots or mockups are helpful, if applicable.\n",
+    "comments": [],
+    "labels": [
+      "suspected-spam"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

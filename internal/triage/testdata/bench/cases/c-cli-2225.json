@@ -1,0 +1,48 @@
+{
+  "id": "c-cli-2225",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2225,
+    "url": "https://github.com/urfave/cli/issues/2225"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Improve `AllowExtFlags` robustness",
+    "body": "## Checklist\n\n* [X] Are you running the latest v3 release?\n* [X] Did you check the manual for your release?\n* [X] Did you perform a search about this feature?\n\n## What problem does this solve?\n\n- cryptic error messages like `\"syntax error: expected flag.go:234\"`\n- errors requiring external boolean flags have a value when used\n- avoidable astonishment when `AllowExtFlags` flags behave differently from identical flags defined using urfave/cli\n\nRecently, while addressing CVE-2025-52881, I found urfave/cli/v3 became a transitive dependency of numerous programs with a large number of dependencies, many of which define flags using the standard golang \"flags\" package.\n\nThe support for external flags in urfave/cli/v3, `AllowExtFlags` [added code to set the value of each external flag to its default value.](https://github.com/urfave/cli/commit/9bb00e2e9d78514163e08bc45ff95017171e559b) While it seems reasonable that every flag would accept its default value, that is not always the case.\n\nIt's not clear to me that urfave/cli should ever fail in this case. That said, it is possible to identify a tiny subset of flags that are most likely to reject their default value, namely variable flags that use a pointer to a structure as the variable and lazily use the string representation of the zero-value of the structure instead of an empty string as the default. In any case, where urfave/cli does fail, the user would benefit from additional context.\n\nAll of the urfave/cli flag types follow a Val",
+    "comments": [
+      {
+        "author": "coilysiren",
+        "body": "I'm closing everything whose last update was in 2025 or earlier, to reduce maintainer burden while we coordinate a roll-over of who is doing the primary work day to day. You are highly encouraged to re-open this if it's still live for you!",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

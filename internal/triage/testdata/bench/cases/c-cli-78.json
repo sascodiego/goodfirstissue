@@ -1,0 +1,54 @@
+{
+  "id": "c-cli-78",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 78,
+    "url": "https://github.com/httpie/cli/issues/78"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Syntax for nested JSON ",
+    "body": "The simple examples work, but what about nested data?\nIn curl I do something like this:\n\n-d \\\n'\"credentials\": {\n    \"username\": \"me\",\n    \"key\": \"my-key\"}\n}'\n\nHow can I do this with httpie?\n",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "An important consideration here is backwards compatibility. If we simply introduce a syntax relying on dots, than a script containing the following HTTPie command:\r\n\r\n```bash\r\n$ http httpbin.org/post  foo.bar=baz\r\n```\r\nWhich currently produces this JSON:\r\n\r\n```json\r\n{\r\n    \"foo.bar\": \"baz\"\r\n}\r\n```\r\n\r\nWould unexpectly result in:\r\n\r\n```json\r\n{\r\n    \"foo\": {\r\n        \"bar\": \"baz\"\r\n    }\r\n}\r\n```\r\n\r\nSo the command would have to be updated to escape the newly-meanignful `.` character:\r\n\r\n```bash\r\n$ ht",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "jkbrzt",
+        "body": "@merwok Good point. I’ve updated the example to take shell escaping into account. General [request item escaping rules](https://httpie.io/docs#escaping-rules) apply.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "enhancement",
+      "planned",
+      "needs product design"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

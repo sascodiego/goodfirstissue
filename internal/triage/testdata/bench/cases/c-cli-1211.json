@@ -1,0 +1,72 @@
+{
+  "id": "c-cli-1211",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1211,
+    "url": "https://github.com/httpie/cli/issues/1211"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Lazily load pygments styles",
+    "body": "We currently try to retrieve all pygments styles at once, but this operation is very slow due to the import of `pkg_resources` on the pygments side.\r\nhttps://github.com/httpie/httpie/blob/cfcd7413d1afbabc5ab3c88a892851335be4944a/httpie/output/formatters/colors.py#L31 \r\n\r\nWe should load these styles lazily when a user specifies `--style` explicitly. ",
+    "comments": [
+      {
+        "author": "isidentical",
+        "body": "Command: `hyperfine 'http --version'`\r\n\r\n|               | normal   | lazy loading | factor      |\r\n|---------------|----------|--------------|-------------|\r\n| Environment 1 | 238.2 ms | 185.4 ms     | 1.30X (30%) |\r\n| Environment 2 | 383.3 ms | 240.4 ms     | 1.58X (58%) |\r\n\r\nSince the actual load we are removing is `pkg_resources` import, the speed-up factor is very dependant on how complex the current python environment you are within. The `Environment 1` is simply a fresh python docker imag",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "isidentical",
+        "body": "(I'll send a patch after #1200)",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "jkbrzt",
+        "body": "Nice! \n\nCould we do some quick lookup even if the user specifies `--style`? Many users probably have `--style` in their config file. \n\nThe full list is probably only needed for `--help` output. But also even then we only need the names. ",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "isidentical",
+        "body": "> Could we do some quick lookup even if the user specifies --style? Many users probably have --style in their config file.\r\n\r\nIf users specify `--style`, they will load the whole pygments (including all of it's plugins). And it will be like the original, so we will error out if the style is not available etc.\r\n\r\n> The full list is probably only needed for --help output. But also even then we only need the names.\r\n\r\nThere is actually no cost distinction between the names of the styles and the loa",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "jkbrzt",
+        "body": "> When you pass a valid --style (to verify it exists)\r\n\r\nCouldn’t we use a different method for checking if it exists (e.g. checking if a module exists first, and only then loading the styles if not)? If I use a custom `--style` (via config, for example), I won’t be able to benefit from this optimization.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "isidentical",
+        "body": "> Couldn’t we use a different method for checking if it exists (e.g. checking if a module exists first, and only then loading the styles if not)?\r\n\r\nWe could introduce layers (e.g `check if this is a built-in httpie style > check if this is a built-in pygments style > check if this is coming from a pygments plugin`), but I think that would be a bit complicated.\r\n\r\nAnother possibility is asking pygments maintainers whether they would accept a patch that migrates from `pkg_resources` to `importlib",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [
+      "performance"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

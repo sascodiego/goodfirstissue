@@ -1,0 +1,43 @@
+{
+  "id": "c-cli-2402",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2402,
+    "url": "https://github.com/urfave/cli/issues/2402"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "`BoolWithInverseFlag` does not honor explicitly set `DefaultText`",
+    "body": "## My urfave/cli version is\n\nv3.10.1\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n- My project is using go modules.\n- My project is automatically downloading the latest version.\n\n## Describe the bug\n\n[`BoolWithInverseFlag`](https://github.com/urfave/cli/blob/main/flag_bool_with_inverse.go) does NOT honor its property [`DefaultText`](https://github.com/urfave/cli/blob/c6f4cf7e9223793478cfcde9b8f135cc8f86e78f/flag_bool_with_inverse.go#L15), which, if I am not mistaken, should override the `(default: […])` output in the help message regardless of any actual value.\n\n## To reproduce\n\n1. Create a new Go module\n2. Add urfave/cli\n3. Copy/paste the following snippet and run it\n\n```go\npackage main\n\nimport (\n\t\"context\"\n\t\"os\"\n\n\t\"github.com/urfave/cli/v3\"\n)\n\nvar cmd = &cli.Command{\n\tName: \"test\",\n\tFlags: []cli.Flag{\n\t\t&cli.BoolFlag{\n\t\t\tName:        \"debug\",\n\t\t\tUsage:       \"set log level to DEBUG\",\n\t\t\tValue:       true,\n\t\t\tDefaultText: \"blabla\", // for comparison\n\t\t},\n                # control output color\n\t\t&cli.BoolWithInverseFlag{\n\t\t\t// accepts (true|false|",
+    "comments": [],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,49 @@
+{
+  "id": "c-cli-1929",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1929,
+    "url": "https://github.com/urfave/cli/issues/1929"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "What is the purpose of `normalizeFlags`?",
+    "body": "I read the code but my understanding of it doesn't match what happens when I remove that function entirely.\r\n\r\nIt looks like the only things it does in practice is to disallow using the long form and the short form alias of the same flag in a same call.\r\n\r\nIs there a reason why that should be disallowed? Or is that a necessity due to some constraint I am not seeing?",
+    "comments": [
+      {
+        "author": "fiatjaf",
+        "body": "Thank you, this is good news!",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "kind/question",
+      "area/v2",
+      "status/triage"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

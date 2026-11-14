@@ -1,0 +1,42 @@
+{
+  "id": "c-cli-1022",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1022,
+    "url": "https://github.com/httpie/cli/issues/1022"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Better handling of responses without correct content-type charset",
+    "body": "## Problem\r\n\r\nIf server doesn't provide correct content-type charset, we're defaulting to latin1 [because requests underlying does that](https://github.com/psf/requests/issues/2086). This is undesirable for user experience.\r\n\r\n## Possible solutions\r\n\r\n* Default to utf8\r\n* For well-known content-types, handle them as defined in respective RFC (utf8 for `application/json`, first line or BOM for XML, meta tag in HTML)\r\n* Use [chardet](https://pypi.org/project/chardet/) to detect from the body\r\n\r\n## Considerations\r\n* Streaming mode and chunks\r\n* Discrepancies between streaming and display mode: should this only be done for readability when showing to the terminal, or also when piping to other commands? Current decision: only doing this for terminal display. Consider flag for enforcing this for piping as well\r\n* chardet requires downloading the whole body, so it would download a whole video to tell you it's binary data\r\n",
+    "comments": [],
+    "labels": [
+      "enhancement",
+      "needs product design"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

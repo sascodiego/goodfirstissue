@@ -1,0 +1,49 @@
+{
+  "id": "c-cli-2275",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2275,
+    "url": "https://github.com/urfave/cli/issues/2275"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "flag actioning order is not consistent",
+    "body": "## My urfave/cli version is\n\n_**v3.7.0**_\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n<!--\n  Delete any of the following that do not apply:\n-->\n\n- My project is using go modules.\n- My project is automatically ~downloading~ updating the latest version. (via Renovate)\n\n## Describe the bug\n\nIt appears that the order in which `Flag.Action` is called is not deterministic\n\n## To reproduce\n\n```go\npackage debug_test\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"testing\"\n\n\t\"github.com/urfave/cli/v3\"\n)\n\nfunc RunCli(args []string) string {\n\tstr := \"\"\n\n\tcmd := &cli.Command{\n\t\tFlags:    []cli.Flag{},\n\t\tAction: func(_ context.Context, cmd *cli.Command) error {\n\t\t\treturn nil\n\t\t},\n\t}\n\n\tfor _, f := range []string{\"a\", \"b\", \"c\"} {\n\t\tcmd.Flags = append(cmd.Flags, &cli.BoolFlag{\n\t\t\tName: f,\n\t\t\tAction: func(_ context.Context, _ *cli.Command, _ bool) error {\n\t\t\t\tstr += f\n\n\t\t\t\treturn nil\n\t\t\t},\n\t\t})\n\t}\n\n\tif err := cmd.Run(context.Background(), args); err != nil {\n\t\tfmt.Printf(\"%s\\n\", err)\n\t}\n\n\treturn str\n}\n\ntype Case struct {\n\tName string\n\tArgs []string\n}\n\nfunc Test_run(t *testing.T) {",
+    "comments": [
+      {
+        "author": "G-Rath",
+        "body": "Trying to dig into this more, it looks like this is happening because \"set flags\" are stored in a map:\n\nhttps://github.com/urfave/cli/blob/be9a4ba05ccf8e92f34274a5e0c555f2ad09e2b3/command.go#L147-L148\n\nwhich gets iterated over when running actions:\n\nhttps://github.com/urfave/cli/blob/be9a4ba05ccf8e92f34274a5e0c555f2ad09e2b3/command.go#L583-L585\n\nand of course in Go map ranging is random so that explains this.\n\nThe easiest fix here that comes to mind would be to instead iterate over `cmd.Flags` a",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

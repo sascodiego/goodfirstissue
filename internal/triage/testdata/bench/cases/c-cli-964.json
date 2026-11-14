@@ -1,0 +1,45 @@
+{
+  "id": "c-cli-964",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 964,
+    "url": "https://github.com/httpie/cli/issues/964"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Support header values read from file ?",
+    "body": "httpie allows to get url params and form data from file, by using @ syntax\r\n\r\nThere are sometimes complicated headers, for example tokens.\r\n\r\nIt seems this is not yet possible for headers.\r\n\r\nCan this feature be added for headers as well?\r\n\r\nProbably with a syntax like:\r\n```\r\n':@'\r\n```\r\n\r\nlike:\r\n\r\n```\r\nReferer:http://httpie.org  Cookie:foo=bar  User-Agent:bacon/1.0 FunnyHeader:@somefile\r\n```\r\n\r\nThat would be very helpful.\r\n",
+    "comments": [
+      {
+        "author": "coldcoff",
+        "body": "Yes, OK -- I will prepare some. Probably even more generic (multiple headers and their values in a file), thinking about it",
+        "author_association": ""
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

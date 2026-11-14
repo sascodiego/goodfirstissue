@@ -1,0 +1,53 @@
+{
+  "id": "c-cli-566",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 566,
+    "url": "https://github.com/httpie/cli/issues/566"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Brew installed version doesn't work with plugins",
+    "body": "Brew is listed as the recommended way of installing httpie on macOS. However, it doesn't work with auth plugins.\r\n\r\nFor example, if you `pip3 install requests-hawk` and then run `http --help` hawk will not show as an auth type. If you `pip3 install httpie-oauth` it will install httpie via pip as a dependency and overwrite the brew installed link in `/usr/local/bin/http` and now all the plugins will show because it isn't using the brew installed version.\r\n\r\nI suggest changing the documentation to read `pip3 install httpie` as the recommended method of installing on macOS.",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "Managing plugins through an HTTPie-provided command looks like the best solution all things considered. \r\n\r\n---\r\n\r\n### `httpie` command\r\n\r\nCurrently, the HTTPie package doesn’t come with a command called `httpie` (only `http` and `https`). \r\n\r\nAt one point, I was going to add it for sessions management but then decided against it (https://github.com/httpie/httpie/commit/5cc5b13555f359712e0c5784bebdb091c34e6c82) to keep the project simple. \r\n\r\nNow, however, with this plugin management use case (a",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "jkbrzt",
+        "body": "> * We will mirror the python upgrades as they are happening. For example if a minor version bump (3.6.10 -> 3.6.11) does preserve the site-packages, so do we. But for major bumps, we will change it. (This should happen rarely, even with PEP 602 it takes about 1.5/2 years for built packages to bump their interpreter's major version).\r\n\r\nOkay, that’s great 👍🏻 \r\n",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "bug",
+      "docs"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

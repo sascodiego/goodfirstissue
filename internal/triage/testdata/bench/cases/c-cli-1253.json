@@ -1,0 +1,41 @@
+{
+  "id": "c-cli-1253",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1253,
+    "url": "https://github.com/httpie/cli/issues/1253"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "--chunked with --raw raises an internal error",
+    "body": "```console\r\n$ http --chunked pie.dev/post --raw '{\"a\": 1}'                             \r\nhttp: error: AttributeError: 'bytes' object has no attribute 'encode'\r\n```",
+    "comments": [],
+    "labels": [
+      "bug"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

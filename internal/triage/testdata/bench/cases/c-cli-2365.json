@@ -1,0 +1,45 @@
+{
+  "id": "c-cli-2365",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2365,
+    "url": "https://github.com/urfave/cli/issues/2365"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Documentation on optimizing binary size",
+    "body": "In https://github.com/urfave/cli/issues/2304 we've tried to trace what happened to build flags that helped to reduce binary size. The information in the thread appeared quite valuable to me, and I thought that `urfave/cli` is popular enough among Go beginners to share a tutorial on where the binary size comes from, and how to prove and optimize it (if possible).\n\nI am not sure I am capable to write it myself in a concise and visually pleasing way with dumps, pictures and commands. So I leave this issue here to challenge other Go hackers.",
+    "comments": [
+      {
+        "author": "abitrolly",
+        "body": "#2366 solves 80% of the issue. The rest is using https://github.com/Zxilly/go-size-analyzer to see where bloat comes from. Then explain some techniques like syncing `go.mod` files to have the same dependency versions for different modules. Maybe something else, like why and how introspection bloats, how to remove it. Also how to remove templates that trigger introspection.",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

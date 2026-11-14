@@ -1,0 +1,43 @@
+{
+  "id": "c-cli-2273",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2273,
+    "url": "https://github.com/urfave/cli/issues/2273"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "MutuallyExclusiveFlags not validated on subcommands for persistent flags",
+    "body": "## My urfave/cli version is\n\nv3.7.0\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n- My project is using go modules.\n\n## Describe the bug\n\nThis is a follow-up to https://github.com/urfave/cli/issues/2265.\n\nPR #2266 fixed persistent flag propagation for `MutuallyExclusiveFlags`, so subcommands can now read the flag values. However, the mutual exclusivity validation itself is not enforced on subcommands. When both flags from a mutually exclusive group defined on a parent command are passed to a subcommand, no error is returned.\n\nThe root cause is in `command_run.go`: the check only iterates over `cmd.MutuallyExclusiveFlags` (the current command's groups) rather than walking the parent chain.\n\n## To reproduce\n\n```go\ncmd := &cli.Command{\n    Name: \"root\",\n    MutuallyExclusiveFlags: []cli.MutuallyExclusiveFlags{\n        {\n            Flags: [][]cli.Flag{\n                {&cli.StringFlag{Name: \"alpha\"}},\n                {&cli.StringFlag{Name: \"beta\"}},\n            },\n        },\n    },\n    Commands: []*cli.Command{\n        {\n            Name: \"sub\",\n     ",
+    "comments": [],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

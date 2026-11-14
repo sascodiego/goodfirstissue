@@ -1,0 +1,52 @@
+{
+  "id": "c-cli-1271",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1271,
+    "url": "https://github.com/httpie/cli/issues/1271"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Not all messages are suppressed with `--quiet --quiet` or `-qq`",
+    "body": "## Checklist\r\n\r\n- [x] I've searched for similar issues.\r\n- [x] I'm using the latest version of HTTPie.\r\n\r\n---\r\n\r\n## Minimal reproduction code and steps\r\n\r\n```bash\r\n$  http --quiet --quiet --check-status \\\r\n    \"https://al.mirror.kumi.systems/ubuntu/dists/focal/main/binary-amd64/\"\r\n```\r\n\r\n## Current result\r\n```bash\r\n$  http --quiet --quiet --check-status \\\r\n    \"https://al.mirror.kumi.systems/ubuntu/dists/focal/main/binary-amd64/\"\r\n\r\nhttp: error: SSLError: HTTPSConnectionPool(host='al.mirror.kumi.systems', port=443): Max retries exceeded with url: /ubuntu//dists/focal/main/binary-amd64/ (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:997)'))) while doing a GET request to URL: https://al.mirror.kumi.systems/ubuntu//dists/focal/main/binary-amd64/\r\n\r\n```\r\n## Expected result\r\nI'd expect the double `--quiet` flag to suppress all warnings.\r\n\r\n---\r\n\r\n## Debug output\r\n\r\nPlease re-run the command with `--debug`, then copy the entire command & output and paste both below:\r\n\r\n```python\r\n$ http --debug --quiet --quiet --check-status \"https://al.mirror.kumi.systems/ubuntu//dists/focal/main/binary-amd64/\" 2>&1\r\nHTTPie 2.6.0\r\nRequests 2.26.0\r\nPygments 2.11.2\r\nPython 3.10.1 (main, Dec 18 2021, 23:53:45) [GCC 11.1.0]\r\n/usr/bin/python3\r\nLinux 5.15.15-1-MANJARO\r\n\r\n<Environment {'colors': 256,\r\n 'config': {'default_options': []},\r\n 'config_dir': PosixPath('/home/alex/.config/httpie'),\r\n 'devnull': <proper",
+    "comments": [
+      {
+        "author": "alexdelorenzo",
+        "body": "I'm also encountering cases where `httpie` will still print 404 warnings to the console despite launching it with double quiet flags. I can't reproduce it consistently, though. It seems to only occasionally happen when making many concurrent connections from the shell with GNU `parallel` and the `http` CLI.",
+        "author_association": ""
+      },
+      {
+        "author": "jkbrzt",
+        "body": "Thanks for the report! @isidentical looks like we need to also [disable Python’s `warnings`](https://docs.python.org/3/library/warnings.html#overriding-the-default-filter) to hide warnings triggered in 3rd-party packages.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "bug"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

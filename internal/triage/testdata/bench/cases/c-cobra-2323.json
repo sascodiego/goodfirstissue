@@ -1,0 +1,39 @@
+{
+  "id": "c-cobra-2323",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2323,
+    "url": "https://github.com/spf13/cobra/issues/2323"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Refactor: make minUsagePadding a constant",
+    "body": "### Summary\n\nThe variable [minUsagePadding](https://github.com/spf13/cobra/blob/main/command.go#L560) is currently defined as a package-level variable, but it represents a fixed configuration value that never changes at runtime.\nIt would be more idiomatic and safer in Go to define it as a constant.\n\n### Current Code\n\n```go\nvar minUsagePadding = 25\n```\n\n### Proposed Change\n\nChange it to:\n\n```go\nconst minUsagePadding = 25\n```\n\n### Rationale\n\n* The value is immutable and conceptually a compile-time constant.\n* Using `const` makes the intention clearer to readers and contributors.\n* It prevents any accidental modification at runtime and improves code safety.\n\n### Impact\n\nThis change is fully backward compatible and has no functional impact on behavior.\nIt only improves clarity and maintainability of the codebase.\n",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

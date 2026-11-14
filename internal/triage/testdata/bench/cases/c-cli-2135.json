@@ -1,0 +1,39 @@
+{
+  "id": "c-cli-2135",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2135,
+    "url": "https://github.com/urfave/cli/issues/2135"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "v3: cluttered usage text for subcommands",
+    "body": "The default help message for subcommands that don't have further subcommands seems cluttered with extra `[command [command options]]` part.\n\n## Example\n\nGot:\n\n```\nNAME:\n   app hello - Prints hello message.\n\nUSAGE:\n   app hello [command [command options]] name\n\nOPTIONS:\n   --lang string\n   --help, -h     show help\n\nGLOBAL OPTIONS:\n   --global-flag string\n```\n\nWant:\n\n```\nNAME:\n   app hello - Prints hello message.\n\nUSAGE:\n   app hello [options] name\n\nOPTIONS:\n   --lang string\n   --help, -h     show help\n\nGLOBAL OPTIONS:\n   --global-flag string\n```\n\n\n## Reproduction code: \n\n[Playground](https://go.dev/play/p/VCREapNAydI).\n\n```go\npackage main\n\nimport (\n\t\"bytes\"\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/urfave/cli/v3\"\n)\n\nfunc main() {\n\tvar b bytes.Buffer\n\tapp := &cli.Command{\n\t\tName:  \"app\",\n\t\tUsage: \"Sample app to reproduce a cluttered subcommand help.\",\n\t\tAction: func(ctx context.Context, cmd *cli.Command) error {\n\t\t\tfmt.Println(\"root command\")\n\t\t\treturn nil\n\t\t},\n\t\tFlags: []cli.Flag{\n\t\t\t&cli.StringFlag{\n\t\t\t\tName: \"global-flag\",\n\t\t\t},\n\t\t},\n\t\tCommands: []*cli.Command{\n\t\t\t{\n\t\t\t\tName:  \"hello\",\n\t\t\t\tUsage: \"Prints hello message.\",\n\t\t\t\tAction: func(ctx context.Context, cmd *cli.Command) error {\n\t\t\t\t\tfmt.Println(\"Hello\", cmd.StringArg(\"name\"))\n\t\t\t\t\treturn nil\n\t\t\t\t},\n\t\t\t\tArguments: []cli.Argument{\n\t\t\t\t\t&cli.StringArg{\n\t\t\t\t\t\tName: \"name\",\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\tFlags: []cli.Flag{\n\t\t\t\t\t&cli.StringFlag{\n\t\t\t\t\t\tName: \"lang\",\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t},\n\t\tWriter: &b,\n\t}\n\n\tif err := app.Run(context.Background(",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

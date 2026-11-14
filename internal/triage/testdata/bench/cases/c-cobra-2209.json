@@ -1,0 +1,55 @@
+{
+  "id": "c-cobra-2209",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2209,
+    "url": "https://github.com/spf13/cobra/issues/2209"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Feature request: Set a default completion function",
+    "body": "In my experience, not many flags actually require completion of files.\r\n\r\nSome have dynamic completions, but a great deal of them take free-form string parameters where no completion can be offered.\r\nUnfortunately, the default completion for a flag with no completion function in Cobra is file completion.\r\nThis forces me to register a `cobra.NoFileCompletions` for each flag of that category.\r\n\r\nAs an example, completion for `docker run` has 56 flags where no meaningful FlagCompletionFunc exists.\r\nIn a first attempt, I registered 56 handlers with `cmd.RegisterFlagCompletionFunc(\"flag-name\", cobra.NoFileCompletions)` just to silence their file completion.\r\nFollowing a hint of @thaJeztah, I replaced them with a programmatically installed default handler, see [here](https://github.com/docker/cli/commit/06260e68f3686a0368284a8ce9b910e056bb523b#diff-50fe347eb4bdafebc190aa42b2caa34b089a538cd444b8a151a763372e93c0cf).\r\n\r\nI would very much welcome a solution in Cobra, where I can set a default handler on command level, something like\r\n\r\n```go\r\ncmd.CompletionOptions.DefaultCompHandler = cobra.NoFileCompletions\r\n```\r\n\r\nWith this feature, I'd only have to define the completion functions for flags that actually have meaningful completions.\r\n\r\n/cc @thaJeztah",
+    "comments": [
+      {
+        "author": "marckhouzam",
+        "body": "I agree. I regret making file completion the default behaviour; in retrospect, no completion should have been the default. But now we are stuck with this default behaviour. Adding an option to change the default completion sounds like a good idea. ",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "albers",
+        "body": "@thaJeztah I will give it a try.",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "albers",
+        "body": "@marckhouzam File completion was an obvious choice though, as it is exactly what bash completion resorts to in case no completion is defined.",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,42 @@
+{
+  "id": "c-cli-1951",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1951,
+    "url": "https://github.com/urfave/cli/issues/1951"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Propagate HideHelpCommand to sub-commands",
+    "body": "## Checklist\r\n\r\n* [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [x] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/index.md).\r\n* [x] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\n\r\nAvoid having to manually set `HideHelpCommand: true` on all sub-commands. E.g.\r\n\r\n```\r\ncli sub1 sub2 sub3 --foo\r\n```\r\n\r\nYou need to set `HideHelpCommand: true` for each `sub1/2/3` `*cli.Command` definitions.\r\n\r\n## Solution description\r\n\r\nI'm not sure about the API tbh.\r\n\r\nIf you set it on the root command, it should propagate to all sub-commands? 🤔\r\n\r\nAn additional boolean seems like overkill.\r\n\r\n## Describe alternatives you've considered\r\n\r\nSetting it manually for all sub-commands.\r\n",
+    "comments": [],
+    "labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

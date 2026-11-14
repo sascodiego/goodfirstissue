@@ -1,0 +1,53 @@
+{
+  "id": "c-cli-1156",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1156,
+    "url": "https://github.com/httpie/cli/issues/1156"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Do not append missing XML declaration in formatted responses",
+    "body": "## Minimal reproduction code and steps\r\n\r\n1. Create the file `repro.xml` with that content:\r\n\r\n  ```xml\r\n  <!-- comment --><root><element key='value'>text</element><element>text</element>tail<empty-element/></root>\r\n  ```\r\n2. Serve that file using:\r\n\r\n  ```bash\r\n  $ python -m http.server\r\n  ```\r\n3. And GET the file:\r\n\r\n  ```bash\r\n  $ http :8000/repro.xml\r\n  ```\r\n\r\n## Current result\r\n\r\n```xml\r\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<!-- comment -->\r\n<root>\r\n  <element key=\"value\">text</element>\r\n  <element>text</element>\r\n  tail\r\n  <empty-element/>\r\n</root>\r\n```\r\n\r\nNote the additional XML declaration (it is not present from the original response).\r\n\r\n## Expected result\r\n\r\nThe responses should not be altered:\r\n\r\n```xml\r\n<!-- comment -->\r\n<root>\r\n  <element key=\"value\">text</element>\r\n  <element>text</element>\r\n  tail\r\n  <empty-element/>\r\n</root>\r\n```\r\n\r\n---\r\n\r\n## Additional information, screenshots, or code examples\r\n\r\nWhen pretty-printing a XML response that does not contain a XML declaration, `minidom` will append one ([source](https://github.com/python/cpython/blob/851811f5772c43f72f445e2ce1ac3ea9da951ae3/Lib/xml/dom/minidom.py#L1823)).",
+    "comments": [
+      {
+        "author": "BoboTiG",
+        "body": "Of course @this-is-r-gaurav 👍 :)",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "BoboTiG",
+        "body": "> I think after this fix formatted file will need to remove xml prolog. If i need to fix those test, do let me know please. :)\r\n\r\nIndeed, simply removing the XML declaration is needed, let's do that in the same PR :)",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [
+      "bug",
+      "help wanted"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

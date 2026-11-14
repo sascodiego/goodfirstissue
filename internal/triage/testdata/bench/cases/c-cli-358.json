@@ -1,0 +1,47 @@
+{
+  "id": "c-cli-358",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 358,
+    "url": "https://github.com/httpie/cli/issues/358"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Default to encoding specified in XML declaration",
+    "body": "HTTPie seems to assume ISO-8859-1 when decoding XML in UTF-8 form. Below I show the difference between the HTTPie and cURL outputs. The last element displays as “FinanciÃ«n | Begroting”, respectively “Financiën | Begroting” (Dutch for “Finance | Budget”).\n\n$ http 'https://zoek.officielebekendmakingen.nl/kst-34200-14/metadata_owms.xml'\n\n``` xml\nHTTP/1.1 200 OK\nCache-Control: private\nConnection: keep-alive\nContent-Disposition: attachment; filename=metadata_owms.xml\nContent-Encoding: gzip\nContent-Type: text/xml\nDate: Fri, 29 May 2015 09:14:39 GMT\nServer: nginx\nSet-Cookie: ASP.NET_SessionId=d5rme4n4tyrzt52z4hrto5fk; path=/; secure; HttpOnly\nTransfer-Encoding: chunked\nVary: Accept-Encoding\nX-Frame-Options: SAMEORIGIN\n\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<owms-metadata xmlns:ns0=\"http://purl.org/dc/terms/\" xmlns:ns1=\"http://standaarden.overheid.nl/oep/meta/\" xmlns:ns2=\"http://standaarden.overheid.nl/owms/terms/\">\n    <owmskern>\n        <ns0:identifier>kst-34200-14</ns0:identifier>\n        <ns0:title>Financieel jaarverslag van het Rijk 2014; Motie; Motie van het lid Krol over het continueren van het verlaagde btw-tarief voor verbouwingen en renovaties</ns0:title>\n        <ns0:language>nl</ns0:language>\n        <ns0:type scheme=\"OVERHEIDop.KamerstukTypen\">Motie</ns0:type>\n        <ns0:type scheme=\"OVERHEIDop.Parlementair\">Kamerstuk</ns0:type>\n        <ns0:creator scheme=\"OVERHEID.StatenGeneraal\">Tweede Kamer der Staten-Generaal</ns0:creator>\n        <dcterms.modified>2015-05-27</d",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "It's because the underlying python-requests library defaults to `ISO-8859-1` when no charset is specified in `Content-Type`:\n\n``` python\n>>> import requests\n>>> r = requests.get('https://zoek.officielebekendmakingen.nl/kst-34200-14/metadata_owms.xml')\n>>> r.headers['Content-Type']\n'text/xml'\n>>> r.encoding\n'ISO-8859-1'\n```\n\nI guess HTTPie could try to obtain the encoding information from the XML declaration.\n",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "enhancement"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

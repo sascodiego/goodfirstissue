@@ -1,0 +1,39 @@
+{
+  "id": "c-cli-2228",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2228,
+    "url": "https://github.com/urfave/cli/issues/2228"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Can we use Commands *and* (global) Flags? What about a 'default' command?",
+    "body": "\n### Discussed in https://github.com/urfave/cli/discussions/1974\n\n<div type='discussions-op-text'>\n\n<sup>Originally posted by **GwynethLlewelyn** October  1, 2024</sup>\nHi there! 👋 \r\n\r\nI was actually a bit surprised that nobody asked this before...\r\n\r\nI'm using the latest version of v2, even though I'm quite eager to \"upgrade\" to v3... as soon as at least _some_ documentation is finished 😁 \r\n\r\nSo, here is my apparently simple question, which, however, I'm not able to implement in a reasonable way.\r\n\r\nI'm trying to do a tool that will perform some operations on images. Because I like the `git` approach, I thought that it would be nice to have some commands (some of which have their own specific flags), as well as some global flags, which all commands can use.\r\n\r\nSo consider the commands `compress`, `resize`, and `convert`. All can optionally take up to two arguments, i.e. the filename of an existing image, and the output filename. That's the part that works.\r\n\r\nSome commands need to have a few extra flags. For instance, `convert` has an additional (optional) flag, `-g`, which allows the filetype to be specified (strictly speaking, this might not be needed). That works well, so\r\n\r\n```sh\r\n./mytool convert -g webp test.jpg test.webp\r\n./mytool convert test.jpg test.webp\r\n```\r\nwork, because `webp` is the default image format to convert to.\r\n\r\nSimilarly, the `resize` option has its own set of flags to set height and width, both of which are fine as well (`compress` doesn't have any ",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,42 @@
+{
+  "id": "c-cli-2392",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2392,
+    "url": "https://github.com/urfave/cli/issues/2392"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "No way to mark a single-value argument as required",
+    "body": "## Checklist\n\n* [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n* [x] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/index.md).\n* [x] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## What problem does this solve?\n\nVersion: urfave/cli v3.10.1 (also on latest main at commit 4937c16)\n\nThere is no way to require a single-value argument (`{Type}Arg`). `ArgumentBase.Parse` falls back to the default value when no argument is given, so a command like `app delete` runs with an empty ID instead of failing.\n\nThe closest workaround is the plural type with `Min`/`Max`:\n\n```go\nvar ids []string\n\n&cli.StringArgs{Name: \"id\", Min: 1, Max: 1, Destination: &ids}\n```\n\nwhich needs a slice destination for a single value, and shows this when the argument is missing:\n\n```\nsufficient count of arg id not provided, given 0 expected 1\n```\n\n## Solution description\n\nThe same thing flags already have (`FlagBase.Required`):\n\n```go\n&cli.StringArg{Name: \"id\", Required: true, Destination: &id}\n```\n\nWith `Required: true`, `Parse` returns `Required argument \"id\" not set` when the argument is missing.\n\nHelp output could also follow the bracket convention that `{Type}Args` already uses: `[name]` when optional, `name` when required",
+    "comments": [],
+    "labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

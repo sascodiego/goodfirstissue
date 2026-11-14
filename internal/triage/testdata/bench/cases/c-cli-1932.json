@@ -1,0 +1,49 @@
+{
+  "id": "c-cli-1932",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1932,
+    "url": "https://github.com/urfave/cli/issues/1932"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Shell completion works wrongly even if double dash `--` are included in arguments",
+    "body": "## My urfave/cli version is\r\n\r\n_**v2.27.2**_\r\n\r\n## Checklist\r\n\r\n- [x] Are you running the latest v2 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n- [ ] Did you check the manual for your release? The v2 manual is [here](https://github.com/urfave/cli/blob/main/docs/v2/manual.md)\r\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## Dependency Management\r\n\r\n<!--\r\n  Delete any of the following that do not apply:\r\n-->\r\n\r\n- My project is using go modules.\r\n\r\n## Describe the bug\r\n\r\nI created a GitHub repository to reproduce the issue.\r\nPlease read README.md.\r\n\r\nhttps://github.com/suzuki-shunsuke/reproduce-urfave-cli-shell-completion-issue\r\n\r\n## To reproduce\r\n\r\nDescribe the steps or code required to reproduce the behavior\r\n\r\nhttps://github.com/suzuki-shunsuke/reproduce-urfave-cli-shell-completion-issue\r\n\r\n## Observed behavior\r\n\r\nWhat did you see happen immediately after the reproduction steps\r\nabove?\r\n\r\nhttps://github.com/suzuki-shunsuke/reproduce-urfave-cli-shell-completion-issue\r\n\r\n## Expected behavior\r\n\r\nWhat would you have expected to happen immediately after the\r\nreproduction steps above?\r\n\r\nhttps://github.com/suzuki-shunsuke/reproduce-urfave-cli-shell-completion-issue\r\n\r\n## Additional context\r\n\r\nAdd any other context about the problem here.\r\n\r\nIf the issue relates to a specific open sou",
+    "comments": [
+      {
+        "author": "suzuki-shunsuke",
+        "body": "- For v3: https://github.com/urfave/cli/pull/1933\r\n- For v2: https://github.com/urfave/cli/pull/1938",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "area/v2",
+      "status/triage"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

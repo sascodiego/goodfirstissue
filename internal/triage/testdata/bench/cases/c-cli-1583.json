@@ -1,0 +1,77 @@
+{
+  "id": "c-cli-1583",
+  "provenance": "real-closed",
+  "trap": "closed_refused_with_reason",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1583,
+    "url": "https://github.com/urfave/cli/issues/1583"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "strong",
+    "label_note": "un mantenedor explicó por qué no se hace"
+  },
+  "issue": {
+    "title": "Use a core flag parser other than stdlib `flag` to unlock wider range of arg types",
+    "body": "tl;dr - By switching away from stdlib `flag`, we will be able to support a wider range of capabilities with significantly less workaround code.\r\n\r\nMuch of the code around here is arguably _working around_ stdlib `flag`, for example:\r\n\r\n- concept of commands\r\n    - nesting of commands\r\n    - commands with aliases\r\n- persistent flags (in progress)\r\n- flags with aliases\r\n- flags of types not already supported in stdlib (via `FlagSet.Var`)\r\n    - slice-specific (de)serialization hacks\r\n    - other inconsistently-implemented (de)serialization hacks\r\n- probably other stuff!\r\n\r\nBy building on top of stdlib `flag`, we are limited to two categories of string arguments:\r\n\r\n- flags\r\n    - must start with `-`\r\n    - may accept zero or one argument\r\n- non-flag string literals\r\n    - must not start with `-`\r\n    - no additional help from stdlib `flag` 🤷🏼 \r\n\r\nThere are [many other command line argument parsers available in the Go third-party package ecosystem](https://github.com/avelino/awesome-go#standard-cli) such as:\r\n\r\n- [pflag](https://github.com/ogier/pflag), a lower-level library that provides a compatibility layer with stdlib `flag`\r\n    - typically seen via [this fork](https://github.com/spf13/pflag) which isn't being actively maintained\r\n- [cobra](https://github.com/spf13/cobra), a holistic command and flag building solution that encourages imperative construction of command contexts (depends on pflag)\r\n- [kong](https://github.com/alecthomas/kong), a holistic command and flag buil",
+    "comments": [
+      {
+        "author": "meatballhat",
+        "body": "> > flags: must start with `-`\r\n> \r\n> This is reasonable imo, I haven't seen any use for not starting (non-argument) flags without `-`. It also majorly simplifies parsing.\r\n\r\n@jtagcat it's a unix-y-centric way of working, imho. For example, in Windows there's strong precedent for `/` as prefix and `:` as assignment like `/{flag}:{value}`, although this also conflicts with the idea of \"compound short flags\" 🤷🏼  I'd like to provide a flexible way to allow for different argument styles if possible,",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "meatballhat",
+        "body": "@jtagcat I appreciate the points you're making.\r\n\r\nI'd love to see what an integration of [harg](https://github.com/jtagcat/harg/) for the purpose of addressing this issue looks like, if you're up for doing that work.\r\n\r\nI'm personally interested in exploring [this approach](https://github.com/urfave/cli/pull/1584), if only to better understand how the urfave/cli layer can change.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "meatballhat",
+        "body": "@dearchap Are you suggesting that this issue is not worth pursuing (yet)? 😅 imho the workarounds in place to support nested commands and compound short flags are indications that we've already gone past the point of stretching stdlib flag to the max. Or do I misunderstand what you mean? ❤️ ",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "meatballhat",
+        "body": "@jtagcat imho <https://github.com/jtagcat/harg> is lovely as heck and I would very much like to see what an integration with urfave/cli/v3 looks like 😁 Is this work you're planning to do soon?",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "meatballhat",
+        "body": "@jtagcat do I understand correctly that you are recommending against integrating `jtagcat/harg` directly with this library, but instead to make a `jtagcat/hcli` project that uses it, and then use `jtagcat/hcli` in this library?",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "meatballhat",
+        "body": "@skelouse sorry for the long delay! I think your requests are accounted for, but I'll definitely want more feedback once this is closer. I've been occupied with other life adventures since ~January-ish but I've got some vacation time coming up 🤞🏼 ",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "meatballhat",
+        "body": "I have lost focus on this more than once, and IIUC others in threads here have also moved on, so I'd like to propose that this is _not_ a blocker for v3 release. @urfave/cli WDYT?",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

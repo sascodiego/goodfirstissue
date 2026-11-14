@@ -1,0 +1,39 @@
+{
+  "id": "c-cli-2271",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2271,
+    "url": "https://github.com/urfave/cli/issues/2271"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "v3.6.2 regression: flag parsing skipped for help subcommands",
+    "body": "*Filed by Claude on behalf of @silverwind*\n\n## Description\n\nPR #2245 introduced a regression in v3.6.2 where flag pre-parsing is skipped for any command named \"help\". This breaks applications that use flags with help subcommands, as the flags are never parsed.\n\nThe problematic change in `command_run.go`:\n\n```diff\n-\tif cmd.isCompletionCommand {\n+\tif cmd.isCompletionCommand || cmd.Name == helpName {\n\t\ttracef(\"special command detected, skipping pre-parse (cmd=%[1]q)\", cmd.Name)\n\t\tcmd.parsedArgs = args\n\t\treturn ctx, cmd.Action(ctx, cmd)\n\t}\n```\n\nBy matching on `cmd.Name == helpName`, this skips pre-parsing for ALL commands named \"help\", not just the internal completion command. This causes flags passed to help subcommands (e.g. `myapp help -c mycmd`) to be silently ignored.\n\n## Steps to reproduce\n\n1. Define a CLI app with a flag (e.g. `-c`) on the help command\n2. Run `myapp help -c value`\n3. The flag value is never parsed\n\n## Expected behavior\n\nFlags should be parsed normally for help commands, as they were in v3.6.1.\n\n## Actual behavior\n\nFlag pre-parsing is skipped entirely, flags are ignored.\n\n## Workaround\n\nPin `urfave/cli/v3` to v3.6.1 or earlier via `replace` directive in `go.mod`.\n\n## Related\n\n- #2260 (same root cause, different symptom)\n- #2245 (PR that introduced the regression)",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

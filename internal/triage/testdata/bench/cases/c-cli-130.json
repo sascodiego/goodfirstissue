@@ -1,0 +1,48 @@
+{
+  "id": "c-cli-130",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 130,
+    "url": "https://github.com/httpie/cli/issues/130"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "can't use multiple HTTP Headers with the same name",
+    "body": "In HTTP it allows multiple headers with the same name.  However, when I went to test\r\nwebapp that seems to break when IE10 sends multiple cookie headers, I can't use httpie to test it as it only puts in the last header value in the request.\r\n\r\nexample:\r\n\r\n```bash\r\n$ http -v example.org Cookie:foo1=bar1 User-Agent:BAM\\1.0 Cookie:foo2=bar2\r\n```\r\n\r\nCurrent output:\r\n\r\n```http\r\nGET / HTTP/1.1\r\nAccept: _/_\r\nAccept-Encoding: gzip, deflate, compress\r\nCookie: foo2=bar2\r\nHost: example.org\r\nUser-Agent: BAM1.0\r\n\r\n//response omitted\r\n```\r\n\r\nExpected output:\r\n\r\n```\r\nGET / HTTP/1.1\r\nAccept: _/_\r\nAccept-Encoding: gzip, deflate, compress\r\nCookie: foo1=bar1\r\nCookie: foo2=bar2\r\nHost: example.org\r\nUser-Agent: BAM1.0\r\n```\r\n\r\nReally HTTP headers should be represented as a case-insensitive MultiMap of some sort, not a  Dict.",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "@isidentical \r\n> As people already quoted [RFC 7230, Section 3.22](https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.2) says;\r\n> \r\n> > A sender MUST NOT generate multiple header fields with the same field name in a message unless either the entire field value for that header field is defined as a comma-separated list [i.e., #(values)] or the header field is a well-known exception (as noted below).\r\n> \r\n> Which I interpret as, if a header is required to be sent multiple times with differe",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "bug",
+      "planned"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

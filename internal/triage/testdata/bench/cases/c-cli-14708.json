@@ -1,0 +1,45 @@
+{
+  "id": "c-cli-14708",
+  "provenance": "real-closed",
+  "trap": "closed_refused_with_reason",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14708,
+    "url": "https://github.com/cli/cli/issues/14708"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "strong",
+    "label_note": "un mantenedor explicó por qué no se hace"
+  },
+  "issue": {
+    "title": "gh secret set --body - stores literal \"-\" instead of reading stdin",
+    "body": "## Bug: `gh secret set --body -` stores the literal string `-` instead of reading stdin\n\n### Expected\n`echo \"s3cret\" | gh secret set MYSECRET --body -` should store `s3cret`, following the universal `-` = stdin convention (which `gh secret set --env-file -` already honors in the same command).\n\n### Actual\nThe secret is set to the literal one-character string `-`. Stdin is silently ignored. No error, no warning.\n\n### Why this happens\nIn `pkg/cmd/secret/set/set.go`, `getBody()` returns `[]byte(opts.Body)` verbatim for any non-empty `--body`, with no `-` special-casing — while `--env-file` explicitly checks `opts.EnvFile == \"-\"` and reads stdin. Same command, adjacent flags, inconsistent behavior.\n\n### Impact\nThis is a silent data-corruption footgun: the command succeeds, so automation (e.g. `spawnSync(\"gh\", [\"secret\", \"set\", ..., \"--body\", \"-\"], {input: token})`) believes the real secret was stored while GitHub holds `-`. I lost an hour to this provisioning a CI credential before reading the source.\n\n### Proposed fix\nTreat `--body -` like an absent `--body` so it falls through to the stdin read in `getBody()`. Happy to open the PR.\n",
+    "comments": [
+      {
+        "author": "BagToad",
+        "body": "Please use `gh secret set -f -`",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

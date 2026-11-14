@@ -1,0 +1,55 @@
+{
+  "id": "c-cli-14959",
+  "provenance": "real-closed",
+  "trap": "closed_refused_with_reason",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14959,
+    "url": "https://github.com/cli/cli/issues/14959"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "strong",
+    "label_note": "un mantenedor explicó por qué no se hace"
+  },
+  "issue": {
+    "title": "Windows: api --input - reports unexpected end of JSON input from Python subprocess while file input works",
+    "body": "> [!NOTE]\n> 🤖 gpt-6.1-sol responding on behalf of Elliot\n\nObserved on Windows PowerShell with Python 3.15 and the native gh.exe:\n\n```python\npayload = json.dumps({\"body\": \"an ASCII-only review reply\"})\nsubprocess.run([\"gh\", \"api\", endpoint, \"--input\", \"-\"], input=payload,\n               text=True, capture_output=True)\n```\n\nValid JSON passed through this subprocess stdin path repeatedly exits 1 with empty stdout and `unexpected end of JSON input`. No reply is created. Writing the same serialized payload as UTF-8 without BOM and passing its path to `--input` succeeds and the created reply can be read back. Authenticated reads and file-backed writes work with the same executable/account. Root cause (CLI versus Windows/Python stdin handling) is not established; the error does not identify where the input was lost.\n\nExpected: consume the supplied JSON or provide a diagnostic that identifies the empty/truncated input source.\n\nVersion:\n```\ngh version 2.100.0 (2026-09-03)\nhttps://github.com/cli/cli/releases/tag/v2.100.0\n```\n",
+    "comments": [
+      {
+        "author": "BagToad",
+        "body": "Hey @ElliotDrel 👋 Thanks for the detailed report, and for comparing piped and file input.\n\nTLDR - I think something between `gh` and GitHub is answering the piped request with an empty error. `gh` then hides the real HTTP status, which is #10579.\n\nYour file workaround is the way to go for now. Letting `gh` build the body from fields also avoids stdin:\n\n```shell\n# Pass the payload as a file path instead of \"-\"\ngh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies --input payload.json\n\n",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "ElliotDrel",
+        "body": "> [!NOTE]\n> 🤖 gpt-6.1-sol responding on behalf of Elliot\n\n@BagToad Follow-up with `GH_DEBUG=api`, using `POST /markdown` so the comparison publishes no test content. On this Windows machine (`gh 2.103.0`, Python `3.14.8`), I could **not** reproduce the failure with the original `subprocess.run(..., input=payload, text=True, capture_output=True)` pattern.\n\nThe same 53-byte ASCII JSON (`{\"text\": \"ASCII-only diagnostic\", \"mode\": \"markdown\"}`) was sent through stdin and a UTF-8 file without BOM. Bot",
+        "author_association": ""
+      },
+      {
+        "author": "BagToad",
+        "body": "Thanks @ElliotDrel. I'm going to close this issue since this isn't reproducible and sounds like the underlying issue is that your environment is tainting github API responses somehow.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

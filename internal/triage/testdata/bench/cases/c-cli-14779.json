@@ -1,0 +1,41 @@
+{
+  "id": "c-cli-14779",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14779,
+    "url": "https://github.com/cli/cli/issues/14779"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "weak",
+    "label_note": "cerrada como no planeada sin nada que leer"
+  },
+  "issue": {
+    "title": "gh issue view exits successfully with empty output",
+    "body": "On engi, from /home/nate/work, running  returned exit code 0 and no stdout or stderr (observed 2026-10-20). The command process completed without a persistent session ID; line range: not applicable to CLI output.",
+    "comments": [],
+    "labels": [
+      "suspected-spam"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,43 @@
+{
+  "id": "c-cli-2250",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2250,
+    "url": "https://github.com/urfave/cli/issues/2250"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Imbalance between Before and After calls at printing help",
+    "body": "## My urfave/cli version is\n\n_**3.6.2**_\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n- My project is using go modules.\n\n## Describe the bug\n\nFor \"help\" action or \"subcommand --help\" \"After\" is called without calling \"Before\".\n\n## To reproduce\n\nDescribe the steps or code required to reproduce the behavior\n\n## Observed behavior\n\nWhat did you see happen immediately after the reproduction steps\nabove?\n\n## Expected behavior\n\nCallback \"After\" is called iff \"Before\" was called in the past.\n\n## Additional context\n\nAdd any other context about the problem here.\n\nIf the issue relates to a specific open source GitHub repo, please\nlink that repo here.\n\nIf you can reproduce this issue with a public CI system, please\nlink a failing build here.\n\n## Want to fix this yourself?\n\nWe'd love to have more contributors on this project! If the fix for\nthis bug is easily explained and very small, feel free to create a\npull request for it.\n\n## Run `go version` and paste its output here\n\n```\n# paste `go version` output in here\n```\n\n## Run `go env` and paste its output here\n",
+    "comments": [],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

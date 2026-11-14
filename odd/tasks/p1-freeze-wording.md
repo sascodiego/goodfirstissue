@@ -155,3 +155,28 @@ si otros usuarios del proyecto se benefician.
 L19. Bug de reporte propio, segundo: las cerradas se anotaban dos veces en la lista de
 corridas y el denominador del desenlace salía en 115 en vez de 76. Corregido; los números
 citados salen de recalcular sobre el reporte guardado, no de esa salida.
+
+L20. Semántica de `intent`, confirmada por el owner: responde una sola cosa, **¿el proyecto ya
+decidió?** con tres valores — aprobado, rechazado, sin posición. Una etiqueta o un comentario
+que afirme aprobación o rechazo es una decisión tomada. **`sin posición` no es nunca un estado
+final**: cae al nodo siguiente del árbol.
+
+L21. Defecto de alimentación encontrado y corregido: el expediente de intención se quedaba con
+los **últimos tres** comentarios de mantenedor, y la aprobación suele ser la primera respuesta.
+Ahora los comentarios con lenguaje de decisión tienen prioridad sobre los más recientes, y el
+tope sube a seis. La corrida siguiente dirá si la causa principal era ésta o la ausencia de
+material.
+
+L22. Defecto de alimentación que **no** podemos corregir en el triaje: la etiqueta no registra
+quién la aplicó, porque el fetch no trae el actor de `LabeledEvent`. Para honrar la regla «si
+la etiqueta afirma aprobación, hay decisión», el fetch de E1 tiene que traer ese actor; sin él,
+una etiqueta que se puso el propio autor vale lo mismo que una del mantenedor.
+
+L23. Decisión del owner sobre el bug sin reproducción: **MARCADA**, con el motivo y marcada para
+revisión posterior del modelo en la etapa de exploración. No es terminal: que no se pueda
+reproducir no significa que no se pueda encontrar en el código, y esa ambigüedad se resuelve
+más adelante con evidencia, no en P1.
+
+L24. Dato nuevo del tracker: `state_reason` ahora incluye `DUPLICATE` (7 casos en `cli/cli`).
+Es una señal nativa de duplicado que no estaba contemplada; queda fuera del banco hasta que se
+decida qué significa para el MVP sin agrupación.

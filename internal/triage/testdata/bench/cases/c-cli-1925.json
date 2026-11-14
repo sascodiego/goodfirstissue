@@ -1,0 +1,42 @@
+{
+  "id": "c-cli-1925",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1925,
+    "url": "https://github.com/urfave/cli/issues/1925"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Allow omission of default text in help text",
+    "body": "## Checklist\r\n\r\n* [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [x] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/manual.md). -- This link is a 404\r\n* [x] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\n\r\nIn 3.0.0-alpha9, default text is always printed, irrespective of whether the field is required, etc.\r\n\r\nThis means that required numeric flags have help text that prints a default value of 0, for example.  The current API supports bringing your own DefaultText, but if you set it to \"\", it doesn't get applied. See relevant code [here](https://github.com/urfave/cli/blob/main/flag.go#L348-L354) and [here](https://github.com/urfave/cli/blob/1210bdf785b2bddda680a262acc84d5e7b583460/flag_impl.go#L245-L251).\r\n\r\nArguably this is a bug for implicit zero-valued default values. Certainly this is a bug for required flags with an implicit zero-valued default. Regardless of its status as a bug or expected behavior, it would be nice to be able to opt out of showing default text altogether on a flag-by-flag basis.\r\n\r\n## Solution description\r\n\r\nI'd like for an `OmitDefaultText` boolean field to be added to flag base, or a similarly turn-key solution.\r\n\r\n## Describe al",
+    "comments": [],
+    "labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

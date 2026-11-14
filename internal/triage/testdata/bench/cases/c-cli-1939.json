@@ -1,0 +1,58 @@
+{
+  "id": "c-cli-1939",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1939,
+    "url": "https://github.com/urfave/cli/issues/1939"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "The document includes broken links",
+    "body": "I checked links in the document using https://github.com/lycheeverse/lychee .\r\n\r\n```console\r\n$ git ls-files | grep -E \"\\.md$\" | xargs lychee --max-concurrency 10 -a 429\r\n  247/247 ━━━━━━━━━━━━━━━━━━━━ Finished extracting links                                                                                       Issues found in 6 inputs. Find details below.\r\n\r\n[.github/ISSUE_TEMPLATE/v1-bug-report.md]:\r\n✗ [404] https://github.com/urfave/cli/blob/main/docs/v1/manual.md | Failed: Network error: Not Found\r\n\r\n[.github/ISSUE_TEMPLATE/v2-bug-report.md]:\r\n✗ [404] https://github.com/urfave/cli/blob/main/docs/v2/manual.md | Failed: Network error: Not Found\r\n\r\n[docs/index.md]:\r\n↻ [404] https://github.com/urfave/cli/blob/main/.github/workflows/cli.yml | Cached: Error (cached)\r\n\r\n[.github/ISSUE_TEMPLATE/v3-feature-request.md]:\r\n✗ [404] https://github.com/urfave/cli/blob/main/docs/v3/manual.md | Failed: Network error: Not Found\r\n\r\n[docs/CHANGELOG.md]:\r\n✗ [404] https://github.com/lynncyrin | Failed: Network error: Not Found\r\n✗ [404] https://github.com/urfave/cli/compare/v1.22.4...v1 | Failed: Network error: Not Found\r\n✗ [404] https://github.com/urfave/891 | Failed: Network error: Not Found\r\n✗ [404] https://github.com/masonj188 | Failed: Network error: Not Found\r\n✗ [404] https://github.com/lynncyrin/ | Failed: Network error: Not Found\r\n\r\n[docs/CONTRIBUTING.md]:\r\n✗ [ERR] file:///Users/shunsukesuzuki/repos/src/github.com/urfave/cli/docs/RELEASING | Failed: Cannot find file\r\n✗ [404] https://git",
+    "comments": [
+      {
+        "author": "suzuki-shunsuke",
+        "body": "✅ I'll send a pull request to fix some broken links.\r\n\r\n- https://github.com/urfave/cli/pull/1940",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "suzuki-shunsuke",
+        "body": "https://github.com/urfave/cli/pull/1940#issuecomment-2198357217\r\n\r\n#1940 fixed some broken links, but some links are still broken.\r\n\r\n```console\r\n$ git ls-files | grep -E \"\\.md$\" | xargs lychee --max-concurrency 10 -a 429\r\n  247/247 ━━━━━━━━━━━━━━━━━━━━ Finished extracting links                                                                                       Issues found in 2 inputs. Find details below.\r\n\r\n[docs/CHANGELOG.md]:\r\n✗ [404] https://github.com/lynncyrin/ | Failed: Network error: ",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "suzuki-shunsuke",
+        "body": "That's a nice idea.\r\n\r\n```console\r\n$ git ls-files | grep -E \"\\.md$\" | xargs lychee --max-concurrency 10 -a 429\r\n  252/252 ━━━━━━━━━━━━━━━━━━━━ Finished extracting links                                                                          Issues found in 2 inputs. Find details below.\r\n\r\n[docs/CHANGELOG.md]:\r\n     [404] https://github.com/lynncyrin\r\n     [404] https://github.com/masonj188\r\n     [404] https://github.com/urfave/cli/compare/v1.22.4...v1\r\n     [404] https://github.com/urfave/891\r\n",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [
+      "kind/documentation",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,52 @@
+{
+  "id": "c-cli-1775",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1775,
+    "url": "https://github.com/urfave/cli/issues/1775"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Ensure all exported structs are usable as \"zero value\"",
+    "body": "This likely overlaps with the goal described in #1774, but this issue is intended to track a lower-level list of specific types. Each of these types must have tests in place to ensure the \"zero value\" is usable in the way it is documented. This may require softening the rule in some places, but I'd like such places to be accompanied with documentation and good examples of happy path usage. The critical parts of what I mean by \"usable\" are:\r\n\r\n- None of the functions with the struct as receiver or argument `panic`\r\n- None of the templates that use the struct `panic` or otherwise result in an error\r\n\r\nI *do not* expect arbitrary, undocumented, or otherwise unsupervised usage of a \"zero value\" struct to fulfill these requirements. The primary way I expect the above definition of \"usable\" to be implemented is via private methods that ensure all fields are minimally initialized such as [`*Command.setupDefaults`](https://github.com/urfave/cli/blob/84cb04ed27c1e7d263b5bb3cf2109fa3069a191a/command.go#L179).\r\n\r\n- [ ] Ensure `Command` type is usable as \"zero value\"\r\n- [ ] Ensure `ValueSourceChain` type is usable as \"zero value\"\r\n- [ ] Ensure `MutuallyExclusiveFlags` type is usable as \"zero value\"\r\n- [ ] Ensure `BoolWithInverseFlag` type is usable as \"zero value\"\r\n- [ ] (more TODO)",
+    "comments": [
+      {
+        "author": "bartekpacia",
+        "body": "@meatballhat How do you imagine e.g. a zero-valued `Command` to work? I mean, at least a name is required so it will display correctly in \"help\" and will be triggered.\r\n\r\n",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "meatballhat",
+        "body": "@bartekpacia Hello and sorry for my delay! I'll add some more details to the description 👍🏼",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

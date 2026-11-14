@@ -1,0 +1,102 @@
+{
+  "id": "c-cli-14702",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14702,
+    "url": "https://github.com/cli/cli/issues/14702"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "weak",
+    "label_note": "cerrada como no planeada sin nada que leer"
+  },
+  "issue": {
+    "title": "[aw] Dependabot PR Triage (skills-driven) exceeded daily AI credits budget",
+    "body": "### Workflow Failure\n\n**Workflow:** [Dependabot PR Triage (skills-driven)](https://github.com/cli/cli/blob/trunk/.github/workflows/dependabot-triage.md)  \n**Branch:** trunk  \n**Run:** https://github.com/cli/cli/actions/runs/38738470047\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC values are approximate. Consult the billing dashboards for accurate usage and charges.</sub>\n\n<details>\n<summary>How to raise the daily limit</summary>\n\nSet `max-daily-ai-credits` in your workflow frontmatter to a higher value, then recompile:\n\n```yaml\nmax-daily-ai-credits: 20K\n```\n\nCommon suffix shorthands: `K` = thousands, `M` = millions (e.g. `2M` = 2,000,000).\n\nAfter editing the workflow source file, regenerate the compiled lock file:\n\n```bash\ngh aw compile\n```\n\nCommit and push the updated `.lock.yml` file.\n\n> [!NOTE]\n> Raising the limit increases the number of AI inference calls the workflow can make\n> per 24-hour window. Review your Copilot or model provider billing\n> before significantly increasing the threshold (for example, before doubling the current\n> value or setting it far above expected usage).\n\n</details>\n\n<details>\n<summar",
+    "comments": [
+      {
+        "author": "cli-triage",
+        "body": "This is an automated report generated when the `dependabot-triage` agentic workflow's own daily AI-credits guardrail (`max-daily-ai-credits`) is exceeded — it is not a bug or feature request in the `gh` CLI codebase, so I'm not suggesting a `bug`/`enhancement`/command label. The report is self-explanatory and documents that it auto-expires/resolves once the 24h window resets (expiry noted for Oct 22, 2026). I found near-identical prior occurrences of this same automated guardrail notice in #1468",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "Agent job [38745707824](https://github.com/cli/cli/actions/runs/38745707824) failed.\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC v",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "Agent job [38754482716](https://github.com/cli/cli/actions/runs/38754482716) failed.\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC v",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "Agent job [38763377417](https://github.com/cli/cli/actions/runs/38763377417) failed.\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC v",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "Agent job [38772002047](https://github.com/cli/cli/actions/runs/38772002047) failed.\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC v",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "Agent job [38779845409](https://github.com/cli/cli/actions/runs/38779845409) failed.\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC v",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "Agent job [38788988702](https://github.com/cli/cli/actions/runs/38788988702) failed.\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC v",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "Agent job [38796182235](https://github.com/cli/cli/actions/runs/38796182235) failed.\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC v",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "Agent job [38804575898](https://github.com/cli/cli/actions/runs/38804575898) failed.\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC v",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "Agent job [38812091293](https://github.com/cli/cli/actions/runs/38812091293) failed.\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC v",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "Agent job [38819020140](https://github.com/cli/cli/actions/runs/38819020140) failed.\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC v",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "Agent job [38825198511](https://github.com/cli/cli/actions/runs/38825198511) failed.\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC v",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "agentic-workflows"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

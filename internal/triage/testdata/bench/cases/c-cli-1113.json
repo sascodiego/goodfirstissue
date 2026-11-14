@@ -1,0 +1,100 @@
+{
+  "id": "c-cli-1113",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1113,
+    "url": "https://github.com/urfave/cli/issues/1113"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
+  },
+  "issue": {
+    "title": "Relax ordering requirements for flags/commands to improve upon cli ergonomics",
+    "body": "## Checklist\r\n\r\n* [X ] Are you running the latest v2 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [X ] Did you check the manual for your release? The v2 manual is [here](https://github.com/urfave/cli/blob/master/docs/v2/manual.md)\r\n* [ X] Did you perform a search about this feature? Here's the [Github guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\n\r\nCLI ergonomics when editing/adding flags to command are very bad.\r\n\r\nQuick example, consider how many times you have to move cursor back in commandline to go from\r\n\r\n    $ cmd query users\r\n\r\nto\r\n\r\n    $ cmd --out=csv query --filter \"project=kittens\" users --with-permission=Deploy\r\n\r\nvs\r\n\r\n    $ cmd query users --with-permission=Deploy  --filter  \"project=kittens\", --out=csv \r\n\r\nIt also \"reads\" worse:\r\n \"output CSV on query project kittens on users with permissions to deploy:\r\n vs\r\n \" query users that can deploy in project kittens, output csv\"\r\n\r\nWithout forced ordering you can add a flag at the end at any point so ad-hoc usage of commands is much more streamlined, it also allows writing CLI scripts with arguments grouped by what makes more sense, not by how program author structured it.\r\n\r\nNow the long winded example, consider the following:\r\n* App has global flags applicable to all subcommands like\r\n  * change output type (for example switch between machine-parseable ",
+    "comments": [
+      {
+        "author": "coilysiren",
+        "body": "I'm tentatively in favor of this, we would just have to think about any potential unexpected impacts.\r\n\r\n> Only real option to have convenient ability to change the parameters used in whole app is duplicating them as command-local variables\r\n\r\n☝️  In practice this is how I've solved this problem, I really didn't consider it to be a huge issue. I agree that it's not elegant, though.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "rliebz",
+        "body": "For my use case, I actually prefer the behavior that flags must be placed specifically next to their declaration site.\r\n\r\nTo give an example of why this is important—I have an application called `tusk` that allows users to dynamically define tasks they want to run. Those tasks may have arbitrary flags that users may also define. The application as a whole has a `verbose` mode, in which more information is printed than normal. Individual tasks however may also have a `verbose` mode. So the follow",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "XANi",
+        "body": "\r\n@rliebz I have thought about that problem but to even distinguish between which levels a given flag is defined in v2 you have to go thru hoops. I'm not sure whether that's even intended behaviour but I had to do something like this:\r\n\r\n```go\r\n\tapp := &cli.App{\r\n\t\tFlags: []cli.Flag{\r\n\t\t\t&cli.BoolFlag{\r\n\t\t\t\tName: \"verbose1\",\r\n\t\t\t\tAliases:[]string{\"verbose\"},\r\n\t\t\t},\r\n\t\t},\r\n\t\tCommands: []*cli.Command{\r\n\t\t\t{\r\n\t\t\t\tName:    \"l1\",\r\n\t\t\t\tFlags: []cli.Flag{\r\n\t\t\t\t\t&cli.BoolFlag{\r\n\t\t\t\t\t\tName: \"verbose2\",\r\n",
+        "author_association": ""
+      },
+      {
+        "author": "rliebz",
+        "body": "I'm actually still on v1. I'm not sure what the current behavior is for this, or what the impetus for changing it was.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "XANi",
+        "body": "@rliebz in v2 it would change some edge cases with using cli.GlobalType vs just cli.Type\r\n\r\nbut v2 has no differentiation of that.",
+        "author_association": ""
+      },
+      {
+        "author": "XANi",
+        "body": "I'd be interested in implementing it. Haven't looked at code yet but I'd probably also add a flag to opt in for \"strict\" ordering if it won't mess up code too much. ",
+        "author_association": ""
+      },
+      {
+        "author": "XANi",
+        "body": "I've wrote a bit of code to  \"merge\" flags on each step (and remove duplicates if same)\r\n\r\nhttps://github.com/XANi/urfave-cli/commit/ba353ea41f636494934bd56ef01feb3770220ad5\r\n\r\nBut I'm not sure how to make `flag` actually populate parameters correctly in current incremental parsing - with this modification only parameters present at last subcommand in chain are being processed and rest is ignored e.g `cmd --format=csv sub1 sub2` \"parses\" but the variable is not set, while `cmd sub1 sub2 --format",
+        "author_association": ""
+      },
+      {
+        "author": "XANi",
+        "body": "@heyvito for the project that really hurt on the ergonomics I just used spf13/cobra but that one is on the other hand really unergonomic when it comes to setting up commands, we're talking more boilerplate and less readable",
+        "author_association": ""
+      },
+      {
+        "author": "rliebz",
+        "body": "I'm not sure that we have the maintenance resources to push forward with a 3.X release right now. But I don't think we need to make a breaking change to do this. I would be happy to review a change that makes this an opt-in feature for v2, if you were interested in contributing. \r\n\r\nMaybe a `UseRelaxedOptionOrdering` flag (similar to `UseShortOptionHandling`), which when explicitly passed, uses a different option handling strategy. ",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "meatballhat",
+        "body": "@jtagcat Thank you for working on this problem!\r\n\r\nI admit that I'm more than a bit nervous about depending on spf13/pflag 😅 because it was forked from https://github.com/ogier/pflag for whatever reason, but diverged (?) enough that it's not being kept up to date, and is not being directly maintained with much regularity (last commit at time of this writing was over a year ago).\r\n\r\nThat being said, switching away from stdlib `flag` has long been discussed in this repo and I'd very much like to e",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "meatballhat",
+        "body": "@jtagcat I'm happy to start publishing releases in the `v3` series, fwiw, with the stipulation that versions would have a `beta` suffix or whatever is necessary to ensure clarity about it being more volatile than `v2`. Does that change anything for you?",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "kind/feature",
+      "status/in-review",
+      "pinned",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

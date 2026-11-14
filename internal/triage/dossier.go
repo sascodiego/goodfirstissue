@@ -5,6 +5,7 @@
 package triage
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -30,6 +31,9 @@ const maxDossierChars = 4000
 const (
 	maxComments     = 3
 	maxCommentChars = 600
+	// The intent dossier gets a bigger budget: it is the only material that answers the
+	// question, and the decision is often buried among replies that say nothing.
+	maxProjectComments = 6
 )
 
 // The marker is part of the text the judge reads, not a note for the log. Silently
@@ -267,18 +271,34 @@ func projectVoiceSection(issue Issue) string {
 }
 
 // projectComments are the comments written by an account the tracker marks as responsible.
+//
+// Keeping only the most recent ones lost the answer: an approval is usually the first reply,
+// and the last three are frequently follow-ups about something else. So a comment that reads
+// like a decision is kept ahead of a newer one that does not, and only then the cap applies.
 func projectComments(issue Issue) []Comment {
-	var kept []Comment
+	var decision, other []Comment
 	for _, c := range issue.Comments {
-		if isMaintainer(c.AuthorAssociation) {
-			kept = append(kept, c)
+		if !isMaintainer(c.AuthorAssociation) {
+			continue
 		}
+		if decisionWords.MatchString(c.Body) {
+			decision = append(decision, c)
+			continue
+		}
+		other = append(other, c)
 	}
-	if len(kept) > maxComments {
-		kept = kept[len(kept)-maxComments:]
+	kept := append(decision, other...)
+	if len(kept) > maxProjectComments {
+		kept = kept[:maxProjectComments]
 	}
 	return kept
 }
+
+// decisionWords is a selection heuristic, never a verdict: it only decides which comments
+// reach the judge first. The judge still reads them and decides.
+var decisionWords = regexp.MustCompile(`(?i)accept|approve|go for it|pr welcome|pull request welcome|` +
+	`sounds good|happy to|good idea|feel free|let'?s do|merged|landed|shipped|fixed by|released|` +
+	`won'?t|will not|not going|out of scope|by design|decline|reject|not planned|duplicate|wontfix`)
 
 // commentsSection quotes the comments the policy admits. A comment is third-party text:
 // it is delimited and named as evidence, because the judge reads it and the repository

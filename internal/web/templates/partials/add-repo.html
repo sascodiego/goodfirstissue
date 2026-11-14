@@ -1,0 +1,14 @@
+{{define "add-repo"}}<form class="add" aria-label="Agregar repositorio">
+      <label for="nuevo">Agregar repositorio</label>
+      <div class="add-row">
+        <input id="nuevo" type="text" placeholder="owner/nombre o enlace de GitHub"
+               autocomplete="off" spellcheck="false" disabled>
+        <button type="button" disabled aria-label="Agregar repositorio">+</button>
+      </div>
+      <p>
+        Acepta <code>owner/nombre</code> o el enlace completo.<br>
+        El alta desde la interfaz todavía no está conectada: por ahora
+        <code>gfi fetch owner/nombre</code>. Trae hasta 150 issues <code>OPEN</code>
+        con sus etiquetas verbatim, sin filtrar por etiqueta.
+      </p>
+    </form>{{end}}

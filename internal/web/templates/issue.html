@@ -1,0 +1,91 @@
+{{define "content"}}
+<div class="app">
+
+  <aside class="rail">
+    <div class="brand"><span class="mark" aria-hidden="true"></span><b>GoodFirstIssue</b></div>
+
+    <nav aria-label="Repositorio">
+      <p class="rail-label">Repositorio</p>
+      <a class="repo" href="{{.BackHref}}">
+        <span class="name">{{.Active.Name}}</span><span class="n">{{.Active.Free}}</span>
+        <span class="sub">{{.Active.Open}} abiertas · {{.Active.Stored}} traídas · {{.Active.Analyses}} análisis</span>
+      </a>
+      <p class="rail-hint"><a href="{{.BackHref}}">← Volver al corpus</a></p>
+    </nav>
+
+    <div class="rail-foot">
+      {{if .HasRepo}}corpus {{.Corpus}} · pin {{.Commit}}{{else}}corpus vacío{{end}}
+    </div>
+  </aside>
+
+  <main>
+
+    <header class="top">
+      <div>
+        <h1><span class="num">#{{.Issue.Number}}</span> {{.Issue.Title}}</h1>
+        <p class="meta">
+          <span class="st {{.Issue.State}}">{{.Issue.StateText}}</span>
+          {{with .Issue.Author}}· abierta por <b>{{.}}</b>{{end}}
+          · el <b>{{.Issue.Created}}</b>
+          · actualizada el <b>{{.Issue.Updated}}</b>
+        </p>
+      </div>
+      <div class="actions">
+        <a class="btn" href="{{.Issue.URL}}" rel="noopener noreferrer">Abrir en GitHub</a>
+      </div>
+    </header>
+
+    <div class="issue">
+      <section class="issue-body" aria-label="Cuerpo de la issue">
+        {{if .Issue.HasBody}}{{.Issue.Body}}{{else}}<p class="none">Sin cuerpo: la issue se explica solo en el título.</p>{{end}}
+      </section>
+
+      <aside class="issue-side">
+        <p class="rail-label">Etiquetas</p>
+        {{if .Issue.HasLabel}}
+        <p class="labels">{{range .Issue.Labels}}<span class="chip{{if .Hit}} hit{{end}}">{{.Text}}</span>{{end}}</p>
+        {{else}}
+        <p class="none">ninguna</p>
+        {{end}}
+
+        <p class="rail-label">Pull requests</p>
+        {{if .Issue.HasPR}}
+        <ul class="prs">
+          {{range .Issue.PRs}}
+          <li>
+            <a href="{{.URL}}" rel="noopener noreferrer">#{{.Number}}</a>
+            <span class="st {{.State}}">{{.Text}}</span>
+          </li>
+          {{end}}
+        </ul>
+        {{else}}
+        <p class="none">ninguna vinculada</p>
+        {{end}}
+      </aside>
+    </div>
+
+    {{/* Puntos de inclusión de la ola 2: hoy vacíos, y por eso las tres
+         issues siguientes enganchan su bloque sin editar este archivo. */}}
+    {{template "triage" .}}
+    {{template "evidence" .}}
+    {{template "fit" .}}
+
+    <section class="thread" aria-label="Comentarios">
+      <h2>{{.Issue.CommentCount}} comentarios</h2>
+      {{range .Issue.Comments}}
+      <article class="comment">
+        <p class="who">
+          <b>{{.Author}}</b>{{with .Association}} <span class="assoc">{{.}}</span>{{end}}
+          <time>{{.Created}}</time>
+        </p>
+        <div class="text">{{.Body}}</div>
+      </article>
+      {{else}}
+      <p class="none">Sin comentarios guardados.</p>
+      {{end}}
+    </section>
+
+  </main>
+
+</div>
+{{end}}

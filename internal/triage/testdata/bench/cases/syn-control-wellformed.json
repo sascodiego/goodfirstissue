@@ -1,0 +1,27 @@
+{
+  "id": "syn-control-wellformed",
+  "provenance": "synthetic",
+  "trap": "control_well_formed_bug",
+  "issue": {
+    "title": "`--config` ignores the `timeout` key",
+    "body": "Version 2.4.0, Linux.\n\nSteps:\n1. write `{\"timeout\": 5}` to `app.json`\n2. run `app --config app.json fetch`\n\nExpected: the request times out after 5 seconds, as documented.\n\nActual: it waits 30 seconds (the default). Any other key is read correctly.\n",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "neutral",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "CANDIDATA"
+  },
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,29 @@
+{
+  "id": "syn-feature-prefix-bug",
+  "provenance": "synthetic",
+  "trap": "bug_with_feature_prefix",
+  "issue": {
+    "title": "Feature request: crash when the config file is empty",
+    "body": "Feature request: I would like the tool to stop crashing when the config file is empty.\n\nSteps: `touch config.json && tool run`.\n\nExpected: it starts with defaults, as the documentation says.\n\nActual: panic with \"unexpected end of JSON input\" and exit code 2.\n\nVersion: 3.4.1. It worked in 3.3.0.\n",
+    "comments": [],
+    "labels": [
+      "enhancement"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "neutral",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "CANDIDATA"
+  },
+  "expect_pre_gate": ""
+}

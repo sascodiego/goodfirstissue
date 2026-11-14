@@ -1,0 +1,54 @@
+{
+  "id": "cobra-2188",
+  "provenance": "real",
+  "trap": "reports_existing_behaviour_with_open_pr",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2188,
+    "url": "https://github.com/spf13/cobra/issues/2188"
+  },
+  "issue": {
+    "title": "Combining shorthand flags before command names does not work",
+    "body": "How to reproduce:\n\n* Compile the following source code which defines some commands & flags (`go build ./mycli.go`):\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\n\t\"github.com/spf13/cobra\"\n)\n\nvar (\n\taFlag bool\n\tbFlag bool\n\tcFlag string\n)\n\nfunc main() {\n\t// Define commands\n\tvar rootCmd = &cobra.Command{\n\t\tUse: \"mycli\",\n\t}\n\tvar firstCmd = &cobra.Command{\n\t\tUse: \"first\",\n\t}\n\tvar secondCmd = &cobra.Command{\n\t\tUse: \"second\",\n\t\tRun: func(cmd *cobra.Command, args []string) {\n\t\t\tif aFlag {\n\t\t\t\tfmt.Println(\"flag A is set\")\n\t\t\t}\n\t\t\tif bFlag {\n\t\t\t\tfmt.Println(\"flag B is set\")\n\t\t\t}\n\t\t\tif cFlag != \"\" {\n\t\t\t\tfmt.Printf(\"flag C is set with value: %s\\n\", cFlag)\n\t\t\t}\n\t\t},\n\t}\n\n\t// Define flags\n\trootCmd.PersistentFlags().BoolVarP(&aFlag, \"set-A\", \"A\", false, \"Set the A flag\")\n\trootCmd.PersistentFlags().BoolVarP(&bFlag, \"set-B\", \"B\", false, \"Set the B flag\")\n\trootCmd.PersistentFlags().StringVarP(&cFlag, \"set-C\", \"C\", \"\", \"Set the C flag with a value\")\n\n\tfirstCmd.AddCommand(secondCmd)\n\trootCmd.AddCommand(firstCmd)\n\n\tif err := rootCmd.Execute(); err != nil {\n\t\tfmt.Println(err)\n\t\tos.Exit(1)\n\t}\n}\n```\n* Notice how this command does not work:\n```\n$ ./mycli -ABC elephant first second\nError: unknown command \"elephant\" for \"mycli\"\nRun 'mycli --help' for usage.\nunknown command \"elephant\" for \"mycli\"\n```\n* However, those commands work:\n```\n$ ./mycli -ABC=elephant first second\nflag A is set\nflag B is set\nflag C is set with value: elephant\n$ ./mycli first second -ABC elephant\nflag A is set\nflag B is set\nflag C is",
+    "comments": [
+      {
+        "author": "nicula-stripe",
+        "body": "@marckhouzam \n> Does `./mycli -C elephant first second` work?\n\nYes",
+        "author_association": "NONE"
+      },
+      {
+        "author": "marckhouzam",
+        "body": "Sounds like a bug then",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 2189,
+        "state": "OPEN",
+        "merged": false
+      },
+      {
+        "number": 2510,
+        "state": "OPEN",
+        "merged": false
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "neutral",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "already_working"
+}

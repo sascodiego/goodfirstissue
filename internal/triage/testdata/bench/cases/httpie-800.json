@@ -1,0 +1,41 @@
+{
+  "id": "httpie-800",
+  "provenance": "real",
+  "trap": "authorized_by_maintainer_prose_against_label",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 800,
+    "url": "https://github.com/httpie/cli/issues/800"
+  },
+  "issue": {
+    "title": "\"SSL: CERTIFICATE_VERIFY_FAILED\" should show cert at least with --debug",
+    "body": "When connecting to a site with a broken TLS certificate, httpie only displays the one-liner Python error message.\n\nIt would be nice, if it would print the certificate chain in human readable form, maybe even with a hint that e.g. the intermediate certificate is no longer valid, the common name does not match or the certificate is self signed.",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "@darthbeep go for it 👍 ",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "awaiting-response",
+      "error-messages"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "authorized",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CANDIDATA"
+  },
+  "expect_pre_gate": ""
+}

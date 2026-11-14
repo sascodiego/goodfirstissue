@@ -1,0 +1,27 @@
+{
+  "id": "syn-question-as-change",
+  "provenance": "synthetic",
+  "trap": "question_written_as_change_request",
+  "issue": {
+    "title": "It would be great if `--verbose` showed request timings",
+    "body": "Is there a flag that shows how long each request took? I could not find one in the help output. It would be great if `--verbose` printed timings, but first I would like to know whether something already does that.\n",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "question",
+    "intent": "neutral",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,35 @@
+{
+  "id": "httpie-1463",
+  "provenance": "real",
+  "trap": "bug_with_evidence_control",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1463,
+    "url": "https://github.com/httpie/cli/issues/1463"
+  },
+  "issue": {
+    "title": "cookie is not being set",
+    "body": "## Checklist\n\n- [x] I've searched for similar issues.\n- [x] I'm using the latest version of HTTPie.\n\n---\n\n## Minimal reproduction code and steps\n\nsee httpie debug output below from WSL. also repro'd on Ubuntu 22.10\n\n## Current result\n\n`sid` cookie is not being set\n\n## Expected result\n\n`sid` cookie should be set. it works correctly using Chrome, Firefox, curl, and Python/requests with or without a `session`.\n\n```py\nimport requests\n\nbase_url = 'https://gsroka-neto.oktapreview.com'\ntoken = '...'\n\n# Not using `session`:\nr = requests.get(base_url + '/login/sessionCookieRedirect?redirectUrl=/&token=' + token)\nsid = r.cookies.get('sid')\nprint(sid)\nprint(r.headers['set-cookie'])\n\nu = requests.get(base_url + '/api/v1/users/me', cookies={'sid': sid}).json()\nprint(u['id'])\n```\n\n---\n\n## Debug output\n\nPlease re-run the command with `--debug`, then copy the entire command & output and paste both below:\n\nI've redacted actual token and cookie values with `XXX123`.\n\n```bash\n$ https -vv --debug --session=./cookies.json \"https://gsroka-neto.oktapreview.com/login/sessionCookieRedirect?redirectUrl=/&token=token123\"\n\nHTTPie 3.2.1\nRequests 2.25.1\nPygments 2.11.2\nPython 3.10.6 (main, Nov 14 2022, 16:10:14) [GCC 11.3.0]\n/usr/bin/python3\nLinux 4.4.0-19041-Microsoft\n\n<Environment {'apply_warnings_filter': <function Environment.apply_warnings_filter at 0x7f219af4e950>,\n 'args': Namespace(),\n 'as_silent': <function Environment.as_silent at 0x7f219af4e830>,\n 'colors': 256,\n 'config': {'__meta__': {'about'",
+    "comments": [],
+    "labels": [
+      "bug",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "neutral",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "CANDIDATA"
+  },
+  "expect_pre_gate": ""
+}

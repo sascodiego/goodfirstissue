@@ -1,0 +1,41 @@
+{
+  "id": "syn-completed",
+  "provenance": "synthetic",
+  "trap": "completed_by_native_state_reason",
+  "issue": {
+    "title": "Flag parsing breaks on repeated values",
+    "body": "Passing the same flag twice keeps only the last value. Version 1.2.0.\n",
+    "comments": [
+      {
+        "author": "maintainer",
+        "body": "Fixed by #412.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "bug"
+    ],
+    "github_state": "CLOSED",
+    "github_state_reason": "COMPLETED",
+    "linked_prs": [
+      {
+        "number": 412,
+        "state": "MERGED",
+        "merged": true
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "neutral",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "already_done"
+}

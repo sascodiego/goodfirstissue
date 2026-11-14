@@ -1,0 +1,84 @@
+{
+  "id": "httpie-1898",
+  "provenance": "real",
+  "trap": "bug_with_nine_linked_prs",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1898,
+    "url": "https://github.com/httpie/cli/issues/1898"
+  },
+  "issue": {
+    "title": "Bug: Windows guard in is_available() compares os.system (a function) to 'nt' — always False",
+    "body": "## Description\n\nIn `httpie/output/ui/man_pages.py`, `is_available()` tries to short-circuit on Windows but the check is broken:\n\nhttps://github.com/httpie/cli/blob/master/httpie/output/ui/man_pages.py#L21\n\n```python\ndef is_available(program: str) -> bool:\n    if NO_MAN_PAGES or os.system == 'nt':\n        return False\n    ...\n```\n\n`os.system` is a **built-in function object**, so `os.system == 'nt'` is always `False`. The intended Windows guard never fires. The author almost certainly meant `os.name == 'nt'`.\n\n## Why it is wrong\n\n- `os.system` is `<built-in function system>`; comparing a callable to the string `'nt'` is always `False`.\n- The correct, idiomatic Windows check is `os.name == 'nt'` (or `sys.platform == 'win32'`).\n\n## Impact\n\nOn Windows the `if NO_MAN_PAGES or os.system == 'nt':` branch is dead code. The function does not short-circuit; instead it falls through to `subprocess.run(['man', '1', program])`. On a typical Windows install `man` is absent, so `FileNotFoundError` is raised and swallowed by the `except Exception: return False`, yielding the same observable result — but only by accident. If a `man` executable happens to be on `PATH` (e.g. Git Bash / WSL), HTTPie will attempt to render man pages on Windows, contrary to the intent of the guard. Also, relying on a swallowed exception for control flow is fragile.\n\n## Reproduction / verification\n\n```python\nimport os\nprint(os.system == 'nt')   # -> False (regardless of platform)\nprint(os.name == 'nt')     # -> Tru",
+    "comments": [
+      {
+        "author": "truongsontung",
+        "body": "Follow-up: confirmed the bug — `os.system` is a built-in function object, so `os.system == 'nt'` is always `False` and the Windows short-circuit never fires (the function instead relies on a swallowed `FileNotFoundError` to return `False` by accident).\n\nThe intended guard should be a real platform check, e.g.:\n\n```python\nimport sys\n...\ndef is_available(program: str) -> bool:\n    if NO_MAN_PAGES or sys.platform == 'win32':\n        return False\n    ...\n```\n\n(`sys.platform == 'win32'` is the most r",
+        "author_association": "NONE"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 1900,
+        "state": "OPEN",
+        "merged": false
+      },
+      {
+        "number": 1903,
+        "state": "OPEN",
+        "merged": false
+      },
+      {
+        "number": 1908,
+        "state": "OPEN",
+        "merged": false
+      },
+      {
+        "number": 1911,
+        "state": "OPEN",
+        "merged": false
+      },
+      {
+        "number": 1916,
+        "state": "OPEN",
+        "merged": false
+      },
+      {
+        "number": 1923,
+        "state": "CLOSED",
+        "merged": false
+      },
+      {
+        "number": 1924,
+        "state": "CLOSED",
+        "merged": false
+      },
+      {
+        "number": 1937,
+        "state": "CLOSED",
+        "merged": false
+      },
+      {
+        "number": 1954,
+        "state": "OPEN",
+        "merged": false
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "neutral",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "already_working"
+}

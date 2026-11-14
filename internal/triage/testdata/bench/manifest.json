@@ -1,0 +1,151 @@
+{
+  "version": "bench-1",
+  "policy_version": "p1-1",
+  "purpose": "Measure the wording of the P1 questions against hand-labelled cases before freezing it.",
+  "required_coverage": [
+    {
+      "trap": "feature_with_bug_prefix",
+      "min": 1,
+      "why": "the measured adversarial case: the author's framing must not decide the kind"
+    },
+    {
+      "trap": "bug_with_feature_prefix",
+      "min": 1,
+      "why": "the inverse disguise"
+    },
+    {
+      "trap": "question_written_as_change_request",
+      "min": 1,
+      "why": "a question phrased as a request must not become work"
+    },
+    {
+      "trap": "author_applied_bug_and_urgent_labels",
+      "min": 1,
+      "why": "labels written by the requester are claims, not facts"
+    },
+    {
+      "trap": "duplicate_group_absorption",
+      "min": 1,
+      "why": "the unit of judgement is the group (I12)"
+    },
+    {
+      "trap": "bug_with_nine_linked_prs",
+      "min": 1,
+      "why": "a recommendation of work already taken is the worst output"
+    },
+    {
+      "trap": "completed_by_native_state_reason",
+      "min": 1,
+      "why": "native state reason resolves it without a question"
+    },
+    {
+      "trap": "declined_by_native_state_reason",
+      "min": 1,
+      "why": "native state reason resolves it without a question"
+    },
+    {
+      "trap": "open_work_preempts_doubt",
+      "min": 1,
+      "why": "a deterministic fact outranks an abstention"
+    },
+    {
+      "trap": "evidence_that_does_not_reach",
+      "min": 1,
+      "why": "insufficient evidence is doubt, never a discard (I10)"
+    },
+    {
+      "trap": "title_only",
+      "min": 1,
+      "why": "the same doubt path with no body at all"
+    },
+    {
+      "trap": "bug_without_reproduction",
+      "min": 1,
+      "why": "a bug without a reproduction cannot be worked"
+    },
+    {
+      "trap": "control_well_formed_bug",
+      "min": 1,
+      "why": "the control: a well formed bug must not be rejected"
+    },
+    {
+      "trap": "authorized_by_maintainer_prose_against_label",
+      "min": 1,
+      "why": "authorisation lives in prose, and the label disagreed"
+    },
+    {
+      "trap": "question_disguised_as_feature_request",
+      "min": 1,
+      "why": "support questions look like feature requests"
+    },
+    {
+      "trap": "new_behaviour_labelled_bug",
+      "min": 1,
+      "why": "new behaviour labelled as a bug"
+    },
+    {
+      "trap": "terse_but_classifiable",
+      "min": 1,
+      "why": "short is not the same as insufficient"
+    },
+    {
+      "trap": "bug_without_trace_but_with_steps",
+      "min": 1,
+      "why": "a version and steps are evidence even without a trace"
+    },
+    {
+      "trap": "terse_feature_with_parity",
+      "min": 1,
+      "why": "parity with an existing feature defines done"
+    },
+    {
+      "trap": "project_state_question",
+      "min": 1,
+      "why": "a question about the project is not code work"
+    },
+    {
+      "trap": "reports_existing_behaviour_with_open_pr",
+      "min": 1,
+      "why": "existing behaviour reported as broken, already being fixed"
+    },
+    {
+      "trap": "feature_with_open_pr",
+      "min": 1,
+      "why": "open work again, with a feature"
+    },
+    {
+      "trap": "bug_with_evidence_control",
+      "min": 1,
+      "why": "a real bug with a debug trace"
+    }
+  ],
+  "required_provenance": {
+    "real": 8,
+    "synthetic": 8
+  },
+  "cases": [
+    "cobra-2176",
+    "cobra-2188",
+    "cobra-2193",
+    "cobra-2207",
+    "cobra-2364",
+    "httpie-1422",
+    "httpie-1427",
+    "httpie-1463",
+    "httpie-1525",
+    "httpie-1661",
+    "httpie-1898",
+    "httpie-800",
+    "syn-bug-prefix-feature",
+    "syn-completed",
+    "syn-control-wellformed",
+    "syn-duplicate-group",
+    "syn-empty-body",
+    "syn-feature-prefix-bug",
+    "syn-no-repro-bug",
+    "syn-not-planned",
+    "syn-open-pr-insufficient",
+    "syn-question-as-change",
+    "syn-self-labeled"
+  ]
+}

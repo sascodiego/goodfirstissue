@@ -1,0 +1,35 @@
+{
+  "id": "httpie-1525",
+  "provenance": "real",
+  "trap": "new_behaviour_labelled_bug",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1525,
+    "url": "https://github.com/httpie/cli/issues/1525"
+  },
+  "issue": {
+    "title": "Display a warning for using option --ignore-stdin when request fails with content present in stdin",
+    "body": "## Checklist\n\n- [ X] I've searched for similar issues.\n- [ X] I'm using the latest version of HTTPie.\n\n---\n\n## Running environment\n\n- Ubuntu 22.04.3  LTS Jammy\n- bash 5.1-6ubuntu1\n- HTTPie 3.2.1 from `https://packages.httpie.io/deb`\n- [jq](https://jqlang.github.io/jq/)\n  ([jq @ GitHub](https://github.com/jqlang/jq)) 1.6-2.1ubuntu3.\n\n## Minimal reproduction code and steps\n\nInstall the software:\n\n```bash\nsudo apt install 'miller' jq'\n```\n\nThe error occurred when interrogating [Gandi Public API](https://api.gandi.net/docs/).\n\nSet Gandi API Key:\n\n```bash\ngandi_api_key=\"<Gandi API key>\"\n```\n\nQuery Gandi API for all domains mailboxes:\n\n```bash\nwhile read -r 'domain'; do\n  command https --body \"https://api.gandi.net/v5/email/mailboxes/${domain}\" \\\n    \"Authorization: Apikey ${gandi_api_key}\" 'per_page==250'\ndone < <( command https --body 'https://api.gandi.net/v5/domain/domains' \\\n    \"Authorization: Apikey ${gandi_api_key}\" 'per_page==250' |\n  command jq '.[].fqdn' |\n  command tr --delete '\"' )\n```\n\n## Current result\n\nThe first loop output is:\n\n```bash\nBad Request\n\n```\n\n## Expected result\n\nThe expected result:\n\n```bash\nBad Request\n\nWarning: stdin contents detected. Retry with --ignore-stdin option.\n```\n\n## Additional information, screenshots, or code examples\n\nI've found the final answer in #1017 and when using --debug option.\nHTTPie should be able to detect if stdin contents come from a pipe or are for xargs or a bash loop.\nIn any case, displaying a warning when a request fails wi",
+    "comments": [],
+    "labels": [
+      "bug",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "neutral",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA"
+  },
+  "expect_pre_gate": ""
+}

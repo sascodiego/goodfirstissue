@@ -97,6 +97,10 @@ type Usage struct {
 }
 
 // SystemOne asks Clef a batch of questions about one state.
+//
+// Requests are serialized across the whole client: I1 allows one in flight per key, so the
+// queue lives here and every caller shares it without knowing. The slot is held per
+// attempt, not across a backoff wait, so a sleeping retry does not block the next caller.
 func (c *Client) SystemOne(ctx context.Context, req SystemOneRequest) (*SystemOneResponse, error) {
 	switch {
 	case req.Model == "":
@@ -118,7 +122,7 @@ func (c *Client) SystemOne(ctx context.Context, req SystemOneRequest) (*SystemOn
 	}
 
 	var out SystemOneResponse
-	if err := c.post(ctx, "systemone", c.systemOneURL, req, &out); err != nil {
+	if err := c.post(ctx, "systemone", c.systemOneURL, req, &out, true); err != nil {
 		return nil, err
 	}
 	return &out, nil

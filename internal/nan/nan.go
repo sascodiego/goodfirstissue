@@ -2,6 +2,9 @@
 //
 // It covers POST /v1/systemone: decision questions answered by Clef.
 //
+// One request at a time, always (I1): the queue lives here, in the client, so three screens
+// asking for triage still put a single request on the wire without knowing about each other.
+//
 // This package never decides which model to use: the request carries it, and the
 // constitutional allowlist belongs to internal/config (I13). It also never reads the
 // environment: the key arrives in Options.
@@ -77,13 +80,18 @@ type Options struct {
 	Sleep func(ctx context.Context, d time.Duration) error
 }
 
-// Client is safe for concurrent use.
+// Client is safe for concurrent use, and serializes the decision endpoint for every caller
+// that shares it.
 type Client struct {
 	systemOneURL string
 	apiKey       string
 	maxAttempts  int
 	http         *http.Client
 	sleep        func(context.Context, time.Duration) error
+
+	// one is the single-in-flight slot for /v1/systemone. A channel, not a mutex, so that
+	// waiting for the wire honors the caller's context instead of blocking it.
+	one chan struct{}
 }
 
 // New validates the settings and builds a client. Every rejection happens here, at
@@ -137,6 +145,7 @@ func New(opts Options) (*Client, error) {
 		maxAttempts:  attempts,
 		http:         client,
 		sleep:        sleep,
+		one:          make(chan struct{}, 1),
 	}, nil
 }
 
@@ -161,7 +170,8 @@ func (c *Client) Timeout() time.Duration { return c.http.Timeout }
 func (c *Client) MaxAttempts() int { return c.maxAttempts }
 
 // post sends one JSON request and decodes the answer, retrying where the policy allows.
-func (c *Client) post(ctx context.Context, op, target string, body, out any) error {
+// serial makes the call hold the single-in-flight slot for each attempt.
+func (c *Client) post(ctx context.Context, op, target string, body, out any, serial bool) error {
 	payload, err := json.Marshal(body)
 	if err != nil {
 		return &Error{Op: op, Kind: KindRequest, Err: err}
@@ -172,7 +182,15 @@ func (c *Client) post(ctx context.Context, op, target string, body, out any) err
 			return contextError(op, attempt-1, err)
 		}
 
+		if serial {
+			if err := c.acquire(ctx); err != nil {
+				return contextError(op, attempt-1, err)
+			}
+		}
 		failure, retry := c.attempt(ctx, op, target, payload, out)
+		if serial {
+			c.release()
+		}
 		if failure == nil {
 			return nil
 		}
@@ -264,6 +282,18 @@ func waitFor(e *Error, attempt int) time.Duration {
 	}
 	return wait
 }
+
+// acquire takes the single-in-flight slot, or gives up when the caller does.
+func (c *Client) acquire(ctx context.Context) error {
+	select {
+	case c.one <- struct{}{}:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
+func (c *Client) release() { <-c.one }
 
 // sleepContext is the default wait: a timer that surrenders to the caller's context.
 func sleepContext(ctx context.Context, d time.Duration) error {

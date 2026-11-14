@@ -180,3 +180,30 @@ más adelante con evidencia, no en P1.
 L24. Dato nuevo del tracker: `state_reason` ahora incluye `DUPLICATE` (7 casos en `cli/cli`).
 Es una señal nativa de duplicado que no estaba contemplada; queda fuera del banco hasta que se
 decida qué significa para el MVP sin agrupación.
+
+L25. **Corte de alcance por tiempo** (decisión del owner, con la hackathon encima): el pase
+inicial se queda con lo que puede decidir. `intent` sale de P1 y pasa a la segunda fase, donde
+un modelo de lenguaje lee la issue, toda la metadata y todos los comentarios con la instrucción
+de **priorizar la voz del owner e ignorar la del creador**. Justificación medida: 3,7 % de
+acierto sobre 188 issues con resolución conocida.
+
+L26. Autoría de etiquetas, verificada en la API: `timelineItems(itemTypes:[LABELED_EVENT])`
+devuelve `actor{login}` por etiqueta. Un `accepted` puesto por quien pide la issue deja de valer
+como decisión. Falta incorporarlo al fetch de E1 (`internal/ghdata`).
+
+L27. Todo comentario de mantenedor entra al expediente: el tope de seis se fue, el límite es el
+tamaño del expediente y los comentarios con lenguaje de decisión van primero para que el recorte
+se lleve el final y no la respuesta.
+
+L28. Documentación, tests y refactors **son trabajo** y dejan de ser MARCADA: eran 17 de las 34
+fallas del bloque de completadas con PR mergeada. Un bug sin reproducción también es CANDIDATA,
+con la nota de que primero hay que encontrarlo en el código: no reproducible no es no
+encontrable, y nueve bugs de ese tipo se arreglaron igual.
+
+L29. La alineación corre **sólo para features**: un bug es una desviación de algo ya querido y un
+arreglo de documentación no es una feature. Umbral 0,6, medido: 9 de 10 con 0,6 contra 6 de 10
+con 0,5.
+
+L30. El pase queda con un expediente, una petición y una pre-compuerta determinista. `MARCADA` no
+es terminal: entra a la cola de revisión y una ronda posterior con mejor material puede
+revertirla.

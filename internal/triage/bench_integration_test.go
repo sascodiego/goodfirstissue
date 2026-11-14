@@ -357,7 +357,9 @@ func TestBenchMeasuresWording(t *testing.T) {
 		started := time.Now()
 		substance, err := client.ask(ctx, SubstanceDossier(issue), substanceQuestions)
 		if err != nil {
-			t.Fatalf("%s: substance request: %v", c.ID, err)
+			// One bad case must not cost the whole report: the benchmark is the evidence.
+			t.Errorf("%s: substance request: %v", c.ID, err)
+			continue
 		}
 		answersAt := time.Since(started)
 
@@ -376,7 +378,7 @@ func TestBenchMeasuresWording(t *testing.T) {
 			}
 			got, err := client.ask(ctx, AlignmentDossier(issue, brief), alignmentQuestions)
 			if err != nil {
-				t.Fatalf("%s: alignment request: %v", c.ID, err)
+				t.Errorf("%s: alignment request: %v", c.ID, err)
 			}
 			alignment = noulMap(got)
 		}
@@ -539,7 +541,8 @@ func reportConsistency(t *testing.T, ctx context.Context, client clefClient, cas
 		for pass := 2; pass <= consistencyRuns; pass++ {
 			again, err := client.ask(ctx, SubstanceDossier(issue), substanceQuestions)
 			if err != nil {
-				t.Fatalf("%s: consistency request: %v", id, err)
+				t.Errorf("%s: consistency request: %v", id, err)
+				continue
 			}
 
 			if again["kind"].Choice != base.Kind {

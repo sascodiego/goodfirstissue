@@ -216,8 +216,8 @@ func TestDefaultAddrListensOnAllInterfaces(t *testing.T) {
 	if host != "0.0.0.0" {
 		t.Errorf("host = %q, want 0.0.0.0 para aceptar conexiones de la red", host)
 	}
-	if port != "8080" {
-		t.Errorf("port = %q, want 8080", port)
+	if port != "7117" {
+		t.Errorf("port = %q, want 7117", port)
 	}
 
 	got, err := Load(write(t, `{"server":{"addr":"127.0.0.1:9999"}}`))

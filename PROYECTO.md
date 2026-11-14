@@ -1367,7 +1367,7 @@ PASS  api.nan.builders  alcanzable (HTTP 401)
 make build                          # go build -o bin/gfi ./cmd/gfi
 make test                           # go test ./...
 make lint                           # go vet ./... && golangci-lint run
-./bin/gfi                                   # 0.0.0.0:8080, configurable en server.addr
+./bin/gfi                                   # 0.0.0.0:7117, configurable en server.addr
 make verify                         # build + test + lint, de una
 ```
 
@@ -1432,7 +1432,7 @@ Un archivo parcial solo nombra lo que cambia; el resto toma su default. Las secc
 
 | Sección | Qué configura |
 |---|---|
-| `server` | `addr`: dirección de escucha. Por defecto `0.0.0.0:8080`, que acepta conexiones de la red local; `127.0.0.1:8080` la cierra a esta máquina |
+| `server` | `addr`: dirección de escucha. Por defecto `0.0.0.0:7117`, que acepta conexiones de la red (el binario corre en un VPS y se mira desde afuera); `127.0.0.1:7117` la cierra a esta máquina. `7117` y no `8080` porque `8080` es el default de media docena de servidores de desarrollo |
 | `repos.clone_dir` | dónde se clonan los repositorios (`var/repos`) |
 | `store.dir` | corpus congelado y resultados (`var/store`) |
 | `github` | `max_issues`, `page_size`, `timeout` — **sin filtro por etiqueta** |

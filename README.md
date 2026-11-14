@@ -64,11 +64,17 @@ cp config.example.json config.json
 ./scripts/preflight.sh         # tiene que dar 0 bloqueantes
 
 make build                     # binario estático en bin/gfi
-./bin/gfi                     # http://localhost:8080, y desde la red en 0.0.0.0:8080
+./bin/gfi                     # http://localhost:7117, y desde la red en 0.0.0.0:7117
 make verify                    # build + test + lint + design-check
 ```
 
-El servidor todavía no lee `config.json`: el esqueleto arranca sin configuración.
+El servidor lee `config.json` si está, y arranca con los defaults si no: escucha en
+`0.0.0.0:7117`, con `-addr` y `server.addr` para cambiarlo.
+
+Si lo vas a dejar público, que sea detrás del proxy y no desnudo: la app no tiene
+autenticación y el alta de repositorios escribe en el store y gasta el rate limit del token
+de GitHub. Las pantallas de lectura no necesitan nada; los dos `POST` sí merecen que el
+proxy pida credenciales.
 
 ## Decisiones que tomó, y por qué
 

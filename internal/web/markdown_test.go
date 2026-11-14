@@ -115,3 +115,31 @@ func TestMarkdownInlineCodeIsNotEmphasis(t *testing.T) {
 		t.Errorf("se aplicó énfasis adentro del código en línea:\n%s", got)
 	}
 }
+
+// El canal de marcas no es del autor. Un NUL escrito en el cuerpo no puede
+// hacerse pasar por una marca: si lo hiciera, reescribiría el marcado que arma
+// el renderer —un `href` de más, un atributo de más— y el invariante «en el paso
+// 2 solo se agregan etiquetas propias» dejaría de ser cierto.
+func TestMarkdownAuthorCannotForgeMarkers(t *testing.T) {
+	got := string(renderMarkdown("[t](https://x\x000\x00y)"))
+
+	if strings.ContainsRune(got, 0) {
+		t.Errorf("el render dejó un NUL en la salida: %q", got)
+	}
+	if n := strings.Count(got, "<a "); n != 1 {
+		t.Errorf("se armaron %d anclas, want 1:\n%s", n, got)
+	}
+	if n := strings.Count(got, "href="); n != 1 {
+		t.Errorf("se armaron %d atributos href, want 1 (el NUL del autor abrió el marcado):\n%s", n, got)
+	}
+	want := `<a href="https://x0y" rel="noopener noreferrer">t</a>`
+	if !strings.Contains(got, want) {
+		t.Errorf("el enlace no salió como %q:\n%s", want, got)
+	}
+
+	// En texto suelto el control no tiene nada que hacer: se descarta, no se
+	// escapa, porque no se ve.
+	if got := string(renderMarkdown("a\x00b")); got != "<p>ab</p>\n" {
+		t.Errorf("renderMarkdown(\\x00 en texto) = %q, want %q", got, "<p>ab</p>\n")
+	}
+}

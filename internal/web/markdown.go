@@ -26,9 +26,31 @@ import (
 func renderMarkdown(src string) template.HTML {
 	src = strings.ReplaceAll(src, "\r\n", "\n")
 	src = strings.ReplaceAll(src, "\r", "\n")
+	src = stripControls(src)
 
 	// Paso 1, el único que toca lo que escribió el autor.
 	return template.HTML(renderBlocks(html.EscapeString(src)))
+}
+
+// stripControls borra los controles C0 y el DEL: no se ven, no aportan texto y
+// son el único canal por el que el autor podría escribir una marca del render.
+//
+// html.EscapeString escapa < > & ' " y nada más: un NUL del cuerpo atraviesa el
+// escapado intacto. Sin este filtro, el autor podría hacerse pasar por una marca
+// y reescribir el marcado que arma este archivo, que es exactamente lo que el
+// contrato de renderMarkdown promete que no puede pasar. El salto y el tab se
+// conservan: son contenido, no control.
+func stripControls(s string) string {
+	return strings.Map(func(r rune) rune {
+		switch r {
+		case '\n', '\t':
+			return r
+		}
+		if r < 0x20 || r == 0x7f {
+			return -1
+		}
+		return r
+	}, s)
 }
 
 // codeFence delimita un bloque de código. Se compara sobre el texto ya escapado:
@@ -136,8 +158,9 @@ func renderInline(escaped string) string {
 	return restoreInline(escaped, kept)
 }
 
-// inlineMarker separa las marcas del texto. El NUL no puede venir del autor:
-// html.EscapeString no lo produce y el texto ya está escapado.
+// inlineMarker separa las marcas del texto. El NUL es un canal que solo este
+// archivo escribe: stripControls ya borró los del autor antes de escapar, así
+// que el texto que llega acá no puede contener ni uno.
 func inlineMarker(i int) string { return "\x00" + strconv.Itoa(i) + "\x00" }
 
 var markerPattern = regexp.MustCompile("\x00(\\d+)\x00")

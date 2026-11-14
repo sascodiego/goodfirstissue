@@ -20,7 +20,7 @@ const (
 	DefaultCloneDir   = "var/repos"
 	DefaultStoreDir   = "var/store"
 	DefaultPigHomeDir = "var/pig"
-	DefaultAddr       = ":8080"
+	DefaultAddr       = "0.0.0.0:8080"
 )
 
 // AllowedChatModels are the allowlist entries usable through /v1/chat/completions.

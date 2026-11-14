@@ -1,6 +1,7 @@
 package config
 
 import (
+	"net"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -201,5 +202,29 @@ func TestLoadRejectsClefAsTheExploreModel(t *testing.T) {
 		if !strings.Contains(err.Error(), "chat model") {
 			t.Errorf("%s: err = %v, want it to say clef is not a chat model", body, err)
 		}
+	}
+}
+
+// El servidor escucha en todas las interfaces por defecto, para poder abrirlo
+// desde otra máquina del mismo segmento sin recompilar. La dirección sigue
+// siendo configurable, y eso es lo que permite cerrarlo a loopback si hace falta.
+func TestDefaultAddrListensOnAllInterfaces(t *testing.T) {
+	host, port, err := net.SplitHostPort(DefaultAddr)
+	if err != nil {
+		t.Fatalf("DefaultAddr = %q, no es host:puerto: %v", DefaultAddr, err)
+	}
+	if host != "0.0.0.0" {
+		t.Errorf("host = %q, want 0.0.0.0 para aceptar conexiones de la red", host)
+	}
+	if port != "8080" {
+		t.Errorf("port = %q, want 8080", port)
+	}
+
+	got, err := Load(write(t, `{"server":{"addr":"127.0.0.1:9999"}}`))
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if got.Server.Addr != "127.0.0.1:9999" {
+		t.Errorf("addr = %q, want the configured 127.0.0.1:9999", got.Server.Addr)
 	}
 }

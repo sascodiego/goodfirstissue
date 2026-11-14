@@ -26,7 +26,9 @@
     "done_defined": true,
     "reports_defect": false,
     "evidence_sufficient": true,
-    "outcome": "CONDICIONADA"
+    "outcome": "CONDICIONADA",
+    "only_for_requester": false,
+    "fits_direction": true
   },
   "expect_pre_gate": ""
 }

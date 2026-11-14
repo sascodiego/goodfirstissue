@@ -54,6 +54,10 @@ type Expected struct {
 	ReportsDefect      bool   `json:"reports_defect"`
 	EvidenceSufficient bool   `json:"evidence_sufficient"`
 	Outcome            string `json:"outcome"`
+	// Alignment is labelled only where the tree asks it: a feature with no recorded
+	// position. Absent means "this case does not reach the node", not "false".
+	OnlyForRequester *bool `json:"only_for_requester,omitempty"`
+	FitsDirection    *bool `json:"fits_direction,omitempty"`
 }
 
 type benchDuplicate struct {
@@ -70,6 +74,8 @@ type benchCase struct {
 	Duplicates    []benchDuplicate `json:"duplicates"`
 	Expected      Expected         `json:"expected"`
 	ExpectPreGate string           `json:"expect_pre_gate"`
+	// Project names the brief a synthetic case imitates; a real case uses its source.
+	Project string `json:"project,omitempty"`
 }
 
 type coverage struct {

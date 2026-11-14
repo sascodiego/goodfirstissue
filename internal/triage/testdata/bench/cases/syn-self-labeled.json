@@ -24,7 +24,10 @@
     "done_defined": false,
     "reports_defect": false,
     "evidence_sufficient": true,
-    "outcome": "CONDICIONADA"
+    "outcome": "MARCADA",
+    "only_for_requester": true,
+    "fits_direction": false
   },
-  "expect_pre_gate": ""
+  "expect_pre_gate": "",
+  "project": "httpie__cli"
 }

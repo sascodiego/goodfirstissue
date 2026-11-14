@@ -151,6 +151,23 @@ var substanceQuestions = []question{
 	},
 }
 
+// alignmentQuestions are dossier C. A feature can be clear, approved as a topic, and
+// still be worth nothing to anyone but the person asking.
+var alignmentQuestions = []question{
+	{
+		ID:   "only_for_requester",
+		Type: "noul",
+		Instructions: "Is this request driven by a situation specific to the person asking, such that the " +
+			"project's other users would not get anything out of it?",
+	},
+	{
+		ID:   "fits_direction",
+		Type: "noul",
+		Instructions: "Judged against what the project's documentation and recent history show it is trying to " +
+			"be, would this request move it further in that direction, or away from it?",
+	},
+}
+
 var intentQuestions = []question{
 	{ID: "intent", Type: "choice", Instructions: "What position does the project record about this work?", Criteria: intentCriteria},
 	{ID: "maintainer_spoke", Type: "noul", Instructions: "Does the material contain at least one statement written by someone responsible for the project, as opposed to statements written only by people asking for it?"},
@@ -283,16 +300,19 @@ func noulMap(answers map[string]answer) map[string]float64 {
 }
 
 type benchRun struct {
-	Case       string             `json:"case"`
-	Trap       string             `json:"trap"`
-	Expect     Expected           `json:"expect"`
-	Has        map[string]float64 `json:"substance"`
-	Kind       string             `json:"kind_flat"`
-	KindProb   map[string]float64 `json:"kind_probabilities"`
-	KindConf   float64            `json:"kind_confidence"`
-	Intent     string             `json:"intent"`
-	IntentProb map[string]float64 `json:"intent_probabilities"`
-	IntentConf float64            `json:"intent_confidence"`
+	Alignment   map[string]float64 `json:"alignment,omitempty"`
+	TreeOutcome string             `json:"tree_outcome"`
+	FlatOutcome string             `json:"flat_outcome"`
+	Case        string             `json:"case"`
+	Trap        string             `json:"trap"`
+	Expect      Expected           `json:"expect"`
+	Has         map[string]float64 `json:"substance"`
+	Kind        string             `json:"kind_flat"`
+	KindProb    map[string]float64 `json:"kind_probabilities"`
+	KindConf    float64            `json:"kind_confidence"`
+	Intent      string             `json:"intent"`
+	IntentProb  map[string]float64 `json:"intent_probabilities"`
+	IntentConf  float64            `json:"intent_confidence"`
 }
 
 func TestBenchMeasuresWording(t *testing.T) {
@@ -305,6 +325,7 @@ func TestBenchMeasuresWording(t *testing.T) {
 
 	cases, m := loadBench(t)
 	client := newClefClient()
+	briefs := loadBriefs(t)
 	ctx := t.Context()
 
 	var (
@@ -345,6 +366,26 @@ func TestBenchMeasuresWording(t *testing.T) {
 			t.Fatalf("%s: intent request: %v", c.ID, err)
 		}
 
+		var alignment map[string]float64
+		if run0 := substance["kind"]; run0.Choice == "feature" && intent["intent"].Choice == "undecided" {
+			// The tree only walks here: a feature nobody approved, whose value to the
+			// project is the open question.
+			project := c.Project
+			if project == "" {
+				project = c.issue().Repository
+			}
+			project = strings.ReplaceAll(project, "__", "/")
+			brief, ok := briefs[project]
+			if !ok {
+				t.Fatalf("%s: no project brief for %q", c.ID, project)
+			}
+			got, err := client.ask(ctx, AlignmentDossier(issue, brief), alignmentQuestions)
+			if err != nil {
+				t.Fatalf("%s: alignment request: %v", c.ID, err)
+			}
+			alignment = noulMap(got)
+		}
+
 		noul := noulMap(substance)
 		derived := DerivedKind(noul)
 		run := benchRun{
@@ -355,10 +396,13 @@ func TestBenchMeasuresWording(t *testing.T) {
 			Kind:       substance["kind"].Choice,
 			KindProb:   substance["kind"].Probabilities,
 			KindConf:   substance["kind"].Confidence,
+			Alignment:  alignment,
 			Intent:     intent["intent"].Choice,
 			IntentProb: intent["intent"].Probabilities,
 			IntentConf: intent["intent"].Confidence,
 		}
+		run.TreeOutcome = TreeOutcome(c.issue(), substance, intent["intent"].Choice, alignment)
+		run.FlatOutcome = FlatOutcome(c.issue(), substance, intent["intent"].Choice)
 		runs = append(runs, run)
 
 		scored++
@@ -394,6 +438,29 @@ func TestBenchMeasuresWording(t *testing.T) {
 			noul["evidence_sufficient"], answersAt.Round(time.Millisecond))
 	}
 
+	treeHits, flatOutcomeHits, aligned, alignedHits := 0, 0, 0, 0
+	for _, run := range runs {
+		if run.TreeOutcome == run.Expect.Outcome {
+			treeHits++
+		}
+		if run.FlatOutcome == run.Expect.Outcome {
+			flatOutcomeHits++
+		}
+		if run.Alignment != nil && run.Expect.OnlyForRequester != nil {
+			aligned++
+			okSelf := (run.Alignment["only_for_requester"] >= 0.5) == *run.Expect.OnlyForRequester
+			okDir := run.Expect.FitsDirection == nil
+			if !okDir {
+				okDir = (run.Alignment["fits_direction"] >= 0.5) == *run.Expect.FitsDirection
+			}
+			if okSelf && okDir {
+				alignedHits++
+			}
+		}
+	}
+	t.Logf("desenlace plano: %d/%d", flatOutcomeHits, len(runs))
+	t.Logf("desenlace árbol: %d/%d", treeHits, len(runs))
+	t.Logf("nodo de alineación: %d/%d", alignedHits, aligned)
 	t.Logf("")
 	t.Logf("resueltos sin preguntar: %d (%s)", len(preGated), strings.Join(preGated, ", "))
 	t.Logf("medidos:        %d", scored)
@@ -472,4 +539,110 @@ func writeBenchReport(t *testing.T, m manifest, runs []benchRun) {
 		t.Fatalf("write report: %v", err)
 	}
 	t.Logf("report written to %s", path)
+}
+
+// loadBriefs reads the project direction written for each repository under test. It is
+// real material taken from the clone: what the README declares and what the last twenty
+// commits reveal.
+func loadBriefs(t *testing.T) map[string]string {
+	t.Helper()
+
+	paths, err := filepath.Glob(filepath.Join(benchDir, "project-brief", "*.md"))
+	if err != nil {
+		t.Fatalf("glob briefs: %v", err)
+	}
+	briefs := make(map[string]string, len(paths))
+	for _, path := range paths {
+		blob, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatalf("read %s: %v", path, err)
+		}
+		name := strings.TrimSuffix(filepath.Base(path), ".md")
+		briefs[strings.ReplaceAll(name, "__", "/")] = string(blob)
+	}
+	if len(briefs) == 0 {
+		t.Fatal("no project briefs: the alignment node would judge blind")
+	}
+	return briefs
+}
+
+// prescreen resolves the native and structural facts, and nothing else.
+func prescreen(issue Issue) string {
+	return Prescreen(issue).Reason
+}
+
+// FlatOutcome is the chain as frozen in criteria.md: independent gates in a fixed order.
+func FlatOutcome(issue Issue, substance map[string]answer, intent string) string {
+	if pre := prescreen(issue); pre != "" {
+		return "MARCADA"
+	}
+	at := func(id string) float64 { return substance[id].Noul }
+	kind := substance["kind"].Choice
+
+	if at("evidence_sufficient") < 0.5 {
+		return "no_verdict"
+	}
+	if kind == "question" || kind == "spam" || kind == "other" {
+		return "MARCADA"
+	}
+	if at("self_contained") < 0.5 {
+		return "MARCADA"
+	}
+	if kind == "bug" && at("has_evidence") < 0.5 {
+		return "MARCADA"
+	}
+	if kind == "bug" && at("reports_defect") < 0.5 {
+		kind = "feature"
+	}
+	if at("done_defined") < 0.5 || at("unambiguous") < 0.5 {
+		return "CONDICIONADA"
+	}
+	if kind == "feature" && intent == "undecided" {
+		return "CONDICIONADA"
+	}
+	if intent == "refused" {
+		return "MARCADA"
+	}
+	return "CANDIDATA"
+}
+
+// TreeOutcome is the tree the owner proposed: approval ends the walk, refusal ends it,
+// and only a feature nobody decided on reaches the alignment node, where the question is
+// whether the request serves the project or only the person asking.
+func TreeOutcome(issue Issue, substance map[string]answer, intent string, alignment map[string]float64) string {
+	if pre := prescreen(issue); pre != "" {
+		return "MARCADA"
+	}
+	at := func(id string) float64 { return substance[id].Noul }
+	kind := substance["kind"].Choice
+
+	if intent == "approved" {
+		return "CANDIDATA"
+	}
+	if intent == "refused" {
+		return "MARCADA"
+	}
+	if at("evidence_sufficient") < 0.5 {
+		return "no_verdict"
+	}
+	if kind == "question" || kind == "spam" || kind == "other" {
+		return "MARCADA"
+	}
+	if kind == "bug" {
+		if at("has_evidence") < 0.5 {
+			return "MARCADA"
+		}
+		return "CANDIDATA"
+	}
+	// Feature with no recorded position.
+	if alignment == nil {
+		return "CONDICIONADA"
+	}
+	if alignment["only_for_requester"] >= 0.5 {
+		return "MARCADA"
+	}
+	if alignment["fits_direction"] >= 0.5 {
+		return "CANDIDATA"
+	}
+	return "CONDICIONADA"
 }

@@ -29,5 +29,6 @@
     "evidence_sufficient": false,
     "outcome": "MARCADA"
   },
-  "expect_pre_gate": "already_working"
+  "expect_pre_gate": "already_working",
+  "project": "httpie__cli"
 }

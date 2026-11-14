@@ -109,3 +109,25 @@ el banco los reporta como «resueltos sin preguntar».
 L11. El banco creció a 46 casos, 35 reales de los dos repositorios del corpus. Con datos
 reales el acierto de punta a punta es 34/46 (74 %), no el 96 % que sugería el set sintético:
 `done_defined` y `unambiguous` son responsables de seis de las doce fallas.
+
+L12. Diagnóstico del owner, aceptado: la pregunta de intención no estaba mal redactada,
+estaba **mal alimentada**. Se le preguntaba por la posición del proyecto y se le pasaba la
+issue entera. `IntentDossier` ahora lleva sólo lo que puede responderla: estado nativo,
+etiquetas verbatim, una línea con lo que se pide, y los comentarios de cuentas con
+asociación de responsable — más la definición de qué significan OWNER, MEMBER y
+COLLABORATOR, que antes nunca se entregaba.
+
+L13. El árbol que propuso el owner quedó implementado como recorrido de nuestro código:
+aprobada → candidata (fin); rechazada → marcada (fin); sin posición → si es bug, sigue; si
+es feature, nodo de alineación con la dirección real del proyecto (README + últimos 20
+commits del clon, en `testdata/bench/project-brief/`).
+
+L14. Medición del árbol: `intent` 36/37 contra un baseline constante de 34/37 (atrapa los
+dos rechazos en prosa y comete un falso rechazo); el nodo de alineación acierta 6/10, con
+dos casos exactamente en el umbral de 0,50 (cada eje por separado acierta 8/10, la
+conjunción castiga); y el desenlace árbol 22/37 contra plano 24/37, comparación que **no
+vale** todavía porque las etiquetas de desenlace se escribieron bajo la política plana.
+
+L15. Bug de medición propio, registrado: el bloque de reporte reutilizó la variable del
+conteo de categoría y publicó un número equivocado en una corrida. Corregido; los números
+de arriba son de la corrida posterior.

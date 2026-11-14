@@ -37,5 +37,6 @@
     "evidence_sufficient": true,
     "outcome": "MARCADA"
   },
-  "expect_pre_gate": "already_done"
+  "expect_pre_gate": "already_done",
+  "project": "httpie__cli"
 }

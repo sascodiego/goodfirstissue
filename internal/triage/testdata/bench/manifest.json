@@ -182,6 +182,26 @@
       "trap": "capability_question",
       "min": 1,
       "why": "asking whether something is possible"
+    },
+    {
+      "trap": "refused_in_prose_but_still_open",
+      "min": 1,
+      "why": "a refusal written by a maintainer on an issue that is still open: the only case the native layer cannot see"
+    },
+    {
+      "trap": "soft_refusal_that_is_not_a_decision",
+      "min": 1,
+      "why": "a hedge is not a refusal"
+    },
+    {
+      "trap": "feature_that_serves_everyone",
+      "min": 1,
+      "why": "alignment: a request that helps users other than the author"
+    },
+    {
+      "trap": "feature_against_the_project_direction",
+      "min": 1,
+      "why": "alignment: a request that departs from what the project is"
     }
   ],
   "required_provenance": {
@@ -224,14 +244,19 @@
     "httpie-335",
     "httpie-758",
     "httpie-800",
+    "syn-collective-flag",
     "syn-completed",
     "syn-control-wellformed",
     "syn-empty-body",
     "syn-feature-prefix-bug",
     "syn-no-repro-bug",
     "syn-not-planned",
+    "syn-off-direction",
     "syn-open-pr-insufficient",
     "syn-panic-with-bom",
+    "syn-refused-design",
+    "syn-refused-open",
+    "syn-refused-soft",
     "syn-self-labeled"
   ]
 }

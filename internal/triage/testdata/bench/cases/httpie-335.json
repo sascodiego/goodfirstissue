@@ -28,14 +28,16 @@
   "duplicates": [],
   "expected": {
     "kind": "feature",
-    "intent": "approved",
+    "intent": "undecided",
     "self_contained": true,
     "has_evidence": false,
     "unambiguous": false,
     "done_defined": false,
     "reports_defect": false,
     "evidence_sufficient": true,
-    "outcome": "CONDICIONADA"
+    "outcome": "CANDIDATA",
+    "only_for_requester": false,
+    "fits_direction": true
   },
   "expect_pre_gate": ""
 }

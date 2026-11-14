@@ -1,0 +1,35 @@
+{
+  "_note": "Procedencia de cada dato de la pantalla. measured = contado del snapshot guardado; inferred = se deduce de una etiqueta del repositorio, no de un veredicto de Clef. El triaje todavía no corrió: ningún estado de esta carpeta es una decisión del modelo.",
+  "source": {
+    "snapshot": "var/store/spf13__cobra/snapshot.json",
+    "repository": "spf13/cobra",
+    "commit": "adbc8813901bba65827259daa8e22ff94ec1f30e",
+    "fetched_at": "2026-11-14",
+    "filter": "state: OPEN; etiquetas copiadas verbatim, sin normalizar y sin filtrar"
+  },
+  "repositories": [
+    { "name": "spf13/cobra", "language": "Go", "open": 262, "stored": 150, "free": 84, "taken": 66, "analysed": 1 },
+    { "name": "httpie/cli", "language": "Python", "open": 192, "stored": 150, "free": 107, "taken": 43, "analysed": 0 }
+  ],
+  "stats_cobra": {
+    "measured": { "open": 262, "stored": 150, "taken": 66, "free": 84, "without_label": 73, "without_comments": 14, "analysed": 1 }
+  },
+  "rows": [
+    { "number": 2393, "updated": "2026-11-13", "comments": 10, "labels": [], "pr": 222, "state": "taken", "provenance": "measured" },
+    { "number": 2568, "updated": "2026-11-11", "comments": 0, "labels": [], "pr": null, "state": "candidate", "provenance": "measured" },
+    { "number": 2547, "updated": "2026-10-24", "comments": 1, "labels": [], "pr": 2563, "state": "taken", "provenance": "measured" },
+    { "number": 2525, "updated": "2026-10-13", "comments": 1, "labels": [], "pr": null, "state": "candidate", "provenance": "measured" },
+    { "number": 2505, "updated": "2026-10-06", "comments": 2, "labels": [], "pr": null, "state": "candidate", "provenance": "measured" },
+    { "number": 2491, "updated": "2026-09-26", "comments": 1, "labels": [], "pr": null, "state": "conditional", "provenance": "inferred: el título pide una feature; falta el sí del mantenedor" },
+    { "number": 1740, "updated": "2026-09-21", "comments": 9, "labels": ["kind/bug", "area/shell-completion"], "pr": 2485, "state": "taken", "provenance": "measured" },
+    { "number": 1391, "updated": "2026-09-18", "comments": 17, "labels": ["kind/documentation", "good-first-issue"], "pr": 1984, "state": "taken", "provenance": "measured" },
+    { "number": 1995, "updated": "2025-10-27", "comments": 3, "labels": ["kind/support"], "pr": null, "state": "noise", "provenance": "inferred: etiqueta kind/support" },
+    { "number": 1807, "updated": "2024-06-27", "comments": 3, "labels": ["admin", "lifecycle/frozen", "help-wanted"], "pr": null, "state": "noise", "provenance": "inferred: etiquetas lifecycle/frozen + help-wanted" }
+  ],
+  "known_fact": "Las 4 issues de cobra con la etiqueta good-first-issue (#225, #1140, #1272, #1391) tienen al menos una PR abierta vinculada. #1272 acumula cinco: 1632, 2373, 2426, 2431, 2503. Disponibles para alguien que empieza: ninguna.",
+  "not_in_the_mock": [
+    "la tercera pantalla de detalle (S3), cortada en PROYECTO.md §2.1.1",
+    "el nodo de alineación, también cortado",
+    "la vista de resumen de repositorios como página propia: acá vive en el rail"
+  ]
+}

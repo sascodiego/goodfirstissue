@@ -1,0 +1,20 @@
+{
+  "title": "Dashboard · repositorios e issues",
+  "brief": "Pantalla principal del producto: rail con los repositorios conocidos y el alta de uno nuevo, y a la derecha la lista de issues filtrable con fecha, estado, PR y etiquetas. Las dos maquetas son la misma pantalla en las dos familias del sistema (design/system.md); se elige familia, no pantalla.",
+  "artboards": [
+    {
+      "file": "01-instrumento.html",
+      "title": "Instrumento",
+      "tradeoff": "Casi negro, hairlines, densidad de 44 px y monoespaciada en todo dato. Gana autoridad técnica y aguanta horas de uso; el riesgo es verse frío y poco memorable en una demo de cinco minutos.",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "02-editorial.html",
+      "title": "Editorial",
+      "tradeoff": "Cálido, serif en el display, filas de 52 px y el estado como palabra con filete en vez de punto. Gana legibilidad y memoria; el riesgo es perder densidad y que el serif se lea como decoración en vez de instrumento.",
+      "width": 1440,
+      "height": 900
+    }
+  ]
+}

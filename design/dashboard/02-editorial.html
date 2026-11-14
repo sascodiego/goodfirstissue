@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Dashboard · B · Editorial</title>
+<style>
+  /* Familia B · Editorial. La misma pantalla, otro lenguaje visual:
+     serif en el display, aire, y el estado como palabra con filete en vez de punto. */
+  :root {
+    --bg:#12100e; --surface:#191613; --surface-2:#201b17;
+    --line:#2a2420; --line-2:#3a322c;
+    --fg:#f2ece4; --fg-2:#aea396; --fg-3:#7b7167;
+    --accent:#d98b5f; --accent-ink:#12100e;
+    --taken:#7b7167; --noise:#b79be0; --blocked:#d9a441;
+    --r-sm:2px; --r-md:4px;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --serif: ui-serif, Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { color-scheme: dark; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 13.5px/1.55 var(--sans); -webkit-font-smoothing: antialiased;
+  }
+  code { font: 0.92em var(--mono); color: var(--fg-2); }
+
+  .app { display: grid; grid-template-columns: 17rem minmax(0, 1fr); min-height: 100dvh; }
+
+  /* ---------- rail ---------- */
+  .rail {
+    display: flex; flex-direction: column; gap: 1.75rem;
+    background: var(--surface); border-right: 1px solid var(--line);
+    padding: 1.5rem 0;
+  }
+  .brand { padding: 0 1.4rem; }
+  .brand b {
+    display: block; font: 400 17px/1.2 var(--serif); letter-spacing: -0.01em; color: var(--fg);
+  }
+  .brand span { display: block; margin-top: 0.3rem; font: 10px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-3); }
+
+  .rail-label {
+    margin: 0 0 0.7rem; padding: 0 1.4rem;
+    font: 600 9.5px/1 var(--sans); letter-spacing: 0.17em; text-transform: uppercase; color: var(--fg-3);
+  }
+  .repo-list { display: flex; flex-direction: column; }
+  .repo {
+    display: block; padding: 0.6rem 1.4rem; text-decoration: none; color: var(--fg-2);
+    border-left: 2px solid transparent;
+  }
+  .repo:hover { background: var(--surface-2); }
+  .repo[aria-current="page"] { border-left-color: var(--accent); background: var(--surface-2); }
+  .repo .name { display: block; font: 400 14px/1.3 var(--serif); color: var(--fg); }
+  .repo[aria-current="page"] .name { color: var(--fg); }
+  .repo .sub { display: block; margin-top: 0.15rem; font: 10.5px var(--mono); color: var(--fg-3); }
+  .repo .n { float: right; font: 11px var(--mono); font-variant-numeric: tabular-nums; color: var(--fg-3); }
+
+  .add { margin-top: auto; padding: 0 1.4rem; }
+  .add label { display: block; margin-bottom: 0.5rem; font: 600 9.5px/1 var(--sans); letter-spacing: 0.17em; text-transform: uppercase; color: var(--fg-3); }
+  .add-row { display: flex; gap: 0.4rem; }
+  .add input {
+    flex: 1; min-width: 0; padding: 0.45rem 0.55rem; background: var(--bg); color: var(--fg);
+    border: 1px solid var(--line-2); border-radius: var(--r-sm); font: 12px var(--mono);
+  }
+  .add input::placeholder { color: var(--fg-3); }
+  .add button {
+    padding: 0 0.6rem; border: 0; border-radius: var(--r-sm);
+    background: var(--accent); color: var(--accent-ink); font: 600 13px var(--sans); cursor: pointer;
+  }
+  .add p { margin: 0.55rem 0 0; font-size: 11px; line-height: 1.5; color: var(--fg-3); }
+  .add input:focus-visible, .add button:focus-visible, .btn:focus-visible,
+  .repo:focus-visible, .f:focus-visible, .c-ttl a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .rail-foot { padding: 0.9rem 1.4rem 0; border-top: 1px solid var(--line); font: 10px var(--mono); color: var(--fg-3); }
+
+  /* ---------- main ---------- */
+  main { display: flex; flex-direction: column; min-width: 0; }
+
+  .top {
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem;
+    padding: 2rem 2rem 1.4rem; border-bottom: 1px solid var(--line);
+  }
+  h1 { margin: 0; font: 400 30px/1.05 var(--serif); letter-spacing: -0.02em; }
+  .meta { margin: 0.6rem 0 0; font: 11.5px var(--mono); color: var(--fg-3); }
+  .meta b { color: var(--fg-2); font-weight: 400; }
+  .actions { display: flex; gap: 1.1rem; align-items: center; flex: none; }
+  .btn {
+    padding: 0.5rem 0.9rem; border: 1px solid var(--line-2); border-radius: var(--r-sm);
+    background: transparent; color: var(--fg-2); font: 500 12px var(--sans); cursor: pointer;
+  }
+  .btn:hover { color: var(--fg); border-color: var(--fg-3); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .btn.primary:hover { filter: brightness(1.06); }
+
+  /* Las cifras, como una línea de registro y no como tarjetas. */
+  .stats {
+    display: flex; flex-wrap: wrap; gap: 0 2rem; margin: 0;
+    padding: 1rem 2rem; border-bottom: 1px solid var(--line);
+  }
+  .stats div { display: flex; align-items: baseline; gap: 0.45rem; }
+  .stats dt { font: 600 9.5px/1 var(--sans); letter-spacing: 0.15em; text-transform: uppercase; color: var(--fg-3); }
+  .stats dd { margin: 0; font: 400 17px/1 var(--serif); font-variant-numeric: tabular-nums; }
+  .stats dd.live { color: var(--accent); }
+  .stats dd.taken { color: var(--taken); }
+
+  .filters {
+    display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center;
+    padding: 0.85rem 2rem; border-bottom: 1px solid var(--line);
+  }
+  .search { flex: 1 1 14rem; min-width: 0; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--line-2); padding-bottom: 0.25rem; }
+  .search span { font: 11px var(--mono); color: var(--fg-3); }
+  .search input { flex: 1; min-width: 0; background: none; border: 0; color: var(--fg); font: 12px var(--mono); }
+  .search input::placeholder { color: var(--fg-3); }
+  .search input:focus-visible { outline: none; }
+  .search:focus-within { border-color: var(--accent); }
+  .select {
+    padding: 0.25rem 0; background: none; color: var(--fg-2);
+    border: 0; border-bottom: 1px solid var(--line-2); font: 11.5px var(--mono);
+  }
+  .f {
+    padding: 0.15rem 0; background: none; border: 0; border-bottom: 1px solid transparent;
+    color: var(--fg-3); font: 11.5px var(--mono); cursor: pointer;
+  }
+  .f[aria-pressed="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+  .count { margin-left: auto; font: 11px var(--mono); color: var(--fg-3); }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left; padding: 1rem 1rem 0.6rem;
+    border-bottom: 1px solid var(--line-2);
+    font: 600 9.5px/1 var(--sans); letter-spacing: 0.15em; text-transform: uppercase; color: var(--fg-3);
+    white-space: nowrap;
+  }
+  tbody td { height: 3.25rem; padding: 0 1rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tbody tr:hover { background: var(--surface-2); }
+  tbody tr:last-child td { border-bottom: 0; }
+
+  .c-num { font: 11.5px var(--mono); color: var(--fg-3); font-variant-numeric: tabular-nums; width: 4rem; }
+  .c-ttl { min-width: 21rem; }
+  .c-ttl a { color: var(--fg); text-decoration: none; }
+  .c-ttl a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  /* Etiquetas como texto mono separado por puntos, no como chips con borde. */
+  .c-lbl { font: 10.5px var(--mono); color: var(--fg-3); white-space: nowrap; }
+  .c-lbl .hit { color: var(--blocked); }
+  .none { font-size: 10px; color: var(--fg-3); opacity: 0.5; }
+  .c-state { white-space: nowrap; width: 9rem; }
+  .st {
+    font: 600 9.5px/1 var(--sans); letter-spacing: 0.13em; text-transform: uppercase;
+    padding-left: 0.6rem; border-left: 2px solid currentColor;
+  }
+  .st.taken { color: var(--taken); } .st.noise { color: var(--noise); }
+  .st.blocked { color: var(--blocked); } .st.live { color: var(--accent); }
+  .c-pr, .c-date, .c-com { font: 11.5px var(--mono); color: var(--fg-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .c-pr.dash, .c-com.dash { color: var(--fg-3); opacity: 0.45; }
+  .c-com { text-align: right; width: 3.5rem; }
+
+  .tfoot {
+    margin-top: auto; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    padding: 1rem 2rem; border-top: 1px solid var(--line);
+    font: 10.5px var(--mono); color: var(--fg-3);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .repo, .btn, .f, tbody tr, .c-ttl a { transition: background 140ms ease, color 140ms ease, border-color 140ms ease; }
+  }
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .rail { border-right: 0; border-bottom: 1px solid var(--line); }
+    .c-lbl, .c-com { display: none; }
+    .top { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="rail">
+    <div class="brand">
+      <b>GoodFirstIssue</b>
+      <span>verificador de etiquetas</span>
+    </div>
+
+    <nav aria-label="Repositorios">
+      <p class="rail-label">Repositorios · 2</p>
+      <div class="repo-list">
+        <a class="repo" href="#" aria-current="page">
+          <span class="n">84</span><span class="name">spf13/cobra</span>
+          <span class="sub">Go · 262 abiertas · 1 analizada</span>
+        </a>
+        <a class="repo" href="#">
+          <span class="n">107</span><span class="name">httpie/cli</span>
+          <span class="sub">Python · 192 abiertas · 0 analizadas</span>
+        </a>
+      </div>
+    </nav>
+
+    <form class="add" onsubmit="return false">
+      <label for="nuevo">Agregar repositorio</label>
+      <div class="add-row">
+        <input id="nuevo" type="text" placeholder="owner/nombre" autocomplete="off" spellcheck="false">
+        <button type="submit" aria-label="Agregar repositorio">+</button>
+      </div>
+      <p>Trae hasta 150 issues <code>OPEN</code> con sus etiquetas verbatim. La etiqueta no selecciona nada.</p>
+    </form>
+
+    <div class="rail-foot">corpus 2026-11-14 · pin adbc881</div>
+  </aside>
+
+  <main>
+    <header class="top">
+      <div>
+        <h1>spf13/cobra</h1>
+        <p class="meta"><b>Go</b> · 262 abiertas en GitHub · traídas 150 · commit <b>adbc8813901b</b></p>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button">Refrescar</button>
+        <button class="btn primary" type="button">Analizar 84</button>
+      </div>
+    </header>
+
+    <dl class="stats">
+      <div><dt>libres</dt><dd class="live">84</dd></div>
+      <div><dt>con PR</dt><dd class="taken">66</dd></div>
+      <div><dt>sin etiqueta</dt><dd>73</dd></div>
+      <div><dt>sin comentarios</dt><dd>14</dd></div>
+      <div><dt>analizadas</dt><dd>1</dd></div>
+    </dl>
+
+    <div class="filters">
+      <div class="search">
+        <span aria-hidden="true">/</span>
+        <input type="search" placeholder="Buscar en el título y el cuerpo" aria-label="Buscar issues">
+      </div>
+      <select class="select" aria-label="Filtrar por estado">
+        <option>Estado: todos</option>
+        <option>Candidatas</option>
+        <option>Con PR</option>
+        <option>Condicionadas</option>
+        <option>No es trabajo</option>
+      </select>
+      <select class="select" aria-label="Filtrar por etiqueta">
+        <option>Etiqueta: todas</option>
+        <option>good-first-issue</option>
+        <option>kind/bug</option>
+        <option>kind/feature</option>
+        <option>kind/documentation</option>
+      </select>
+      <button class="f" type="button" aria-pressed="true">solo libres</button>
+      <button class="f" type="button" aria-pressed="false">sin etiqueta</button>
+      <span class="count">10 de 150</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Título</th>
+            <th scope="col">Etiquetas</th>
+            <th scope="col">Estado</th>
+            <th scope="col">PR</th>
+            <th scope="col">Actualizada</th>
+            <th scope="col" style="text-align:right">Com.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="c-num">2393</td>
+            <td class="c-ttl"><a href="#">Clink completion (feature request)</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st taken">tomada</span></td>
+            <td class="c-pr">#222</td>
+            <td class="c-date">2026-11-13</td>
+            <td class="c-com">10</td>
+          </tr>
+          <tr>
+            <td class="c-num">2568</td>
+            <td class="c-ttl"><a href="#">YAML docs ignore linkHandler for <code>see_also</code> entries</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st live">candidata</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2026-11-11</td>
+            <td class="c-com dash">0</td>
+          </tr>
+          <tr>
+            <td class="c-num">2547</td>
+            <td class="c-ttl"><a href="#">Docs: contributor architecture overview for the <code>cobra</code> package</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st taken">tomada</span></td>
+            <td class="c-pr">#2563</td>
+            <td class="c-date">2026-10-24</td>
+            <td class="c-com">1</td>
+          </tr>
+          <tr>
+            <td class="c-num">2525</td>
+            <td class="c-ttl"><a href="#">&laquo;passthrough&raquo; arguments and flags?</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st live">candidata</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2026-10-13</td>
+            <td class="c-com">1</td>
+          </tr>
+          <tr>
+            <td class="c-num">2505</td>
+            <td class="c-ttl"><a href="#">docs: cobra.dev broken Go snippets in &laquo;12-Factor App with Viper&raquo;</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st live">candidata</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2026-10-06</td>
+            <td class="c-com">2</td>
+          </tr>
+          <tr>
+            <td class="c-num">2491</td>
+            <td class="c-ttl"><a href="#">Feature Request: Allow optional values in map flags</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st blocked">condicionada</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2026-09-26</td>
+            <td class="c-com">1</td>
+          </tr>
+          <tr>
+            <td class="c-num">1740</td>
+            <td class="c-ttl"><a href="#">Shell completions with whitespace seem to work differently</a></td>
+            <td class="c-lbl">kind/bug · area/shell-completion</td>
+            <td class="c-state"><span class="st taken">tomada</span></td>
+            <td class="c-pr">#2485</td>
+            <td class="c-date">2026-09-21</td>
+            <td class="c-com">9</td>
+          </tr>
+          <tr>
+            <td class="c-num">1391</td>
+            <td class="c-ttl"><a href="#">404 links on cobra.dev</a></td>
+            <td class="c-lbl">kind/documentation · <span class="hit">good-first-issue</span></td>
+            <td class="c-state"><span class="st taken">tomada</span></td>
+            <td class="c-pr">#1984</td>
+            <td class="c-date">2026-09-18</td>
+            <td class="c-com">17</td>
+          </tr>
+          <tr>
+            <td class="c-num">1995</td>
+            <td class="c-ttl"><a href="#">Question：How to write custom template?</a></td>
+            <td class="c-lbl">kind/support</td>
+            <td class="c-state"><span class="st noise">no es trabajo</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2025-10-27</td>
+            <td class="c-com">3</td>
+          </tr>
+          <tr>
+            <td class="c-num">1807</td>
+            <td class="c-ttl"><a href="#">Refactor <code>CONDUCT.md</code></a></td>
+            <td class="c-lbl">admin · lifecycle/frozen · <span class="hit">help-wanted</span></td>
+            <td class="c-state"><span class="st noise">no es trabajo</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2024-06-27</td>
+            <td class="c-com">3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="tfoot">
+      <span>10 de 150 · pinneado a adbc8813901b</span>
+      <span>las filas 2491, 1995 y 1807 infieren su estado de las etiquetas: el triaje no corrió</span>
+    </footer>
+  </main>
+
+</div>
+</body>
+</html>

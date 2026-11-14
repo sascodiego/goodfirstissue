@@ -64,7 +64,7 @@ cp config.example.json config.json
 ./scripts/preflight.sh         # tiene que dar 0 bloqueantes
 
 make build                     # binario estático en bin/gfi
-./bin/gfi -addr :8080          # http://localhost:8080
+./bin/gfi                     # http://localhost:8080, y desde la red en 0.0.0.0:8080
 make verify                    # build + test + lint + design-check
 ```
 

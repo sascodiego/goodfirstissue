@@ -30,7 +30,7 @@ const shutdownTimeout = 5 * time.Second
 
 const usage = `gfi — GoodFirstIssue
 
-  gfi [-addr DIR] [-config FILE]   start the server
+  gfi [-addr ADDR] [-config FILE]   start the server
   gfi config example               print the default configuration
   gfi config check [FILE]          validate a configuration file
   gfi fetch [-config FILE] OWNER/REPO    fetch the open issues into the store
@@ -129,7 +129,12 @@ func runServer(args []string) error {
 		cfg.Server.Addr = *addr
 	}
 
-	handler, err := web.NewHandler()
+	st, err := store.New(cfg.Store.Dir)
+	if err != nil {
+		return err
+	}
+
+	handler, err := web.NewHandler(st)
 	if err != nil {
 		return err
 	}

@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Dashboard · A · Instrumento</title>
+<style>
+  /* Familia A · Instrumento. Autocontenido: el sistema todavía no está en
+     app.css porque no está elegido. Ver design/system.md. */
+  :root {
+    --bg:#0a0b0d; --surface:#101216; --surface-2:#16191e;
+    --line:#1f2329; --line-2:#2a2f37;
+    --fg:#e7e9ec; --fg-2:#99a1ac; --fg-3:#656d78;
+    --accent:#d8f26b; --accent-ink:#0a0b0d;
+    --taken:#656d78; --noise:#a78bfa; --blocked:#e3b341;
+    --r-sm:3px; --r-md:6px;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { color-scheme: dark; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 13px/1.45 var(--sans); -webkit-font-smoothing: antialiased;
+  }
+  code { font: 0.94em var(--mono); color: var(--fg-2); }
+
+  .app { display: grid; grid-template-columns: 15rem minmax(0, 1fr); min-height: 100dvh; }
+
+  /* ---------- rail ---------- */
+  .rail {
+    display: flex; flex-direction: column; gap: 1.5rem;
+    background: var(--surface); border-right: 1px solid var(--line);
+    padding: 1.1rem 0;
+  }
+  .brand { display: flex; align-items: center; gap: 0.55rem; padding: 0 1rem; }
+  .brand .mark {
+    width: 1.1rem; height: 1.1rem; border-radius: 2px;
+    background: var(--accent); position: relative; flex: none;
+  }
+  .brand .mark::after {
+    content: ""; position: absolute; inset: 3px 3px auto 3px; height: 2px; background: var(--accent-ink);
+    box-shadow: 0 4px 0 var(--accent-ink);
+  }
+  .brand b { font-size: 12.5px; font-weight: 600; letter-spacing: -0.01em; }
+
+  .rail-label {
+    margin: 0 0 0.5rem; padding: 0 1rem;
+    font: 600 9.5px/1 var(--mono); letter-spacing: 0.13em; text-transform: uppercase; color: var(--fg-3);
+  }
+  .repo-list { display: flex; flex-direction: column; }
+  .repo {
+    display: grid; grid-template-columns: 1fr auto; gap: 0.3rem 0.5rem; align-items: baseline;
+    padding: 0.55rem 1rem; border-left: 2px solid transparent;
+    text-decoration: none; color: var(--fg-2);
+  }
+  .repo:hover { background: var(--surface-2); }
+  .repo[aria-current="page"] { border-left-color: var(--accent); background: var(--surface-2); color: var(--fg); }
+  .repo .name { font: 12px var(--mono); letter-spacing: -0.01em; }
+  .repo .n { font: 11px var(--mono); font-variant-numeric: tabular-nums; color: var(--fg-3); }
+  .repo .sub { grid-column: 1 / -1; font: 10.5px var(--mono); color: var(--fg-3); }
+
+  .add { margin-top: auto; padding: 0 1rem; }
+  .add label { display: block; margin-bottom: 0.4rem; font: 600 9.5px/1 var(--mono); letter-spacing: 0.13em; text-transform: uppercase; color: var(--fg-3); }
+  .add-row { display: flex; gap: 0.35rem; }
+  .add input {
+    flex: 1; min-width: 0; padding: 0.4rem 0.5rem;
+    background: var(--bg); color: var(--fg);
+    border: 1px solid var(--line-2); border-radius: var(--r-sm);
+    font: 11.5px var(--mono);
+  }
+  .add input::placeholder { color: var(--fg-3); }
+  .add input:focus-visible, .add button:focus-visible, .btn:focus-visible,
+  .repo:focus-visible, .f-dark:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .add button {
+    padding: 0 0.55rem; border: 0; border-radius: var(--r-sm);
+    background: var(--accent); color: var(--accent-ink); font: 600 13px var(--sans); cursor: pointer;
+  }
+  .add p { margin: 0.45rem 0 0; font-size: 10.5px; line-height: 1.4; color: var(--fg-3); }
+  .rail-foot { padding: 0.75rem 1rem 0; border-top: 1px solid var(--line); font: 10px var(--mono); color: var(--fg-3); }
+
+  /* ---------- main ---------- */
+  main { display: flex; flex-direction: column; min-width: 0; }
+
+  .top {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 1.5rem;
+    padding: 1.4rem 1.5rem 1.1rem; border-bottom: 1px solid var(--line);
+  }
+  h1 { margin: 0; font: 560 21px/1.1 var(--sans); letter-spacing: -0.03em; }
+  .meta { margin: 0.45rem 0 0; font: 11px var(--mono); color: var(--fg-3); }
+  .meta b { color: var(--fg-2); font-weight: 400; }
+  .actions { display: flex; gap: 0.4rem; flex: none; }
+  .btn {
+    padding: 0.42rem 0.7rem; border: 1px solid var(--line-2); border-radius: var(--r-sm);
+    background: var(--surface); color: var(--fg-2); font: 500 11.5px var(--sans); cursor: pointer;
+  }
+  .btn:hover { background: var(--surface-2); color: var(--fg); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .btn.primary:hover { filter: brightness(1.06); }
+
+  /* Columnas de ancho igual y el número pegado al borde derecho de la suya:
+     así todas las cifras caen en la misma retícula, aunque la etiqueta mida distinto. */
+  .stats {
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0;
+    padding: 0.75rem 0; border-bottom: 1px solid var(--line);
+  }
+  .stats div {
+    display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 0.75rem;
+    padding: 0 1.5rem; border-right: 1px solid var(--line);
+  }
+  .stats div:last-child { border-right: 0; }
+  .stats dt { font: 600 9.5px/1.3 var(--mono); letter-spacing: 0.11em; text-transform: uppercase; color: var(--fg-3); }
+  .stats dd { margin: 0; font: 15px/1 var(--mono); font-variant-numeric: tabular-nums; text-align: right; letter-spacing: -0.02em; }
+  .stats dd.live { color: var(--accent); }
+  .stats dd.taken { color: var(--taken); }
+
+  .filters {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+    padding: 0.7rem 1.5rem; border-bottom: 1px solid var(--line); background: var(--surface);
+  }
+  .search {
+    flex: 1 1 12rem; min-width: 0; display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.38rem 0.5rem; background: var(--bg);
+    border: 1px solid var(--line-2); border-radius: var(--r-sm);
+  }
+  .search span { font: 11px var(--mono); color: var(--fg-3); }
+  .search input { flex: 1; min-width: 0; background: none; border: 0; color: var(--fg); font: 11.5px var(--mono); }
+  .search input::placeholder { color: var(--fg-3); }
+  .search input:focus-visible { outline: none; }
+  .search:focus-within { border-color: var(--accent); }
+  .select {
+    padding: 0.38rem 0.5rem; background: var(--bg); color: var(--fg-2);
+    border: 1px solid var(--line-2); border-radius: var(--r-sm); font: 11.5px var(--mono);
+  }
+  .f-dark {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.38rem 0.55rem; border: 1px solid var(--line-2); border-radius: var(--r-sm);
+    background: var(--bg); color: var(--fg-2); font: 11.5px var(--mono); cursor: pointer;
+  }
+  .f-dark[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+  .f-dark i { width: 5px; height: 5px; border-radius: 999px; background: currentColor; }
+  .count { margin-left: auto; font: 11px var(--mono); color: var(--fg-3); }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    position: sticky; top: 0; z-index: 1;
+    text-align: left; padding: 0.55rem 0.75rem; background: var(--bg);
+    border-bottom: 1px solid var(--line-2);
+    font: 600 9.5px/1 var(--mono); letter-spacing: 0.11em; text-transform: uppercase; color: var(--fg-3);
+    white-space: nowrap;
+  }
+  tbody td { height: 2.75rem; padding: 0 0.75rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tbody tr:hover { background: var(--surface-2); }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr.is-selected { background: color-mix(in oklab, var(--accent) 6%, transparent); }
+
+  /* Columna de selección: el check nativo, teñido con el acento. */
+  .c-sel { width: 2.25rem; padding-left: 0.9rem; padding-right: 0; }
+  .c-sel input {
+    appearance: none; -webkit-appearance: none;
+    width: 0.85rem; height: 0.85rem; margin: 0; cursor: pointer;
+    border: 1px solid var(--line-2); border-radius: 2px; background: var(--bg);
+    display: grid; place-content: center;
+  }
+  .c-sel input::after {
+    content: ""; width: 0.45rem; height: 0.25rem;
+    border-left: 1.5px solid var(--accent-ink); border-bottom: 1.5px solid var(--accent-ink);
+    transform: rotate(-45deg) translateY(-1px); opacity: 0;
+  }
+  .c-sel input:checked { background: var(--accent); border-color: var(--accent); }
+  .c-sel input:checked::after { opacity: 1; }
+  .c-sel input:indeterminate { background: var(--accent); border-color: var(--accent); }
+  .c-sel input:indeterminate::after {
+    width: 0.45rem; height: 0; border-left: 0; border-bottom: 1.5px solid var(--accent-ink);
+    transform: none; opacity: 1;
+  }
+  .c-sel input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .c-num { font: 11.5px var(--mono); color: var(--fg-3); font-variant-numeric: tabular-nums; width: 4rem; }
+  .c-ttl { min-width: 20rem; }
+  .c-ttl a { color: var(--fg); text-decoration: none; }
+  .c-ttl a:hover { color: var(--accent); }
+  .c-lbl { white-space: nowrap; }
+  .chip {
+    display: inline-block; margin-right: 0.25rem; padding: 0.15rem 0.35rem;
+    border: 1px solid var(--line-2); border-radius: var(--r-sm);
+    font: 10px var(--mono); color: var(--fg-3);
+  }
+  .chip.hit { border-color: color-mix(in oklab, var(--blocked) 55%, var(--line-2)); color: var(--blocked); }
+  .none { font: 10px var(--mono); color: var(--fg-3); opacity: 0.6; }
+  .c-state { white-space: nowrap; width: 8.5rem; }
+  .st { display: inline-flex; align-items: center; gap: 0.35rem; font: 11px var(--sans); }
+  .st i { width: 5px; height: 5px; border-radius: 999px; background: currentColor; flex: none; }
+  .st.taken { color: var(--taken); } .st.noise { color: var(--noise); }
+  .st.blocked { color: var(--blocked); } .st.live { color: var(--accent); }
+  .c-pr, .c-date, .c-com { font: 11px var(--mono); color: var(--fg-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .c-pr.dash, .c-com.dash { color: var(--fg-3); opacity: 0.55; }
+  .c-com { text-align: right; width: 3.5rem; }
+
+  .tfoot {
+    margin-top: auto; display: flex; justify-content: space-between; gap: 1rem;
+    padding: 0.7rem 1.5rem; border-top: 1px solid var(--line);
+    font: 10.5px var(--mono); color: var(--fg-3);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .repo, .btn, .f-dark, tbody tr, .c-ttl a { transition: background 130ms ease, color 130ms ease, border-color 130ms ease; }
+  }
+  @media (max-width: 1100px) {
+    .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 0.75rem; }
+    .stats div:nth-child(3n) { border-right: 0; }
+  }
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .rail { border-right: 0; border-bottom: 1px solid var(--line); flex-direction: column; }
+    .c-lbl, .c-com { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="rail">
+    <div class="brand"><span class="mark" aria-hidden="true"></span><b>GoodFirstIssue</b></div>
+
+    <nav aria-label="Repositorios">
+      <p class="rail-label">Repositorios · 2</p>
+      <div class="repo-list">
+        <a class="repo" href="#" aria-current="page">
+          <span class="name">spf13/cobra</span><span class="n">84</span>
+          <span class="sub">Go · 262 abiertas · 1 analizada</span>
+        </a>
+        <a class="repo" href="#">
+          <span class="name">httpie/cli</span><span class="n">107</span>
+          <span class="sub">Python · 192 abiertas · 0 analizadas</span>
+        </a>
+      </div>
+    </nav>
+
+    <form class="add" onsubmit="return false">
+      <label for="nuevo">Agregar repositorio</label>
+      <div class="add-row">
+        <input id="nuevo" type="text" placeholder="owner/nombre o enlace de GitHub" autocomplete="off" spellcheck="false">
+        <button type="submit" aria-label="Agregar repositorio">+</button>
+      </div>
+      <p>
+        Acepta <code>owner/nombre</code> o el enlace completo:
+        <code>https://github.com/owner/nombre</code>.<br>
+        Trae hasta 150 issues <code>OPEN</code> con sus etiquetas verbatim. No filtra por etiqueta.
+      </p>
+    </form>
+
+    <div class="rail-foot">corpus · 2026-11-14 · pin adbc881</div>
+  </aside>
+
+  <main>
+    <header class="top">
+      <div>
+        <h1>spf13/cobra</h1>
+        <p class="meta"><b>Go</b> · 262 abiertas en GitHub · traídas 150 · commit <b>adbc8813901b</b></p>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button">Refrescar</button>
+        <button class="btn primary" type="button" id="analizar">
+          Analizar <span id="sel-count">0</span> seleccionadas
+        </button>
+      </div>
+    </header>
+
+    <dl class="stats">
+      <div><dt>libres</dt><dd class="live">84</dd></div>
+      <div><dt>con PR</dt><dd class="taken">66</dd></div>
+      <div><dt>sin etiqueta</dt><dd>73</dd></div>
+      <div><dt>sin comentarios</dt><dd>14</dd></div>
+      <div><dt>analizadas</dt><dd>1</dd></div>
+    </dl>
+
+    <div class="filters">
+      <div class="search">
+        <span aria-hidden="true">/</span>
+        <input type="search" placeholder="Buscar en el título y el cuerpo" aria-label="Buscar issues">
+      </div>
+      <select class="select" aria-label="Filtrar por estado">
+        <option>Estado: todos</option>
+        <option>Candidatas</option>
+        <option>Con PR</option>
+        <option>Condicionadas</option>
+        <option>No es trabajo</option>
+      </select>
+      <select class="select" aria-label="Filtrar por etiqueta">
+        <option>Etiqueta: todas</option>
+        <option>good-first-issue</option>
+        <option>kind/bug</option>
+        <option>kind/feature</option>
+        <option>kind/documentation</option>
+      </select>
+      <button class="f-dark" type="button" aria-pressed="true"><i aria-hidden="true"></i>solo libres</button>
+      <button class="f-dark" type="button" aria-pressed="false"><i aria-hidden="true"></i>sin etiqueta</button>
+      <span class="count">10 de 150</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col" class="c-sel">
+              <input type="checkbox" id="sel-all" aria-label="Seleccionar todas las issues del filtro actual">
+            </th>
+            <th scope="col">#</th>
+            <th scope="col">Título</th>
+            <th scope="col">Etiquetas</th>
+            <th scope="col">Estado</th>
+            <th scope="col">PR</th>
+            <th scope="col">Actualizada</th>
+            <th scope="col" style="text-align:right">Com.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="c-sel"><input type="checkbox" class="row-sel" data-issue="2393" aria-label="Seleccionar #2393"></td>
+            <td class="c-num">2393</td>
+            <td class="c-ttl"><a href="#">Clink completion (feature request)</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st taken"><i></i>tomada</span></td>
+            <td class="c-pr">#222</td>
+            <td class="c-date">2026-11-13</td>
+            <td class="c-com">10</td>
+          </tr>
+          <tr>
+            <td class="c-sel"><input type="checkbox" class="row-sel" data-issue="2568" aria-label="Seleccionar #2568"></td>
+            <td class="c-num">2568</td>
+            <td class="c-ttl"><a href="#">YAML docs ignore linkHandler for <code>see_also</code> entries</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st live"><i></i>candidata</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2026-11-11</td>
+            <td class="c-com dash">0</td>
+          </tr>
+          <tr>
+            <td class="c-sel"><input type="checkbox" class="row-sel" data-issue="2547" aria-label="Seleccionar #2547"></td>
+            <td class="c-num">2547</td>
+            <td class="c-ttl"><a href="#">Docs: contributor architecture overview for the <code>cobra</code> package</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st taken"><i></i>tomada</span></td>
+            <td class="c-pr">#2563</td>
+            <td class="c-date">2026-10-24</td>
+            <td class="c-com">1</td>
+          </tr>
+          <tr>
+            <td class="c-sel"><input type="checkbox" class="row-sel" data-issue="2525" aria-label="Seleccionar #2525"></td>
+            <td class="c-num">2525</td>
+            <td class="c-ttl"><a href="#">&laquo;passthrough&raquo; arguments and flags?</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st live"><i></i>candidata</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2026-10-13</td>
+            <td class="c-com">1</td>
+          </tr>
+          <tr>
+            <td class="c-sel"><input type="checkbox" class="row-sel" data-issue="2505" aria-label="Seleccionar #2505"></td>
+            <td class="c-num">2505</td>
+            <td class="c-ttl"><a href="#">docs: cobra.dev broken Go snippets in &laquo;12-Factor App with Viper&raquo;</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st live"><i></i>candidata</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2026-10-06</td>
+            <td class="c-com">2</td>
+          </tr>
+          <tr>
+            <td class="c-sel"><input type="checkbox" class="row-sel" data-issue="2491" aria-label="Seleccionar #2491"></td>
+            <td class="c-num">2491</td>
+            <td class="c-ttl"><a href="#">Feature Request: Allow optional values in map flags</a></td>
+            <td class="c-lbl"><span class="none">ninguna</span></td>
+            <td class="c-state"><span class="st blocked"><i></i>condicionada</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2026-09-26</td>
+            <td class="c-com">1</td>
+          </tr>
+          <tr>
+            <td class="c-sel"><input type="checkbox" class="row-sel" data-issue="1740" aria-label="Seleccionar #1740"></td>
+            <td class="c-num">1740</td>
+            <td class="c-ttl"><a href="#">Shell completions with whitespace seem to work differently</a></td>
+            <td class="c-lbl"><span class="chip">kind/bug</span><span class="chip">area/shell-completion</span></td>
+            <td class="c-state"><span class="st taken"><i></i>tomada</span></td>
+            <td class="c-pr">#2485</td>
+            <td class="c-date">2026-09-21</td>
+            <td class="c-com">9</td>
+          </tr>
+          <tr>
+            <td class="c-sel"><input type="checkbox" class="row-sel" data-issue="1391" aria-label="Seleccionar #1391"></td>
+            <td class="c-num">1391</td>
+            <td class="c-ttl"><a href="#">404 links on cobra.dev</a></td>
+            <td class="c-lbl"><span class="chip">kind/documentation</span><span class="chip hit">good-first-issue</span></td>
+            <td class="c-state"><span class="st taken"><i></i>tomada</span></td>
+            <td class="c-pr">#1984</td>
+            <td class="c-date">2026-09-18</td>
+            <td class="c-com">17</td>
+          </tr>
+          <tr>
+            <td class="c-sel"><input type="checkbox" class="row-sel" data-issue="1995" aria-label="Seleccionar #1995"></td>
+            <td class="c-num">1995</td>
+            <td class="c-ttl"><a href="#">Question：How to write custom template?</a></td>
+            <td class="c-lbl"><span class="chip">kind/support</span></td>
+            <td class="c-state"><span class="st noise"><i></i>no es trabajo</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2025-10-27</td>
+            <td class="c-com">3</td>
+          </tr>
+          <tr>
+            <td class="c-sel"><input type="checkbox" class="row-sel" data-issue="1807" aria-label="Seleccionar #1807"></td>
+            <td class="c-num">1807</td>
+            <td class="c-ttl"><a href="#">Refactor <code>CONDUCT.md</code></a></td>
+            <td class="c-lbl"><span class="chip">admin</span><span class="chip">lifecycle/frozen</span><span class="chip hit">help-wanted</span></td>
+            <td class="c-state"><span class="st noise"><i></i>no es trabajo</span></td>
+            <td class="c-pr dash">—</td>
+            <td class="c-date">2024-06-27</td>
+            <td class="c-com">3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="tfoot">
+      <span>10 de 150 · pinneado a adbc8813901b</span>
+      <span>el estado de las filas 2491, 1995 y 1807 se infiere de sus etiquetas: el triaje todavía no corrió</span>
+    </footer>
+  </main>
+
+</div>
+
+<script>
+  /* Selección múltiple sobre el filtro actual: el check del encabezado
+     es el «seleccionar todo» de lo que se está viendo, no del corpus entero. */
+  (function () {
+    var all = document.getElementById('sel-all');
+    var action = document.getElementById('analizar');
+    var count = document.getElementById('sel-count');
+    var rows = Array.prototype.slice.call(document.querySelectorAll('.row-sel'));
+    var byIssue = {};
+    rows.forEach(function (r) { byIssue[r.dataset.issue] = r; });
+
+    function sync() {
+      var picked = rows.filter(function (r) { return r.checked; });
+      count.textContent = picked.length;
+      action.disabled = picked.length === 0;
+      all.checked = picked.length > 0 && picked.length === rows.length;
+      all.indeterminate = picked.length > 0 && picked.length < rows.length;
+      rows.forEach(function (r) { r.closest('tr').classList.toggle('is-selected', r.checked); });
+    }
+
+    all.addEventListener('change', function () {
+      rows.forEach(function (r) { r.checked = all.checked; });
+      sync();
+    });
+    rows.forEach(function (r) { r.addEventListener('change', sync); });
+
+    // Tres candidatas marcadas para mostrar el estado de la acción.
+    ['2568', '2525', '2505'].forEach(function (n) {
+      if (byIssue[n]) byIssue[n].checked = true;
+    });
+    sync();
+  })();
+</script>
+</body>
+</html>

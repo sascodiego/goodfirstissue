@@ -211,16 +211,28 @@ func buildArgs(req Request) []string {
 		"--mode", "json",
 		"--provider", "nan",
 		"--model", "nan/" + req.Model,
-		"--tools", strings.Join(req.Tools, ","),
-		// --no-extensions also disables the builtin MCP extension, so re-enable exactly
-		// that one. Without it the agent never sees the code graph.
-		"--no-extensions", "-e", "builtin:mcp",
+	}
+	if len(req.Tools) == 0 {
+		// No tools is a job that only moves text: nothing to read, nothing to run, no
+		// repository to graph. Without its own branch an empty allowlist would become
+		// "--tools " and still load the MCP extension, which starts a code-graph server
+		// for a task that never looks at code.
+		args = append(args, "-nt", "--no-extensions", "--no-mcp")
+	} else {
+		args = append(args,
+			"--tools", strings.Join(req.Tools, ","),
+			// --no-extensions also disables the builtin MCP extension, so re-enable exactly
+			// that one. Without it the agent never sees the code graph.
+			"--no-extensions", "-e", "builtin:mcp",
+		)
+	}
+	args = append(args,
 		"--no-session",
 		"--no-skills",
 		"-nc",
 		"-np",
 		"--no-approve",
-	}
+	)
 	for _, p := range req.SystemPrompts {
 		args = append(args, "--append-system-prompt", p)
 	}

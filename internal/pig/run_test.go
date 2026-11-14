@@ -38,6 +38,28 @@ func TestBuildArgsUsesNaNAndNativeMCP(t *testing.T) {
 	}
 }
 
+// A job that only moves text has nothing to read, nothing to run and no repository to
+// graph: an empty allowlist must mean exactly that, not an empty --tools value.
+func TestBuildArgsWithNoToolsDisablesToolsAndMCP(t *testing.T) {
+	args := buildArgs(Request{Model: "glm5.3-flash", Prompt: "extract"})
+
+	if !contains(args, "-nt") && !contains(args, "--no-tools") {
+		t.Error("an empty tool list must disable every tool")
+	}
+	if !contains(args, "--no-mcp") {
+		t.Error("an empty tool list must not connect MCP servers")
+	}
+	for _, forbidden := range []string{"--tools", "-e", "builtin:mcp"} {
+		if contains(args, forbidden) {
+			t.Errorf("arg %q present with an empty tool list", forbidden)
+		}
+	}
+	// The prompt still goes last, after the separator.
+	if args[len(args)-1] != "extract" || args[len(args)-2] != "--" {
+		t.Errorf("prompt not after the separator: %v", args[len(args)-3:])
+	}
+}
+
 // The tool allowlist must name the MCP tool, or the first turn never waits for it.
 func TestDefaultToolsAreReadOnlyAndIncludeTheGraph(t *testing.T) {
 	tools := strings.Join(DefaultTools(), ",")

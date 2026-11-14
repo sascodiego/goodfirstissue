@@ -149,9 +149,10 @@ func TestResolveMakesPathsAbsolute(t *testing.T) {
 		t.Fatalf("Resolve() error = %v", err)
 	}
 	for name, got := range map[string]string{
-		"clone": cfg.Repos.CloneDir,
-		"store": cfg.Store.Dir,
-		"home":  cfg.Explore.Home,
+		"clone":   cfg.Repos.CloneDir,
+		"store":   cfg.Store.Dir,
+		"home":    cfg.Explore.Home,
+		"profile": cfg.Profile.Home,
 	} {
 		if !filepath.IsAbs(got) {
 			t.Errorf("%s = %q, want an absolute path", name, got)
@@ -171,10 +172,57 @@ func TestEnsureDirsCreatesTheOwnedDirectories(t *testing.T) {
 	if err := cfg.EnsureDirs(); err != nil {
 		t.Fatalf("EnsureDirs() error = %v", err)
 	}
-	for _, dir := range []string{cfg.Repos.CloneDir, cfg.Store.Dir, cfg.Explore.Home} {
+	for _, dir := range []string{cfg.Repos.CloneDir, cfg.Store.Dir, cfg.Explore.Home, cfg.Profile.Home} {
 		if info, err := os.Stat(dir); err != nil || !info.IsDir() {
 			t.Errorf("%s was not created", dir)
 		}
+	}
+}
+
+// The CV extraction is its own job with its own agent home: it must not share PIG_HOME
+// with exploration, because that home is rewritten on every run and two runs would race
+// on it.
+func TestProfileSectionHasItsOwnDefaults(t *testing.T) {
+	cfg := Default()
+	if cfg.Profile.Binary == "" {
+		t.Error("profile.binary is empty")
+	}
+	if cfg.Profile.Home == cfg.Explore.Home {
+		t.Errorf("profile.home = %q is the exploration home", cfg.Profile.Home)
+	}
+	if err := cfg.Validate(); err != nil {
+		t.Fatalf("the profile defaults are invalid: %v", err)
+	}
+}
+
+// The same coherence rules as exploration: a kill threshold has to be harder than the
+// warning, and the budget has to leave room for the kill to happen.
+func TestValidateRejectsIncoherentProfileTimeouts(t *testing.T) {
+	for name, mutate := range map[string]func(*Profile){
+		"idle_kill below idle_warn": func(p *Profile) { p.IdleKill = Duration(5 * time.Second) },
+		"budget below idle_kill":    func(p *Profile) { p.Budget = Duration(10 * time.Second) },
+		"zero idle":                 func(p *Profile) { p.IdleWarn, p.IdleKill = 0, 0 },
+		"zero budget":               func(p *Profile) { p.Budget = 0 },
+	} {
+		cfg := Default()
+		mutate(&cfg.Profile)
+		if err := cfg.Validate(); err == nil {
+			t.Errorf("%s was accepted", name)
+		}
+	}
+}
+
+func TestValidateRejectsEmptyProfileHome(t *testing.T) {
+	cfg := Default()
+	cfg.Profile.Home = " "
+	if err := cfg.Validate(); err == nil {
+		t.Error("an empty profile.home was accepted")
+	}
+
+	cfg = Default()
+	cfg.Profile.Binary = ""
+	if err := cfg.Validate(); err == nil {
+		t.Error("an empty profile.binary was accepted")
 	}
 }
 

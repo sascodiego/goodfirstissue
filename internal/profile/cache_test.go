@@ -2,15 +2,12 @@ package profile
 
 import (
 	"context"
-	"encoding/json"
-	"net/http"
-	"net/http/httptest"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
 
-	"github.com/sascodiego/nan-hackathon-clef/internal/nan"
+	"github.com/sascodiego/nan-hackathon-clef/internal/pig"
 	"github.com/sascodiego/nan-hackathon-clef/internal/store"
 )
 
@@ -22,31 +19,15 @@ const cacheTestAnswer = `## Conocimientos técnicos
 - Python — nivel: demostrado — evidencia: «5 años de desarrollo backend con Django»
 `
 
-// cacheHarness returns an extractor sharing one store, and a counter of model calls.
+// cacheHarness returns an extractor sharing one store, and a counter of agent runs.
 func cacheHarness(t *testing.T, st *store.Store) (*Extractor, *atomic.Int32) {
 	t.Helper()
 	var calls atomic.Int32
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	run := func(context.Context, pig.Request) (*pig.Outcome, error) {
 		calls.Add(1)
-		_ = json.NewEncoder(w).Encode(map[string]any{
-			"choices": []map[string]any{{
-				"index":   0,
-				"message": map[string]string{"role": "assistant", "content": cacheTestAnswer},
-			}},
-		})
-	}))
-	t.Cleanup(srv.Close)
-
-	client, err := nan.New(nan.Options{
-		ChatURL:      srv.URL + "/v1/chat/completions",
-		SystemOneURL: srv.URL + "/v1/systemone",
-		APIKey:       "test-key",
-		Timeout:      nan.MinTimeout,
-	})
-	if err != nil {
-		t.Fatalf("nan.New() error = %v", err)
+		return &pig.Outcome{Answer: cacheTestAnswer}, nil
 	}
-	e, err := New(Options{Client: client, Model: cacheTestModel, Store: st})
+	e, err := New(Options{Run: run, Model: cacheTestModel, Home: t.TempDir(), Store: st})
 	if err != nil {
 		t.Fatalf("New() error = %v", err)
 	}
@@ -103,7 +84,7 @@ func TestExtractDoesNotPayTwiceForTheSameCV(t *testing.T) {
 		t.Error("Cached = false on a repeated CV")
 	}
 	if got := calls.Load(); got != 1 {
-		t.Errorf("model calls = %d, want 1", got)
+		t.Errorf("agent runs = %d, want 1", got)
 	}
 
 	// A fresh extractor over the same store also hits: the cache is on disk, not in memory.
@@ -112,7 +93,7 @@ func TestExtractDoesNotPayTwiceForTheSameCV(t *testing.T) {
 		t.Fatalf("Extract() from another extractor error = %v", err)
 	}
 	if got := more.Load(); got != 0 {
-		t.Errorf("model calls from a second extractor = %d, want 0", got)
+		t.Errorf("agent runs from a second extractor = %d, want 0", got)
 	}
 	if second.Document.Text != one.Document.Text {
 		t.Error("the cached document differs from the extracted one")

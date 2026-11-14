@@ -42,4 +42,6 @@ Issue #4 · rama `feat/split-web-by-screen` · base `main` @ 1a7d843.
 
 **L4** (verbatim): «Acepto tu plan aunque se desvie. Comenta la issue con los motivos y la evidencia» — consentimiento explícito para escribir código y para comentar la issue.
 
+**L5** (borde de rebanada): T3 y T4 se commitean juntos como una sola unidad revisable aunque el diffstat sume ~700 líneas, porque es una mudanza: `view.go` pierde 313 líneas y `dashboard.go` gana 289, y el neto es +77. Partir una mudanza en dos commits artificiales empeora la revisión, no la mejora. T5 va aparte porque sí cambia aserciones.
+
 **Evidencia** (medida en el worktree): `handler.go` 71 líneas, `view.go` 417, `handler_test.go` 369 con 14 `func Test`, `templates/index.html` 162, `templates/layout.html` 14. Consumidores externos del paquete: solo `cmd/gfi/main.go:137` (`web.NewHandler`) y `:144` (`handler.Routes()`).

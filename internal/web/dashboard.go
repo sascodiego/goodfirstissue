@@ -94,10 +94,7 @@ func (h *Handler) dashboard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := h.tmpl.ExecuteTemplate(w, "layout", data); err != nil {
-		// La cabecera ya salió: solo queda registrarlo.
-		slog.Error("render layout", "err", err)
-	}
+	h.render(w, screenDashboard, data)
 }
 
 // buildPage arma la pantalla. Un store nil o vacío no es un error: es la app

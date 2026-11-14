@@ -129,7 +129,12 @@ func runServer(args []string) error {
 		cfg.Server.Addr = *addr
 	}
 
-	handler, err := web.NewHandler()
+	st, err := store.New(cfg.Store.Dir)
+	if err != nil {
+		return err
+	}
+
+	handler, err := web.NewHandler(st)
 	if err != nil {
 		return err
 	}

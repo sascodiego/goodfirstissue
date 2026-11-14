@@ -1,17 +1,162 @@
 {{define "content"}}
-<main class="shell">
-  <p class="eyebrow">NaN Hackathon #2 · Reto 4</p>
-  <h1>GoodFirstIssue</h1>
-  <p class="claim">La etiqueta miente. La verificamos contra el código.</p>
+<div class="app">
 
-  <div class="status">
-    <span class="dot" aria-hidden="true"></span>
-    Servidor arriba · esqueleto
-  </div>
+  <aside class="rail">
+    <div class="brand"><span class="mark" aria-hidden="true"></span><b>GoodFirstIssue</b></div>
 
-  <p class="next">
-    Siguiente: corpus, índice y triaje. Ver
-    <code>PROYECTO.md</code> §2.
-  </p>
-</main>
+    <nav aria-label="Repositorios">
+      <p class="rail-label">Repositorios · {{len .Repos}}</p>
+      <div class="repo-list">
+        {{range .Repos}}
+        <a class="repo" href="{{.Href}}"{{if .Active}} aria-current="page"{{end}}>
+          <span class="name">{{.Name}}</span><span class="n">{{.Free}}</span>
+          <span class="sub">{{.Open}} abiertas · {{.Stored}} traídas · {{.Analyses}} análisis</span>
+        </a>
+        {{else}}
+        <p class="rail-empty">Ninguno todavía.</p>
+        {{end}}
+      </div>
+    </nav>
+
+    <form class="add" aria-label="Agregar repositorio">
+      <label for="nuevo">Agregar repositorio</label>
+      <div class="add-row">
+        <input id="nuevo" type="text" placeholder="owner/nombre o enlace de GitHub"
+               autocomplete="off" spellcheck="false" disabled>
+        <button type="button" disabled aria-label="Agregar repositorio">+</button>
+      </div>
+      <p>
+        Acepta <code>owner/nombre</code> o el enlace completo.<br>
+        El alta desde la interfaz todavía no está conectada: por ahora
+        <code>gfi fetch owner/nombre</code>. Trae hasta 150 issues <code>OPEN</code>
+        con sus etiquetas verbatim, sin filtrar por etiqueta.
+      </p>
+    </form>
+
+    <div class="rail-foot">
+      {{if .HasRepo}}corpus {{.Fetched}} · pin {{.Commit}}{{else}}corpus vacío{{end}}
+    </div>
+  </aside>
+
+  <main>
+  {{if not .HasRepo}}
+
+    <div class="empty">
+      <p class="eyebrow">Sin corpus</p>
+      <h1>Todavía no hay repositorios</h1>
+      <p>
+        Traé el primero con <code>gfi fetch owner/nombre</code> y, si querés el
+        índice del código, <code>gfi index</code>. Esta pantalla se arma con lo
+        que haya en <code>var/store</code>; no inventa ceros.
+      </p>
+    </div>
+
+  {{else}}
+
+    <header class="top">
+      <div>
+        <h1>{{.Active.Name}}</h1>
+        <p class="meta">
+          {{with .Language}}<b>{{.}}</b> · {{end}}{{.Total}} traídas · commit <b>{{.Commit}}</b>
+        </p>
+      </div>
+      <div class="actions">
+        <a class="btn" href="{{.Active.Href}}">Refrescar</a>
+        <button class="btn primary" type="button" id="analizar" disabled aria-describedby="analizar-nota">
+          Analizar <span id="sel-count">0</span> seleccionadas
+        </button>
+      </div>
+    </header>
+
+    <dl class="stats">
+      <div><dt>libres</dt><dd class="live">{{.Stats.Free}}</dd></div>
+      <div><dt>con PR</dt><dd class="taken">{{.Stats.Taken}}</dd></div>
+      <div><dt>sin etiqueta</dt><dd>{{.Stats.WithoutLabel}}</dd></div>
+      <div><dt>sin comentarios</dt><dd>{{.Stats.WithoutComment}}</dd></div>
+      <div><dt>análisis</dt><dd>{{.Stats.Analyses}}</dd></div>
+    </dl>
+
+    <form class="filters" method="get" action="/">
+      <input type="hidden" name="repo" value="{{.Active.Key}}">
+
+      <div class="search">
+        <span aria-hidden="true">/</span>
+        <input type="search" name="q" value="{{.Filter.Query}}"
+               placeholder="Buscar en el título y el cuerpo" aria-label="Buscar issues">
+      </div>
+
+      <select class="select" name="state" data-autosubmit aria-label="Filtrar por estado">
+        <option value=""{{if eq .Filter.State ""}} selected{{end}}>Estado: todos</option>
+        <option value="free"{{if eq .Filter.State "free"}} selected{{end}}>Libres</option>
+        <option value="taken"{{if eq .Filter.State "taken"}} selected{{end}}>Con PR</option>
+      </select>
+
+      <select class="select" name="label" data-autosubmit aria-label="Filtrar por etiqueta">
+        <option value="">Etiqueta: todas</option>
+        {{range .Labels}}
+        <option value="{{.}}"{{if eq . $.Filter.Label}} selected{{end}}>{{.}}</option>
+        {{end}}
+      </select>
+
+      <a class="f{{if eq .Filter.State "free"}} is-on{{end}}" href="{{.FreeHref}}">solo libres</a>
+      <a class="f{{if .Filter.NoLabel}} is-on{{end}}" href="{{.NoLabelHref}}">sin etiqueta</a>
+
+      <noscript><button class="btn" type="submit">Filtrar</button></noscript>
+      <span class="count">{{.Shown}} de {{.Total}}</span>
+    </form>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col" class="c-sel">
+              <input type="checkbox" id="sel-all" aria-label="Seleccionar todas las issues del filtro actual">
+            </th>
+            <th scope="col">#</th>
+            <th scope="col">Título</th>
+            <th scope="col">Etiquetas</th>
+            <th scope="col">Estado</th>
+            <th scope="col">PR</th>
+            <th scope="col">Actualizada</th>
+            <th scope="col" class="right">Com.</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range .Rows}}
+          <tr>
+            <td class="c-sel">
+              <input type="checkbox" class="row-sel" data-issue="{{.Number}}"
+                     aria-label="Seleccionar #{{.Number}}">
+            </td>
+            <td class="c-num">{{.Number}}</td>
+            <td class="c-ttl"><a href="{{.URL}}" rel="noopener noreferrer">{{.Title}}</a></td>
+            <td class="c-lbl">
+              {{if .HasLabel}}{{range .Labels}}<span class="chip{{if .Hit}} hit{{end}}">{{.Text}}</span>{{end}}
+              {{else}}<span class="none">ninguna</span>{{end}}
+            </td>
+            <td class="c-state"><span class="st {{.State}}">{{.StateText}}</span></td>
+            <td class="c-pr{{if not .HasPR}} dash{{end}}">{{if .HasPR}}#{{.PR}}{{else}}—{{end}}</td>
+            <td class="c-date">{{.Updated}}</td>
+            <td class="c-com{{if .NoComments}} dash{{end}}">{{.Comments}}</td>
+          </tr>
+          {{else}}
+          <tr class="no-rows"><td colspan="8">Ninguna issue coincide con este filtro.</td></tr>
+          {{end}}
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="tfoot">
+      <span>{{.Shown}} de {{.Total}} · pinneado a {{.Commit}}</span>
+      <p id="analizar-nota">
+        {{if eq .Total 0}}El corpus de este repositorio está vacío: corré <code>gfi fetch {{.Active.Name}}</code>.{{end}}
+        El análisis por issue todavía no está conectado: llega con <code>internal/triage</code>.
+        El estado de cada fila es un hecho medido (PR abierta) o la ausencia de triaje.
+      </p>
+    </footer>
+
+  {{end}}
+  </main>
+
+</div>
 {{end}}

@@ -1180,8 +1180,8 @@ Chequeos por etapa, ejecutables:
 
 - **E1:** el SHA registrado coincide con `git rev-parse HEAD`; el fetch de 30 issues consume **1** request.
 - **E2:** para cada issue del corpus, al menos un archivo realmente implicado aparece en `entryPoints` o `relatedFiles`; se mide el tiempo por consulta.
-- **E3:** las 30 issues del corpus agrupadas y triajeadas en menos de 120 s, con cero llamadas al modelo de chat.
-- **Agrupación:** sobre el corpus, con los duplicados marcados a mano, medir precisión y recall de los grupos. Un falso positivo fusiona dos oportunidades distintas; un falso negativo recomienda trabajo ya hecho. Se reportan los dos.
+- **E3:** las 30 issues del corpus triajeadas en menos de 120 s, con cero llamadas al modelo de chat.
+- **Diferida (§7.1) — Agrupación:** sobre el corpus, con los duplicados marcados a mano, medir precisión y recall de los grupos. Un falso positivo fusiona dos oportunidades distintas; un falso negativo recomienda trabajo ya hecho. Se reportan los dos. Método registrado, no chequeo del MVP.
 - **E4:** toda ruta en `files` existe en ese SHA; ningún campo numérico en el JSON; ninguna parte sin archivos.
 - **E5:** misma entrada dos veces → misma decisión; fallo simulado → `undecided`.
 - **I1:** 10 llamadas disparadas en paralelo → cero `429` y todas respondidas.
@@ -1199,7 +1199,7 @@ Chequeos por etapa, ejecutables:
 | Normalizar el título antes de preguntar (`title_normalized`) | **adoptada** | medido: el prefijo `Bug:` hace que Clef clasifique una feature como bug con 0,91; limpiarlo la clasifica bien con 0,76–0,80 y **no** degrada los casos honestos (0,93 → 0,94) |
 | `declared_kind` como atributo reportado, no como señal | **adoptada** | el prefijo del autor es una afirmación, no evidencia: mismo patrón que `label_honest` |
 | El benchmark incluye disfraces deliberados | **adoptada** | sin casos adversariales el benchmark certifica una compuerta que falla donde importa |
-| **Agrupar duplicados antes de triajear** | **adoptada** | un duplicado escueto parece una issue mal armada; sin agrupar se descarta una oportunidad real, y se puede recomendar algo que ya tiene PR abierta |
+| **Agrupar duplicados antes de triajear** | **adoptada** | un duplicado escueto parece una issue mal armada; sin agrupar se descarta una oportunidad real, y se puede recomendar algo que ya tiene PR abierta. **Descartada en 2.21:** el paso va después del triaje y queda fuera del MVP |
 | Triaje antes de explore | **adoptada** | no se gasta el recurso más caro en una issue que no es trabajo (I9) |
 | Triaje sin LLM, solo Clef | **adoptada** | el insumo es texto y preguntas tipadas: ~45 s y 0 tokens para 30 issues |
 | Calidad de la issue evaluada en P1 | **adoptada** | una issue mal armada le hace perder tiempo al contribuyente |
@@ -1257,12 +1257,11 @@ Guion:
 PRE-COMPUTADO  3 repos, 30 issues triajeadas, candidatas exploradas.
 EN VIVO (~2 s por paso)
   1. El embudo de S1 completo, con los números.
-  2. Un grupo de duplicados: «lo reportaron 6 veces en dos semanas y nadie lo arregló».
-  3. Una issue con PR abierta, marcada como ya tomada.
-  4. Una issue MARCADA y por qué (con la cita del proyecto).
-  5. Una `good first issue` que resulta no serlo, con la evidencia.
-  6. Pegar un CV → veredicto. Pegar otro CV → otro veredicto. Misma evidencia.
-  7. Cortar la red → la app muestra `undecided`. «No decidí» es parte del producto.
+  2. Una issue con PR abierta, marcada como ya tomada.
+  3. Una issue MARCADA y por qué (con la cita del proyecto).
+  4. Una `good first issue` que resulta no serlo, con la evidencia.
+  5. Pegar un CV → veredicto. Pegar otro CV → otro veredicto. Misma evidencia.
+  6. Cortar la red → la app muestra `undecided`. «No decidí» es parte del producto.
 CIERRE         La tabla de §12 en pantalla: Clef contra reglas y contra LLM directo.
 ```
 
@@ -1273,8 +1272,7 @@ La pantalla que gana el jurado no es la del veredicto: es **S1**. El embudo se e
 ## 16. Definición de terminado
 
 - [ ] 3 repositorios en SHA fijo, indexados, 30 issues con su etiqueta original preservada por separado.
-- [ ] Las 30 issues tienen `IssueTriage` válido; agrupación + triaje completo en menos de 120 s sin modelo de chat.
-- [ ] Al menos un grupo con 3 o más miembros, demostrable, con el reporte más rico como puerta de entrada.
+- [ ] Las 30 issues tienen `IssueTriage` válido; triaje completo en menos de 120 s sin modelo de chat.
 - [ ] Al menos un caso demostrable de issue MARCADA por `cluster_has_open_work`.
 - [ ] Al menos un caso demostrable de feature reclasificada por `reports_defect`.
 - [ ] Al menos un caso demostrable de `alignment` = `out_of_scope` o `divergent`, con la cita del proyecto.

@@ -81,10 +81,15 @@ type Document struct {
 	Insufficient bool
 }
 
-// Version hashes the prompt. It is part of the cache key, so changing a rule makes every stored
-// extraction miss instead of reusing an answer given under different instructions (I14).
+// schemaVersion changes whenever Parse or Audit change the way an answer is read. Without it, a
+// stricter parser would keep serving answers written under looser rules: same question, a different
+// reading, and I14 says that is a different question.
+const schemaVersion = "1"
+
+// Version hashes the prompt and the reading rules. It is part of the cache key, so changing either
+// makes every stored extraction miss instead of reusing an answer read another way (I14).
 func Version() string {
-	sum := sha256.Sum256([]byte(Prompt))
+	sum := sha256.Sum256([]byte(schemaVersion + "\x00" + Prompt))
 	return hex.EncodeToString(sum[:])[:12]
 }
 
@@ -215,8 +220,14 @@ func parseItem(section, line string) (Item, error) {
 	return item, nil
 }
 
-// trimGuillemets removes the quotes the format asks around a quote, so comparisons work against
-// the CV text itself.
+// trimGuillemets removes the pair of quotes the format asks around a citation, and nothing else: a
+// quote that legitimately ends with an apostrophe must survive, or the audit raises a false
+// warning. Trimming a cutset from both edges would eat it.
 func trimGuillemets(s string) string {
-	return strings.Trim(s, "«»\"“”'")
+	for _, pair := range [][2]string{{"«", "»"}, {"“", "”"}, {`"`, `"`}} {
+		if strings.HasPrefix(s, pair[0]) && strings.HasSuffix(s, pair[1]) && len(s) > len(pair[0])+len(pair[1]) {
+			return strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(s, pair[0]), pair[1]))
+		}
+	}
+	return s
 }

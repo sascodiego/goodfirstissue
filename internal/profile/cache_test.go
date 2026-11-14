@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 
@@ -218,5 +219,37 @@ func writeCache(t *testing.T, st *store.Store, entries map[string]cacheEntry) {
 	t.Helper()
 	if err := st.Write(cacheName, cacheFile{Entries: entries}); err != nil {
 		t.Fatalf("store.Write() error = %v", err)
+	}
+}
+
+// Two extractors share one store on disk, which is the documented deployment shape. A lost entry
+// costs a future request, so the read-modify-write cannot be guarded per instance only.
+func TestTwoExtractorsSharingAStoreKeepBothEntries(t *testing.T) {
+	st := newTestStore(t)
+	first, _ := cacheHarness(t, st)
+	second, _ := cacheHarness(t, st)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		if _, err := first.Extract(context.Background(), "CV uno: Go y PostgreSQL"); err != nil {
+			t.Errorf("first Extract() error = %v", err)
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		if _, err := second.Extract(context.Background(), "CV dos: Python y Django"); err != nil {
+			t.Errorf("second Extract() error = %v", err)
+		}
+	}()
+	wg.Wait()
+
+	var file cacheFile
+	if err := st.Read(cacheName, &file); err != nil {
+		t.Fatalf("store.Read() error = %v", err)
+	}
+	if len(file.Entries) != 2 {
+		t.Errorf("entries = %d, want 2: an entry was lost by the read-modify-write", len(file.Entries))
 	}
 }

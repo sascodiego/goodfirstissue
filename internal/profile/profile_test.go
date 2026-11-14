@@ -169,3 +169,15 @@ func TestPromptStatesTheSkeletonAndTheUntrustedRule(t *testing.T) {
 		}
 	}
 }
+
+// A quote that ends with a quote character is still a quote: stripping every apostrophe from the
+// edges turns a real citation into a false warning.
+func TestParseKeepsAQuoteThatEndsWithAQuoteCharacter(t *testing.T) {
+	doc, err := profile.Parse("## Conocimientos técnicos\n- CLI propia — nivel: demostrado — evidencia: «escribí la CLI 'gfi'»\n")
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if got := doc.Items[0].Evidence; got != "escribí la CLI 'gfi'" {
+		t.Errorf("evidence = %q, want the quote without its outer guillemets only", got)
+	}
+}

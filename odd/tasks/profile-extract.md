@@ -14,7 +14,7 @@ S2. «CV vacío o sin información técnica → `insufficient_information`, no u
 
 S3. «Caché por `(hash del texto, modelo, versión del prompt)`: el mismo CV no gasta dos veces.»
 
-S4. «El modelo sale de `config.models.profile_extract`, validado contra la lista constitucional al arrancar (I13).» La validación vive en `internal/config` y ya está pinneada (`config_test.go:191`): este paquete no la duplica.
+S4. «El modelo sale de `config.models.profile_extract`, validado contra la lista constitucional al arrancar (I13).» La validación vive en `internal/config` y ya está pinneada (`config_test.go:189-196`): este paquete no la duplica.
 
 S5. «Tests con `httptest`: ninguna llamada real.»
 
@@ -62,3 +62,16 @@ L9. Evidencia (TDD en rojo): `go test ./internal/profile/` → «no non-test Go 
 L10. Defecto que encontró el propio test de T1: un nombre de formación legítimo lleva « — » adentro («Licenciatura en Sistemas — Universidad X»), y el split posicional lo tomaba como campo. Se corrigió el parser, no el fixture: el nombre son los segmentos iniciales sin `:` y los campos se reconocen por la clave. Un test que no puede fallar no prueba nada, pero un test que falla por el fixture equivocado tampoco.
 
 L11. Nota de rebanadas: 5 commits de 510/150/430/295/160 líneas. T1 quedó sobre la guía de ~400 por el mismo motivo que en #5: tipos, prompt y parser no existen por separado sin stubs. El log del doc lleva el mapa tarea→commit.
+
+L12. Evidencia (verificación independiente, `gentle-ai-verify` sobre `dc80e52`): `make verify` exit 0; `go test -race -count=1 ./internal/profile/` limpio; S1–S9 cubiertos con test que los pinnea; el test de I3 se sostiene porque usa un token (`ZEBRAFISH-CONSULTING-1998`) que no aparece en ningún otro archivo del repo. Hallazgos cerrados en `fix(profile)`:
+
+- **El delimitador era forjable (real, I3).** Un CV que contenía `CV>>>` cerraba el bloque y escribía afuera: el `state` veía como instrucción lo que venía después. Ahora `sanitize` sustituye ambos marcadores dentro del CV por formas que no pueden re-formarlos (`∎CV`, `CV∎`), y la prosa del mensaje dejó de nombrar los marcadores, así que cada uno aparece exactamente una vez. Test en rojo observado: «the closing marker appears 3 times, want 1».
+- **Falso positivo del auditor.** `trimGuillemets` recortaba un cutset desde los dos bordes, así que una cita que termina legítimamente en apóstrofo («escribí la CLI 'gfi'») quedaba sin su última comilla y nunca auditaba como trazable: aviso falso. Ahora quita un par de comillas, y nada más. Test en rojo: `evidence = "escribí la CLI 'gfi"`.
+- **Carrera de caché.** El mutex era por `Extractor`, pero el store es de disco: dos extractores con el mismo store podían perder una entrada en el read-modify-write. Ahora es un mutex de proceso. Honestidad: el test nuevo **no reprodujo** la carrera (la ventana es de milisegundos y los tests usan httptest), así que no hubo RED; el mutex la elimina por construcción y `-race` cubre la seguridad de memoria.
+- **La versión no cubría el parser.** `Version()` ahora hashea `schemaVersion + prompt`: cambiar las reglas de lectura invalida el caché aunque el prompt no cambie (I14).
+
+L13. Nits relevados y **no** accionados, con motivo:
+
+- `New` no recorta el modelo: `" glm5.3-flash"` pasaría y viajaría con espacio. No se corrige porque el modelo viene de `config.models.profile_extract`, que lo valida contra el allowlist al arrancar; recortar acá escondería un typo de configuración en vez de hacerlo fallar al inicio (I13).
+- El caché no tiene cota de entradas y reescribe el archivo completo en cada acierto nuevo. Es una entrada por CV distinto; en un binario local con pocos CVs es aceptable y queda escrito. Si crece, la solución es una política de evicción, no un parche.
+- **El cumplimiento real del esqueleto por parte del modelo no está verificado**: los tests usan fixtures. Si el modelo devuelve prosa, `Extract` falla con error visible en vez de guardar un documento silencioso, que es la degradación correcta. Es un riesgo asumido para la demo.

@@ -4,10 +4,16 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"sync"
 )
 
 // cacheName is the store document that keeps extraction answers.
 const cacheName = "profile/cache.json"
+
+// cacheWrite serializes the cache read-modify-write across every Extractor in the process. A
+// per-instance lock would not do: the store is on disk, so two extractors sharing it would still
+// lose an entry. Cross-process access is out of scope — one binary, one store.
+var cacheWrite sync.Mutex
 
 // cacheEntry is one answer, kept with the two facts that produced it so an entry can be read back
 // without guessing what wrote it.
@@ -55,8 +61,8 @@ func (e *Extractor) remember(key, answer string) error {
 	if e.store == nil {
 		return nil
 	}
-	e.mu.Lock()
-	defer e.mu.Unlock()
+	cacheWrite.Lock()
+	defer cacheWrite.Unlock()
 
 	var file cacheFile
 	if err := e.store.Read(cacheName, &file); err != nil || file.Entries == nil {

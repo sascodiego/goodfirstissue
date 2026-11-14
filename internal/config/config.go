@@ -20,7 +20,10 @@ const (
 	DefaultCloneDir   = "var/repos"
 	DefaultStoreDir   = "var/store"
 	DefaultPigHomeDir = "var/pig"
-	DefaultAddr       = "0.0.0.0:8080"
+	// 7117 y no 8080: 8080 es el default de media docena de servidores de desarrollo, y dos
+	// procesos peleando por el mismo puerto es la primera hora perdida de una demo. La
+	// interfaz sigue siendo 0.0.0.0 porque el binario corre en un VPS y se mira desde afuera.
+	DefaultAddr = "0.0.0.0:7117"
 )
 
 // AllowedChatModels are the allowlist entries usable through /v1/chat/completions.

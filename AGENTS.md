@@ -145,8 +145,8 @@ make build               # CGO_ENABLED=0, binario estático en bin/gfi (~8 MB)
 make test                # go test ./...
 make lint                # go vet ./... && golangci-lint run
 make verify              # build + test + lint + design-check
-make run                 # go run ./cmd/gfi  (por defecto :8080)
-./bin/gfi -addr :8080    # servidor local
+make run                 # go run ./cmd/gfi  (por defecto 0.0.0.0:7117)
+./bin/gfi -addr :7117    # servidor local
 ```
 
-Rutas: `GET /` (cáscara), `GET /static/…` (activos embebidos). `config.json` todavía no se lee: el esqueleto arranca sin configuración.
+Rutas: `GET /` (cáscara), `GET /static/…` (activos embebidos). El servidor lee `config.json` si está y arranca con los defaults si no.

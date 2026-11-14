@@ -1,6 +1,6 @@
 {
   "server": {
-    "addr": "0.0.0.0:8080"
+    "addr": "0.0.0.0:7117"
   },
   "repos": {
     "clone_dir": "var/repos"

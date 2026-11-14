@@ -54,6 +54,7 @@ func corpus(t *testing.T) *store.Store {
 				Number:       2568,
 				Title:        "YAML docs ignore linkHandler for see_also entries",
 				Body:         "The link handler is ignored.",
+				URL:          "https://github.com/spf13/cobra/issues/2568",
 				UpdatedAt:    time.Date(2026, 11, 11, 0, 0, 0, 0, time.UTC),
 				CommentCount: 0,
 			},

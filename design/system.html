@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Sistema de diseño · dos familias</title>
+<style>
+  /* Tablero de comparación. Autocontenido a propósito: documenta dos sistemas
+     que todavía no están en ningún app.css. Los tokens de cada familia se
+     declaran acá y se copian a internal/web/static/app.css cuando se elige. */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { color-scheme: dark; }
+  body {
+    margin: 0; padding: 3rem 0 5rem;
+    background: #08090a; color: #d7dade;
+    font: 13px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { width: min(84rem, 100%); margin: 0 auto; padding: 0 2rem; }
+  .page-head { margin-bottom: 2.5rem; }
+  .kicker { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #6b7280; margin: 0 0 .6rem; }
+  h1 { margin: 0; font-size: 26px; letter-spacing: -.02em; font-weight: 560; }
+  .page-head p.lede { margin: .7rem 0 0; max-width: 62ch; color: #8b929c; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start; }
+  @media (max-width: 900px) { .cols { grid-template-columns: 1fr; } }
+
+  /* ---------- A · Instrumento ---------- */
+  .a {
+    --bg:#0a0b0d; --surface:#101216; --surface-2:#16191e;
+    --line:#1f2329; --line-2:#2a2f37;
+    --fg:#e7e9ec; --fg-2:#99a1ac; --fg-3:#656d78;
+    --accent:#d8f26b; --accent-ink:#0a0b0d;
+    --taken:#656d78; --noise:#a78bfa; --blocked:#e3b341;
+    --r-sm:3px; --r-md:6px;
+  }
+  /* ---------- B · Editorial ---------- */
+  .b {
+    --bg:#12100e; --surface:#191613; --surface-2:#201b17;
+    --line:#2a2420; --line-2:#3a322c;
+    --fg:#f2ece4; --fg-2:#aea396; --fg-3:#7b7167;
+    --accent:#d98b5f; --accent-ink:#12100e;
+    --taken:#7b7167; --noise:#b79be0; --blocked:#d9a441;
+    --r-sm:2px; --r-md:4px;
+  }
+  .fam {
+    background: var(--bg); color: var(--fg);
+    border: 1px solid var(--line-2);
+    border-radius: 8px; overflow: hidden;
+  }
+  .fam > header { padding: 1.4rem 1.5rem 1.1rem; border-bottom: 1px solid var(--line); }
+  .fam .tag { font: 600 10px/1 ui-monospace, Menlo, monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+  .fam h2 { margin: .7rem 0 0; font-size: 20px; letter-spacing: -.02em; font-weight: 560; }
+  .fam header p { margin: .5rem 0 0; color: var(--fg-2); font-size: 12.5px; max-width: 46ch; }
+  .b .fam h2, .b h2 { font-family: ui-serif, Georgia, "Iowan Old Style", "Palatino Linotype", serif; }
+
+  .part { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--line); }
+  .part:last-child { border-bottom: 0; }
+  .part h3 {
+    margin: 0 0 .9rem; font-size: 10px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--fg-3); font-weight: 600;
+  }
+
+  .sw { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr)); gap: .5rem; }
+  .sw div { border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; }
+  .sw span { display: block; height: 2.1rem; }
+  .sw b { display: block; padding: .35rem .45rem; font: 400 9.5px/1.4 ui-monospace, Menlo, monospace; color: var(--fg-2); }
+
+  .spec p { margin: 0 0 .55rem; }
+  .spec .d { font-size: 24px; letter-spacing: -.02em; font-weight: 560; }
+  .b .spec .d { font-family: ui-serif, Georgia, serif; font-weight: 400; font-size: 26px; }
+  .spec .l { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--fg-2); font-weight: 600; }
+  .spec .c { font-size: 12.5px; color: var(--fg-2); }
+  .spec .m { font: 11px/1.4 ui-monospace, Menlo, monospace; color: var(--fg-3); }
+
+  .demo { display: grid; gap: .9rem; }
+  .field { display: grid; gap: .35rem; }
+  .field label { font: 10px/1 ui-monospace, Menlo, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-3); }
+  .input {
+    display: flex; align-items: center; gap: .5rem;
+    border: 1px solid var(--line-2); border-radius: var(--r-sm);
+    background: var(--surface); padding: .5rem .6rem;
+    font: 12px/1 ui-monospace, Menlo, monospace; color: var(--fg-2);
+  }
+  .input em { font-style: normal; color: var(--fg-3); }
+  .btn {
+    display: inline-flex; align-items: center; gap: .4rem; align-self: start;
+    border: 0; border-radius: var(--r-sm); padding: .5rem .85rem;
+    background: var(--accent); color: var(--accent-ink);
+    font: 600 12px/1 ui-sans-serif, system-ui, sans-serif; cursor: pointer;
+  }
+  .btn.ghost { background: transparent; color: var(--fg-2); border: 1px solid var(--line-2); }
+  .btn:focus-visible, .input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: .35rem; }
+  .chip {
+    font: 11px/1 ui-monospace, Menlo, monospace;
+    border: 1px solid var(--line-2); border-radius: var(--r-sm);
+    padding: .25rem .4rem; color: var(--fg-2);
+  }
+  .states { display: flex; flex-wrap: wrap; gap: .8rem; }
+  .st { display: inline-flex; align-items: center; gap: .4rem; font-size: 11.5px; color: var(--fg-2); }
+  .st i { width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+  .st.t { color: var(--taken); } .st.n { color: var(--noise); }
+  .st.k { color: var(--blocked); } .st.v { color: var(--accent); }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font: 600 10px/1 ui-monospace, Menlo, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-3); padding: .45rem .5rem; border-bottom: 1px solid var(--line-2); }
+  td { padding: .55rem .5rem; border-bottom: 1px solid var(--line); font-size: 12.5px; }
+  tr:last-child td { border-bottom: 0; }
+  td.num { font: 11.5px ui-monospace, Menlo, monospace; color: var(--fg-3); font-variant-numeric: tabular-nums; }
+  td.ttl { color: var(--fg); }
+  td.dim { color: var(--fg-2); font: 11px ui-monospace, Menlo, monospace; }
+
+  .verdict { margin-top: 2.5rem; padding: 1.25rem 1.5rem; border: 1px solid #1f2329; border-radius: 8px; }
+  .verdict h2 { margin: 0 0 .6rem; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: #8b929c; font-weight: 600; }
+  .verdict p { margin: 0 0 .5rem; color: #8b929c; max-width: 76ch; }
+  .verdict b { color: #d7dade; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page-head">
+    <p class="kicker">Sistema de diseño · propuesta</p>
+    <h1>Dos familias, los mismos componentes</h1>
+    <p class="lede">
+      Reemplazan la hoja del esqueleto «hola mundo». Ninguno de estos valores está
+      todavía en el código: se elige una familia y recién entonces se lleva a
+      <code>internal/web/static/app.css</code>.
+    </p>
+  </header>
+
+  <div class="cols">
+
+    <!-- ============ A · INSTRUMENTO ============ -->
+    <section class="fam a">
+      <header>
+        <span class="tag">A · Instrumento</span>
+        <h2>Precisión sobre calidez</h2>
+        <p>Casi negro, hairlines de 1 px, densidad alta. Un solo acento que aparece poco y por eso pesa.</p>
+      </header>
+
+      <div class="part">
+        <h3>Color</h3>
+        <div class="sw">
+          <div><span style="background:#0a0b0d"></span><b>bg</b></div>
+          <div><span style="background:#101216"></span><b>surface</b></div>
+          <div><span style="background:#16191e"></span><b>surface-2</b></div>
+          <div><span style="background:#e7e9ec"></span><b>fg</b></div>
+          <div><span style="background:#99a1ac"></span><b>fg-2</b></div>
+          <div><span style="background:#d8f26b"></span><b>accent</b></div>
+          <div><span style="background:#a78bfa"></span><b>noise</b></div>
+          <div><span style="background:#e3b341"></span><b>blocked</b></div>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3>Tipografía</h3>
+        <div class="spec">
+          <p class="d">spf13/cobra</p>
+          <p class="l">Repositorios</p>
+          <p class="c">Tres repositorios, 600 issues abiertas. Todo lo que sigue se puede verificar.</p>
+          <p class="m">#1272 · adbc881 · 2026-11-13</p>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3>Controles</h3>
+        <div class="demo">
+          <div class="field">
+            <label for="a-in">Agregar repositorio</label>
+            <div class="input" id="a-in">owner/nombre <em>↵ para traer</em></div>
+          </div>
+          <div class="chips">
+            <span class="btn">Traer issues</span>
+            <span class="btn ghost">Forzar</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3>Etiquetas y estados</h3>
+        <div class="chips" style="margin-bottom:.9rem">
+          <span class="chip">good-first-issue</span>
+          <span class="chip">kind/bug</span>
+          <span class="chip">area/lib</span>
+        </div>
+        <div class="states">
+          <span class="st t"><i></i>tomada</span>
+          <span class="st n"><i></i>no es trabajo</span>
+          <span class="st k"><i></i>condicionada</span>
+          <span class="st v"><i></i>candidata</span>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3>Fila de tabla</h3>
+        <table>
+          <thead><tr><th>#</th><th>Título</th><th>Estado</th><th>PR</th><th>Actualizada</th></tr></thead>
+          <tbody>
+            <tr><td class="num">2568</td><td class="ttl">YAML docs ignore linkHandler for <code>see_also</code></td><td><span class="st v"><i></i>candidata</span></td><td class="dim">—</td><td class="dim">2026-11-11</td></tr>
+            <tr><td class="num">2393</td><td class="ttl">Clink completion (feature request)</td><td><span class="st t"><i></i>tomada</span></td><td class="dim">#222</td><td class="dim">2026-11-13</td></tr>
+            <tr><td class="num">1391</td><td class="ttl">404 links on cobra.dev</td><td><span class="st k"><i></i>condicionada</span></td><td class="dim">#1984</td><td class="dim">2026-09-18</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ B · EDITORIAL ============ -->
+    <section class="fam b">
+      <header>
+        <span class="tag">B · Editorial</span>
+        <h2>Aire y serif</h2>
+        <p>Cálido, con serif en los títulos y una terracota usada con cuentagotas. Se lee como un informe bien impreso.</p>
+      </header>
+
+      <div class="part">
+        <h3>Color</h3>
+        <div class="sw">
+          <div><span style="background:#12100e"></span><b>bg</b></div>
+          <div><span style="background:#191613"></span><b>surface</b></div>
+          <div><span style="background:#201b17"></span><b>surface-2</b></div>
+          <div><span style="background:#f2ece4"></span><b>fg</b></div>
+          <div><span style="background:#aea396"></span><b>fg-2</b></div>
+          <div><span style="background:#d98b5f"></span><b>accent</b></div>
+          <div><span style="background:#b79be0"></span><b>noise</b></div>
+          <div><span style="background:#d9a441"></span><b>blocked</b></div>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3>Tipografía</h3>
+        <div class="spec">
+          <p class="d">spf13/cobra</p>
+          <p class="l">Repositorios</p>
+          <p class="c">Tres repositorios, 600 issues abiertas. Todo lo que sigue se puede verificar.</p>
+          <p class="m">#1272 · adbc881 · 2026-11-13</p>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3>Controles</h3>
+        <div class="demo">
+          <div class="field">
+            <label for="b-in">Agregar repositorio</label>
+            <div class="input" id="b-in">owner/nombre <em>↵ para traer</em></div>
+          </div>
+          <div class="chips">
+            <span class="btn">Traer issues</span>
+            <span class="btn ghost">Forzar</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3>Etiquetas y estados</h3>
+        <div class="chips" style="margin-bottom:.9rem">
+          <span class="chip">good-first-issue</span>
+          <span class="chip">kind/bug</span>
+          <span class="chip">area/lib</span>
+        </div>
+        <div class="states">
+          <span class="st t"><i></i>tomada</span>
+          <span class="st n"><i></i>no es trabajo</span>
+          <span class="st k"><i></i>condicionada</span>
+          <span class="st v"><i></i>candidata</span>
+        </div>
+      </div>
+
+      <div class="part">
+        <h3>Fila de tabla</h3>
+        <table>
+          <thead><tr><th>#</th><th>Título</th><th>Estado</th><th>PR</th><th>Actualizada</th></tr></thead>
+          <tbody>
+            <tr><td class="num">2568</td><td class="ttl">YAML docs ignore linkHandler for <code>see_also</code></td><td><span class="st v"><i></i>candidata</span></td><td class="dim">—</td><td class="dim">2026-11-11</td></tr>
+            <tr><td class="num">2393</td><td class="ttl">Clink completion (feature request)</td><td><span class="st t"><i></i>tomada</span></td><td class="dim">#222</td><td class="dim">2026-11-13</td></tr>
+            <tr><td class="num">1391</td><td class="ttl">404 links on cobra.dev</td><td><span class="st k"><i></i>condicionada</span></td><td class="dim">#1984</td><td class="dim">2026-09-18</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="verdict">
+    <h2>Qué se está eligiendo</h2>
+    <p><b>A</b> gana densidad y autoridad técnica: es el tablero donde alguien pasa horas filtrando issues. Su riesgo es verse frío.</p>
+    <p><b>B</b> gana legibilidad y memoria: es el tablero que se recuerda después de la demo, y el serif es lo que más lo aleja de una plantilla. Su riesgo es perder densidad.</p>
+    <p>Las dos evitan lo mismo: degradados de texto, glassmorphism, halos, violeta-azul de plantilla y tarjetas redondeadas con sombra.</p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -21,11 +21,18 @@ nadie mira es peor que ninguna.
 ## Convención
 
 ```
+design/app.css                   hoja única, idéntica a internal/web/static/app.css
+design/app.js                    comportamiento, idéntico a internal/web/static/app.js
+design/system.md                 tokens y reglas, sincronizados desde app.css
+design/system.html               tablero que muestra esos tokens
 design/<slug>/NN-nombre.html     maqueta, numerada en orden de flujo
-design/<slug>/app.css            hoja, idéntica a internal/web/static/app.css
-design/<slug>/app.js             comportamiento, idéntico a internal/web/static/app.js
-design/<slug>/fixtures.json      datos de mentira
+design/<slug>/fixtures.json      datos de maqueta y su procedencia
 ```
+
+`app.css` y `app.js` van en la raíz de `design/`, no dentro de cada slug: son
+una sola copia compartida, y `make design-check` compara `design/app.css` contra
+`internal/web/static/app.css`. Una copia por slug abriría la puerta a que se
+separen. Las maquetas las enlazan con `<link rel="stylesheet" href="../app.css">`.
 
 Slugs del proyecto: `repo` (embudo), `issue` (evidencia), `veredicto` (encaje).
 

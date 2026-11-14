@@ -1,0 +1,48 @@
+{
+  "id": "c-cli-1212",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1212,
+    "url": "https://github.com/httpie/cli/issues/1212"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "a merged pull request closed it: the work really happened"
+  },
+  "issue": {
+    "title": "JSON only operator handling for :=/:=@ --form/--multipart",
+    "body": "Currently handling of JSON only operators (:=/:=@) with `--form`/`--multipart` is not properly defined, and they sometimes work and sometimes just throw and `AssertionError`. As discussed, let's properly formalize this:\r\n- Support basic types like strings, numbers and booleans\r\n- Error out on complex types\r\n",
+    "comments": [],
+    "labels": [
+      "bug",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 1213,
+        "state": "MERGED",
+        "merged": true
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

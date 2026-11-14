@@ -1,0 +1,54 @@
+{
+  "id": "c-cli-1204",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1204,
+    "url": "https://github.com/httpie/cli/issues/1204"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "a merged pull request closed it: the work really happened"
+  },
+  "issue": {
+    "title": "Ignoring broken plugins",
+    "body": "Seems like there are a couple of broken plugins out there, and when any of them are installed in the system it completely blocks the usage of `http`/`https` commands. An example scenario;\r\n\r\n```\r\n$ pip install httpie\r\n$ pip install httpie-aws-auth\r\n$ http\r\nTraceback (most recent call last):\r\n  File \"/usr/local/bin/http\", line 8, in <module>\r\n    sys.exit(main())\r\n  File \"/usr/local/lib/python3.9/site-packages/httpie/__main__.py\", line 9, in main\r\n    exit_status = main()\r\n  File \"/usr/local/lib/python3.9/site-packages/httpie/core.py\", line 35, in main\r\n    plugin_manager.load_installed_plugins()\r\n  File \"/usr/local/lib/python3.9/site-packages/httpie/plugins/manager.py\", line 35, in load_installed_plugins\r\n    plugin = entry_point.load()\r\n  File \"/usr/local/lib/python3.9/site-packages/pkg_resources/__init__.py\", line 2450, in load\r\n    return self.resolve()\r\n  File \"/usr/local/lib/python3.9/site-packages/pkg_resources/__init__.py\", line 2456, in resolve\r\n    module = __import__(self.module_name, fromlist=['__name__'], level=0)\r\n  File \"/usr/local/lib/python3.9/site-packages/httpie_aws_auth.py\", line 8, in <module>\r\n    from httpie import ExitStatus\r\nImportError: cannot import name 'ExitStatus' from 'httpie' (/usr/local/lib/python3.9/site-packages/httpie/__init__.py)\r\n```\r\n\r\nA straightforward solution for this is ignoring these errors, and throwing a warning to user (`Warning: Failed to load 'httpie-aws-auth' plugin, see '/tmp/xxx.txt' for more logs`). This way, even if the plu",
+    "comments": [
+      {
+        "author": "isidentical",
+        "body": "> , if there aren't any other changes to be made. \r\n\r\nUnfortunately, there is. For not creating any conflicts, we need #1200 first (not directly relevant, but touches the same places this requires). After that, it should be very simple to do so.",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [
+      "enhancement",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 1228,
+        "state": "MERGED",
+        "merged": true
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

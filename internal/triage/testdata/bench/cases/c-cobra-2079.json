@@ -1,0 +1,81 @@
+{
+  "id": "c-cobra-2079",
+  "provenance": "real-closed",
+  "trap": "closed_refused_with_reason",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2079,
+    "url": "https://github.com/spf13/cobra/issues/2079"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "strong",
+    "label_note": "a maintainer explained why it will not be done"
+  },
+  "issue": {
+    "title": "[Bug] SetArgs doesn't reset flag value",
+    "body": "See following test code. Call `SetArgs` won't reset flag value, `Execute()` also won't reset flag value too.\r\n```go\r\nfunc TestSetArgs(t *testing.T) {\r\n\tgetCMD := func() *Command {\r\n\t\tcmd := &Command{\r\n\t\t\tUse: \"testcmd\",\r\n\t\t\tRunE: func(cmd *Command, args []string) error {\r\n\t\t\t\ta, _ := cmd.Flags().GetBool(\"a\")\r\n\t\t\t\tb, _ := cmd.Flags().GetBool(\"b\")\r\n\t\t\t\tc, _ := cmd.Flags().GetBool(\"c\")\r\n\t\t\t\tswitch {\r\n\t\t\t\tcase a && b, a && c, b && c:\r\n\t\t\t\t\treturn fmt.Errorf(\"a,b,c only one could be true\")\r\n\t\t\t\t}\r\n\t\t\t\treturn nil\r\n\t\t\t},\r\n\t\t}\r\n\t\tf := cmd.Flags()\r\n\t\tf.BoolP(\"a\", \"a\", false, \"a,b,c only one could be true\")\r\n\t\tf.BoolP(\"b\", \"b\", false, \"a,b,c only one could be true\")\r\n\t\tf.Bool(\"c\", false, \"a,b,c only one could be true\")\r\n\t\treturn cmd\r\n\t}\r\n\r\n\tcmd := getCMD()\r\n\r\n\t// step 1\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--a=true\",\r\n\t})\r\n\tassertNoErr(t, cmd.Execute()) // PASS\r\n\r\n\t// step 2\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--b=true\",\r\n\t})\r\n\tt.Log(cmd.Flags().Changed(\"a\")) // true\r\n\tassertNoErr(t, cmd.Execute()) // FAIL, output error msg is \"a,b,c only one could be true\"\r\n\r\n\t// step 3\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--c=true\",\r\n\t})\r\n\tassertNoErr(t, cmd.Execute()) // FAIL, output error msg is \"a,b,c only one could be true\"\r\n\r\n\t// step 4\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--a=false\",\r\n\t\t\"--b=false\",\r\n\t\t\"--c=true\",\r\n\t})\r\n\tassertNoErr(t, cmd.Execute()) // PASS\r\n}\r\n```",
+    "comments": [
+      {
+        "author": "levisyin",
+        "body": "@marckhouzam Hi sir, can we reopen this issue, I indeed couldn't find a better way for implementing the solution in my own project tests, could you please give me some suggestions😀",
+        "author_association": ""
+      },
+      {
+        "author": "marckhouzam",
+        "body": "@levisyin `type Value interface` is not part of Cobra.  It is defined in a different project `github.com/spf13/pflag`.\r\n\r\nHowever, two thoughts on this:\r\n1. Aren't the slices always separated by commas (`,`)?  Or is there a way to choose a different separator?\r\n2. Since this is for your tests, you probably know the default value and not have to read it from `DefValue`.  You therefore should be able to use `Replace()` with that value.",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "levisyin",
+        "body": "@marckhouzam Hi sir, thanks for the reminder.\r\n\r\nFor thought 1, after I reviewed again, the builtin implements of `SliceValue` are always separated by commas `,`, but for custom implements, we are not sure\r\n\r\nFor thought 2, since this is aimed to be a `util function` for all tests, it shouldn't care about the test case itself IMO",
+        "author_association": ""
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 2080,
+        "state": "CLOSED",
+        "merged": false
+      },
+      {
+        "number": 18876,
+        "state": "MERGED",
+        "merged": true
+      },
+      {
+        "number": 18902,
+        "state": "MERGED",
+        "merged": true
+      },
+      {
+        "number": 989,
+        "state": "MERGED",
+        "merged": true
+      },
+      {
+        "number": 1,
+        "state": "MERGED",
+        "merged": true
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

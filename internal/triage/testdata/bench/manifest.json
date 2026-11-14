@@ -202,13 +202,73 @@
       "trap": "feature_against_the_project_direction",
       "min": 1,
       "why": "alignment: a request that departs from what the project is"
+    },
+    {
+      "trap": "closed_completed_merged_pr",
+      "min": 20,
+      "why": "a merged pull request closed it: the work really happened"
+    },
+    {
+      "trap": "closed_refused_with_reason",
+      "min": 4,
+      "why": "a maintainer explained why it will not be done"
+    },
+    {
+      "trap": "closed_refused_without_reason",
+      "min": 10,
+      "why": "closed as not planned with nothing in the text to read"
+    },
+    {
+      "trap": "closed_completed_uncorroborated",
+      "min": 5,
+      "why": "closed as completed, no merged change, no explanation"
     }
   ],
   "required_provenance": {
     "real": 20,
-    "synthetic": 8
+    "synthetic": 8,
+    "real-closed": 30
   },
   "cases": [
+    "c-cli-1079",
+    "c-cli-1093",
+    "c-cli-1167",
+    "c-cli-1195",
+    "c-cli-1201",
+    "c-cli-1204",
+    "c-cli-1212",
+    "c-cli-1215",
+    "c-cli-1234",
+    "c-cli-1242",
+    "c-cli-1285",
+    "c-cli-1300",
+    "c-cli-1308",
+    "c-cli-1388",
+    "c-cli-1395",
+    "c-cli-1444",
+    "c-cli-1473",
+    "c-cli-1512",
+    "c-cli-1523",
+    "c-cli-1535",
+    "c-cli-1544",
+    "c-cli-1561",
+    "c-cli-1564",
+    "c-cli-1571",
+    "c-cli-1572",
+    "c-cli-243",
+    "c-cli-448",
+    "c-cli-464",
+    "c-cli-523",
+    "c-cli-605",
+    "c-cli-825",
+    "c-cli-939",
+    "c-cobra-1328",
+    "c-cobra-1820",
+    "c-cobra-2017",
+    "c-cobra-2079",
+    "c-cobra-2119",
+    "c-cobra-2250",
+    "c-cobra-2254",
     "cobra-1394",
     "cobra-1949",
     "cobra-1991",

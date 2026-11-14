@@ -1,0 +1,42 @@
+{
+  "id": "c-cli-1544",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1544,
+    "url": "https://github.com/httpie/cli/issues/1544"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "weak",
+    "label_note": "closed as not planned with nothing in the text to read"
+  },
+  "issue": {
+    "title": "HTTPS_PROXY not working",
+    "body": "## Checklist\r\n\r\n- [x] I've searched for similar issues.\r\n- [x] I'm using the latest version of HTTPie.\r\n\r\n---\r\n\r\n## Minimal reproduction code and steps\r\n\r\n1.export HTTPS_PROXY=\"https://username:password@my.proxy.example.com\"\r\n2. http http://httpbin.org\r\n3. error\r\n\r\n## Current result\r\n```\r\nhttp: error: ProxyError: HTTPSConnectionPool(host='httpbin.org', port=443): Max retries exceeded with url: /ip (Caused by ProxyError('Cannot connect to proxy.', OSError('Tunnel connection failed: 426 Upgrade Required'))) while doing a GET request to URL: https://httpbin.org/ip\r\n```\r\n## Expected result\r\n\r\nThe request should work\r\n---\r\n\r\n## Debug output\r\n\r\nPlease re-run the command with `--debug`, then copy the entire command & output and paste both below:\r\n\r\n```bash\r\n$ HTTPS_PROXY=\"https://username:password@my.proxy.example.com\" http --debug https://httpbin.org/ip\r\n\r\nHTTPie 3.2.2\r\nRequests 2.31.0\r\nPygments 2.16.1\r\nPython 3.11.6 (main, Oct  2 2023, 13:45:54) [GCC 11.4.0]\r\n/home/hbagdi/.linuxbrew/Homebrew/opt/python@3.11/bin/python3.11\r\nLinux 6.2.0-37-generic\r\n\r\n<Environment {'apply_warnings_filter': <function Environment.apply_warnings_filter at 0x7f38e07a2480>,\r\n 'args': Namespace(),\r\n 'as_silent': <function Environment.as_silent at 0x7f38e07a2340>,\r\n 'colors': 8,\r\n 'config': {'default_options': []},\r\n 'config_dir': PosixPath('/home/hbagdi/.config/httpie'),\r\n 'devnull': <property object at 0x7f38e07ac130>,\r\n 'is_windows': False,\r\n 'log_error': <function Environment.log_error at 0x7f38e07a23e0",
+    "comments": [],
+    "labels": [
+      "bug",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

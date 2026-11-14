@@ -1,0 +1,39 @@
+{
+  "id": "c-cli-523",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 523,
+    "url": "https://github.com/httpie/cli/issues/523"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "weak",
+    "label_note": "closed as completed, no merged change, no explanation"
+  },
+  "issue": {
+    "title": "enable quic protocol",
+    "body": "Httpie will support [QUIC](https://github.com/google/proto-quic) protocol?\n",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,39 @@
+{
+  "id": "c-cli-1572",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1572,
+    "url": "https://github.com/httpie/cli/issues/1572"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "weak",
+    "label_note": "closed as not planned with nothing in the text to read"
+  },
+  "issue": {
+    "title": "### Summary",
+    "body": "### Summary\r\n\r\nAs per the announcement, [learning lab was deprecated](https://github.blog/changelog/2022-09-01-deprecating-learning-lab/). \r\nHowever, the learning lab URL (https://lab.github.com/) is still available but leads to a 404 error page. \r\n\r\nYou might want to redirect this to https://skills.github.com/.\r\n\r\n### How to reproduce\r\n\r\n1. Go to https://lab.github.com/.\r\n2. See 404 error.\r\n\r\n<img src=\"https://github.com/skills/introduction-to-github/assets/23019147/c3fa988f-7204-425f-8614-2c883dd85528\" alt=\"screenshot of 404 error when you go to github learning lab\" />\r\n\r\n\r\n\r\n\n\n_Originally posted by @dipikabh in https://github.com/skills/introduction-to-github/issues/682_",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

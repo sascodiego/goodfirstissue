@@ -302,6 +302,7 @@ func noulMap(answers map[string]answer) map[string]float64 {
 type benchRun struct {
 	Alignment   map[string]float64 `json:"alignment,omitempty"`
 	TreeOutcome string             `json:"tree_outcome"`
+	Closed      bool               `json:"closed_label"`
 	FlatOutcome string             `json:"flat_outcome"`
 	Case        string             `json:"case"`
 	Trap        string             `json:"trap"`
@@ -329,13 +330,20 @@ func TestBenchMeasuresWording(t *testing.T) {
 	ctx := t.Context()
 
 	var (
-		preGated    []string
-		runs        []benchRun
-		flatHits    int
-		derivedHits int
-		intentHits  int
-		abstentions int
-		scored      int
+		closed       int
+		strong       int
+		weak         int
+		strongIntent int
+		weakIntent   int
+		strongTree   int
+		weakTree     int
+		preGated     []string
+		runs         []benchRun
+		flatHits     int
+		derivedHits  int
+		intentHits   int
+		abstentions  int
+		scored       int
 	)
 	questionHits := map[string]int{}
 	questionSeen := map[string]int{}
@@ -401,9 +409,35 @@ func TestBenchMeasuresWording(t *testing.T) {
 			IntentProb: intent["intent"].Probabilities,
 			IntentConf: intent["intent"].Confidence,
 		}
+		run.Closed = c.ClosedLabel
 		run.TreeOutcome = TreeOutcome(c.issue(), substance, intent["intent"].Choice, alignment)
 		run.FlatOutcome = FlatOutcome(c.issue(), substance, intent["intent"].Choice)
 		runs = append(runs, run)
+
+		if c.ClosedLabel {
+			closed++
+			if c.Closure.LabelStrength == "strong" {
+				strong++
+				if run.Intent == c.Expected.Intent {
+					strongIntent++
+				}
+				if run.TreeOutcome == c.Expected.Outcome {
+					strongTree++
+				}
+			} else {
+				weak++
+				if run.Intent == c.Expected.Intent {
+					weakIntent++
+				}
+				if run.TreeOutcome == c.Expected.Outcome {
+					weakTree++
+				}
+			}
+			t.Logf("%-24s cerrada como %-12s fuerza=%-6s intent %-10s got=%-10s(p=%.2f) árbol=%-12s esp=%s",
+				c.ID, c.Closure.StateReason, c.Closure.LabelStrength, c.Expected.Intent,
+				run.Intent, intent["intent"].Probability, run.TreeOutcome, c.Expected.Outcome)
+			continue
+		}
 
 		scored++
 		if run.Kind == c.Expected.Kind {
@@ -440,6 +474,9 @@ func TestBenchMeasuresWording(t *testing.T) {
 
 	treeHits, flatOutcomeHits, aligned, alignedHits := 0, 0, 0, 0
 	for _, run := range runs {
+		if run.Closed {
+			continue
+		}
 		if run.TreeOutcome == run.Expect.Outcome {
 			treeHits++
 		}
@@ -458,6 +495,9 @@ func TestBenchMeasuresWording(t *testing.T) {
 			}
 		}
 	}
+	t.Logf("cerradas con etiqueta real: %d (fuertes %d · débiles %d)", closed, strong, weak)
+	t.Logf("  intent  fuerte %d/%d · débil %d/%d", strongIntent, strong, weakIntent, weak)
+	t.Logf("  desenlace árbol fuerte %d/%d · débil %d/%d", strongTree, strong, weakTree, weak)
 	t.Logf("desenlace plano: %d/%d", flatOutcomeHits, len(runs))
 	t.Logf("desenlace árbol: %d/%d", treeHits, len(runs))
 	t.Logf("nodo de alineación: %d/%d", alignedHits, aligned)

@@ -131,3 +131,27 @@ vale** todavía porque las etiquetas de desenlace se escribieron bajo la políti
 L15. Bug de medición propio, registrado: el bloque de reporte reutilizó la variable del
 conteo de categoría y publicó un número equivocado en una corrida. Corregido; los números
 de arriba son de la corrida posterior.
+
+L16. Banco cerrado con etiqueta real: 350 issues cerradas de los dos repos, de las cuales
+se usan 39. El hallazgo que obliga a desconfiar de la premisa: **sólo el 17 % de las
+cerradas como completadas (58 de 350) tiene una PR mergeada que las cierra**, y **sólo 4
+de 26 rechazadas tienen explicación de un mantenedor**. La etiqueta del cierre dice qué
+decidió el proyecto, no si la issue era buena. Por eso el set se parte por fuerza de
+etiqueta: 24 fuertes y 15 débiles, y sólo las fuertes cuentan para el titular.
+
+L17. `intent` contra etiqueta real: **2/24 en las fuertes** (22 veces «sin posición», 2
+veces «aprobada»), 1/15 en las débiles. Desglose por causa: con comentario de mantenedor
+acierta 3 de 12; **sin comentario, 0 de 27**. La decisión del proyecto casi nunca está en
+el texto que vemos, y el acierto del 36/37 en el set abierto era el prior de «sin
+posición». Conclusión: `intent` no puede ser pregunta del modelo; la capa nativa
+(`state_reason`) es la única fuente confiable.
+
+L18. Umbral del nodo de alineación medido: **0,50 → 6/10 · 0,60 → 9/10 · 0,70 → 8/10**.
+Se adopta 0,60, que es lo que `PROYECTO.md` §7.5 ya decía. El fallo de `cobra#2232` expone
+un defecto de redacción del nodo: preguntar «¿es una situación específica de quien lo
+pide?» hace que el modelo se ancle en la herramienta del que pide, cuando la pregunta era
+si otros usuarios del proyecto se benefician.
+
+L19. Bug de reporte propio, segundo: las cerradas se anotaban dos veces en la lista de
+corridas y el denominador del desenlace salía en 115 en vez de 76. Corregido; los números
+citados salen de recalcular sobre el reporte guardado, no de esa salida.

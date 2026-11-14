@@ -1,0 +1,53 @@
+{
+  "id": "c-cli-1523",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1523,
+    "url": "https://github.com/httpie/cli/issues/1523"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "weak",
+    "label_note": "closed as not planned with nothing in the text to read"
+  },
+  "issue": {
+    "title": "[macOS] Lag when piping stdout ",
+    "body": "When redirecting httpie output to a pipe, there is a significant lag in the total execution time:  \r\n\r\n1. Without pipe\r\n```\r\ntime http http://localhost:8508/api/v1 > /dev/null\r\nhttp http://localhost:8508/api/v1> /dev/null  0.12s user 0.05s system 59% cpu 0.282 total\r\n```\r\n\r\n2. With pipe\r\n```\r\ntime http http://localhost:8508/api/v1 | cat > /dev/null\r\nhttp http://localhost:8508/api/v1  0.12s user 0.04s system 86% cpu 0.193 total\r\ncat > /dev/null  0.00s user 0.00s system 0% cpu 0.973 total\r\n```\r\n\r\nNote that the lag appears to be happening in the `cat` command after `httpie`, which doesn't make sense and doesn't happen for `curl` or `wget`:\r\n```\r\ntime curl -s http://localhost:8508/api/v1  > /dev/null\r\ncurl -s http://localhost:8508/api/v1 > /dev/null  0.01s user 0.01s system 56% cpu 0.024 total\r\n\r\ntime curl -s http://localhost:8508/api/v1 | cat > /dev/null\r\ncurl -s http://localhost:8508/api/v1  0.00s user 0.01s system 44% cpu 0.035 total\r\ncat > /dev/null  0.00s user 0.00s system 9% cpu 0.034 total\r\n```\r\n\r\n## Checklist\r\n\r\n- [x] I've searched for similar issues.\r\n- [x] I'm using the latest version of HTTPie.\r\n",
+    "comments": [
+      {
+        "author": "gsakkis",
+        "body": "Thanks for looking into it. I tested it again against an [httpbin](https://httpbin.org/) server running on localhost and hitting `http://localhost:8000/get` with `httpie` 3.2.2:\r\n- On MacOS Ventura 13.2.1 (`Darwin Kernel Version 22.3.0`) the piped version is ~4-5x slower\r\n- On Linux (`#35~20.04.1-Ubuntu SMP`) there is not significant difference.\r\n\r\nSo it manifests on macOS only; I'll edit the title.",
+        "author_association": ""
+      },
+      {
+        "author": "gsakkis",
+        "body": "After several hours of debugging, it turns out this is unrelated to potential buffering differences between MacOS and Linux as I had original suspected; it's [this code](https://github.com/httpie/cli/blob/master/httpie/internal/daemons.py#L87-L93). Commenting it out (or just the `process.communicate()` line) does away with the lag. \r\n\r\nThat's as far as I got. I don't have an explanation of why this affects only the piped version; the interactive non-piped version also calls `process.communicate(",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "bug",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

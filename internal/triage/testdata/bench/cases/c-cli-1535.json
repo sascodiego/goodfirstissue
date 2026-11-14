@@ -1,0 +1,42 @@
+{
+  "id": "c-cli-1535",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1535,
+    "url": "https://github.com/httpie/cli/issues/1535"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "weak",
+    "label_note": "closed as not planned with nothing in the text to read"
+  },
+  "issue": {
+    "title": "Does not work with a small easy peasy sample 'http -f  requests.http'",
+    "body": "## Checklist\r\n\r\n- [ X] I've searched for similar issues.\r\n- [ X] I'm using the latest version of HTTPie.\r\n\r\n---\r\n\r\n## Minimal reproduction code and steps\r\n\r\n1. Create a .http file, e.g. file.http\r\n2. Try execute, http -f file.http\r\n\r\n## Current result\r\n\r\nTraceback (most recent call last):\r\n  File \"/opt/homebrew/bin/http\", line 8, in <module>\r\n    sys.exit(main())\r\n             ^^^^^^\r\n  File \"/opt/homebrew/Cellar/httpie/3.2.2_2/libexec/lib/python3.12/site-packages/httpie/__main__.py\", line 8, in main\r\n    from httpie.core import main\r\n  File \"/opt/homebrew/Cellar/httpie/3.2.2_2/libexec/lib/python3.12/site-packages/httpie/core.py\", line 8, in <module>\r\n    import requests\r\n  File \"/opt/homebrew/Cellar/httpie/3.2.2_2/libexec/lib/python3.12/site-packages/requests/__init__.py\", line 147, in <module>\r\n    from . import packages, utils\r\n  File \"/opt/homebrew/Cellar/httpie/3.2.2_2/libexec/lib/python3.12/site-packages/requests/utils.py\", line 24, in <module>\r\n    from . import certs\r\n  File \"/opt/homebrew/Cellar/httpie/3.2.2_2/libexec/lib/python3.12/site-packages/requests/certs.py\", line 14, in <module>\r\n    from certifi import where\r\nModuleNotFoundError: No module named 'certifi'\r\n\r\n## Expected result\r\n\r\nThe current result is malfunction since 'certifi' module is there as well.\r\n\r\n---\r\n\r\n## Debug output\r\n\r\nPlease re-run the command with `--debug`, then copy the entire command & output and paste both below:\r\n\r\n```bash\r\n$ http --debug -f product_requests.http\r\nTraceback (most recent c",
+    "comments": [],
+    "labels": [
+      "bug",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

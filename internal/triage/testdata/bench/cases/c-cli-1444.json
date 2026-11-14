@@ -1,0 +1,42 @@
+{
+  "id": "c-cli-1444",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1444,
+    "url": "https://github.com/httpie/cli/issues/1444"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "weak",
+    "label_note": "closed as not planned with nothing in the text to read"
+  },
+  "issue": {
+    "title": "Investigate increasing Maintainer Productivity with Pull Requests Environments",
+    "body": "I would like to make life easier for HTTPie maintainers by implementing [Uffizzi](https://github.com/UffizziCloud/uffizzi) \r\npreviews. \r\nDisclaimer: I work on [Uffizzi](https://github.com/UffizziCloud/uffizzi) \r\nUffizzi is a Open Source full stack previews engine and is completely free for HTTPie (and all open source projects). This will provide maintainers with previews of their PRs in the cloud, allowing them iterate faster and reduce time to merge.\r\n\r\nTODO:\r\n\r\n- [ ]  Intial POC",
+    "comments": [],
+    "labels": [
+      "enhancement",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

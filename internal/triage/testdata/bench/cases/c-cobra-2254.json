@@ -1,0 +1,45 @@
+{
+  "id": "c-cobra-2254",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2254,
+    "url": "https://github.com/spf13/cobra/issues/2254"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "weak",
+    "label_note": "closed as completed, no merged change, no explanation"
+  },
+  "issue": {
+    "title": "How do you add a shorthand to an option?",
+    "body": "You would like to add a shorthand to an option.\n\nHow would you add a shorthand to an option (e.g., `f` in `--flag`)?",
+    "comments": [
+      {
+        "author": "marckhouzam",
+        "body": "For example\nlocalCmd.Flags().StringVarP(&Source, \"source\", \"s\", \"\", \"Source directory to read from\")\n\nNotice the “s” parameter",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

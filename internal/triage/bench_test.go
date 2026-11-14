@@ -76,6 +76,15 @@ type benchCase struct {
 	ExpectPreGate string           `json:"expect_pre_gate"`
 	// Project names the brief a synthetic case imitates; a real case uses its source.
 	Project string `json:"project,omitempty"`
+	// ClosedLabel marks a case whose verdict is not this repository's reading but the
+	// project's own decision: it closed the issue. Only intent and the outcome are scored.
+	ClosedLabel bool `json:"closed_label,omitempty"`
+	Closure     struct {
+		State         string `json:"state"`
+		StateReason   string `json:"state_reason"`
+		LabelStrength string `json:"label_strength"`
+		LabelNote     string `json:"label_note"`
+	} `json:"closure,omitempty"`
 }
 
 type coverage struct {
@@ -180,7 +189,9 @@ func TestBenchCasesAreComplete(t *testing.T) {
 		if c.Issue.Title == "" {
 			t.Errorf("%s: empty title", c.ID)
 		}
-		if !kinds[c.Expected.Kind] {
+		if c.ClosedLabel && c.Expected.Kind == "" {
+			// A closed case carries no reading of its own: only the project's decision.
+		} else if !kinds[c.Expected.Kind] {
 			t.Errorf("%s: expected kind %q is not one of the five", c.ID, c.Expected.Kind)
 		}
 		if !intents[c.Expected.Intent] {
@@ -190,9 +201,12 @@ func TestBenchCasesAreComplete(t *testing.T) {
 			t.Errorf("%s: expected outcome %q is not one of the four", c.ID, c.Expected.Outcome)
 		}
 		switch c.Provenance {
-		case "real":
+		case "real", "real-closed":
 			if c.Source == nil || c.Source.Repository == "" {
 				t.Errorf("%s: a real case must name its source", c.ID)
+			}
+			if c.Provenance == "real-closed" && c.Closure.LabelStrength == "" {
+				t.Errorf("%s: a closed case must say how strong its label is", c.ID)
 			}
 		case "synthetic":
 			if c.Source != nil {

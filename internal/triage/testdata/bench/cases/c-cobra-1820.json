@@ -1,0 +1,47 @@
+{
+  "id": "c-cobra-1820",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 1820,
+    "url": "https://github.com/spf13/cobra/issues/1820"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "weak",
+    "label_note": "closed as not planned with nothing in the text to read"
+  },
+  "issue": {
+    "title": "Improve CONTRIBUTING.md and update Makefile help message",
+    "body": "Hi 👋🏼 \r\n\r\nThe CONTRIBUTING.md file doesn't mention the requirements (golangci-lint and richgo), we should add those for a smoother experience.\r\n\r\nAnd while we are on that, when I tried to run `make test` the first time, this is what it looked like:\r\n\r\n```shell\r\nMakefile:5: \"could not find golangci-lint in /opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/curl/bin:/opt/homebrew/opt/libiconv/bin:/Users/maxrn/.pyenv/shims:/Users/maxrn/.nvm/versions/node/v16.13.0/bin:/Library/Frameworks/Python.framework/Versions/2.7/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/usr/local/go/bin:/usr/local/MacGPG2/bin:/usr/local/share/dotnet:/opt/X11/bin:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/maxrn/.sdkman/candidates/java/current/bin:/opt/homebrew/opt/llvm/bin:/Users/maxrn/.cabal/bin:/Users/maxrn/.ghcup/bin:/opt/homebrew/opt/curl/bin:/opt/homebrew/opt/libiconv/bin:/Users/maxrn/.nvm/versions/node/v16.13.0/bin:/Library/Frameworks/Python.framework/Versions/2.7/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/maxrn/.cargo/bin:/opt/homebrew/opt/fzf/bin:/Users/maxrn/go/bin:/Users/maxrn/src/sonar-scanner-4.7.0.2747-macosx/bin:/Users/maxrn/.dotfiles/bin:/Users/maxrn/go/bin:/Users/maxrn/src/sonar-scanner-4.7.0.2747-macosx/bin:/Users/maxrn/.dotfiles/bin, run: curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh\"\r\nMakefile:9: \"could not find richgo in /opt/h",
+    "comments": [],
+    "labels": [
+      "kind/documentation"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 1823,
+        "state": "CLOSED",
+        "merged": false
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

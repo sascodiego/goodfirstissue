@@ -1,0 +1,58 @@
+{
+  "id": "c-cli-1195",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1195,
+    "url": "https://github.com/httpie/cli/issues/1195"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "a merged pull request closed it: the work really happened"
+  },
+  "issue": {
+    "title": ":// to use command name for scheme",
+    "body": "## Checklist\r\n\r\n- [x] I've searched for similar feature requests.\r\n\r\n---\r\n\r\n## Enhancement request\r\n\r\n`://` for `use command name for scheme`, like this:\r\n```\r\nhttp ://example.com \r\n--> http://example.com\r\nhttps ://example.com\r\n --> https://example.com\r\n```\r\n\r\n---\r\n\r\n## Problem it solves\r\n\r\nThis will make requesting from clipboard more easy, it's just putting space.\r\n\r\n---\r\n\r\n## Additional information, screenshots, or code examples\r\n\r\n…\r\n",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "@sevenc-nanashi thanks for the suggestion — implemented in `master` 🎉 ",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "enhancement"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 1197,
+        "state": "MERGED",
+        "merged": true
+      },
+      {
+        "number": 232,
+        "state": "MERGED",
+        "merged": true
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

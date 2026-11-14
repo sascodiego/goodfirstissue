@@ -1,0 +1,57 @@
+{
+  "id": "c-cli-1512",
+  "provenance": "real-closed",
+  "trap": "closed_refused_with_reason",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1512,
+    "url": "https://github.com/httpie/cli/issues/1512"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "NOT_PLANNED",
+    "label_strength": "strong",
+    "label_note": "a maintainer explained why it will not be done"
+  },
+  "issue": {
+    "title": "Add support for HTTP/2, HTTP/3, System CA, OCSP Revocation",
+    "body": "Hello HTTPie users,\r\n\r\nI am working on native support for HTTP/2 and HTTP/3 and I reached a point where I need testers.\r\nSo I am opening that issue to invite anyone willing to explore and report anomalies directly here.\r\n\r\n### Option A\r\n\r\nRun with a plugin, but it is a minimalist implementation.\r\n\r\n```shell\r\npip install httpie-next -U\r\n```\r\n\r\n### Option B\r\n\r\nUse my HTTPie branch for a more \"feature\"-complete implementation.\r\n\r\n```shell\r\npip install git+https://github.com/Ousret/HTTPie.git@feature-tryout-niquests -U\r\n```\r\n\r\n### Verify\r\n\r\nRun this, to verify it's working properly.\r\n\r\n```shell\r\n# run twice!\r\nhttps GET www.cloudflare.com/img/nav/globe-lang-select-dark.svg\r\n```\r\n\r\n![image](https://github.com/httpie/cli/assets/9326700/c928d527-a0e0-408c-9e79-09656ffe6c5f)\r\n---\r\n![image](https://github.com/httpie/cli/assets/9326700/f6c68e29-9bb3-4f1e-8617-4179d784d3a4)\r\n---\r\n![image](https://github.com/httpie/cli/assets/9326700/90c21afc-63ed-48b2-878d-cdf5b5e469d1)\r\n---\r\n![image](https://github.com/httpie/cli/assets/9326700/d0d0122f-db5d-4c6e-8daf-b0bccf5aa71a)\r\n",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "@Ousret great stuff, will play with it a report back",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "Ousret",
+        "body": "Now directly available through PyPI.\r\n\r\n`pip install httpie-next -U`",
+        "author_association": ""
+      },
+      {
+        "author": "Ousret",
+        "body": "Update: Since last time, a lot has happened.\r\nSee https://github.com/httpie/cli/pull/1531 if you want to test this in a more mature form.",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

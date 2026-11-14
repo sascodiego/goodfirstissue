@@ -1,0 +1,48 @@
+{
+  "id": "c-cli-1234",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1234,
+    "url": "https://github.com/httpie/cli/issues/1234"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "a merged pull request closed it: the work really happened"
+  },
+  "issue": {
+    "title": "Plugin updates through httpie interface",
+    "body": "Context: https://github.com/httpie/httpie/pull/1228#discussion_r764267920\r\n\r\nThe UI can be one of these:\r\n- `httpie plugins install --upgrade <bla bla>` (I think less intuitive)\r\n- `httpie plugins update <bla bla>`\r\n- `httpie plugins upgrade <bla bla>` (same with apt)\r\n",
+    "comments": [],
+    "labels": [
+      "enhancement",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 1241,
+        "state": "MERGED",
+        "merged": true
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,47 @@
+{
+  "id": "c-cli-1308",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1308,
+    "url": "https://github.com/httpie/cli/issues/1308"
+  },
+  "closure": {
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "label_strength": "strong",
+    "label_note": "a merged pull request closed it: the work really happened"
+  },
+  "issue": {
+    "title": "Invaliding Secure Cookie handling with localhost",
+    "body": "## Checklist\r\n\r\n- [X] I've searched for similar issues.\r\n- [X] I'm using the latest version of HTTPie.\r\n\r\n---\r\n\r\n## Minimal reproduction code and steps\r\nGiven the following tiny Go HTTP server\r\n```GO\r\npackage main\r\n\r\nimport (\r\n\t\"net/http\"\r\n)\r\n\r\nfunc set(rw http.ResponseWriter, _ *http.Request) {\r\n\thttp.SetCookie(rw, &http.Cookie{\r\n\t\tName:     \"session-token\",\r\n\t\tValue:    \"token here\",\r\n\t\tSecure:   true,\r\n\t\tHttpOnly: false,\r\n\t\tSameSite: http.SameSiteNoneMode,\r\n\t})\r\n\trw.Write(nil)\r\n}\r\n\r\nfunc get(rw http.ResponseWriter, req *http.Request) {\r\n\tcookie, err := req.Cookie(\"session-token\")\r\n\tif err != nil {\r\n\t\trw.Write(nil)\r\n\t\treturn\r\n\t}\r\n\trw.Write([]byte(cookie.Value))\r\n}\r\n\r\nfunc main() {\r\n\thttp.HandleFunc(\"/set-cookie\", set)\r\n\thttp.HandleFunc(\"/get-cookie\", get)\r\n\r\n\tpanic(http.ListenAndServe(\":8090\", nil))\r\n}\r\n```\r\nIf you set the cookie to a session with the following command\r\n```bash\r\nhttp --session=./session.json GET http://localhost:8090/set-cookie\r\n```\r\nI would expect to be able to get the cookie value by the next running \r\n```bash\r\nhttp --session=./session.json GET http://localhost:8090/get-cookie\r\n```\r\n\r\nHowever, the cookie is unset in the second request if the Secure flag is set to true.\r\n\r\nAs per the spec; \r\nA cookie with the Secure attribute is only sent to the server with an encrypted request over the HTTPS protocol. It's never sent with unsecured HTTP (***except on localhost***), which means [man-in-the-middle](https://developer.mozilla.org/en-US/docs/Glossary/MitM) att",
+    "comments": [],
+    "labels": [
+      "bug"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 1327,
+        "state": "MERGED",
+        "merged": true
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

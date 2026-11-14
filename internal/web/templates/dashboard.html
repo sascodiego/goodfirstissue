@@ -26,6 +26,7 @@
   </aside>
 
   <main>
+  {{with .Estado}}<p class="flash">{{.}} {{$.Active.Name}}. <span class="meta">El corpus ya está actualizado.</span></p>{{end}}
   {{if not .HasRepo}}
 
     <div class="empty">

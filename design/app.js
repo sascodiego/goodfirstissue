@@ -54,4 +54,25 @@
   });
 
   sync();
+
+  // Un fetch real tarda segundos y el POST espera: el formulario se apaga al enviarse y
+  // dice qué está pasando. Sin este archivo el envío funciona igual, solo que mudo.
+  Array.prototype.forEach.call(
+    document.querySelectorAll("form[data-busy]"),
+    function (form) {
+      form.addEventListener("submit", function () {
+        var button = form.querySelector("button[type=submit]");
+        if (button) {
+          button.disabled = true;
+          button.setAttribute("aria-busy", "true");
+        }
+        Array.prototype.forEach.call(
+          form.querySelectorAll(".busy"),
+          function (note) {
+            note.hidden = false;
+          }
+        );
+      });
+    }
+  );
 })();

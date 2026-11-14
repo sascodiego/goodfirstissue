@@ -73,14 +73,16 @@ func TestDashboardRendersCorpus(t *testing.T) {
 }
 
 // El formulario del rail vive en templates/partials/add-repo.html: si el
-// parcial se desengancha, la pantalla pierde el alta y nada más lo nota.
+// parcial se desengancha, la pantalla pierde el alta y nada más lo nota. Desde la
+// #7 el formulario además postea de verdad, así que el enganche y la acción se
+// afirman juntos: un parcial enganchado pero apagado sería el mismo defecto de antes.
 func TestDashboardRendersAddRepoPartial(t *testing.T) {
 	page := body(t, newHandler(t, corpus(t)), "/?repo=spf13__cobra")
 
 	for _, want := range []string{
-		`<form class="add" aria-label="Agregar repositorio">`,
-		`<input id="nuevo"`,
-		`gfi fetch owner/nombre`,
+		`<form class="add" method="post" action="/repos"`,
+		`<input id="nuevo" name="nuevo"`,
+		`owner/nombre</code> o el enlace completo`,
 	} {
 		if !strings.Contains(page, want) {
 			t.Errorf("el parcial add-repo no está enganchado: falta %q", want)

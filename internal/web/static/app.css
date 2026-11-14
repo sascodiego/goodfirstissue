@@ -748,3 +748,33 @@ tbody tr:last-child td {
     width: 100%;
   }
 }
+
+/* El alta y el refresco esperan a GitHub, y la espera se dice. En cuanto el
+   formulario se envía, el botón se apaga y el aviso aparece: son unos segundos por
+   repositorio, y una pantalla quieta se lee como una pantalla rota. */
+.flash {
+  margin: 0 0 1rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--line-2);
+  border-left: 3px solid var(--accent, var(--fg-2));
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font: 500 12px var(--sans);
+  color: var(--fg);
+}
+.flash .meta {
+  color: var(--muted, var(--fg-3));
+  font-weight: 400;
+}
+.busy {
+  margin: 0.35rem 0 0;
+  font: 500 11.5px var(--sans);
+  color: var(--fg-2);
+}
+/* Los dos botones que disparan un fetch se ven apagados mientras esperan: no hay
+   spinners porque no hay nada que animar, solo una espera que se declara. */
+.add button:disabled,
+.inline button:disabled {
+  opacity: 0.45;
+  cursor: progress;
+}

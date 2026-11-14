@@ -12,6 +12,7 @@ import "net/http"
 func (h *Handler) Routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", h.dashboard)
+	mux.HandleFunc("POST /repos", h.addRepo)
 	mux.Handle("GET /static/", http.StripPrefix("/static/", h.static))
 	return mux
 }

@@ -1,14 +1,15 @@
-{{define "add-repo"}}<form class="add" aria-label="Agregar repositorio">
+{{define "add-repo"}}<form class="add" method="post" action="/repos" data-busy aria-label="Agregar repositorio">
       <label for="nuevo">Agregar repositorio</label>
       <div class="add-row">
-        <input id="nuevo" type="text" placeholder="owner/nombre o enlace de GitHub"
-               autocomplete="off" spellcheck="false" disabled>
-        <button type="button" disabled aria-label="Agregar repositorio">+</button>
+        <input id="nuevo" name="nuevo" type="text" placeholder="owner/nombre o enlace de GitHub"
+               autocomplete="off" spellcheck="false" required>
+        <button type="submit" aria-label="Agregar repositorio">+</button>
       </div>
       <p>
         Acepta <code>owner/nombre</code> o el enlace completo.<br>
-        El alta desde la interfaz todavía no está conectada: por ahora
-        <code>gfi fetch owner/nombre</code>. Trae hasta 150 issues <code>OPEN</code>
-        con sus etiquetas verbatim, sin filtrar por etiqueta.
+        El nombre canónico lo dice GitHub: si el repositorio se renombró, se guarda el
+        nuevo. Trae hasta 150 issues <code>OPEN</code> con sus etiquetas verbatim, sin
+        filtrar por etiqueta.
       </p>
+      <p class="busy" hidden>Trayendo el repositorio. Tarda unos segundos; no cierres.</p>
     </form>{{end}}

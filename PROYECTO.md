@@ -1373,7 +1373,7 @@ PASS  api.nan.builders  alcanzable (HTTP 401)
 ./scripts/preflight.sh              # verifica prerequisitos
 make build                          # go build -o bin/gfi ./cmd/gfi
 make test                           # go test ./...
-make lint                           # go vet ./... && golangci-lint run
+make lint                           # go vet ./... && golangci-lint run && gofmt -l . (falla si hay sucio)
 ./bin/gfi                                   # 0.0.0.0:7117, configurable en server.addr
 make verify                         # build + test + lint, de una
 ```

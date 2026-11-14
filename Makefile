@@ -9,9 +9,13 @@ build:
 test:
 	go test ./...
 
+# gofmt no está entre los linters por defecto de golangci-lint: sin esta compuerta,
+# make lint dice verde con archivos sucios. Solo informa y falla — formatear es
+# decisión de quien escribe el código, nunca del build.
 lint:
 	go vet ./...
 	golangci-lint run
+	@test -z "$$(gofmt -l .)" || { echo "gofmt sucio:"; gofmt -l .; exit 1; }
 
 verify: build test lint design-check
 

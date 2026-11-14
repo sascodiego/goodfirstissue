@@ -143,7 +143,7 @@ Si una tarea parece requerir violar uno de estos, **parar y preguntar**. No es u
 cp config.example.json config.json   # un modelo por acción (PROYECTO.md §17.7)
 make build               # CGO_ENABLED=0, binario estático en bin/gfi (~8 MB)
 make test                # go test ./...
-make lint                # go vet ./... && golangci-lint run
+make lint                # go vet ./... && golangci-lint run && gofmt -l . (falla si hay sucio)
 make verify              # build + test + lint + design-check
 make run                 # go run ./cmd/gfi  (por defecto 0.0.0.0:7117)
 ./bin/gfi -addr :7117    # servidor local

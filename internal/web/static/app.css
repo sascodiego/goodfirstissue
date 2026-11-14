@@ -1,0 +1,115 @@
+/* GoodFirstIssue — hoja base.
+   Sin frameworks, sin build. Solo tokens y lo mínimo para el esqueleto. */
+
+:root {
+  --bg: #0e1116;
+  --bg-raised: #161b22;
+  --line: #232b36;
+  --fg: #e6edf3;
+  --fg-dim: #8b98a9;
+  --accent: #4ec9a5;
+  --accent-dim: #1f6f5c;
+
+  --step-0: clamp(0.95rem, 0.92rem + 0.15vw, 1.05rem);
+  --step-1: clamp(1.15rem, 1.05rem + 0.5vw, 1.4rem);
+  --step-4: clamp(2.4rem, 1.8rem + 3.2vw, 4rem);
+
+  --gap: clamp(1rem, 0.8rem + 1vw, 2rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--gap);
+
+  background:
+    radial-gradient(60rem 40rem at 15% -10%, #17342c 0%, transparent 60%),
+    radial-gradient(50rem 30rem at 110% 110%, #1b2330 0%, transparent 55%),
+    var(--bg);
+
+  color: var(--fg);
+  font: var(--step-0) / 1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell {
+  width: min(46rem, 100%);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: clamp(1.5rem, 1rem + 3vw, 3rem);
+
+  background: color-mix(in oklab, var(--bg-raised) 82%, transparent);
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 35%);
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+h1 {
+  margin: 0;
+  font-size: var(--step-4);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.claim {
+  margin: 0.75rem 0 0;
+  max-width: 30ch;
+  font-size: var(--step-1);
+  color: var(--fg-dim);
+  text-wrap: balance;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  margin-top: 2rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+
+  font-size: 0.85rem;
+  color: var(--fg-dim);
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0.25rem color-mix(in oklab, var(--accent-dim) 45%, transparent);
+}
+
+.next {
+  margin: 1.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--fg-dim);
+}
+
+code {
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 0.35rem;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.85em;
+  color: var(--fg);
+}

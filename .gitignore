@@ -7,3 +7,6 @@ node_modules/
 /bin/
 /var/
 config.json
+
+# Engram: bindings y chunks de sync son estado local de cada máquina
+.engram/

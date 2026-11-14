@@ -1,9 +1,15 @@
 // Package nan speaks the NaN HTTP API.
 //
-// It covers POST /v1/systemone: decision questions answered by Clef.
+// It covers the two endpoints the application needs and nothing else:
 //
-// One request at a time, always (I1): the queue lives here, in the client, so three screens
-// asking for triage still put a single request on the wire without knowing about each other.
+//   - POST /v1/systemone answers decision questions with Clef. One request at a time,
+//     always (I1): the queue lives here, in the client, so three screens asking for triage
+//     still put a single request on the wire without knowing about each other.
+//   - POST /v1/chat/completions runs the allowlisted chat models in parallel. Four
+//     simultaneous requests were measured answering 200, so this path is not serialized.
+//
+// The two regimes are deliberately not the same. Confusing them would either serialize the
+// exploration for nothing or eat 429 during the demo (PROYECTO.md §6.9).
 //
 // This package never decides which model to use: the request carries it, and the
 // constitutional allowlist belongs to internal/config (I13). It also never reads the
@@ -25,8 +31,9 @@ import (
 )
 
 const (
-	// DefaultSystemOneURL is the documented decision endpoint.
+	// DefaultSystemOneURL and DefaultChatURL are the documented endpoints.
 	DefaultSystemOneURL = "https://api.nan.builders/v1/systemone"
+	DefaultChatURL      = "https://api.nan.builders/v1/chat/completions"
 
 	// MinTimeout is the API's documented minimum of 50 s. A shorter client timeout aborts
 	// requests the service is still answering, which looks like a service failure and is
@@ -56,8 +63,9 @@ const (
 // explicit in spirit: a partial Options takes documented defaults, the way config.json
 // takes default values for omitted fields.
 type Options struct {
-	// SystemOneURL defaults to the documented endpoint.
+	// SystemOneURL and ChatURL default to the documented endpoints.
 	SystemOneURL string
+	ChatURL      string
 
 	// APIKey is the NaN key. The caller reads it from the environment (NAN_KEY); this
 	// package never touches the environment and never writes the key to disk.
@@ -80,10 +88,11 @@ type Options struct {
 	Sleep func(ctx context.Context, d time.Duration) error
 }
 
-// Client is safe for concurrent use, and serializes the decision endpoint for every caller
-// that shares it.
+// Client is safe for concurrent use. Both endpoints share it; only /v1/systemone is
+// serialized.
 type Client struct {
 	systemOneURL string
+	chatURL      string
 	apiKey       string
 	maxAttempts  int
 	http         *http.Client
@@ -116,7 +125,11 @@ func New(opts Options) (*Client, error) {
 	if systemOneURL == "" {
 		systemOneURL = DefaultSystemOneURL
 	}
-	for _, u := range []string{systemOneURL} {
+	chatURL := opts.ChatURL
+	if chatURL == "" {
+		chatURL = DefaultChatURL
+	}
+	for _, u := range []string{systemOneURL, chatURL} {
 		if err := validURL(u); err != nil {
 			return nil, cfgErr("%v", err)
 		}
@@ -141,6 +154,7 @@ func New(opts Options) (*Client, error) {
 
 	return &Client{
 		systemOneURL: systemOneURL,
+		chatURL:      chatURL,
 		apiKey:       opts.APIKey,
 		maxAttempts:  attempts,
 		http:         client,

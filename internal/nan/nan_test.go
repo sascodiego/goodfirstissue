@@ -33,6 +33,7 @@ func newTestClient(t *testing.T, h http.HandlerFunc, tweaks ...func(*nan.Options
 	t.Cleanup(srv.Close)
 	opts := nan.Options{
 		SystemOneURL: srv.URL + "/v1/systemone",
+		ChatURL:      srv.URL + "/v1/chat/completions",
 		APIKey:       testKey,
 		Timeout:      nan.MinTimeout,
 		MaxAttempts:  5,

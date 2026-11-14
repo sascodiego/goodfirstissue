@@ -196,6 +196,7 @@ func TestCallerDeadlineIsHonored(t *testing.T) {
 
 	c, err := nan.New(nan.Options{
 		SystemOneURL: srv.URL + "/v1/systemone",
+		ChatURL:      srv.URL + "/v1/chat/completions",
 		APIKey:       testKey,
 		Timeout:      nan.MinTimeout,
 	})

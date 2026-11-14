@@ -95,7 +95,7 @@ Detalle completo en `PROYECTO.md` §10. Resumen ejecutable:
 - **I9** Triaje antes de explore. Nunca se gasta un explore en una issue que no pasó P1.
 - **I10** Nunca se descarta por evidencia insuficiente: se duda en voz alta.
 - **I11** El triaje corre sobre la caché local; la red se usa solo en el fetch.
-- **I12** La unidad de evaluación es el grupo: los duplicados se absorben, no se descartan.
+- **I12** La unidad de evaluación del MVP es la issue sola: agrupar duplicados queda fuera por tiempo (`LIMITES.md` §1). Cuando exista, absorbe y no descarta.
 - **I13** Solo los modelos de la lista constitucional. Un id fuera de ella impide el arranque; la lista es constante en código y la configuración solo elige dentro de ella.
 - **I14** Un resultado guardado declara la pregunta que responde: `(issue, pasada, modelo, versión del prompt, commit)`. Si cambia uno, es otra pregunta y se recalcula. El caché nunca se presenta como fresco.
 

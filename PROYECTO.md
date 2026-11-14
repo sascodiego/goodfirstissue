@@ -6,6 +6,9 @@
 **Reemplaza:** el documento de definición de producto y arquitectura v1.0, en todo lo relativo al **alcance del MVP** (sus secciones 13 y 18). La visión de producto, el análisis del problema y los principios de diseño del original siguen vigentes.
 
 **Historial**
+- **2.21** — el paso de «¿ya fue atendida antes?» más la agrupación de duplicadas se ubica **después** del triaje y **antes** del explore: el triaje juzga la issue sola y deja candidatas. Del paso, el MVP solo conserva la señal determinista de trabajo abierto por issue (§7.1).
+- **2.20** — la agrupación de duplicados **sale del MVP por tiempo** (`LIMITES.md` §1). **I12 se reformula**:
+  la unidad de evaluación es la issue sola. No se reescribe la entrada 2.1: registra lo que se decidió entonces.
 - **2.19** — el proyecto pasa a repositorio propio (`sascodiego/goodfirstissue`), no un fork. Sin remote hacia el repositorio oficial del hackathon: la ruta para abrir ahí una issue o un PR no existe. El historial completo y el material original se conservan; la procedencia queda declarada en `NOTICE.md` (§18).
 - **2.18** — persistencia de análisis (§17.9): registro de repositorios (`gfi repos`) y journal de decisiones append-only con bloqueo `flock`. El caché se indexa por `(issue, pasada, modelo, versión del prompt, commit)` (I14): la segunda corrida de la misma issue pasó de **1m49s a 0,023s**. Medido: SQLite puro Go cuesta 26 módulos y ~5 MB de binario; DuckDB 72 módulos, 34 MB y cgo, así que queda descartado.
 - **2.17** — persistencia y clonado (§17.3): `internal/store` con envoltura de esquema y escritura atómica, `internal/repo` con clonado shallow idempotente, `gfi fetch` y `gfi index`. Corpus real de dos lenguajes. El nombre canónico de GitHub resuelve renombrados (§5.2).
@@ -24,7 +27,7 @@
 - **2.4** — lista constitucional de modelos: solo cinco flash más `clef`; la lista es constante en código y el arranque falla cerrado (I13).
 - **2.3** — primera medición contra la API real: la higiene del `state` (normalizar el título) queda como ley; el benchmark incorpora casos adversariales; se documenta el contrato real de Clef.
 - **2.2** — se fija el stack concreto y los prerequisitos ejecutables (cero módulos de terceros).
-- **2.1** — la agrupación de duplicados entra como primer trabajo de P1: la unidad de evaluación deja de ser la issue y pasa a ser el grupo; nueva invariante I12; se incorpora la marca «ya está siendo trabajada».
+- **2.1** — la agrupación de duplicados entra como primer trabajo de P1: la unidad de evaluación deja de ser la issue y pasa a ser el grupo; nueva invariante I12; se incorpora la marca «ya está siendo trabajada». **Revertida en 2.20 y 2.21.**
 - **2.0** — flujo reestructurado en tres pasadas con embudo de costo; el triaje pasa a ser la primera etapa y corre sin LLM; se incorporan calidad de la issue, líneas de decisión cerradas y abiertas, nodo de alineación y guardarraíl de feature disfrazada de bug.
 - **1.4** — los antecedentes se limitan a literatura académica.
 - **1.3** — la aptitud queda restringida a requisitos técnicos; la promesa 4 de la etiqueta queda en disputa.
@@ -123,7 +126,7 @@ Consecuencia estructural: **P1 no necesita modelo generativo**. Un repositorio c
 | **E0** | Corpus: 1–2 repositorios, clonados e indexados, ~20 issues con su etiqueta original | 1,5 |
 | **E1** | Datos y clon: fetch GraphQL, caché en disco, SHA fijo, inventario | 1,5 |
 | **E2** | Herramientas del agente: catálogo, ejecutor, loop de tool calling (§6) | 1 |
-| **E3** | Agrupación + triaje P1: duplicados y compuertas, sin nodo de alineación (§7) | 2,5 |
+| **E3** | Triaje P1: compuertas y calidad sobre la issue sola, sin nodo de alineación (§7) | 2,5 |
 | **E4** | Explore P2: prompt del agente y esquema de salida, sin `confirmed_defect` (§8) | 1,5 |
 | **E5** | Encaje P3 + `profile_extract`, sin `learning_value` (§9) | 2 |
 | — | UI: embudo y veredicto | 3,5 |
@@ -193,11 +196,10 @@ Es lo único que convierte un desastre técnico de último momento en un pitch d
 repo ─► [E1 datos + clon] ─► [E2 indexar]
                                   │
    ┌──────────────────────────────▼──────────────────────────────────┐
-   │  P1 · AGRUPAR + TRIAJEAR — Clef solo, 0 tokens LLM, 0 código   │
-   │  a) duplicados: duplicate_of · cluster_has_open_work            │
-   │  b) triaje del grupo: kind · intent · self_contained ·          │
-   │     has_evidence · unambiguous · done_defined ·                 │
-   │     reports_defect · evidence_sufficient                        │
+   │  P1 · TRIAJEAR — Clef solo, 0 tokens LLM, 0 código              │
+   │  la issue sola: kind · intent · self_contained · has_evidence · │
+   │  unambiguous · done_defined · reports_defect ·                  │
+   │  evidence_sufficient                                            │
    └───────┬──────────────────────────┬──────────────────────┬───────┘
            │                          │                      │
    evidence_sufficient<0,5      calidad < 0,5           kind=trabajo
@@ -233,6 +235,12 @@ repo ─► [E1 datos + clon] ─► [E2 indexar]
                                         └──────────┴──────────┘
                                                     ▼
    ┌────────────────────────────────────────────────▼───────────────┐
+   │  PASO DIFERIDO — fuera del MVP (§7.1)                          │
+   │  ¿ya fue atendida antes? · agrupar duplicadas                  │
+   │  el MVP conserva: open_prs determinista                        │
+   └────────────────────────────────┬───────────────────────────────┘
+                                    ▼
+   ┌────────────────────────────────────────────────▼───────────────┐
    │  P2 · EXPLORE — LLM + codegraph (solo candidatas)              │
    │  evidencia · requisitos en 3 baldes · lagunas · partes         │
    │  gates: label_honest · confirmed_defect (bugs) · guarda 16k    │
@@ -262,7 +270,7 @@ Ninguna se oculta. `MARCADA` y `CONDICIONADA` aparecen en la lista principal con
 
 ### 2.3. Fuera de alcance
 
-Agrupación de duplicados (diferida: ver §7.1) · construir un indexador propio · workers asíncronos · object storage · clonación en vivo durante la demo · extracción de DOCX · GitHub App · webhooks · análisis incremental · modelo de costes · rúbricas numéricas · marketplace · reputación · ejecución de tests del repositorio · generación de PR. La extracción de PDF y la descarga por URL **sí** están en alcance, con el cómo aún abierto (§17.8.1).
+Agrupación de duplicados y chequeo de candidatas ya atendidas (diferidos: ver §7.1) · construir un indexador propio · workers asíncronos · object storage · clonación en vivo durante la demo · extracción de DOCX · GitHub App · webhooks · análisis incremental · modelo de costes · rúbricas numéricas · marketplace · reputación · ejecución de tests del repositorio · generación de PR. La extracción de PDF y la descarga por URL **sí** están en alcance, con el cómo aún abierto (§17.8.1).
 
 ---
 
@@ -417,7 +425,7 @@ labels[]           texto libre, verbatim, sin normalizar y sin interpretar
 open_prs[]         PRs vinculadas por evento de referencia cruzada, con estado
 ```
 
-Nada más se clasifica por adelantado. Qué tipo de issue es, si la etiqueta dice la verdad y si alcanza la evidencia son preguntas de Clef (§7), no de una regla. `open_prs` es el insumo de `cluster_has_open_work` (§7.1) y sale de la misma consulta GraphQL.
+Nada más se clasifica por adelantado. Qué tipo de issue es, si la etiqueta dice la verdad y si alcanza la evidencia son preguntas de Clef (§7), no de una regla. `open_prs` es el insumo de `cluster_has_open_work` (§7.1), la única señal del paso diferido que el MVP conserva, y sale de la misma consulta GraphQL.
 
 Lo que la regla **no** puede hacer es interpretar un conjunto libre de etiquetas y comentarios. Ahí decide Clef (§7.4).
 
@@ -678,18 +686,24 @@ Lo que sí funciona es el **silencio del pipe**. PiG escribe un evento por líne
 
 ## 7. E3 — Triaje (P1)
 
-**Clef solo. Sin LLM. Sin código.** Dos trabajos en una misma pasada: primero **agrupar duplicados**, después **triajear el grupo**. Una petición por unidad, en serie por la cola (I1).
+**Clef solo. Sin LLM. Sin código.** Un solo trabajo: **triajear la issue sola**. Una petición por unidad, en serie por la cola (I1). Agrupar duplicados y resolver si una candidata ya fue atendida antes van **después** del triaje (§7.1).
 
 La issue se juzga a sí misma **antes** de explorar el código, por una razón de producto y no técnica: *una issue mal armada le hace perder tiempo al contribuyente*. Explorarla primero sería gastar el recurso más caro en el caso que ya sabemos que no sirve.
 
-### 7.1. Agrupación: la unidad de evaluación es el grupo
+### 7.1. Agrupación: fuera del MVP por tiempo
 
-> **Diferida: fuera del MVP.** Agrupar duplicados exige decidir si dos textos describen el
-> mismo problema, y eso es trabajo de un modelo de lenguaje sobre cada par de candidatas:
-> no entra en el tiempo del hackathon. La unidad de evaluación del MVP es **la issue sola**.
-> El costo está asumido: un reporte escueto que duplica a otro completo se juzga por su
-> propio texto y puede quedar marcado como falto de contexto. Lo que sigue en esta sección
-> queda como diseño registrado, no como comportamiento del producto.
+> **Diferida: fuera del MVP.** El triaje deja **candidatas**. Sobre esa lista falta el paso
+> que hoy no existe: saber si una candidata **ya fue atendida antes** —aprobada, trabajada,
+> mergeada o denegada— y **juntar las que están duplicadas**, porque el grupo sabe más que
+> cualquiera de sus partes. Decidir si dos textos describen el mismo problema es trabajo de
+> un modelo de lenguaje sobre cada par de candidatas, y no entra en el tiempo del hackathon.
+> La unidad de evaluación del MVP es **la issue sola**: cada candidata se explora y se encaja
+> por separado. Del chequeo histórico se conserva **una** señal determinista, la PR abierta
+> enlazada (`open_prs`, §5.3). El costo está asumido: un reporte escueto que duplica a otro
+> completo se juzga por su propio texto y puede quedar marcado como falto de contexto. Lo que
+> sigue en esta sección queda como diseño registrado, no como comportamiento del producto.
+
+Este paso va **después** del triaje (§7.2–§7.7) y **antes** del explore (§8): no es parte de P1.
 
 Varias issues reportan el mismo problema. Tratarlas por separado produce tres errores concretos:
 
@@ -697,11 +711,11 @@ Varias issues reportan el mismo problema. Tratarlas por separado produce tres er
 2. **Evidencia desperdiciada.** La reproducción está en una, el entorno en otra, el comentario del mantenedor en una tercera. El grupo sabe más que cualquiera de sus partes.
 3. **El peor consejo posible:** recomendar una issue que **ya tiene una PR abierta**. Eso no se perdona en una demo.
 
-Por eso agrupar va **antes** de juzgar la calidad. Es lo que hace cualquiera que atienda issues: primero mira las relacionadas, después evalúa.
+Por eso el paso va **después** del triaje y **antes** de explorar: la evaluación (§8, §9) se hace sobre el grupo, no sobre las partes. El error 1 no lo evita este paso —la calidad ya se juzgó por issue en P1— y el MVP lo paga a cambio de no agrupar; los errores 2 y 3 sí los resuelve.
 
-#### Candidatas deterministas (coste cero)
+#### Hermanas deterministas (coste cero)
 
-Para cada issue se buscan hasta 8 hermanas potenciales por señal, todo sobre la caché local:
+Para cada candidata se buscan hasta 8 hermanas potenciales por señal, todo sobre la caché local:
 
 | Señal | De dónde sale |
 |---|---|
@@ -726,7 +740,7 @@ Las decisiones por pares se cierran con union-find. Un grupo es un conjunto cone
 
 #### Consecuencias
 
-- **La unidad de triaje es el grupo**, no la issue. El `state` lleva el cuerpo completo del miembro más rico, los títulos de los demás y `report_count`.
+- Cuando exista, **la unidad de evaluación es el grupo**, no la issue. El `state` lleva el cuerpo completo del miembro más rico, los títulos de los demás y `report_count`.
 - Las issues duplicadas no se descartan: se **absorben** (`absorbed`) y quedan apuntando al grupo. Siguen visibles.
 - La recomendación es del grupo, con el reporte más completo como puerta de entrada.
 - `cluster_has_open_work ≥ 0,5` → **MARCADA: ya está siendo trabajada.** Además de Clef hay señal determinista: `state` cerrado con `state_reason=completed`, o una PR abierta enlazada.
@@ -885,8 +899,7 @@ El guardarraíl barato evita gastar explore; el definitivo evita recomendar una 
 | condición | resultado |
 |---|---|
 | `evidence_sufficient` < 0,5 | **DUDA EN VOZ ALTA** — no se descarta (I10) |
-| `duplicate_of` ≠ `none` | **ABSORBIDA** en el grupo; se triajea el grupo |
-| `cluster_has_open_work` ≥ 0,5 | MARCADA: ya está siendo trabajada |
+| `cluster_has_open_work` ≥ 0,5 | MARCADA: ya está siendo trabajada — es la señal del paso diferido (§7.1) que el MVP conserva |
 | `self_contained` < 0,5 | MARCADA: falta contexto para abordarla |
 | `kind=bug` y `has_evidence` < 0,5 | MARCADA: sin reproducción no hay bug |
 | `kind=bug` y `reports_defect` < 0,5 | RECLASIFICADA a feature → §7.5 |
@@ -1103,7 +1116,7 @@ Incumplir cualquiera invalida la demo.
 | **I9** | **Triaje antes de explore.** Nunca se gasta un explore en una issue que no pasó la compuerta de P1. |
 | **I10** | **Nunca se descarta por evidencia insuficiente.** Se duda en voz alta. Una issue mal armada se excluye diciendo qué le falta; una issue que no se puede clasificar se mantiene con la duda. |
 | **I11** | **El triaje corre sobre la caché local.** La red se usa solo en el fetch de §5.2. |
-| **I12** | **La unidad de evaluación es el grupo.** Los duplicados se absorben, no se descartan; la recomendación y el triaje son del grupo. |
+| **I12** | **La unidad de evaluación del MVP es la issue sola.** La agrupación de duplicados queda fuera del MVP por tiempo (`LIMITES.md` §1): comparar pares con un modelo no entra en el reloj. Cuando exista, los duplicados se absorberán en un grupo y no se descartarán. |
 | **I13** | **Solo los modelos de la lista constitucional.** `clef` más cinco flash. Un id fuera de ella impide el arranque; la lista es constante en código y `NAN_CHAT_MODEL` solo elige dentro de ella. |
 | **I14** | **Un resultado guardado declara la pregunta que responde.** El caché se indexa por `(issue, pasada, modelo, versión del prompt, commit)`. Si cambia cualquiera de los cinco, es otra pregunta y se recalcula. Nunca se reutiliza un veredicto ajeno ni se presenta como fresco. |
 
@@ -1167,8 +1180,8 @@ Chequeos por etapa, ejecutables:
 
 - **E1:** el SHA registrado coincide con `git rev-parse HEAD`; el fetch de 30 issues consume **1** request.
 - **E2:** para cada issue del corpus, al menos un archivo realmente implicado aparece en `entryPoints` o `relatedFiles`; se mide el tiempo por consulta.
-- **E3:** las 30 issues del corpus agrupadas y triajeadas en menos de 120 s, con cero llamadas al modelo de chat.
-- **Agrupación:** sobre el corpus, con los duplicados marcados a mano, medir precisión y recall de los grupos. Un falso positivo fusiona dos oportunidades distintas; un falso negativo recomienda trabajo ya hecho. Se reportan los dos.
+- **E3:** las 30 issues del corpus triajeadas en menos de 120 s, con cero llamadas al modelo de chat.
+- **Diferida (§7.1) — Agrupación:** sobre el corpus, con los duplicados marcados a mano, medir precisión y recall de los grupos. Un falso positivo fusiona dos oportunidades distintas; un falso negativo recomienda trabajo ya hecho. Se reportan los dos. Método registrado, no chequeo del MVP.
 - **E4:** toda ruta en `files` existe en ese SHA; ningún campo numérico en el JSON; ninguna parte sin archivos.
 - **E5:** misma entrada dos veces → misma decisión; fallo simulado → `undecided`.
 - **I1:** 10 llamadas disparadas en paralelo → cero `429` y todas respondidas.
@@ -1186,7 +1199,7 @@ Chequeos por etapa, ejecutables:
 | Normalizar el título antes de preguntar (`title_normalized`) | **adoptada** | medido: el prefijo `Bug:` hace que Clef clasifique una feature como bug con 0,91; limpiarlo la clasifica bien con 0,76–0,80 y **no** degrada los casos honestos (0,93 → 0,94) |
 | `declared_kind` como atributo reportado, no como señal | **adoptada** | el prefijo del autor es una afirmación, no evidencia: mismo patrón que `label_honest` |
 | El benchmark incluye disfraces deliberados | **adoptada** | sin casos adversariales el benchmark certifica una compuerta que falla donde importa |
-| **Agrupar duplicados antes de triajear** | **adoptada** | un duplicado escueto parece una issue mal armada; sin agrupar se descarta una oportunidad real, y se puede recomendar algo que ya tiene PR abierta |
+| **Agrupar duplicados antes de triajear** | **adoptada** | un duplicado escueto parece una issue mal armada; sin agrupar se descarta una oportunidad real, y se puede recomendar algo que ya tiene PR abierta. **Descartada en 2.21:** el paso va después del triaje y queda fuera del MVP |
 | Triaje antes de explore | **adoptada** | no se gasta el recurso más caro en una issue que no es trabajo (I9) |
 | Triaje sin LLM, solo Clef | **adoptada** | el insumo es texto y preguntas tipadas: ~45 s y 0 tokens para 30 issues |
 | Calidad de la issue evaluada en P1 | **adoptada** | una issue mal armada le hace perder tiempo al contribuyente |
@@ -1244,12 +1257,11 @@ Guion:
 PRE-COMPUTADO  3 repos, 30 issues triajeadas, candidatas exploradas.
 EN VIVO (~2 s por paso)
   1. El embudo de S1 completo, con los números.
-  2. Un grupo de duplicados: «lo reportaron 6 veces en dos semanas y nadie lo arregló».
-  3. Una issue con PR abierta, marcada como ya tomada.
-  4. Una issue MARCADA y por qué (con la cita del proyecto).
-  5. Una `good first issue` que resulta no serlo, con la evidencia.
-  6. Pegar un CV → veredicto. Pegar otro CV → otro veredicto. Misma evidencia.
-  7. Cortar la red → la app muestra `undecided`. «No decidí» es parte del producto.
+  2. Una issue con PR abierta, marcada como ya tomada.
+  3. Una issue MARCADA y por qué (con la cita del proyecto).
+  4. Una `good first issue` que resulta no serlo, con la evidencia.
+  5. Pegar un CV → veredicto. Pegar otro CV → otro veredicto. Misma evidencia.
+  6. Cortar la red → la app muestra `undecided`. «No decidí» es parte del producto.
 CIERRE         La tabla de §12 en pantalla: Clef contra reglas y contra LLM directo.
 ```
 
@@ -1260,8 +1272,7 @@ La pantalla que gana el jurado no es la del veredicto: es **S1**. El embudo se e
 ## 16. Definición de terminado
 
 - [ ] 3 repositorios en SHA fijo, indexados, 30 issues con su etiqueta original preservada por separado.
-- [ ] Las 30 issues tienen `IssueTriage` válido; agrupación + triaje completo en menos de 120 s sin modelo de chat.
-- [ ] Al menos un grupo con 3 o más miembros, demostrable, con el reporte más rico como puerta de entrada.
+- [ ] Las 30 issues tienen `IssueTriage` válido; triaje completo en menos de 120 s sin modelo de chat.
 - [ ] Al menos un caso demostrable de issue MARCADA por `cluster_has_open_work`.
 - [ ] Al menos un caso demostrable de feature reclasificada por `reports_defect`.
 - [ ] Al menos un caso demostrable de `alignment` = `out_of_scope` o `divergent`, con la cita del proyecto.
@@ -1328,7 +1339,7 @@ internal/pig/            ✅ wrapper del agente: PIG_HOME propio, JSONL, watchdo
 internal/explore/        ✅ contrato de salida embebido, parseo estricto, validación contra la traza
 internal/nan/            ✅ cliente HTTP: /v1/systemone con cola 1-en-vuelo, /v1/chat/completions en paralelo
 internal/profile/        ✅ CV pegado → documento con evidencia y supuestos explícitos, caché por pregunta
-internal/triage/         P1: agrupación por union-find, preguntas, política §7.7
+internal/triage/         P1: preguntas, política §7.7 — agrupación y estado histórico diferidos (§7.1)
 internal/fit/            P3: estado por parte, preguntas, política §9.3
 internal/store/          ✅ JSON atómico, envoltura de esquema, snapshots, registro de repos, journal de decisiones
 internal/repo/           ✅ clonado shallow idempotente y SHA de HEAD
@@ -1423,7 +1434,7 @@ Para P2 se elige una de las cinco flash con salida JSON estricta. **Pendiente: c
 
 | Acción | Qué hace | Modelo |
 |---|---|---|
-| `triage` | P1: agrupación, duplicados, compuertas | `clef` — fijo |
+| `triage` | P1: compuertas y calidad sobre la issue sola | `clef` — fijo |
 | `alignment` | nodo de alineación (§7.5) | `clef` — fijo |
 | `label_honest` | P2: fact-check de la etiqueta (§8.3) | `clef` — fijo |
 | `confirmed_defect` | P2: verificación del bug (§8.3) | `clef` — fijo |

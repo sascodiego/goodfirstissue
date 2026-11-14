@@ -143,8 +143,10 @@ Cuatro desenlaces, iguales en las dos familias (`--state-*` de arriba):
 
 No existe un quinto estado para «descartada». **I10** prohíbe descartar por
 evidencia insuficiente: ese caso aparece como `uncertain` dentro de la etapa
-viva, con su probabilidad. Las duplicadas tampoco se descartan (**I12**): se
-absorben en un grupo, y el grupo es la unidad de evaluación.
+viva, con su probabilidad. Las duplicadas tampoco se descartan (**I12**). En el
+MVP la unidad de evaluación es la issue sola: agrupar quedó fuera por tiempo
+(`LIMITES.md` §1). Cuando exista, corre después del triaje y la evaluación se
+hace sobre el grupo.
 
 ## Cómo se elige
 

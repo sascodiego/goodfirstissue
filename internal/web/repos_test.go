@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/sascodiego/nan-hackathon-clef/internal/ghdata"
 	"github.com/sascodiego/nan-hackathon-clef/internal/store"
@@ -246,5 +247,228 @@ func TestAddRepoStoresARepositoryWithNoOpenIssues(t *testing.T) {
 	}
 	if !st.HasSnapshot("tiny__repo") {
 		t.Error("the snapshot was not saved")
+	}
+}
+
+// S10: «Refrescar» vuelve a consultar de verdad. Antes era un enlace a la misma URL, así
+// que el pin y la fecha nunca cambiaban; ahora el registro los mueve y la pantalla los
+// muestra.
+func TestRefreshMovesThePinAndTheFetchTime(t *testing.T) {
+	st, err := store.New(t.TempDir())
+	if err != nil {
+		t.Fatalf("store.New() error = %v", err)
+	}
+	old := time.Date(2026, 1, 2, 3, 4, 0, 0, time.UTC)
+	if err := st.SaveRepo(store.RepoEntry{
+		Name:      "spf13/cobra",
+		Key:       "spf13__cobra",
+		CommitSHA: "111111111111",
+		TotalOpen: 40,
+		Issues:    40,
+		FetchedAt: old,
+	}); err != nil {
+		t.Fatalf("SaveRepo() error = %v", err)
+	}
+
+	fresh := snapshotOfRepo("spf13/cobra", 5)
+	fresh.Repository.CommitSHA = "999999999999"
+	f := &fakeFetcher{snap: fresh}
+	h := newRepoHandler(t, st, f)
+
+	rec := post(t, h, "/repos/spf13__cobra/refresh", nil)
+	if rec.Code != http.StatusSeeOther {
+		t.Fatalf("status = %d, want 303; body = %q", rec.Code, rec.Body.String())
+	}
+	if got := rec.Header().Get("Location"); got != "/?repo=spf13__cobra&estado=refresco" {
+		t.Errorf("Location = %q", got)
+	}
+
+	entry, ok, err := st.Repo("spf13__cobra")
+	if err != nil || !ok {
+		t.Fatalf("Repo() = %+v, %v, %v", entry, ok, err)
+	}
+	if entry.CommitSHA != "999999999999" {
+		t.Errorf("CommitSHA = %q, want the pin moved", entry.CommitSHA)
+	}
+	if !entry.FetchedAt.After(old) {
+		t.Errorf("FetchedAt = %v, want it after %v", entry.FetchedAt, old)
+	}
+	if entry.Issues != 5 || entry.TotalOpen != 5 {
+		t.Errorf("entry = %+v, want the new counts", entry)
+	}
+	if len(f.calls) != 1 {
+		t.Errorf("fetcher calls = %v, want exactly one", f.calls)
+	}
+
+	// Y la pantalla lo muestra: el pin del rail es el nuevo.
+	page := body(t, h, "/?repo=spf13__cobra")
+	if !strings.Contains(page, "999999999999") {
+		t.Error("the rail does not show the new pin")
+	}
+	if strings.Contains(page, "111111111111") {
+		t.Error("the rail still shows the old pin")
+	}
+}
+
+// Refrescar algo que no está en el corpus sería un alta disfrazada: 404 y a otra cosa.
+func TestRefreshAnswersNotFoundForARepositoryOutsideTheCorpus(t *testing.T) {
+	st, err := store.New(t.TempDir())
+	if err != nil {
+		t.Fatalf("store.New() error = %v", err)
+	}
+	f := &fakeFetcher{snap: snapshotOfRepo("nope/nope", 1)}
+	h := newRepoHandler(t, st, f)
+
+	rec := post(t, h, "/repos/nope__nope/refresh", nil)
+	if rec.Code != http.StatusNotFound {
+		t.Fatalf("status = %d, want 404; body = %q", rec.Code, rec.Body.String())
+	}
+	if len(f.calls) != 0 {
+		t.Errorf("the fetcher was called for an unknown repository: %v", f.calls)
+	}
+}
+
+// Un repositorio que se renombró mientras estaba en el corpus se refresca por su nombre
+// canónico y queda bajo la clave nueva, no duplicado.
+func TestRefreshFollowsARenameAndKeepsOneEntry(t *testing.T) {
+	st, err := store.New(t.TempDir())
+	if err != nil {
+		t.Fatalf("store.New() error = %v", err)
+	}
+	if err := st.SaveRepo(store.RepoEntry{
+		Name: "httpie/httpie", Key: "httpie__httpie", CommitSHA: "111111111111",
+	}); err != nil {
+		t.Fatalf("SaveRepo() error = %v", err)
+	}
+	h := newRepoHandler(t, st, &fakeFetcher{snap: snapshotOfRepo("httpie/cli", 2)})
+
+	rec := post(t, h, "/repos/httpie__httpie/refresh", nil)
+	if rec.Code != http.StatusSeeOther {
+		t.Fatalf("status = %d, want 303; body = %q", rec.Code, rec.Body.String())
+	}
+	if got := rec.Header().Get("Location"); got != "/?repo=httpie__cli&estado=refresco" {
+		t.Errorf("Location = %q, want the new key", got)
+	}
+	if canonical, ok := st.Alias("httpie/httpie"); !ok || canonical != "httpie/cli" {
+		t.Errorf("alias = %q, %v", canonical, ok)
+	}
+}
+
+// S1, S3, S11: los dos controles del rail hacen lo que dicen. El formulario del alta queda
+// habilitado y apunta al POST; «Refrescar» deja de ser un enlace a la misma URL y pasa a
+// ser un botón que vuelve a consultar.
+func TestDashboardOffersTheRealControls(t *testing.T) {
+	st := corpus(t)
+	h := newRepoHandler(t, st, &fakeFetcher{snap: snapshotOfRepo("spf13/cobra", 1)})
+
+	page := body(t, h, "/?repo=spf13__cobra")
+
+	form := between(t, page, `<form class="add"`, "</form>")
+	if form == "" {
+		t.Fatal("the rail has no add form")
+	}
+	if !strings.Contains(form, `action="/repos"`) || !strings.Contains(form, `method="post"`) {
+		t.Errorf("the add form does not post to /repos: %s", form)
+	}
+	if !strings.Contains(form, `name="nuevo"`) {
+		t.Error("the add form has no named field")
+	}
+	if strings.Contains(form, "disabled") {
+		t.Errorf("the add form is still disabled: %s", form)
+	}
+	if !strings.Contains(page, `action="/repos/spf13__cobra/refresh"`) {
+		t.Error("Refrescar does not post to the refresh route")
+	}
+	if strings.Contains(page, `<a class="btn" href`) {
+		t.Error("Refrescar is still a link to the same URL")
+	}
+}
+
+// S1: la pantalla confirma lo que pasó. El estado viaja como código de una lista blanca, así
+// que un valor inventado en la URL no se convierte en texto de la página.
+func TestDashboardConfirmsTheAddAndTheRefresh(t *testing.T) {
+	st := corpus(t)
+	h := newRepoHandler(t, st, &fakeFetcher{snap: snapshotOfRepo("spf13/cobra", 1)})
+
+	if page := body(t, h, "/?repo=spf13__cobra&estado=alta"); !strings.Contains(page, "Se agregó") {
+		t.Error("the page does not confirm the add")
+	}
+	if page := body(t, h, "/?repo=spf13__cobra&estado=refresco"); !strings.Contains(page, "Refrescado") {
+		t.Error("the page does not confirm the refresh")
+	}
+	if page := body(t, h, "/?repo=spf13__cobra&estado=<script>alert(1)</script>"); strings.Contains(page, "<script>alert") {
+		t.Error("the estado parameter reached the page")
+	}
+}
+
+// between devuelve el trozo de page que va desde open hasta close, o "" si no están.
+func between(t *testing.T, page, open, close string) string {
+	t.Helper()
+	start := strings.Index(page, open)
+	if start < 0 {
+		return ""
+	}
+	end := strings.Index(page[start:], close)
+	if end < 0 {
+		return ""
+	}
+	return page[start : start+end+len(close)]
+}
+
+// El primer endpoint que cambia estado no puede aceptar un POST de otra página: el binario
+// escucha en 0.0.0.0 por defecto, así que un sitio cualquiera abierto en el mismo navegador
+// podría escribir en el store. Se corta por el origen, sin token y sin dependencias.
+func TestPostRejectsCrossSiteRequests(t *testing.T) {
+	for _, c := range []struct {
+		name   string
+		header map[string]string
+	}{
+		{"declared cross-site", map[string]string{"Sec-Fetch-Site": "cross-site"}},
+		{"foreign origin", map[string]string{"Origin": "https://evil.example"}},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			st, err := store.New(t.TempDir())
+			if err != nil {
+				t.Fatalf("store.New() error = %v", err)
+			}
+			f := &fakeFetcher{snap: snapshotOfRepo("spf13/cobra", 1)}
+			h := newRepoHandler(t, st, f)
+
+			req := httptest.NewRequest(http.MethodPost, "/repos",
+				strings.NewReader(url.Values{"nuevo": {"spf13/cobra"}}.Encode()))
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			for k, v := range c.header {
+				req.Header.Set(k, v)
+			}
+			rec := httptest.NewRecorder()
+			h.Routes().ServeHTTP(rec, req)
+
+			if rec.Code != http.StatusForbidden {
+				t.Fatalf("status = %d, want 403; body = %q", rec.Code, rec.Body.String())
+			}
+			if len(f.calls) != 0 {
+				t.Errorf("the fetch ran for a cross-site request: %v", f.calls)
+			}
+			if repos, _ := st.Repos(); len(repos) != 0 {
+				t.Errorf("repos = %v, want an empty registry", repos)
+			}
+		})
+	}
+
+	// El control negativo: el mismo POST desde la página propia tiene que pasar.
+	st, err := store.New(t.TempDir())
+	if err != nil {
+		t.Fatalf("store.New() error = %v", err)
+	}
+	h := newRepoHandler(t, st, &fakeFetcher{snap: snapshotOfRepo("spf13/cobra", 1)})
+	req := httptest.NewRequest(http.MethodPost, "/repos",
+		strings.NewReader(url.Values{"nuevo": {"spf13/cobra"}}.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Sec-Fetch-Site", "same-origin")
+	req.Header.Set("Origin", "http://"+req.Host)
+	rec := httptest.NewRecorder()
+	h.Routes().ServeHTTP(rec, req)
+	if rec.Code != http.StatusSeeOther {
+		t.Fatalf("same-origin status = %d, want 303; body = %q", rec.Code, rec.Body.String())
 	}
 }

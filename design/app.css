@@ -752,6 +752,9 @@ tbody tr:last-child td {
 /* El alta y el refresco esperan a GitHub, y la espera se dice. En cuanto el
    formulario se envía, el botón se apaga y el aviso aparece: son unos segundos por
    repositorio, y una pantalla quieta se lee como una pantalla rota. */
+.inline {
+  display: inline;
+}
 .flash {
   margin: 0 0 1rem;
   padding: 0.55rem 0.8rem;

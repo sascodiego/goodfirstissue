@@ -22,6 +22,9 @@ const maxRepoInput = 200
 // segundos, así que este es el único lugar de la app donde un pedido espera a GitHub; el
 // resto de las pantallas se arma con lo que ya está en el store.
 func (h *Handler) addRepo(w http.ResponseWriter, r *http.Request) {
+	if rejectCrossSite(w, r) {
+		return
+	}
 	if h.store == nil || h.fetcher == nil {
 		http.Error(w, "el alta no está disponible: este binario arrancó sin store o sin GitHub",
 			http.StatusServiceUnavailable)
@@ -41,6 +44,52 @@ func (h *Handler) addRepo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	redirectToRepo(w, r, key, "alta")
+}
+
+// refreshRepo vuelve a consultar GitHub para un repositorio que ya está en el corpus. Es
+// lo que «Refrescar» hacía de mentira: antes era un enlace a la misma URL.
+func (h *Handler) refreshRepo(w http.ResponseWriter, r *http.Request) {
+	if rejectCrossSite(w, r) {
+		return
+	}
+	key := r.PathValue("repo")
+	if h.store == nil || h.fetcher == nil {
+		http.Error(w, "el refresco no está disponible: este binario arrancó sin store o sin GitHub",
+			http.StatusServiceUnavailable)
+		return
+	}
+
+	entry, ok, err := h.store.Repo(key)
+	if err != nil {
+		slog.Error("leer el registro", "key", key, "err", err)
+		http.Error(w, "no se pudo leer el corpus", http.StatusInternalServerError)
+		return
+	}
+	if !ok {
+		// El registro es la autoridad sobre qué existe en el corpus: refrescar algo que no
+		// está sería un alta disfrazada, y el alta tiene su propio formulario.
+		http.Error(w, "ese repositorio no está en el corpus; agregalo primero", http.StatusNotFound)
+		return
+	}
+
+	owner, name, err := splitCanonical(entry.Name)
+	if err != nil {
+		// El nombre guardado es el canónico que devolvió GitHub, así que esto no puede pasar
+		// sin que el store esté roto. Decirlo es mejor que refrescar cualquier cosa.
+		slog.Error("nombre canónico ilegible en el registro", "key", key, "name", entry.Name, "err", err)
+		http.Error(w, "el registro tiene un nombre que no se puede leer; volvé a traerlo con gfi fetch",
+			http.StatusInternalServerError)
+		return
+	}
+
+	canonical, err := h.fetchAndStore(r.Context(), owner, name)
+	if err != nil {
+		h.failFetch(w, entry.Name, err)
+		return
+	}
+	// Un repositorio renombrado cambia de clave: la redirección sigue al nombre nuevo en vez
+	// de dejar al usuario mirando una clave que ya no existe.
+	redirectToRepo(w, r, canonical, "refresco")
 }
 
 // fetchAndStore trae un repositorio y lo registra. Devuelve la clave canónica del store.
@@ -109,6 +158,33 @@ func (h *Handler) failFetch(w http.ResponseWriter, target string, err error) {
 func redirectToRepo(w http.ResponseWriter, r *http.Request, key, estado string) {
 	target := "/?repo=" + url.QueryEscape(key) + "&estado=" + url.QueryEscape(estado)
 	http.Redirect(w, r, target, http.StatusSeeOther)
+}
+
+// rejectCrossSite corta el POST que viene de otra página, y devuelve true cuando ya
+// respondió.
+//
+// El binario escucha en 0.0.0.0:8080 por defecto, así que «es local» no es un argumento: un
+// sitio cualquiera abierto en el mismo navegador puede postear a localhost y escribir en el
+// store. Se mira lo que el navegador dice del origen (Sec-Fetch-Site), y si no lo dice se
+// compara Origin con Host. Es la defensa mínima y suficiente para un endpoint que no tiene
+// sesión que robar: no hay token porque no hay nada que el token proteja de más.
+func rejectCrossSite(w http.ResponseWriter, r *http.Request) bool {
+	if r.Header.Get("Sec-Fetch-Site") == "cross-site" {
+		http.Error(w, "este formulario solo acepta pedidos de la propia página",
+			http.StatusForbidden)
+		return true
+	}
+	origin := r.Header.Get("Origin")
+	if origin == "" {
+		return false
+	}
+	u, err := url.Parse(origin)
+	if err != nil || !strings.EqualFold(u.Host, r.Host) {
+		http.Error(w, "este formulario solo acepta pedidos de la propia página",
+			http.StatusForbidden)
+		return true
+	}
+	return false
 }
 
 // parseRepoInput acepta las dos formas que promete el formulario: `owner/nombre` o el

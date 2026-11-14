@@ -186,7 +186,10 @@ func TestBenchCasesAreComplete(t *testing.T) {
 
 	kinds := map[string]bool{"bug": true, "feature": true, "question": true, "spam": true, "other": true}
 	intents := map[string]bool{"approved": true, "undecided": true, "refused": true}
-	outcomes := map[string]bool{"CANDIDATA": true, "CONDICIONADA": true, "MARCADA": true, "no_verdict": true}
+	outcomes := map[string]bool{
+		"CANDIDATA": true, "CONDICIONADA": true, "MARCADA": true,
+		"DUDA": true, "SEGUNDA_RONDA": true,
+	}
 	seen := map[string]bool{}
 
 	for _, c := range cases {

@@ -75,7 +75,7 @@ Two consequences of that boundary:
 | `dossier` | The text sent as the state under judgement. A string, nothing else. |
 | `evidence` | What P2 produces. Not a dossier. |
 | `outcome` | `CANDIDATA`, `CONDICIONADA`, or `MARCADA`. |
-| `abstention` | `no_verdict`, `uncertain`, `insufficient_information`, `undecided`. |
+| `DUDA` | The outcome of an issue the pass could not classify. It is shown to the user as such, never silently folded into another outcome. |
 
 ## Layers, and the deterministic-first rule
 
@@ -195,25 +195,37 @@ Threshold `0.6`, measured: 9 of 10 with 0.6 against 6 of 10 with 0.5.
 
 ## Outcomes
 
-| Outcome | Meaning |
-|---|---|
-| `CANDIDATA` | worth exploring, and it can be recommended |
-| `CONDICIONADA` | an opportunity, but an external condition is missing; it arrives with the condition named |
-| `MARCADA` | not recommended, with the reason and the evidence in view |
+| Outcome | Meaning | What the user sees |
+|---|---|---|
+| `CANDIDATA` | worth exploring, and it can be recommended | the issue, with its probability |
+| `CONDICIONADA` | an opportunity, but an external condition is missing | the condition, named |
+| `MARCADA` | not recommended, with the reason | the reason and the evidence |
+| `DUDA` | **could not be classified** | the mark DUDA and what is missing to decide |
 
-No outcome is hidden. `MARCADA` and `CONDICIONADA` appear in the main list with their
-marker. No outcome is ever shown without its probability.
+**`DUDA` is a first-class outcome, not a hidden abstention.** An issue the pass cannot
+classify is shown to the user as a doubt, never quietly promoted to candidate and never
+silently dropped (I10). It is the answer when `evidence_sufficient` falls below the
+threshold: not "we think it is bad", but "we cannot say, and here is what we would need".
 
-## The four abstentions
+The measurement backs the decision to surface it: of the 17 issues the pass labelled DUDA on
+the blind sample, 16 had in fact been rejected by their project, and they were not subtle
+cases — they were one-word issues and bare installation commands. A doubt that is right nine
+times out of ten is worth a category of its own.
 
-Four different problems with four different fixes. They are never collapsed into one.
+No outcome is hidden. All four appear in the main list with their marker. No outcome is ever
+shown without its probability.
 
-| Abstention | Threshold | Emitted by | What it means |
-|---|---|---|---|
-| `no_verdict` | `evidence_sufficient < 0.5` | P1 | the judge answered "not enough"; doubt out loud (I10) |
-| `uncertain` | any answer below `0.45` that the chain needed | P1, P2, P3 | no verdict is emitted |
-| `insufficient_information` | a required input is absent | P3 | the reason is the **profile**, not the opportunity; P1 does not emit it |
-| `undecided` | the request failed: timeout, retries exhausted, 4xx, 5xx | P1, P2, P3 | the application does not decide (I2) |
+### The remaining abstentions
+
+`DUDA` is what the user sees. Behind it there are still four different problems, with four
+different fixes, and the interface distinguishes them:
+
+| Abstention | Cause | Stage |
+|---|---|---|
+| the judge answered "not enough" | `evidence_sufficient < 0.5` | P1, shown as `DUDA` |
+| `uncertain` | an answer below `0.45` that the chain needed | P1, P2, P3 |
+| `insufficient_information` | a required input is absent: the profile | P3 |
+| `undecided` | the request failed: timeout, retries exhausted, 4xx, 5xx (I2) | P1, P2, P3 |
 
 ## Rules that are not negotiable
 

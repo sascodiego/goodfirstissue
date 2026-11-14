@@ -32,7 +32,7 @@
     "done_defined": false,
     "reports_defect": false,
     "evidence_sufficient": false,
-    "outcome": "no_verdict"
+    "outcome": "DUDA"
   },
   "expect_pre_gate": ""
 }

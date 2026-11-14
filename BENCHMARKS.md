@@ -97,7 +97,7 @@ rechazada, PR abierta, sin cuerpo) y aciertan 12/12, porque el motivo nativo *es
 | `CANDIDATA` | **167** | 16 | 183 | **91 %** |
 | `CONDICIONADA` | 8 | 1 | 9 | 89 % |
 | `DERIVADAS` (preguntas, segunda ronda) | 12 | 1 | 13 | 92 % |
-| `DUDAS` (`evidence_sufficient` < 0,5) | 1 | **16** | 17 | 6 % |
+| `DUDA` (`evidence_sufficient` < 0,5) | 1 | **16** | 17 | 6 % |
 | `MARCADA` | 0 | 0 | 0 | — |
 
 - **Precisión de `CANDIDATA`: 91 %.** De cada diez issues que el triaje recomienda, nueve
@@ -105,7 +105,7 @@ rechazada, PR abierta, sin cuerpo) y aciertan 12/12, porque el motivo nativo *es
 - **Recall sobre trabajo real: 89 %** (167 de 188).
 - **`MARCADA` no se emite nunca en este set**, porque marcar depende de la intención, que se
   movió a la segunda fase. Es el corte documentado en `LIMITES.md`, no un error de medición.
-- **`DUDAS` es, de hecho, una buena señal de descarte**: 16 de las 17 dudas eran issues que el
+- **`DUDA` es, de hecho, una buena señal de descarte**: 16 de las 17 dudas eran issues que el
   proyecto rechazó. Lo que está mal es la etiqueta, no el juicio: un 94 % de esas dudas son
   basura del buzón (`brew install`, `Xxx`, correos sueltos).
 

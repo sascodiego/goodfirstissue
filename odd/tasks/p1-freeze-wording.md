@@ -207,3 +207,13 @@ con 0,5.
 L30. El pase queda con un expediente, una petición y una pre-compuerta determinista. `MARCADA` no
 es terminal: entra a la cola de revisión y una ronda posterior con mejor material puede
 revertirla.
+
+L31. **`DUDA` es un desenlace propio y visible.** No se esconde dentro de otra categoría ni se
+promueve en silencio: una issue que el pase no puede clasificar se le muestra al usuario como
+DUDA, con lo que falta para decidir. La medición lo respalda: de 17 dudas en la muestra ciega,
+16 habían sido rechazadas por su proyecto. `no_verdict` queda como el nombre interno de la
+abstención que produce ese desenlace.
+
+L32. El informe de la medición queda por escrito en `INFORME-TRIAJE.md`, con la matriz por clase
+emitida, la separación entre resolución determinista y modelo, lo que se puede afirmar y lo que
+no.

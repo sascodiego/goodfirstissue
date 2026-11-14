@@ -104,6 +104,8 @@ Este repositorio **no es un fork**: el material de arriba es una copia del repos
 
 ## Límites y mediciones
 
+- [`INFORME-TRIAJE.md`](INFORME-TRIAJE.md) — el resultado de pasar la muestra ciega por el
+  triaje real, con la matriz por clase emitida.
 - [`LIMITES.md`](LIMITES.md) — qué no hace el sistema, por qué, y qué costaría cerrarlo.
 - [`BENCHMARKS.md`](BENCHMARKS.md) — los resultados que decidieron el diseño, con el corpus y
   el comando para reproducirlos.

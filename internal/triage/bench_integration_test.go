@@ -615,7 +615,7 @@ func FlatOutcome(issue Issue, substance map[string]answer) string {
 	kind := substance["kind"].Choice
 
 	if at("evidence_sufficient") < 0.5 {
-		return "no_verdict"
+		return "DUDA"
 	}
 	if kind == "question" || kind == "spam" || kind == "other" {
 		return "MARCADA"
@@ -650,7 +650,7 @@ func TreeOutcome(issue Issue, substance map[string]answer, alignment map[string]
 	kind := substance["kind"].Choice
 
 	if at("evidence_sufficient") < 0.5 {
-		return "no_verdict"
+		return "DUDA"
 	}
 	switch kind {
 	case "spam":

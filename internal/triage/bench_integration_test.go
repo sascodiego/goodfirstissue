@@ -636,9 +636,12 @@ func FlatOutcome(issue Issue, substance map[string]answer) string {
 	return "CANDIDATA"
 }
 
-// TreeOutcome is the tree the owner proposed: approval ends the walk, refusal ends it,
-// and only a feature nobody decided on reaches the alignment node, where the question is
-// whether the request serves the project or only the person asking.
+// TreeOutcome is the chain frozen in criteria.md, and it must stay in step with it: the
+// document is what a reader trusts, this is what runs.
+//
+//	pre-gates → kind → bug: candidate · documentation/tests: candidate · spam: marked
+//	                 · question: deferred to the second round
+//	                 · feature: alignment (0.6) → candidate / conditioned / marked
 func TreeOutcome(issue Issue, substance map[string]answer, alignment map[string]float64) string {
 	if pre := prescreen(issue); pre != "" {
 		return "MARCADA"
@@ -649,23 +652,28 @@ func TreeOutcome(issue Issue, substance map[string]answer, alignment map[string]
 	if at("evidence_sufficient") < 0.5 {
 		return "no_verdict"
 	}
-	if kind == "question" || kind == "spam" || kind == "other" {
+	switch kind {
+	case "spam":
 		return "MARCADA"
-	}
-	if kind == "bug" {
-		if at("has_evidence") < 0.5 {
-			return "MARCADA"
-		}
+	case "question":
+		// A question that turns into work is decided in the second round, with the
+		// comments. Until then it is not a rejection.
+		return "SEGUNDA_RONDA"
+	case "bug", "other":
+		// Documentation, tests and refactors are real work, and a bug is a deviation from
+		// what the project already wants. Neither needs the alignment node.
 		return "CANDIDATA"
 	}
-	// Feature with no recorded position.
+
+	// Feature: the only case that has to answer whether it belongs to the project.
 	if alignment == nil {
 		return "CONDICIONADA"
 	}
-	if alignment["only_for_requester"] >= 0.5 {
+	const threshold = 0.6
+	if alignment["only_for_requester"] >= threshold {
 		return "MARCADA"
 	}
-	if alignment["fits_direction"] >= 0.5 {
+	if alignment["fits_direction"] >= threshold {
 		return "CANDIDATA"
 	}
 	return "CONDICIONADA"

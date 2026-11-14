@@ -7,12 +7,6 @@
     "number": 2208,
     "url": "https://github.com/urfave/cli/issues/2208"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Global flags marked as Local are still recognized after a subcommand",
     "body": "## My urfave/cli version is\n\n**cli/v3** v3.4.1\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n- My project is using go modules.\n\n## Describe the bug\n\nParent flags marked as non-persistent (Local=true) are still recognized when specified after a subcommand.\n\n## To reproduce\n\n```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"os\"\n\n\t\"github.com/urfave/cli/v3\"\n)\n\nfunc main() {\n\tcmd := &cli.Command{\n\t\tName:    \"testprog\",\n\t\tVersion: \"1.0\",\n\t\tCommands: []*cli.Command{\n\t\t\t{\n\t\t\t\tName: \"subcmd\",\n\t\t\t\tCommands: []*cli.Command{\n\t\t\t\t\t{\n\t\t\t\t\t\tName: \"nested-subcmd\",\n\t\t\t\t\t\tAction: func(ctx context.Context, c *cli.Command) error {\n\t\t\t\t\t\t\tc.Writer.Write([]byte(\"The nested subcommand is executed\\n\"))\n\t\t\t\t\t\t\treturn nil\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\tFlags: []cli.Flag{\n\t\t\t\t\t&cli.StringFlag{\n\t\t\t\t\t\tName:  \"subcmd-flag\",\n\t\t\t\t\t\tLocal: true,\n\t\t\t\t\t\tAction: func(ctx context.Context, c *cli.Command, v string) error {\n\t\t\t\t\t\t\tc.Writer.Write([]byte(\"--subcmd-flag is presented\\n\"))\n\t\t\t\t\t\t\treturn nil\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\tAction: func(ctx context.Context, c *cli.Command) error {\n\t\t",
@@ -37,7 +31,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2211,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

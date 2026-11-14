@@ -7,12 +7,6 @@
     "number": 1531,
     "url": "https://github.com/urfave/cli/issues/1531"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "NOT_PLANNED",
-    "label_strength": "strong",
-    "label_note": "un mantenedor explicó por qué no se hace"
-  },
   "issue": {
     "title": "Minimize top-level API surface area for both usability clarity and maintenance reduction",
     "body": "- [x] #1586 \r\n- [x] #1600\r\n- [x] #1587\r\n- [x] #1759 \r\n- [x] #1780\r\n- [x] #1791",
@@ -40,7 +34,21 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "meatballhat",
+    "original_labels": [
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "refused",

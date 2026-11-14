@@ -7,12 +7,6 @@
     "number": 1658,
     "url": "https://github.com/spf13/cobra/issues/1658"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Define a security policy",
     "body": "`cobra` needs a security policy.\r\n\r\nGenerally, this should define:\r\n- How users should report vulnerabilities\r\n- How cobra maintainers respond\r\n- How known security vulnerabilities and CVEs are communicated to the community\r\n\r\n[Inspiration from Open Web Application Security Project](https://cheatsheetseries.owasp.org/cheatsheets/Vulnerable_Dependency_Management_Cheat_Sheet.html)\r\n\r\nWe'd also like any input from the community since, in the end, all these policies serve the community",
@@ -33,7 +27,27 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "admin": "unknown",
+    "kind/security": "unknown",
+    "lifecycle/frozen": "unknown",
+    "help-wanted": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2253,
+    "refused_by": null,
+    "original_labels": [
+      "admin",
+      "kind/security",
+      "lifecycle/frozen",
+      "help-wanted"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

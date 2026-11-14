@@ -79,12 +79,21 @@ type benchCase struct {
 	// ClosedLabel marks a case whose verdict is not this repository's reading but the
 	// project's own decision: it closed the issue. Only intent and the outcome are scored.
 	ClosedLabel bool `json:"closed_label,omitempty"`
-	Closure     struct {
-		State         string `json:"state"`
-		StateReason   string `json:"state_reason"`
-		LabelStrength string `json:"label_strength"`
-		LabelNote     string `json:"label_note"`
-	} `json:"closure,omitempty"`
+	// Truth is the real resolution, kept apart from the issue that goes through triage.
+	// The freeze rule: the issue half must look open and unapproved, and only this half
+	// may say what actually happened.
+	Truth struct {
+		Resolution     string   `json:"resolution"`
+		StateReason    string   `json:"state_reason"`
+		MergedPR       int      `json:"merged_pr"`
+		RefusedBy      string   `json:"refused_by"`
+		OriginalLabels []string `json:"original_labels"`
+		LabelStrength  string   `json:"label_strength"`
+	} `json:"truth,omitempty"`
+	// LabelsAppliedBy records who applied each simulated label, when the simulation
+	// invented one: an approval label written by the person asking is not a decision.
+	LabelsAppliedBy map[string]string `json:"labels_applied_by,omitempty"`
+	Simulation      string            `json:"simulation,omitempty"`
 }
 
 type coverage struct {
@@ -205,8 +214,21 @@ func TestBenchCasesAreComplete(t *testing.T) {
 			if c.Source == nil || c.Source.Repository == "" {
 				t.Errorf("%s: a real case must name its source", c.ID)
 			}
-			if c.Provenance == "real-closed" && c.Closure.LabelStrength == "" {
-				t.Errorf("%s: a closed case must say how strong its label is", c.ID)
+			if c.Provenance == "real-closed" {
+				if c.Truth.LabelStrength == "" {
+					t.Errorf("%s: a closed case must say how strong its label is", c.ID)
+				}
+				// The frozen rule: the triage half is a simulation of an open issue.
+				if c.Issue.GitHubState != "OPEN" || c.Issue.GitHubStateReason != "" {
+					t.Errorf("%s: the triaged half must look open and undecided, got %q/%q",
+						c.ID, c.Issue.GitHubState, c.Issue.GitHubStateReason)
+				}
+				if len(c.Issue.LinkedPRs) != 0 {
+					t.Errorf("%s: the triaged half must carry no pull requests", c.ID)
+				}
+				if c.Truth.Resolution == "" {
+					t.Errorf("%s: the real resolution is missing", c.ID)
+				}
 			}
 		case "synthetic":
 			if c.Source != nil {

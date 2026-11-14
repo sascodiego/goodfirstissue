@@ -7,12 +7,6 @@
     "number": 1583,
     "url": "https://github.com/urfave/cli/issues/1583"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "NOT_PLANNED",
-    "label_strength": "strong",
-    "label_note": "un mantenedor explicó por qué no se hace"
-  },
   "issue": {
     "title": "Use a core flag parser other than stdlib `flag` to unlock wider range of arg types",
     "body": "tl;dr - By switching away from stdlib `flag`, we will be able to support a wider range of capabilities with significantly less workaround code.\r\n\r\nMuch of the code around here is arguably _working around_ stdlib `flag`, for example:\r\n\r\n- concept of commands\r\n    - nesting of commands\r\n    - commands with aliases\r\n- persistent flags (in progress)\r\n- flags with aliases\r\n- flags of types not already supported in stdlib (via `FlagSet.Var`)\r\n    - slice-specific (de)serialization hacks\r\n    - other inconsistently-implemented (de)serialization hacks\r\n- probably other stuff!\r\n\r\nBy building on top of stdlib `flag`, we are limited to two categories of string arguments:\r\n\r\n- flags\r\n    - must start with `-`\r\n    - may accept zero or one argument\r\n- non-flag string literals\r\n    - must not start with `-`\r\n    - no additional help from stdlib `flag` 🤷🏼 \r\n\r\nThere are [many other command line argument parsers available in the Go third-party package ecosystem](https://github.com/avelino/awesome-go#standard-cli) such as:\r\n\r\n- [pflag](https://github.com/ogier/pflag), a lower-level library that provides a compatibility layer with stdlib `flag`\r\n    - typically seen via [this fork](https://github.com/spf13/pflag) which isn't being actively maintained\r\n- [cobra](https://github.com/spf13/cobra), a holistic command and flag building solution that encourages imperative construction of command contexts (depends on pflag)\r\n- [kong](https://github.com/alecthomas/kong), a holistic command and flag buil",
@@ -60,7 +54,21 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "meatballhat",
+    "original_labels": [
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "refused",

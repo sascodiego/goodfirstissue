@@ -7,12 +7,6 @@
     "number": 14800,
     "url": "https://github.com/cli/cli/issues/14800"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Replace github.com/vmihailenco/msgpack/v5",
     "body": "### Describe the feature or problem you’d like to solve\n\nmsgpack v5.4.1 is flagged for CVE-2026-2454, and upstream has been inactive since 2023, so a fix is unlikely.\n\n### Proposed solution\n\ngh only uses msgpack to encode `PR_`, `U_` and `DC_` node IDs from small int arrays. A ~20-line encoder in `api` produces identical output and drops the dependency. PR: #14801.",
@@ -56,7 +50,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "tech-debt": "unknown",
+    "help wanted": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 14801,
+    "refused_by": null,
+    "original_labels": [
+      "tech-debt",
+      "help wanted"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

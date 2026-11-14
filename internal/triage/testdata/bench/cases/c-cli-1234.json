@@ -7,12 +7,6 @@
     "number": 1234,
     "url": "https://github.com/httpie/cli/issues/1234"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Plugin updates through httpie interface",
     "body": "Context: https://github.com/httpie/httpie/pull/1228#discussion_r764267920\r\n\r\nThe UI can be one of these:\r\n- `httpie plugins install --upgrade <bla bla>` (I think less intuitive)\r\n- `httpie plugins update <bla bla>`\r\n- `httpie plugins upgrade <bla bla>` (same with apt)\r\n",
@@ -25,7 +19,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "new": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1241,
+    "refused_by": null,
+    "original_labels": [
+      "enhancement",
+      "new"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

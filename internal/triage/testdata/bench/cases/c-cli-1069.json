@@ -7,12 +7,6 @@
     "number": 1069,
     "url": "https://github.com/urfave/cli/issues/1069"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Add option to avoid that '[arguments...]' been printed",
     "body": "## Checklist\r\n\r\n* [x] Are you running the latest v2 release? \r\n* [x] Did you check the manual for your release?\r\n* [x] Did you perform a search about this feature?\r\n\r\n## What problem does this solve?\r\n\r\n- By default, the help of a command shows the section `USAGE` with a text like:\r\n**cmd_name** `[global options] command [command options] [arguments...]`\r\nshowing `[arguments...]` even when your command is not going to use any argument.\r\n\r\n## Solution description\r\n\r\nAdd a boolean to indicate that `[arguments...]` does not been printed.\r\n",
@@ -66,14 +60,32 @@
     "labels": [
       "kind/feature",
       "help wanted",
-      "status/confirmed",
       "area/v3"
     ],
     "github_state": "OPEN",
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/feature": "unknown",
+    "help wanted": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2001,
+    "refused_by": null,
+    "original_labels": [
+      "kind/feature",
+      "help wanted",
+      "status/confirmed",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

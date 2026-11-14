@@ -7,12 +7,6 @@
     "number": 2333,
     "url": "https://github.com/urfave/cli/issues/2333"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Custom shell completion doesn't work",
     "body": "## My urfave/cli version is\n\n`v3.9.0`\n\n## Checklist\n\n- [X] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [X] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [X] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n<!--\n  Delete any of the following that do not apply:\n-->\n\n- My project is using go modules.\n\n\n## Describe the bug\n\nI have added a custom completion to a subcommand but when I reach this point in a completion sequence only files are being completed, the custom completion is not even being called.\n\n## To reproduce\n\nThis is the subcommand:\n\n```go\nfunc IndexShow(conf *cfg.Config) *cli.Command {\n\treturn &cli.Command{\n\t\tName:    \"show\",\n\t\tAliases: []string{\"sh\"},\n\t\tUsage:   \"show details about an index\",\n\n\t\tAction: func(ctx context.Context, cmd *cli.Command) error {\n\t\t\treturn es.IndexShow(conf, cmd.Args().Get(0))\n\t\t},\n\n\t\tShellComplete: func(ctx context.Context, cmd *cli.Command) {\n\t\t\tif cmd.NArg() > 0 {\n\t\t\t\treturn\n\t\t\t}\n\n\t\t\tindices, err := es.IndexNames(conf)\n\t\t\tif err != nil {\n\t\t\t\treturn\n\t\t\t}\n\n\t\t\tfor _, index := range indices {\n\t\t\t\tfmt.Println(index)\n\t\t\t}\n\t\t},\n\t}\n}\n```\n\n## Observed behavior\n\nNothing happens. Even if I add a `panic(0)` at the start of the custom completio",
@@ -32,7 +26,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2338,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

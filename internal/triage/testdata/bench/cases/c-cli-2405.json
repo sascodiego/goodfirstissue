@@ -7,12 +7,6 @@
     "number": 2405,
     "url": "https://github.com/urfave/cli/issues/2405"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "test: add shell-completion case for hidden BoolWithInverseFlag",
     "body": "Follow-up from review of #2388.\n\n## Summary\n\nPR #2388 changed `printFlagSuggestions` in `help.go` to skip flags via the `VisibleFlag`/`IsVisible()` interface instead of the previous `flag.(*BoolFlag)` assertion. The previous check only skipped hidden bool flags, and because the `*BoolFlag` assertion does not match the `*BoolWithInverseFlag` concrete type, hidden `BoolWithInverseFlag`s were also leaked into shell completion suggestions.\n\nThat leak is now fixed by the interface-based check, but the regression test table in `TestDefaultCompleteWithFlags` only covers the `BoolFlag` (`hidden-bool`) and `StringFlag` (new in #2388) cases.\n\n## Proposed change\n\nAdd a `BoolWithInverseFlag` case to the `TestDefaultCompleteWithFlags` table (e.g. a hidden `--excellent` `BoolWithInverseFlag`) to lock in the fix for this type too.\n\n## Impact\n\n- Low risk; test-only change.",
@@ -22,7 +16,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2408,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

@@ -7,12 +7,6 @@
     "number": 1921,
     "url": "https://github.com/urfave/cli/issues/1921"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Remove [command [command options]] from help text if there are no sub commands",
     "body": "Hi there,\r\nI think it would help readability a lot if cli/v3 can check for subcommands first before printing the help of a command.\r\n\r\nFor example, right now this is the help that I get:\r\n\r\n```\r\nNAME:\r\n   app cmd1 cmd2 - does something cool\r\n\r\nUSAGE:\r\n   app cmd1 cmd2 [command [command options]] <myArgUsage>\r\n\r\nOPTIONS:\r\n   --flag value  (default: 1)\r\n   --help, -h     show help (default: false)\r\n```\r\n\r\nNote that `cmd2` has no sub-commands which makes it distracting from reading and understanding the `USAGE`.  So what I'd love to instead see is:\r\n\r\n```\r\nNAME:\r\n   app cmd1 cmd2 - does something cool\r\n\r\nUSAGE:\r\n   app cmd1 cmd2 <myArgUsage>\r\n\r\nOPTIONS:\r\n   --flag value  (default: 1)\r\n   --help, -h     show help (default: false)\r\n```",
@@ -25,7 +19,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2000,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

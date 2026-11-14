@@ -7,12 +7,6 @@
     "number": 3718,
     "url": "https://github.com/cli/cli/issues/3718"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Auto-detected links with new lines result in 404s when clicked",
     "body": "### Describe the bug\r\n\r\nIn gh 1.10.3 links in comments that span new lines are detected as a broken link by terminals like Windows Terminal 1.8 that support detecting URLs.\r\n\r\n### Steps to reproduce the behavior\r\n\r\n1. Type `gh pr -R cli/cli view 3519 --comments`\r\n2. Find the comment with an image and click on the link.\r\n3. The link results in a 404\r\n\r\n![image](https://user-images.githubusercontent.com/1532486/119570647-414f6180-bd65-11eb-8193-41a6a7f67068.png)\r\n\r\nThe detected link here is only <https://user-images.githubusercontent.com/1532486/116502954> which 404s. Windows Terminal 1.8 does properly detect continuous URLs that wrap lines, so I suspect this has more to do with the break in the link for formatting purposes:\r\n\r\n![image](https://user-images.githubusercontent.com/1532486/119571265-fe41be00-bd65-11eb-8c99-a3eaec2a9b1c.png)\r\n\r\nThe rendering is done by github.com/yuin/goldmark which is currently only applying coloring for rendered markdown, and I've opened more of a [feature request](https://github.com/yuin/goldmark/issues/222) for OSC 8 support. This might be more of a tracking bug until that issue is resolved, but I wanted to note  the current behavior.\r\n\r\n### Expected vs actual behavior\r\n\r\nRendered links in the output are clickable and result in the proper resource being fetched.\r\n\r\n### Logs\r\n\r\nN/A\r\n",
@@ -64,7 +58,29 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "bug": "unknown",
+    "priority-3": "unknown",
+    "help wanted": "unknown",
+    "gh-pr": "unknown",
+    "gh-issue": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 14148,
+    "refused_by": null,
+    "original_labels": [
+      "bug",
+      "priority-3",
+      "help wanted",
+      "gh-pr",
+      "gh-issue"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

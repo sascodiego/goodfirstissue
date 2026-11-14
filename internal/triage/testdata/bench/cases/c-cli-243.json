@@ -7,12 +7,6 @@
     "number": 243,
     "url": "https://github.com/httpie/cli/issues/243"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Response time",
     "body": "Could be handy to see a requests response time in verbose or with some other flag.\n",
@@ -31,7 +25,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "planned": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1250,
+    "refused_by": null,
+    "original_labels": [
+      "enhancement",
+      "planned"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

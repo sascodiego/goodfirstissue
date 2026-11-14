@@ -7,12 +7,6 @@
     "number": 2120,
     "url": "https://github.com/urfave/cli/issues/2120"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "v3 fish completions completion inside hidden commands don't work",
     "body": "## My urfave/cli version is\n\n53ad542\n\n## Describe the bug\n\nFish completions only traverse into commands in `cmd.VisibleCommands()` so there will be no completions for anything \"under\" a hidden command.\n\n## To reproduce\n\n```go\n\tapp := &cli.Command{\n\t\tName:                  \"mycli\",\n\t\tVersion:               \"1.0.0\",\n\t\tUsage:                 \"Pure awesomeness.\",\n\t\tEnableShellCompletion: true,\n\t\tSuggest:               true,\n\t\tCommands: []*cli.Command{\n\t\t\t{\n\t\t\t\tName:   \"more-awesome\",\n\t\t\t\tHidden: true,\n\t\t\t\tAction: func(ctx context.Context, cmd *cli.Command) error {\n\t\t\t\t\treturn nil\n\t\t\t\t},\n\t\t\t\tFlags: []cli.Flag{\n\t\t\t\t\t&cli.StringFlag{\n\t\t\t\t\t\tName:      \"increase\",\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t},\n\t}\n```\n## Observed behavior\n\nThis gives no completions:\n\n```\nmycli more-awesome -- <tab>\n```\n\n## Expected behavior\n\nReasonably, once you have entered the secret command, there should be completions again as normal. The bash completions seems to work like that.\n\n## Want to fix this yourself?\n\nPR pending.\n\n## Run `go version` and paste its output here\n\n```\ngo version go1.23.8 linux/amd64\n```\n\n## Run `go env` and paste its output here\n\n```\nGO111MODULE=''\nGOARCH='amd64'\nGOBIN=''\nGOCACHE='/home/andqvi/.cache/go-build'\nGOENV='/home/andqvi/.config/go/env'\nGOEXE=''\nGOEXPERIMENT=''\nGOFLAGS=''\nGOHOSTARCH='amd64'\nGOHOSTOS='linux'\nGOINSECURE=''\nGOMODCACHE='/home/andqvi/go/pkg/mod'\nGONOPROXY=''\nGONOSUMDB=''\nGOOS='linux'\nGOPATH='/home/andqvi/go'\nGOPRIVATE=''\nGOPROXY='https://proxy.golang.org,direct'\nGOROOT='/home",
@@ -26,7 +20,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2122,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

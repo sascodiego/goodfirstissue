@@ -7,12 +7,6 @@
     "number": 1126,
     "url": "https://github.com/httpie/cli/issues/1126"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Session file with cookie cannot be parsed",
     "body": "**Checklist**\r\n\r\n- [Y] I've searched for similar issues.\r\n- [Y] I'm using the the latest version of HTTPie.\r\n\r\n- httpie version, 2.4.0\r\n- python version, 3.9\r\n\r\nI prepared the **my-session-cookie.json** file, the request parameters are placed in **query.json**, and the expected response results are placed in the **result.json** file.\r\n\r\n **my-session-cookie.json** like this:\r\n`\r\n{\r\n      \"__meta__\": {\r\n            \"about\": \"HTTPie session file\",\r\n            \"help\": \"https://httpie.org/doc#sessions\",\r\n            \"httpie\": \"2.4.0\"\r\n       },\r\n       \"headers\": {\r\n            \"Content-Type\": \"application/json\",\r\n            \"cookie\": \"12345\"\r\n      }\r\n}\r\n`\r\n\r\nAnd command like this:\r\n![2021813-22044](https://user-images.githubusercontent.com/26968137/129248791-748008ad-9ce5-4fae-bcdf-c9ed312a8997.png)\r\n<img width=\"816\" alt=\"Xnip2021-08-13_02-22-22\" src=\"https://user-images.githubusercontent.com/26968137/129248846-2614c7bb-afd3-472c-86f8-0429d183cf60.png\">\r\n\r\n`http --verify=no -v  --session-read-only=~/Desktop/my-session-cookie.json POST http://localhost:8301/test < ~/Desktop/query.json -d >>~/Desktop/result.json`\r\n\r\nAnd I got error like this:\r\n`http: error: RuntimeError: OrderedDict mutated during iteration`\r\n\r\nThen I did some test and the request can be executed\r\n- remove cookie field\r\n- OR remove `-d >>~/Desktop/result.json` in the command\r\n\r\nSo what's wrong？",
@@ -41,7 +35,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "bug": "unknown",
+    "new": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1127,
+    "refused_by": null,
+    "original_labels": [
+      "bug",
+      "new"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

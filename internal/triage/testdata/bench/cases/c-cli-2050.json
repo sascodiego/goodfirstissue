@@ -7,12 +7,6 @@
     "number": 2050,
     "url": "https://github.com/urfave/cli/issues/2050"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Removal of integer flags causes issues.",
     "body": "## Checklist\n\n* [X] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n* [X] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/index.md).\n* [X] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## What problem does this solve?\n\nThe new opinionated `IntFlag` does not document on how to work with other types than `int64`. If I have a struct which I want to configure using flags, I do not want to restrict myself to using `int64` since the struct is not defined by my project. I also do not want to create custom flags for builtin types.\n\nI've tried to use the `Action` function on the flag to set the value for a field of type `int` but it doesn't work with default values, making any workaround too convoluted.\n\nThe issue of `intValue` not being exported cause issues if I want to do any form of customization of the flag and this applies to all other flag types. Allowing reuse in custom flags would be nice.\n\n## Solution description\n\nUse generics to implement `IntFlag`, `Int8Flag`, `Int16Flag`, `Int32Flag` and `Int64Flag`.\n\n## Describe alternatives you've considered\n\nOne way would be to recreate the types that you removed but use generics to avoid code duplication.\n\n```go\npackage clix\n\nimport (\n\t\"strconv\"\n\t\"unsafe\"",
@@ -37,7 +31,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "status/waiting-for-response": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2094,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "status/waiting-for-response",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

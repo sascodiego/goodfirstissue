@@ -7,12 +7,6 @@
     "number": 1929,
     "url": "https://github.com/urfave/cli/issues/1929"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "What is the purpose of `normalizeFlags`?",
     "body": "I read the code but my understanding of it doesn't match what happens when I remove that function entirely.\r\n\r\nIt looks like the only things it does in practice is to disallow using the long form and the short form alias of the same flag in a same call.\r\n\r\nIs there a reason why that should be disallowed? Or is that a necessity due to some constraint I am not seeing?",
@@ -32,7 +26,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/question": "unknown",
+    "area/v2": "unknown",
+    "status/triage": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1941,
+    "refused_by": null,
+    "original_labels": [
+      "kind/question",
+      "area/v2",
+      "status/triage"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

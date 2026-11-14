@@ -7,12 +7,6 @@
     "number": 1204,
     "url": "https://github.com/httpie/cli/issues/1204"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Ignoring broken plugins",
     "body": "Seems like there are a couple of broken plugins out there, and when any of them are installed in the system it completely blocks the usage of `http`/`https` commands. An example scenario;\r\n\r\n```\r\n$ pip install httpie\r\n$ pip install httpie-aws-auth\r\n$ http\r\nTraceback (most recent call last):\r\n  File \"/usr/local/bin/http\", line 8, in <module>\r\n    sys.exit(main())\r\n  File \"/usr/local/lib/python3.9/site-packages/httpie/__main__.py\", line 9, in main\r\n    exit_status = main()\r\n  File \"/usr/local/lib/python3.9/site-packages/httpie/core.py\", line 35, in main\r\n    plugin_manager.load_installed_plugins()\r\n  File \"/usr/local/lib/python3.9/site-packages/httpie/plugins/manager.py\", line 35, in load_installed_plugins\r\n    plugin = entry_point.load()\r\n  File \"/usr/local/lib/python3.9/site-packages/pkg_resources/__init__.py\", line 2450, in load\r\n    return self.resolve()\r\n  File \"/usr/local/lib/python3.9/site-packages/pkg_resources/__init__.py\", line 2456, in resolve\r\n    module = __import__(self.module_name, fromlist=['__name__'], level=0)\r\n  File \"/usr/local/lib/python3.9/site-packages/httpie_aws_auth.py\", line 8, in <module>\r\n    from httpie import ExitStatus\r\nImportError: cannot import name 'ExitStatus' from 'httpie' (/usr/local/lib/python3.9/site-packages/httpie/__init__.py)\r\n```\r\n\r\nA straightforward solution for this is ignoring these errors, and throwing a warning to user (`Warning: Failed to load 'httpie-aws-auth' plugin, see '/tmp/xxx.txt' for more logs`). This way, even if the plu",
@@ -31,7 +25,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "new": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1228,
+    "refused_by": null,
+    "original_labels": [
+      "enhancement",
+      "new"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

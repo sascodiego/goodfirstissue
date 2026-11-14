@@ -7,12 +7,6 @@
     "number": 1079,
     "url": "https://github.com/httpie/cli/issues/1079"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Cannot follow 307/308 HTTP redirects in verbose mode if request body is being streamed",
     "body": "**Checklist**\r\n\r\n- [x] I've searched for similar issues.\r\n- [x] I'm using the the latest version of HTTPie.\r\n\r\n---\r\n\r\n**What are the steps to reproduce the problem?**\r\n\r\n1. Create a file with some content `echo 'hello world' | file.txt`\r\n2. Run ` http --follow -v post pie.dev/redirect-to url==https://pie.dev/post status_code==307 @file.txt`\r\n\r\n**What is the expected result?**\r\n\r\nHTTPie should be able to follow any 307/308 HTTP redirect and print intermediate requests/responses.\r\n\r\n**What happens instead?**\r\n\r\nHTTPie hangs for a while before throwing a connection error\r\n\r\n**Debug output**\r\n\r\nPlease re-run the command with `--debug`, then copy the entire command & output and paste both below:\r\n\r\n```\r\n$ http --follow -v --debug post pie.dev/redirect-to url==https://pie.dev/post status_code==307 @cli-tools-i-use.txt\r\nHTTPie 2.4.0\r\nRequests 2.22.0\r\nPygments 2.7.2\r\nPython 3.8.2 (default, Jul 16 2020, 14:00:26)\r\n[GCC 9.3.0]\r\n/usr/bin/python3\r\nLinux 4.19.104-microsoft-standard\r\n\r\n<Environment {'colors': 256,\r\n 'config': {'__meta__': {'about': 'HTTPie configuration file',\r\n                         'help': 'https://httpie.org/doc#config',\r\n                         'httpie': '1.0.3'},\r\n            'default_options': []},\r\n 'config_dir': PosixPath('/home/ducaale/.httpie'),\r\n 'devnull': <property object at 0x7fd43892b720>,\r\n 'is_windows': False,\r\n 'log_error': <function Environment.log_error at 0x7fd43892cd30>,\r\n 'program_name': 'http',\r\n 'stderr': <_io.TextIOWrapper name='<stderr>' mode=",
@@ -30,7 +24,21 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "bug": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1088,
+    "refused_by": null,
+    "original_labels": [
+      "bug"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

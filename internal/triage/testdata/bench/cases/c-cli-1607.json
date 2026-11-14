@@ -7,12 +7,6 @@
     "number": 1607,
     "url": "https://github.com/urfave/cli/issues/1607"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "`ToJSON` or JSON format for import/export of CLI options",
     "body": "I wonder if it is possible to create a generic options definition serialization/exchange format in JSON?\r\n\r\nThen the stuff like Markdown help, man pages and command line completion (https://github.com/urfave/cli/pull/1606/files) could be generated from that JSON format by external tools without bloating the size of `urfave/cli` binaries (https://github.com/urfave/cli/discussions/1594).\r\n\r\nI already tried to play with that a bit with Python here - https://github.com/abitrolly/podman-compose/commit/0cd4197a90453dbb299aab8e8b6c3d0191e59d16 - so it is possible to extract that bit to see if `urfave/cli` export and Python `argparse` export can be compatible.",
@@ -37,7 +31,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/question": "unknown",
+    "area/v2": "unknown",
+    "status/triage": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1855,
+    "refused_by": null,
+    "original_labels": [
+      "kind/question",
+      "area/v2",
+      "status/triage"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

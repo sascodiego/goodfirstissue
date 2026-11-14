@@ -7,12 +7,6 @@
     "number": 130,
     "url": "https://github.com/httpie/cli/issues/130"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "can't use multiple HTTP Headers with the same name",
     "body": "In HTTP it allows multiple headers with the same name.  However, when I went to test\r\nwebapp that seems to break when IE10 sends multiple cookie headers, I can't use httpie to test it as it only puts in the last header value in the request.\r\n\r\nexample:\r\n\r\n```bash\r\n$ http -v example.org Cookie:foo1=bar1 User-Agent:BAM\\1.0 Cookie:foo2=bar2\r\n```\r\n\r\nCurrent output:\r\n\r\n```http\r\nGET / HTTP/1.1\r\nAccept: _/_\r\nAccept-Encoding: gzip, deflate, compress\r\nCookie: foo2=bar2\r\nHost: example.org\r\nUser-Agent: BAM1.0\r\n\r\n//response omitted\r\n```\r\n\r\nExpected output:\r\n\r\n```\r\nGET / HTTP/1.1\r\nAccept: _/_\r\nAccept-Encoding: gzip, deflate, compress\r\nCookie: foo1=bar1\r\nCookie: foo2=bar2\r\nHost: example.org\r\nUser-Agent: BAM1.0\r\n```\r\n\r\nReally HTTP headers should be represented as a case-insensitive MultiMap of some sort, not a  Dict.",
@@ -31,7 +25,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "bug": "unknown",
+    "planned": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1190,
+    "refused_by": null,
+    "original_labels": [
+      "bug",
+      "planned"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

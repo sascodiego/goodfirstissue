@@ -7,12 +7,6 @@
     "number": 2298,
     "url": "https://github.com/spf13/cobra/issues/2298"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "[Docs] Requesting info on repeated flags",
     "body": "Hello!\nIn some programs such as SSH I can repeat the -v flag in their CLI to invoke different behaviors. For example -v will print info level logs, while `-v -v`, or `-vv` will print debug level logs, and `-vvv, -v -v -v` will be more verbose and so on. \n\nI'd like to know if this is possible, and how to do it programmatically.\n\nIf the info is provided in this issue, I'd be happy to put it into a PR for the user guide to complete this request.",
@@ -43,7 +37,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2316,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

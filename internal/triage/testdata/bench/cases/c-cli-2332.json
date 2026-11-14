@@ -7,12 +7,6 @@
     "number": 2332,
     "url": "https://github.com/urfave/cli/issues/2332"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Bash completion not working correctly",
     "body": "## My urfave/cli version is\n\n`v3.9.0`\n\n## Checklist\n\n- [X] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [X] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [X] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n<!--\n  Delete any of the following that do not apply:\n-->\n\n- My project is using go modules.\n\n\n## Describe the bug\n\nWhen completion is loaded, I can do completion in the shell. However, after a completed word, no space is being appended, so I need to enter a space myself to get to the next subcommand completion and so forth.\n\n## To reproduce\n\nI have enabled completions with `EnableShellCompletion: true` and sourced it. \n\n## Observed behavior\n\nThen when I try to complete for instance this command: `esctl ccr follower pause` I need to enter these chars:\n\n`esctl ccr<TAB><SPC>f<TAB><SPC>p<TAB><RET>`\n\nBash completions do usually not work that way.\n\n## Expected behavior\n\nI'd expect to only enter this:\n\n`esctl ccr<TAB>f<TAB>p<TAB><RET>`\n\n## Additional context\n\nSource: https://codeberg.org/scip/esctl\n\n## Run `go version` and paste its output here\n\n```\ngo1.23.5 linux/amd64\n```\n\n## Run `go env` and paste its output here\n\n```\nGO111MODULE=''\nGOARCH='amd64'\nGOBIN=''\nGOCACHE='/ho",
@@ -26,7 +20,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2337,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

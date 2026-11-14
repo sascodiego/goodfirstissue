@@ -7,12 +7,6 @@
     "number": 14598,
     "url": "https://github.com/cli/cli/issues/14598"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "NOT_PLANNED",
-    "label_strength": "strong",
-    "label_note": "un mantenedor explicó por qué no se hace"
-  },
   "issue": {
     "title": "`gh pr edit` fails with Projects classic deprecation when reviving a PR",
     "body": "## Command\n\n`gh pr edit 1743 -R <private-repo> --body ...`\n\n## Observed behavior\n\nThe operation exited 1 without updating the PR body:\n\n```\nGraphQL: Projects (classic) is being deprecated in favor of the new Projects experience, see: https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/. (repository.pullRequest.projectCards)\n```\n\n## Expected behavior\n\nEditing the PR body should succeed independently of deprecated Projects (classic) fields. This matches the already-closed report #13069, but this command still fails in the current installed GitHub CLI.\n\n## Environment\n\nGitHub CLI version: `gh version` not yet collected in this session. The authenticated `gh` operation targeted a private repository PR; no content was changed.\n",
@@ -36,7 +30,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "more-info-needed": "unknown",
+    "gh-pr": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "williammartin",
+    "original_labels": [
+      "more-info-needed",
+      "gh-pr"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "refused",

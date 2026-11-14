@@ -7,12 +7,6 @@
     "number": 1883,
     "url": "https://github.com/urfave/cli/issues/1883"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "How do I define Usage for BoolWithInverseFlag?",
     "body": "I defined a \"summary\" boolean flag as a `BoolWithInverseFlag`.\r\n\r\nBut the help/usage text doesn't look very helpful to me:\r\n\r\n```go\r\npackage main\r\n\r\nimport (\r\n\t\"context\"\r\n\r\n\t\"github.com/urfave/cli/v3\"\r\n)\r\n\r\nfunc main() {\r\n\tcmd := &cli.Command{\r\n\t\tName:                   \"sendsomething\",\r\n\t\tUsage:                  \"report some stuff\",\r\n\t\tArgsUsage:              \"\",\r\n\t\tHideHelpCommand:        true,\r\n\t\tUseShortOptionHandling: true,\r\n\t\tFlags: []cli.Flag{\r\n\t\t\t&cli.BoolFlag{\r\n\t\t\t\tName:    \"verbose\",\r\n\t\t\t\tAliases: []string{\"v\"},\r\n\t\t\t\tUsage:   \"Show more output.\",\r\n\t\t\t},\r\n\t\t\t&cli.BoolFlag{\r\n\t\t\t\tName:    \"dry-run\",\r\n\t\t\t\tAliases: []string{\"dryrun\", \"d\"},\r\n\t\t\t\tUsage:   \"Do a dry-run.\",\r\n\t\t\t},\r\n\t\t\t&cli.StringSliceFlag{\r\n\t\t\t\tName:  \"to\",\r\n\t\t\t\tUsage: \"Define alternative recipients.\",\r\n\t\t\t},\r\n\t\t\t&cli.BoolWithInverseFlag{\r\n\t\t\t\tBoolFlag: &cli.BoolFlag{\r\n\t\t\t\t\tName:  \"summary\",\r\n\t\t\t\t\tUsage: \"default is, to send a summary to all subscribers.\",\r\n\t\t\t\t},\r\n\t\t\t},\r\n\t\t},\r\n\t}\r\n\t_ = cmd.Run(context.Background(), []string{\"prog\", \"--help\"})\r\n}\r\n```\r\n\r\n[See on Go Playground](https://play.golang.com/p/c-Mu2cSv4pd)\r\n\r\n### Actual output\r\n\r\n```\r\nNAME:\r\n   sendsomething - report some stuff\r\n\r\nUSAGE:\r\n   sendsomething [global options] [arguments...]\r\n\r\nGLOBAL OPTIONS:\r\n   --verbose, -v              Show more output. (default: false)\r\n   --dry-run, --dryrun, -d    Do a dry-run. (default: false)\r\n   --to value [ --to value ]  Define alternative recipients.\r\n   --summary                  default is, to send a summa",
@@ -87,7 +81,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "area/v3": "unknown",
+    "good first issue": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1966,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "area/v3",
+      "good first issue"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

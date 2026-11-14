@@ -7,12 +7,6 @@
     "number": 1266,
     "url": "https://github.com/httpie/cli/issues/1266"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "JSON highlighting corrupted by green background in Windows Terminal",
     "body": "## Checklist\r\n\r\n- [X] I've searched for similar issues.\r\n- [X] I'm using the latest version of HTTPie.\r\n\r\n---\r\n\r\n## Minimal reproduction code and steps\r\n\r\n1. Request a JSON file using HTTPie in Windows Terminal, e.g. `http -j GET https://raw.githubusercontent.com/httpie/httpie/master/tests/fixtures/test.json`\r\n2. Observe corrupt/incorrect green background in JSON syntax highlighting\r\n\r\nWindows Terminal version 1.11.3471.0\r\nWindows 10 21H2 (19044.1415)\r\nHTTPie 2.6.0\r\nPython 3.10.1\r\n\r\nJSON highlighting used to work correctly for me, but I'm not sure in exactly which version(s). I tested in Command Prompt, too, with the same result, so I don't think this is specific to Windows Terminal.\r\n\r\n---\r\n\r\n## Debug output\r\n\r\n```txt\r\n>http -j --debug GET https://raw.githubusercontent.com/httpie/httpie/master/tests/fixtures/test.json\r\nHTTPie 2.6.0\r\nRequests 2.27.1\r\nPygments 2.11.2\r\nPython 3.10.1 (tags/v3.10.1:2cd268a, Dec  6 2021, 19:10:37) [MSC v.1929 64 bit (AMD64)]\r\nC:\\Users\\will\\scoop\\apps\\python\\current\\python.exe\r\nWindows 10\r\n\r\n<Environment {'colors': 256,\r\n 'config': {'default_options': []},\r\n 'config_dir': WindowsPath('C:/Users/will/AppData/Roaming/httpie'),\r\n 'devnull': <property object at 0x000002A31B077A10>,\r\n 'is_windows': True,\r\n 'log_error': <function Environment.log_error at 0x000002A31B097010>,\r\n 'program_name': 'http',\r\n 'stderr': <colorama.ansitowin32.StreamWrapper object at 0x000002A31B089D80>,\r\n 'stderr_isatty': True,\r\n 'stdin': <_io.TextIOWrapper name='<stdin>' mode='r'",
@@ -31,7 +25,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "bug": "unknown",
+    "windows": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1268,
+    "refused_by": null,
+    "original_labels": [
+      "bug",
+      "windows"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

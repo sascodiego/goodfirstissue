@@ -7,12 +7,6 @@
     "number": 14699,
     "url": "https://github.com/cli/cli/issues/14699"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "NOT_PLANNED",
-    "label_strength": "strong",
-    "label_note": "un mantenedor explicó por qué no se hace"
-  },
   "issue": {
     "title": "GitHub CLI / REST API PATCH returns HTTP 200 but ignores pull request body update",
     "body": "Hello,\n\nI am reporting a reproducible HTTP 200 no-op behavior while updating the body of a pull request through GitHub CLI and the GitHub REST API.\n\nRepository:\nhttps://github.com/mradali4554/LeanStandardWorkOS\n\nPull request:\nhttps://github.com/mradali4554/LeanStandardWorkOS/pull/6\n\nEnvironment:\n- GitHub CLI: 2.101.0\n- GitHub CLI binary SHA-256: df05089117a23889b3f6ea08d7644849afe7b6025647a09f33b45c71f1418f75\n- Operating system: Windows 11 Enterprise, AMD64\n- PowerShell: 5.1.26100.9711\n- Authenticated account: mradali4554\n- Repository relationship: owner\n\nRequest:\n- Method: PATCH\n- Endpoint: /repos/mradali4554/LeanStandardWorkOS/pulls/6\n- Accept: application/vnd.github+json\n- X-GitHub-Api-Version: 2022-11-28\n- GitHub request ID: F2B8:3B8F9A:7D05582:BB41B3A:6AD08F77\n- Request time: 2026-10-15T08:31:51Z\n\nThe input was a temporary ASCII-only JSON file containing exactly one top-level property named `body`.\n\nPayload verification:\n- Payload size: 6,821 bytes\n- Bytes greater than 0x7F: 0\n- BOM: absent\n- JSON parsing: successful\n- Parsed body matched the intended Unicode body exactly\n- Parsed body SHA-256: c284155fd3ea6b36cca3e27d9e556dc1927238e8ba995d2520c3bfdf53574614\n- Parsed body character length: 5,666\n- Parsed body UTF-8 byte count: 5,880\n\nObserved behavior:\n1. The command exited with code 0 and returned HTTP 200 OK.\n2. The response included request ID F2B8:3B8F9A:7D05582:BB41B3A:6AD08F77.\n3. The response JSON contained the pre-existing pull request body rather than the reques",
@@ -45,7 +39,21 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "gh-pr": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "williammartin",
+    "original_labels": [
+      "gh-pr"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "refused",

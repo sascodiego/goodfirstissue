@@ -7,12 +7,6 @@
     "number": 2293,
     "url": "https://github.com/urfave/cli/issues/2293"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "--flag=\"\" rejected as missing argument instead of setting empty string",
     "body": "## My urfave/cli version is\n\nv3.7.0 (also reproduced on latest `main` at commit `4dc6aa6`)\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n- My project is using go modules.\n- My project is using vendoring.\n\n## Describe the bug\n\n`--flag=` (explicit empty value via `=`) is rejected with `\"flag needs an argument\"` instead of setting the flag to an empty string.\n\nThis is a side effect of the fix for #2223 in commit `2c77d6e`. That fix correctly introduced `valFromEqual` to prevent `--flag=` from consuming the next argument. However, the error condition ended up slightly too broad (`command_parse.go:167`):\n\n```go\nif flagVal == \"\" {\n    if len(rargs) == 1 || valFromEqual {\n        return ..., fmt.Errorf(\"%s%s\", argumentNotProvidedErrMsg, firstArg)\n    }\n    flagVal = rargs[1]\n    ...\n}\n```\n\nWhen `valFromEqual` is true and `flagVal` is `\"\"`, the code enters the outer `if` (because `flagVal == \"\"`) and then hits the error (because `valFromEqual` is true). But `valFromEqual == true` with `flagVal == \"\"` means the user wrote `--flag=` — they explicitly provide",
@@ -26,7 +20,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2297,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

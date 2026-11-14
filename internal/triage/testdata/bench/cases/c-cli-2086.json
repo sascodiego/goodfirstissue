@@ -7,12 +7,6 @@
     "number": 2086,
     "url": "https://github.com/urfave/cli/issues/2086"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "It failed to publish the document",
     "body": "CI failed.\n\nhttps://github.com/urfave/cli/actions/runs/14188563023/job/39748211402\nhttps://github.com/urfave/cli/pull/2085#issuecomment-2768287186",
@@ -33,7 +27,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2087,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

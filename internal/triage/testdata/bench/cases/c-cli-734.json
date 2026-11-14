@@ -7,12 +7,6 @@
     "number": 734,
     "url": "https://github.com/urfave/cli/issues/734"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Display global flags in subcommand",
     "body": "Is it possible to display higher-level flags in a subcommand?\r\n\r\ne.g., given:\r\n\r\n```go\r\napp := &cli.App{\r\n  Flags: []cli.Flag{\r\n    cli.BoolFlag{\r\n      Name: \"verbose, v\",\r\n      Usage: \"be LOUD\",\r\n    },\r\n  },\r\n  Commands: []cli.Command{\r\n    cli.Command{\r\n      Name: \"status\",\r\n    },\r\n  },\r\n}\r\n```\r\n\r\nIs it possible for `verbose` to be displayed in `status`'s help command without redefining the flag?",
@@ -41,14 +35,32 @@
     "labels": [
       "kind/feature",
       "help wanted",
-      "area/v2",
-      "status/confirmed"
+      "area/v2"
     ],
     "github_state": "OPEN",
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/feature": "unknown",
+    "help wanted": "unknown",
+    "area/v2": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1949,
+    "refused_by": null,
+    "original_labels": [
+      "kind/feature",
+      "help wanted",
+      "area/v2",
+      "status/confirmed"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

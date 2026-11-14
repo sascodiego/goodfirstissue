@@ -7,12 +7,6 @@
     "number": 1133,
     "url": "https://github.com/httpie/cli/issues/1133"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Don't silently fix invalid JSON with duplicate keys",
     "body": "**Checklist**\r\n\r\n- [x] I've searched for similar feature requests.\r\n\r\n---\r\n\r\n**What enhancement would you like to see?**\r\n\r\nWhen a server returns invalid JSON, the HTTPie formatter should either leave it untouched or fail loudly. As it stands, if the JSON contains duplicate keys, HTTPie will quietly remove the duplicates during formatting.\r\n\r\n**What problem does it solve?**\r\n\r\nWhen debugging broken services, it's important that I can trust HTTPie to faithfully show me what the server returned, so that I focus on figuring out what's going wrong with my services and not have to spend that time thinking about HTTPie.\r\n\r\nFrom my point of view it's helpful for HTTPie to format and color text, I'd rather it didn't sort keys by default but I know that I can reconfigure that, but it's a problem if HTTPie is removing anything that isn't non-significant whitespace. If HTTPie is to be a general purpose tool it is important that it doesn't mask problems.\r\n\r\n**Provide any additional information, screenshots, or code examples below:**\r\n\r\nThe below example is my motivation for this feature. This server is returning invalid JSON with duplicate keys in the \"dps\" object. But I could not tell it was doing this, because HTTPie had silently \"corrected\" the output during formatting. You can see that if I turn off formatting and only colorize the output, I see the true output.\r\n\r\n```\r\nannettewilson@ANNEWILS02M:~/scratch/undercity$ http GET 'http://opentsdb.skymetrics.prod.skyscanner.local:4242/api/",
@@ -46,7 +40,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "planned": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1163,
+    "refused_by": null,
+    "original_labels": [
+      "enhancement",
+      "planned"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

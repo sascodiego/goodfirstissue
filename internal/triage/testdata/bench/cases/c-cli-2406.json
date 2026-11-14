@@ -7,12 +7,6 @@
     "number": 2406,
     "url": "https://github.com/urfave/cli/issues/2406"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "test: improve coverage of Run-with-no-arguments paths",
     "body": "Follow-up to #2401 (index out of range panic fix). The fix introduced `TestRunWithNoOsArgs` and a `no arguments at all` case in `Test_checkShellCompleteFlag`, but two combinations remain unexercised:\n\n1. **Empty args + `EnableShellCompletion` + empty `Name`** — the only path where both new guards fire together (`setupDefaults` empty-name guard plus the shell-completion `buildCompletionCommand(\"\")` append). Confirmed manually not to panic, but untested.\n2. **`TestRunWithNoOsArgs` does not assert `cmd.Name == \"\"`** after `Run` for the unnamed case — asserting it would lock in the documented behavior (root command keeps an empty Name rather than panicking).\n\nLow priority: pure coverage/robustness hardening; no behavior change.",
@@ -22,7 +16,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2407,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

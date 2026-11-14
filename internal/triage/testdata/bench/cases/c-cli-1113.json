@@ -7,12 +7,6 @@
     "number": 1113,
     "url": "https://github.com/urfave/cli/issues/1113"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Relax ordering requirements for flags/commands to improve upon cli ergonomics",
     "body": "## Checklist\r\n\r\n* [X ] Are you running the latest v2 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [X ] Did you check the manual for your release? The v2 manual is [here](https://github.com/urfave/cli/blob/master/docs/v2/manual.md)\r\n* [ X] Did you perform a search about this feature? Here's the [Github guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\n\r\nCLI ergonomics when editing/adding flags to command are very bad.\r\n\r\nQuick example, consider how many times you have to move cursor back in commandline to go from\r\n\r\n    $ cmd query users\r\n\r\nto\r\n\r\n    $ cmd --out=csv query --filter \"project=kittens\" users --with-permission=Deploy\r\n\r\nvs\r\n\r\n    $ cmd query users --with-permission=Deploy  --filter  \"project=kittens\", --out=csv \r\n\r\nIt also \"reads\" worse:\r\n \"output CSV on query project kittens on users with permissions to deploy:\r\n vs\r\n \" query users that can deploy in project kittens, output csv\"\r\n\r\nWithout forced ordering you can add a flag at the end at any point so ad-hoc usage of commands is much more streamlined, it also allows writing CLI scripts with arguments grouped by what makes more sense, not by how program author structured it.\r\n\r\nNow the long winded example, consider the following:\r\n* App has global flags applicable to all subcommands like\r\n  * change output type (for example switch between machine-parseable ",
@@ -83,7 +77,27 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/feature": "unknown",
+    "status/in-review": "unknown",
+    "pinned": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1568,
+    "refused_by": null,
+    "original_labels": [
+      "kind/feature",
+      "status/in-review",
+      "pinned",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

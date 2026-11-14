@@ -7,12 +7,6 @@
     "number": 2145,
     "url": "https://github.com/urfave/cli/issues/2145"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Missing required flags does not trigger `ExitErrHandler`",
     "body": "Hi everyone.\n\nWe're using the latest version (v3.3.3) of the library, and we noticed that when a command has one or more flags set as `Required` but they're not defined by the user, the library exits by printing the command's help without invoking any callback functions (`OnUsageError` or `OnUsageError`).\n\nhttps://github.com/urfave/cli/blob/cb0fc213cc26317b82f7a9ef9352da7cc8e185e5/command_run.go#L224C1-L229C3\n\nIt's strange because the code block before and after `checkAllRequiredFlags` always calls `deferErr = cmd.handleExitCoder(ctx, err)` before returning the error, while in the case of required flags, the error is directly returned to the caller.",
@@ -31,7 +25,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2161,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

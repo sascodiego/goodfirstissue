@@ -7,12 +7,6 @@
     "number": 14053,
     "url": "https://github.com/cli/cli/issues/14053"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "`gh auth status` reports rate limit / network failures as \"token is invalid\" with misleading re-auth advice",
     "body": "### Describe the bug\n\n`gh auth status` reports \"The token in `<source>` is invalid.\" for **any** token-validation failure, not just 401 Unauthorized. A 403 rate-limit response, a 5xx, or a TLS/DNS failure all produce the same misleading message plus a \"To re-authenticate, run: gh auth refresh\" hint that is useless (or actively harmful) for non-auth failures.\n\nIn `pkg/cmd/auth/status/status.go`, `buildEntry` only special-cases network timeouts; every other error collapses into `authEntryStateError`, and `authEntry.String` unconditionally renders \"The token in %s is invalid.\" for that state — the actual error is only visible via `--json hosts` (`entry.error`).\n\n### Steps to reproduce the behavior\n\n1. Exhaust the account's API rate limit (e.g. an agent/CI loop hitting the API, or a shared token used by another process).\n2. Run `gh auth status`.\n\nActual output:\n\n```\ngithub.com\n  X Failed to log in to github.com account <user> (keyring)\n  - Active account: true\n  - The token in keyring is invalid.\n  - To re-authenticate, run: gh auth refresh -h github.com\n  - To forget about this account, run: gh auth logout -h github.com -u <user>\n```\n\n3. The token is actually fine: `curl -H \"Authorization: Bearer <token>\" https://api.github.com/user` returns `403` with `API rate limit exceeded for user ID ...`, and succeeds again once the limit resets — no re-authentication involved.\n\n### Expected vs actual behavior\n\n**Expected:** distinguish 401 (genuinely invalid/revoked token → \"invalid\" + re",
@@ -42,7 +36,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "bug": "unknown",
+    "priority-3": "unknown",
+    "gh-auth": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 15009,
+    "refused_by": null,
+    "original_labels": [
+      "bug",
+      "priority-3",
+      "gh-auth"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

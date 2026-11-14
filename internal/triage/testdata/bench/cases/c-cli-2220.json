@@ -7,12 +7,6 @@
     "number": 2220,
     "url": "https://github.com/urfave/cli/issues/2220"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Mutually exclusive flags in help output",
     "body": "## What problem does this solve?\n\n- needing to have the opportunity to change FlagStringer for mutually exclusive flags\n\n## Solution description\n\nFor example, we have mutually exclusive flags m1 & m2, they are required. The fact that one of them (m1 or m2) is required must be displayed to the user. With simple flags we can override cli.FlagStringer func for our custom, where can add some special information if flag is required. But with MutuallyExclusiveFlags it doesn't work.\nMaybe add some func to override here too? So we can add some inside logic for output this groups of flags\n\n",
@@ -25,7 +19,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2414,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

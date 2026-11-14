@@ -7,12 +7,6 @@
     "number": 1960,
     "url": "https://github.com/urfave/cli/issues/1960"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Strange `.Validator` behavior",
     "body": "Hi there! I'm wondering if I'm the only one who finds the behavior of this package a bit strange:\r\n\r\n```go\r\npackage main\r\n\r\nimport (\r\n  \"context\"\r\n  \"errors\"\r\n  \"os\"\r\n  \"strings\"\r\n\r\n  \"github.com/urfave/cli/v3\"\r\n)\r\n\r\nfunc main() {\r\n  if err := (&cli.Command{\r\n    Action: func(ctx context.Context, command *cli.Command) error {\r\n      return nil\r\n    },\r\n    Flags: []cli.Flag{\r\n      &cli.StringFlag{\r\n        Name: \"api-key\",\r\n        Validator: func(s string) error {\r\n          if !strings.HasPrefix(s, \"API-\") {\r\n            return errors.New(\"wrong API key format\")\r\n          }\r\n\r\n          return nil\r\n        },\r\n      },\r\n    },\r\n  }).Run(context.Background(), os.Args); err != nil {\r\n    println(err.Error())\r\n\r\n    os.Exit(1)\r\n  }\r\n}\r\n```\r\n\r\nIt seems that the default value validation is failing before the actual flag value is parsed. Since the default value will always be invalid, this validation function renders the app unusable, even when the correct flag value is provided:\r\n\r\n```shell\r\n❯ go run . -h\r\n\r\nIncorrect Usage: wrong API key format\r\n\r\n...\r\n\r\nwrong API key format\r\nexit status 1\r\n```\r\n\r\n```\r\n❯ go run . --api-key API-123 -h\r\n\r\nIncorrect Usage: wrong API key format\r\n\r\n...\r\n\r\nwrong API key format\r\nexit status 1\r\n```\r\n\r\nCurrently, the only option I have is to set a default value that appears to be \"valid-like\":\r\n\r\n```diff\r\n&cli.StringFlag{\r\n\tName: \"api-key\",\r\n+\tValue: \"API-<set-your-key>\",\r\n```\r\n\r\nCould you please confirm if this is intentional or if it might be a bug?",
@@ -37,7 +31,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/question": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1961,
+    "refused_by": null,
+    "original_labels": [
+      "kind/question",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

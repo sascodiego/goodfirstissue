@@ -7,12 +7,6 @@
     "number": 672,
     "url": "https://github.com/httpie/cli/issues/672"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Support snap package on Linux",
     "body": "A ‘snap’ is a universal Linux package https://www.ubuntu.com/desktop/snappy, they are especially useful on servers (on desktops too), where they allow to install apps quickly with a single command and in an isolated way.\r\n\r\nThere is a supporting service build.snapcraft.io, which allows for automatic builds of the source whenever anything changes on a github repo.\r\n\r\nI have done initial packaging and it seems to work fine. Below example shows how simple (and readable) the build config will be, if you decide to publish httpie as snap.\r\n```\r\nname: httpie\r\nversion: '0.9.9'\r\nsummary: HTTPie - a CLI, cURL-like tool for humans.\r\ndescription: |\r\n  HTTPie (pronounced aitch-tee-tee-pie) is a command line HTTP client.\r\n  Its goal is to make CLI interaction with web services as human-friendly as possible.\r\n  It provides a simple http command that allows for sending arbitrary HTTP requests\r\n  using a simple and natural syntax, and displays colorized output.\r\n\r\n   HTTPie can be used for testing, debugging, and generally interacting with HTTP servers.\r\n\r\ngrade: devel\r\nconfinement: strict\r\n\r\nparts:\r\n  httpie:\r\n    plugin: python\r\n    source: https://github.com/jakubroztocil/httpie.git\r\n\r\napps:\r\n  http:\r\n    command: http\r\n    plugs:\r\n      - home\r\n      - network\r\n```",
@@ -45,7 +39,21 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "packaging": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1103,
+    "refused_by": null,
+    "original_labels": [
+      "packaging"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

@@ -7,12 +7,6 @@
     "number": 1958,
     "url": "https://github.com/urfave/cli/issues/1958"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Multiple available formats for timestamp flag",
     "body": "## Checklist\r\n\r\n* [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [x] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/index.md).\r\n* [x] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## Problem\r\n\r\nHi!\r\nUsing lib I found inconvenient moment: only possible time format, but often it is more convenient and intuitive to set time in shortened formats (ex. `1:06PM` instead of '2024-08-06 13:06:00Z').\r\n\r\nIn v3 it can be solved by writing flag using value with custom `Set()` AND this value can be gotten via `Command.Timestamp()`, unlike in v2, where `context.Timestamp()` [casts value to concrete type](https://github.com/urfave/cli/blob/v2-maint/flag_timestamp.go#L202).\r\n\r\nBut I suppose it may be a common problem and it is better to feat this feature into lib instead of solving it locally with custom realizations.\r\n\r\n## Solution suggestion\r\n\r\nI suggest to add multiple available time formats for flag and try to parse given value by each of them until parse is successful.\r\nSee details in PR",
@@ -25,7 +19,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1959,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

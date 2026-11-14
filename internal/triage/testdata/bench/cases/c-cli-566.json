@@ -7,12 +7,6 @@
     "number": 566,
     "url": "https://github.com/httpie/cli/issues/566"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Brew installed version doesn't work with plugins",
     "body": "Brew is listed as the recommended way of installing httpie on macOS. However, it doesn't work with auth plugins.\r\n\r\nFor example, if you `pip3 install requests-hawk` and then run `http --help` hawk will not show as an auth type. If you `pip3 install httpie-oauth` it will install httpie via pip as a dependency and overwrite the brew installed link in `/usr/local/bin/http` and now all the plugins will show because it isn't using the brew installed version.\r\n\r\nI suggest changing the documentation to read `pip3 install httpie` as the recommended method of installing on macOS.",
@@ -36,7 +30,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "bug": "unknown",
+    "docs": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1200,
+    "refused_by": null,
+    "original_labels": [
+      "bug",
+      "docs"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

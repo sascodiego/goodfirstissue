@@ -429,7 +429,7 @@ func TestBenchMeasuresWording(t *testing.T) {
 				t.Logf("FALLA %-22s %-28s esperaba %-12s árbol=%-12s intent=%-9s :: %s",
 					c.Trap, c.ID, c.Expected.Outcome, run.TreeOutcome, run.Intent, c.Issue.Title)
 			}
-			if c.Closure.LabelStrength == "strong" {
+			if c.Truth.LabelStrength == "strong" {
 				strong++
 				if run.Intent == c.Expected.Intent {
 					strongIntent++
@@ -447,7 +447,7 @@ func TestBenchMeasuresWording(t *testing.T) {
 				}
 			}
 			t.Logf("%-24s cerrada como %-12s fuerza=%-6s intent %-10s got=%-10s(p=%.2f) árbol=%-12s esp=%s",
-				c.ID, c.Closure.StateReason, c.Closure.LabelStrength, c.Expected.Intent,
+				c.ID, c.Truth.StateReason, c.Truth.LabelStrength, c.Expected.Intent,
 				run.Intent, intent["intent"].Probability, run.TreeOutcome, c.Expected.Outcome)
 			continue
 		}

@@ -7,12 +7,6 @@
     "number": 10837,
     "url": "https://github.com/cli/cli/issues/10837"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "NOT_PLANNED",
-    "label_strength": "strong",
-    "label_note": "un mantenedor explicó por qué no se hace"
-  },
   "issue": {
     "title": "Unable to install pinned SHA when extension uses binary releases",
     "body": "### Describe the bug\n\nWhen installing an extension using a pinned SHA, the gh CLI is unable to install from source for a commit when it has binary releases.\n\n### Affected version\n\n```\ngh version 2.70.0 (2025-04-11)\n```\n\n### Steps to reproduce the behavior\n\nInstall gh-notify with a commit sha, that will work because the extension has no releases:\n```console\n$ gh extension install meiji163/gh-notify --pin 556df2eecdc0f838244a012759da0b76bcfeb2e7\nCloning into '/Users/leighmcculloch/.local/share/gh/extensions/gh-notify'...\nremote: Enumerating objects: 379, done.\nremote: Counting objects: 100% (224/224), done.\nremote: Compressing objects: 100% (113/113), done.\nremote: Total 379 (delta 149), reused 146 (delta 105), pack-reused 155 (from 1)\nReceiving objects: 100% (379/379), 121.24 KiB | 1.86 MiB/s, done.\nResolving deltas: 100% (181/181), done.\n✓ Installed extension meiji163/gh-notify\n✓ Pinned extension at 556df2eecdc0f838244a012759da0b76bcfeb2e7\n```\nInstall gh-dash with a comit sha, that will fail because the extension has releases:\n```console\n$ gh extension install dlvhdr/gh-dash --pin 605b25ac07928bfc13cde36c312a506d5bb01779 # v4.14.0\nX Could not find a release of dlvhdr/gh-dash for 605b25ac07928bfc13cde36c312a506d5bb01779\n````\n\n### Expected vs actual behavior\n\nI expected all extensions to be installable with a pinned commit sha and for it to be a security best practice to pin extension installs to a commit sha so that the user is in complete control of what gets installed since ",
@@ -47,7 +41,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "more-info-needed": "unknown",
+    "gh-extension": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "BagToad",
+    "original_labels": [
+      "enhancement",
+      "more-info-needed",
+      "gh-extension"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "refused",

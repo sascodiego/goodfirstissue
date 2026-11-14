@@ -7,12 +7,6 @@
     "number": 2027,
     "url": "https://github.com/urfave/cli/issues/2027"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Before function for persistent flags",
     "body": "This is with v3.0.0-beta1.01.\r\nI came across this issue while porting our commands in [go-ethereum](https://github.com/ethereum/go-ethereum) from v2 to v3.\r\n\r\nIn many of our tools, we use a `Before` hook on the root command to perform common actions such as setting up logging.\r\nAs an example, let's define a flag like this to set the loglevel:\r\n\r\n```go\r\nvar logLevelFlag = &cli.IntFlag{\r\n    Name: \"loglevel\",\r\n    Value: 3,\r\n}\r\n```\r\n\r\nThe root command includes this flag and a `Before` hook to enable logging.\r\n\r\n```go\r\nvar app = &cli.Command{\r\n    Flags: []cli.Flag{\r\n        logLevelFlag,\r\n    },\r\n\r\n    Commands: []*cli.Command{\r\n        subCommand,\r\n    },\r\n    \r\n    Before: func (ctx context.Context, cmd *cli.Command) (context.Context, error) {\r\n        // here we would set the loglevel on the default logger\r\n        fmt.Println(\"level:\", cmd.Int(logLevelFlag.Name))\r\n        return ctx, nil\r\n    },\r\n}\r\n\r\nvar subCommand = &cli.Command{\r\n    Name: \"sub\",\r\n}\r\n```\r\n\r\nThis works as expected when invoking the root command (`app`) directly:\r\n\r\n```shell\r\n$ ./app --loglevel=5\r\nlevel: 5\r\n```\r\n\r\nIt also works for subcommands when putting the flag before the command:\r\n\r\n```shell\r\n$ ./app --loglevel=5 sub\r\nlevel: 5\r\n```\r\n\r\nBut it doesn't work when the flag is at the end:\r\n\r\n```shell\r\n$ ./app sub --loglevel=5\r\nlevel: 3  # should be 5\r\n```\r\n\r\nIt's unexpected behavior for me, because in v3, flags are supposed to be persistent by default, i.e. they should be applicable in any context. I think ",
@@ -46,7 +40,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2028,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

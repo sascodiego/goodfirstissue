@@ -7,12 +7,6 @@
     "number": 2217,
     "url": "https://github.com/urfave/cli/issues/2217"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Environment variables not read when flag is defined on both root and subcommand",
     "body": "### My urfave/cli version is\n\nv3.5.0 (latest as of 2025-10-30)\n\n### Checklist\n\n  - Are you running the latest v3 release? The list of releases is https://github.com/urfave/cli/releases. ✅ \n  - Did you check the manual for your release? The v3 manual is https://cli.urfave.org/v3/getting-started/ ✅ \n  - Did you perform a search about this problem? Here's the https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests about searching. ✅ \n\n### Dependency Management\n\nMy project is using go modules.\n\n### Describe the bug\n\n  When the same flag (same flag object instance) is defined in both a root command's Flags array and a subcommand's Flags array, environment variables specified via\n  Sources: cli.EnvVars() are not read correctly when executing the subcommand. However, CLI flag values passed via command-line arguments work fine.\n\n  This appears to be a regression or unintended behavior in v3, as the flag duplication pattern was common in v2 for creating \"global\" flags.\n\n### Minimal reproduction code\n\n```go\n  package main\n\n  import (\n        \"context\"\n        \"fmt\"\n        \"os\"\n\n        \"github.com/urfave/cli/v3\"\n  )\n\n  func main() {\n        // Define flag once\n        flagTest := &cli.StringFlag{\n                Name:     \"test-flag\",\n                Sources:  cli.EnvVars(\"TEST_FLAG\"),\n                Usage:    \"Test flag\",\n                Required: true,\n        }\n\n        // Subcommand that uses the flag\n        subCmd := &cli.C",
@@ -37,7 +31,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/documentation": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2355,
+    "refused_by": null,
+    "original_labels": [
+      "kind/documentation",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

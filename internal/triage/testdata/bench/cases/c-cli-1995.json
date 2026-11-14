@@ -7,12 +7,6 @@
     "number": 1995,
     "url": "https://github.com/urfave/cli/issues/1995"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Fix typo",
     "body": "I checked typo using https://github.com/crate-ci/typos , then a lot of typo are found.\r\n\r\n```console\r\n$ git rev-parse HEAD\r\nc4cd0a51cc113a90eca318cc8f7d328f05a5f2b7\r\n\r\n$ typos --version\r\ntypos-cli 1.26.8\r\n```\r\n\r\n```console\r\n~/repos/src/github.com/urfave/cli main\r\n$ typos\r\nerror: `halp` should be `help`\r\n  --> ./docs/v3/examples/generated-help-text.md:80:22\r\n   |\r\n80 |   \"args\": [\"&#45;&#45halp\"],\r\n   |                      ^^^^\r\n   |\r\nerror: `HALP` should be `HELP`\r\n  --> ./docs/v3/examples/generated-help-text.md:81:24\r\n   |\r\n81 |   \"output\": \"haaaaalp.*HALP\"\r\n   |                        ^^^^\r\n   |\r\nerror: `halp` should be `help`\r\n  --> ./docs/v3/examples/generated-help-text.md:96:22\r\n   |\r\n96 |   Aliases: []string{\"halp\"},\r\n   |                      ^^^^\r\n   |\r\nerror: `HALP` should be `HELP`\r\n  --> ./docs/v3/examples/generated-help-text.md:97:13\r\n   |\r\n97 |   Usage:   \"HALP\",\r\n   |             ^^^^\r\n   |\r\nerror: `HALP` should be `HELP`\r\n  --> ./docs/v3/examples/generated-help-text.md:98:30\r\n   |\r\n98 |   Sources: cli.EnvVars(\"SHOW_HALP\", \"HALPPLZ\"),\r\n   |                              ^^^^\r\n   |\r\nerror: `halp` should be `help`\r\n  --> ./docs/v3/examples/full-api-example.md:34:38\r\n   |\r\n34 |  cli.HelpFlag = &cli.BoolFlag{Name: \"halp\"}\r\n   |                                      ^^^^\r\n   |\r\nerror: `Thar` should be `Than`, `That`\r\n  --> ./docs/v3/examples/full-api-example.md:165:36\r\n    |\r\n165 |    fmt.Fprintf(cmd.Root().Writer, \"Thar be no %q here.\\n\", command)\r\n    |             ",
@@ -28,7 +22,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1996,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

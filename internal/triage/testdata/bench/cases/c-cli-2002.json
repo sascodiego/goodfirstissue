@@ -7,12 +7,6 @@
     "number": 2002,
     "url": "https://github.com/urfave/cli/issues/2002"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "`cli-altsrc` and `cli-docs` version drift and incompatibilities",
     "body": "## What's the problem?\r\n\r\nThe latest `urfave/cli` (v3.0.0-alpha9.2), is not compatible with the latest `urfave/cli-docs` (v3.0.0-alpha5).\r\n\r\nAttempting to build a project with those 2 dependencies results in:\r\n\r\n```\r\n~/projects/emu git:[master]\r\ngo build ./cmd/emu/\r\n# github.com/urfave/cli-docs/v3\r\n../../.cache/go/pkg/mod/github.com/urfave/cli-docs/v3@v3.0.0-alpha5/docs.go:273:16: flag.GetValue undefined (type cli.DocGenerationFlag has no field or method GetValue)\r\n../../.cache/go/pkg/mod/github.com/urfave/cli-docs/v3@v3.0.0-alpha5/docs.go:400:21: flag.GetValue undefined (type cli.DocGenerationFlag has no field or method GetValue)\r\n```\r\n\r\nfor a sample reproducer, see https://github.com/bartekpacia/emu/pull/7\r\n\r\n## What's the larger problem?\r\n\r\nThere's no CI checks that prevent this kind of problem.\r\n\r\nIdeally, nothing that breaks compatibility between the `urfave/cli` modules (`cli`, `altsrc`, and `docs`) should be mergeable (i.e. CI should be red), unless explicit approval from maintainers.",
@@ -26,7 +20,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2004,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

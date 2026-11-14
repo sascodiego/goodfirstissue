@@ -7,12 +7,6 @@
     "number": 1211,
     "url": "https://github.com/httpie/cli/issues/1211"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Lazily load pygments styles",
     "body": "We currently try to retrieve all pygments styles at once, but this operation is very slow due to the import of `pkg_resources` on the pygments side.\r\nhttps://github.com/httpie/httpie/blob/cfcd7413d1afbabc5ab3c88a892851335be4944a/httpie/output/formatters/colors.py#L31 \r\n\r\nWe should load these styles lazily when a user specifies `--style` explicitly. ",
@@ -55,7 +49,21 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "performance": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1221,
+    "refused_by": null,
+    "original_labels": [
+      "performance"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

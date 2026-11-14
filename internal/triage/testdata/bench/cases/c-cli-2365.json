@@ -7,12 +7,6 @@
     "number": 2365,
     "url": "https://github.com/urfave/cli/issues/2365"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Documentation on optimizing binary size",
     "body": "In https://github.com/urfave/cli/issues/2304 we've tried to trace what happened to build flags that helped to reduce binary size. The information in the thread appeared quite valuable to me, and I thought that `urfave/cli` is popular enough among Go beginners to share a tutorial on where the binary size comes from, and how to prove and optimize it (if possible).\n\nI am not sure I am capable to write it myself in a concise and visually pleasing way with dumps, pictures and commands. So I leave this issue here to challenge other Go hackers.",
@@ -28,7 +22,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2428,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

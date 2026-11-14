@@ -7,12 +7,6 @@
     "number": 1255,
     "url": "https://github.com/httpie/cli/issues/1255"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Warn the user when there is no incoming data after a certain time passed on stdin",
     "body": "E.g\r\n```\r\n $ cat | http POST pie.dev/post                                                                                                                                             861ms\r\n> no stdin data read in 10.0s (perhaps you want to --ignore-stdin)\r\n> https://httpie.io/docs/cli/best-practices\r\n\r\n```",
@@ -25,7 +19,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "new": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1256,
+    "refused_by": null,
+    "original_labels": [
+      "enhancement",
+      "new"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

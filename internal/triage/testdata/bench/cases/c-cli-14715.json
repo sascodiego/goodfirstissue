@@ -7,12 +7,6 @@
     "number": 14715,
     "url": "https://github.com/cli/cli/issues/14715"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "NOT_PLANNED",
-    "label_strength": "weak",
-    "label_note": "cerrada como no planeada sin nada que leer"
-  },
   "issue": {
     "title": "[aw] Dependabot PR Triage (skills-driven) exceeded daily AI credits budget",
     "body": "### Workflow Failure\n\n**Workflow:** [Dependabot PR Triage (skills-driven)](https://github.com/cli/cli/blob/trunk/.github/workflows/dependabot-triage.md)  \n**Branch:** trunk  \n**Run:** https://github.com/cli/cli/actions/runs/38910522175\n\n\n> [!WARNING]\n> **Daily Workflow AIC Guardrail Exceeded**: The agent was not started because this workflow has already consumed the configured 24-hour AI Credits budget.\n\n- **24h AIC usage:** `5K` AI Credits\n- **Configured threshold:** `5K` AI Credits\n\nThe agent will resume automatically once the 24-hour rolling window resets. No action is required if the current limit is appropriate for your usage.\n\n<sub>AIC values are approximate. Consult the billing dashboards for accurate usage and charges.</sub>\n\n<details>\n<summary>How to raise the daily limit</summary>\n\nSet `max-daily-ai-credits` in your workflow frontmatter to a higher value, then recompile:\n\n```yaml\nmax-daily-ai-credits: 20K\n```\n\nCommon suffix shorthands: `K` = thousands, `M` = millions (e.g. `2M` = 2,000,000).\n\nAfter editing the workflow source file, regenerate the compiled lock file:\n\n```bash\ngh aw compile\n```\n\nCommit and push the updated `.lock.yml` file.\n\n> [!NOTE]\n> Raising the limit increases the number of AI inference calls the workflow can make\n> per 24-hour window. Review your Copilot or model provider billing\n> before significantly increasing the threshold (for example, before doubling the current\n> value or setting it far above expected usage).\n\n</details>\n\n<details>\n<summar",
@@ -85,7 +79,21 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "agentic-workflows": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "agentic-workflows"
+    ],
+    "label_strength": "weak"
+  },
   "expected": {
     "kind": "",
     "intent": "refused",

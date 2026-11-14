@@ -7,12 +7,6 @@
     "number": 1237,
     "url": "https://github.com/httpie/cli/issues/1237"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Create a style that matches with the HTTPie for Web/Desktop",
     "body": "[HTTPie for Web and Desktop](https://httpie.io/beta) uses a very cool colour scheme, and we should probably add it as a custom style to the CLI.  ",
@@ -25,7 +19,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "new": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1238,
+    "refused_by": null,
+    "original_labels": [
+      "enhancement",
+      "new"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

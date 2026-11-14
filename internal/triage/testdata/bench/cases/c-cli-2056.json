@@ -7,12 +7,6 @@
     "number": 2056,
     "url": "https://github.com/urfave/cli/issues/2056"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Clarification regarding Command.Arguments property",
     "body": "Hi\nGuys please could you clarify the idea behind `Command.Arguments` property.\n\nActually my use case is a command with one required positional argument\n```\napp command <required-position-argument>\n```\nSo without `Command.Arguments`  declaration `cmd.Args().Get(0)` works well.  Yet in this case there's no validation  performed for argument was provided\n\nWith adding\n```golang\nArguments: []cli.Argument{\n  &cli.StringArgument{\n       Name: \"required-position-argument\",\n  }\n}\n```\nit works the very same way (without args number validation)\n\nWhile trying to extend arg declaration with\n```golang\n  &cli.StringArgument{\n       Name: \"required-position-argument\",\n       Min: 1,\n       Max: 1,\n  }\n```\nit actually starts validating against arguments number. Yet the argument value is not accessible neither through `cmd.Args().Get(0)` nor `cmd.String(\"required-position-argument\")`. Instead it could be reached over something like `cmd.Arguments[0].Values[0]`\n\n\nSo as the examples seem not covered such a deep cases it is not clear (for `v3` specifically)\n * How to make in general the case of one Required argument with a single scalar string value\n * What is the purpose of `Argument.Name` though. Are such argument values could be accessed by name somehow or is it just for help referring matter only\n * What is the general case for `Command.Arguments` declaration\n\nThank you.",
@@ -32,7 +26,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/question": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2088,
+    "refused_by": null,
+    "original_labels": [
+      "kind/question",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

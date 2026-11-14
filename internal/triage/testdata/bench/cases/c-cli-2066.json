@@ -7,12 +7,6 @@
     "number": 2066,
     "url": "https://github.com/urfave/cli/issues/2066"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "**Terrible CLI Library** Both v2/v3 have serious bugs",
     "body": "The v3 version fails to properly recognize the `--` terminator, making it completely unusable in my use case.  \nRelated: #1114 (unresolved) ,#1562 (useless, insane patch) ...\n\nThe v2 version can handle the terminator correctly, but it cannot disable the comma-splitting behavior of `StringSliceFlag`, and `cli.separatorSpec` is not exported, making all features related to `separatorSpec` (like `WithSeparatorSpec`) unavailable.  \nRelated: #1856 ,#1552 (should never happen) ,  #1878, #1541 ...\n\nThe above issues are just what I found, there are definitely more than these\n# These are all known issues, but they were closed without being fixed.\n\nAdditionally, there are weird functions like `cli.Args().Slice()`, `Args().Tail()`, etc., and I can only guess their functionality based on their output.\n\nSince I couldn't resolve these issues, I switched to Cobra. I'm just posting this to vent.  \nSimply changing the command parsing part from `urfave/cli` to `cobra`, my binary size dropped from 12MB to 5MB, which is incredible.  \nAlthough Cobra’s API isn’t as pleasant to write as `urfave/cli`, at least it doesn’t have serious bugs and can handle basic command parsing.\n\nSorry for raising this issue, please feel free to close",
@@ -38,7 +32,27 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/question": "unknown",
+    "area/v2": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2074,
+    "refused_by": null,
+    "original_labels": [
+      "kind/question",
+      "area/v2",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

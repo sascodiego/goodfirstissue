@@ -7,12 +7,6 @@
     "number": 2222,
     "url": "https://github.com/spf13/cobra/issues/2222"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Completion helper",
     "body": "Following #2220\n\nRight now the format for completion is not obvious. I discovered in ov tool\n\n```go\nrootCmd.PersistentFlags().IntP(\"tab-width\", \"x\", 8, \"tab stop width\")\n_ = rootCmd.RegisterFlagCompletionFunc(\"tab-width\", func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {\n\treturn []string{\"3\\ttab width\", \"2\\ttab width\", \"4\\ttab width\", \"8\\ttab width\"}, cobra.ShellCompDirectiveNoFileComp\n})\n```\n\nhttps://github.com/noborus/ov/blob/4f4e9e5c266ec4815c5a166718e318992ea47751/main.go#L431-433\n\nBy not .obvious, I mean the `tab` is logic but not something you will think of, when you easily find out in the documentation.\n\nI opened an issue as it requires some design\n\n- Adding a struct, with Text and description\n- validation might be needed\n\n- Generic could help, but the Go version 1.15 is go.mod broke my dreams 😅\n- a fmt.Stringer art, but it doesn't bring much\n\nI might be overthinking and what is needed is simply about adding documentation about the format in the methods\n\nSo, let's talk 😁\n",
@@ -38,7 +32,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2231,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

@@ -7,12 +7,6 @@
     "number": 1349,
     "url": "https://github.com/httpie/cli/issues/1349"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Stdin warning makes programs stuck",
     "body": "Context: https://discord.com/channels/725351238698270761/799982808122523648/962805007248392192",
@@ -35,7 +29,21 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "bug": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1350,
+    "refused_by": null,
+    "original_labels": [
+      "bug"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

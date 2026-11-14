@@ -7,12 +7,6 @@
     "number": 2079,
     "url": "https://github.com/spf13/cobra/issues/2079"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "NOT_PLANNED",
-    "label_strength": "strong",
-    "label_note": "un mantenedor explicó por qué no se hace"
-  },
   "issue": {
     "title": "[Bug] SetArgs doesn't reset flag value",
     "body": "See following test code. Call `SetArgs` won't reset flag value, `Execute()` also won't reset flag value too.\r\n```go\r\nfunc TestSetArgs(t *testing.T) {\r\n\tgetCMD := func() *Command {\r\n\t\tcmd := &Command{\r\n\t\t\tUse: \"testcmd\",\r\n\t\t\tRunE: func(cmd *Command, args []string) error {\r\n\t\t\t\ta, _ := cmd.Flags().GetBool(\"a\")\r\n\t\t\t\tb, _ := cmd.Flags().GetBool(\"b\")\r\n\t\t\t\tc, _ := cmd.Flags().GetBool(\"c\")\r\n\t\t\t\tswitch {\r\n\t\t\t\tcase a && b, a && c, b && c:\r\n\t\t\t\t\treturn fmt.Errorf(\"a,b,c only one could be true\")\r\n\t\t\t\t}\r\n\t\t\t\treturn nil\r\n\t\t\t},\r\n\t\t}\r\n\t\tf := cmd.Flags()\r\n\t\tf.BoolP(\"a\", \"a\", false, \"a,b,c only one could be true\")\r\n\t\tf.BoolP(\"b\", \"b\", false, \"a,b,c only one could be true\")\r\n\t\tf.Bool(\"c\", false, \"a,b,c only one could be true\")\r\n\t\treturn cmd\r\n\t}\r\n\r\n\tcmd := getCMD()\r\n\r\n\t// step 1\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--a=true\",\r\n\t})\r\n\tassertNoErr(t, cmd.Execute()) // PASS\r\n\r\n\t// step 2\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--b=true\",\r\n\t})\r\n\tt.Log(cmd.Flags().Changed(\"a\")) // true\r\n\tassertNoErr(t, cmd.Execute()) // FAIL, output error msg is \"a,b,c only one could be true\"\r\n\r\n\t// step 3\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--c=true\",\r\n\t})\r\n\tassertNoErr(t, cmd.Execute()) // FAIL, output error msg is \"a,b,c only one could be true\"\r\n\r\n\t// step 4\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--a=false\",\r\n\t\t\"--b=false\",\r\n\t\t\"--c=true\",\r\n\t})\r\n\tassertNoErr(t, cmd.Execute()) // PASS\r\n}\r\n```",
@@ -68,7 +62,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "marckhouzam",
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "refused",

@@ -7,12 +7,6 @@
     "number": 1937,
     "url": "https://github.com/spf13/cobra/issues/1937"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "RFE: env var for disabling descriptions",
     "body": "In https://github.com/scop/bash-completion/pull/905, we've added fallback 3rd party completion loaders for various known commands, including some cobra powered ones, and more are expected to be added later. However, as it stands, this mechanism does not have any way for users to specify `--no-descriptions` if that's their preference.\r\n\r\nWe could create a bash-completion specific way to accomplish this, but in my opinion this would be better placed in cobra proper. An environment variable would serve this nicely I think: something like `COBRA_COMPLETION_NO_DESCRIPTIONS(=non-empty-value)` could be equivalent as if `--no-descriptions` was passed in the generator command line.",
@@ -33,7 +27,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1938,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

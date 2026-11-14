@@ -7,12 +7,6 @@
     "number": 1507,
     "url": "https://github.com/spf13/cobra/issues/1507"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Hide auto-generated completion command",
     "body": "Is there a way to hide the  `completion` cmd?  I like having it, but don't want it to show up in --help\r\n\r\nThanks!",
@@ -43,7 +37,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1541,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

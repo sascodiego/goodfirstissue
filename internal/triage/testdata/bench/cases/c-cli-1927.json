@@ -7,12 +7,6 @@
     "number": 1927,
     "url": "https://github.com/urfave/cli/issues/1927"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Ability to add context values",
     "body": "## Checklist\r\n\r\n* [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [x] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/manual.md).\r\n* [x] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\n\r\nIn old versions we could add context fields in Before function like this\r\n```\r\n  Before: func(c *cli.Context) error {\r\n      db := \"example\"\r\n      c.Context = context.WithValue(c.Context, \"db\", db)\r\n      return nil\r\n  },\r\n```\r\nIt's useful for example for passing logger through all commands.\r\n\r\n## Solution description\r\nAdd some middleware layer to command with signature\r\n```\r\nfunc(ctx context.Context, command *cli.Command) func(ctx context.Context, command *cli.Command)\r\n```\r\nwhere we could modify passing ctx\r\n\r\n\r\n## Describe alternatives you've considered\r\n\r\nReturn back Context field to command\r\n",
@@ -41,7 +35,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1994,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

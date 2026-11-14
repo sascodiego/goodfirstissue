@@ -7,12 +7,6 @@
     "number": 11260,
     "url": "https://github.com/cli/cli/issues/11260"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "NOT_PLANNED",
-    "label_strength": "strong",
-    "label_note": "un mantenedor explicó por qué no se hace"
-  },
   "issue": {
     "title": "no output on `gh auth login`",
     "body": "### Describe the bug\n\n<img width=\"697\" height=\"92\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/fdb95296-7bf6-4dc2-bff8-e8303e7172f7\" />\n\n<img width=\"151\" height=\"85\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/b0350ab4-a5f4-4c3b-a31e-5ae6010baaed\" />\n\n<img width=\"842\" height=\"157\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/05e76c31-208d-4f6e-8906-e63cc01d0ab1\" />\n\nNo response to login. I'm on a server, have no browsers installed and no UI.\n\nFirst after a key/enter it will shown. \n\n### Affected version\n\nPlease run `gh version` and paste the output below.\ngh version\ngh version 2.75.0 (2025-07-09)\nhttps://github.com/cli/cli/releases/tag/v2.75.0\n\n\n### Steps to reproduce the behavior\n\n1. Type this '...'\n2. View the output '....'\n3. See error\n\n### Expected vs actual behavior\n\nOutput the Code and Login url as on other systems.\n\n### Logs\n\nPaste the activity from your command line. Redact if needed.\n\n<!-- Note: Set `GH_DEBUG=true` for verbose logs or `GH_DEBUG=api` for verbose logs with HTTP traffic details. -->\n",
@@ -71,7 +65,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "more-info-needed": "unknown",
+    "gh-auth": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "williammartin",
+    "original_labels": [
+      "more-info-needed",
+      "gh-auth"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "refused",

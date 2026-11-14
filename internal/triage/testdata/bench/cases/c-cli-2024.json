@@ -7,12 +7,6 @@
     "number": 2024,
     "url": "https://github.com/urfave/cli/issues/2024"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "v3 error: flag_timestamp.go:92:44: undefined: time.TimeOnly",
     "body": "```\r\n/go/pkg/mod/github.com/urfave/cli/v3@v3.0.0-beta1/flag_timestamp.go:92:44: undefined: time.TimeOnly\r\n```\r\nhttps://ci.codeberg.org/repos/13526/pipeline/30/6",
@@ -36,7 +30,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2026,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

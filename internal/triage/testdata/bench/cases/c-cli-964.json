@@ -7,12 +7,6 @@
     "number": 964,
     "url": "https://github.com/httpie/cli/issues/964"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Support header values read from file ?",
     "body": "httpie allows to get url params and form data from file, by using @ syntax\r\n\r\nThere are sometimes complicated headers, for example tokens.\r\n\r\nIt seems this is not yet possible for headers.\r\n\r\nCan this feature be added for headers as well?\r\n\r\nProbably with a syntax like:\r\n```\r\n':@'\r\n```\r\n\r\nlike:\r\n\r\n```\r\nReferer:http://httpie.org  Cookie:foo=bar  User-Agent:bacon/1.0 FunnyHeader:@somefile\r\n```\r\n\r\nThat would be very helpful.\r\n",
@@ -28,7 +22,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1225,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

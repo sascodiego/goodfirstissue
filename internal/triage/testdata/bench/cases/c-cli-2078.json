@@ -7,12 +7,6 @@
     "number": 2078,
     "url": "https://github.com/urfave/cli/issues/2078"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Support flag sources in a required group of MutuallyExclusiveFlags",
     "body": "## Checklist\n\n* [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n* [x] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/index.md).\n* [x] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## What problem does this solve?\n\nA required group of MutuallyExclusiveFlags with flags that use sources, such as environment variables, should work as expected.\n\nHere is an example program that demonstrates the problem. Set the `ONE` environment variable and then run the program. You get the error `one of these flags needs to be provided: one, two`. If you set required to false, then the MutuallyExclusiveFlags work as expected.\n\n```\npackage main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"log\"\n\t\"os\"\n\n\t\"github.com/urfave/cli/v3\"\n)\n\nfunc main() {\n\tcmd := &cli.Command{\n\t\tName: \"test\",\n\t\tMutuallyExclusiveFlags: []cli.MutuallyExclusiveFlags{\n\t\t\t{\n\t\t\t\tFlags: [][]cli.Flag{\n\t\t\t\t\t{\n\t\t\t\t\t\t&cli.StringFlag{\n\t\t\t\t\t\t\tName:    \"one\",\n\t\t\t\t\t\t\tSources: cli.NewValueSourceChain(cli.EnvVar(\"ONE\")),\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t\t{\n\t\t\t\t\t\t&cli.StringFlag{\n\t\t\t\t\t\t\tName:    \"two\",\n\t\t\t\t\t\t\tSources: cli.NewValueSourceChain(cli.EnvVar(\"TWO\")),\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\tRequired: true,\n\t\t\t},\n\t\t},\n\t\tAction: func(_ context.Context, cmd *cli.Command) error {\n\t\t\tif cmd.",
@@ -25,7 +19,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2074,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

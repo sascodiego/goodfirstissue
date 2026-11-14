@@ -1,20 +1,14 @@
 {
-  "id": "c-cli-14982",
+  "id": "c-cli-15036",
   "provenance": "real-closed",
   "trap": "closed_refused_without_reason",
   "source": {
     "repository": "cli/cli",
-    "number": 14982,
-    "url": "https://github.com/cli/cli/issues/14982"
-  },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "NOT_PLANNED",
-    "label_strength": "weak",
-    "label_note": "cerrada como no planeada sin nada que leer"
+    "number": 15036,
+    "url": "https://github.com/cli/cli/issues/15036"
   },
   "issue": {
-    "title": "Ator/atriz",
+    "title": "Lll",
     "body": "### Describe the feature or problem you’d like to solve\n\nA clear and concise description of what the feature or problem is.\n\n### Proposed solution\n\nHow will it benefit CLI and its users?\n\n### Additional context\n\nAdd any other context like screenshots or mockups are helpful, if applicable.\n",
     "comments": [],
     "labels": [
@@ -24,7 +18,21 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "suspected-spam": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "suspected-spam"
+    ],
+    "label_strength": "weak"
+  },
   "expected": {
     "kind": "",
     "intent": "refused",

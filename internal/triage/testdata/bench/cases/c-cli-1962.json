@@ -7,12 +7,6 @@
     "number": 1962,
     "url": "https://github.com/urfave/cli/issues/1962"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "TestYamlFileUint fails on 32 bit architectures",
     "body": "I'm working on packaging this library for Debian, and after enabling the altsrc package, I noticed that the test cases below fail on 32 bit architectures:\r\n\r\nhttps://github.com/urfave/cli/blob/a4832fd31def973ae9fb5aedba571db952463ceb/altsrc/yaml_file_loader_test.go#L293-L302\r\n\r\nThis applies to each of `i386`, `armhf` and `armel`:\r\n\r\n```\r\n119s     yaml_file_loader_test.go:261: 4 testcast: expect error but Mismatched type for flag 'test'. Expected 'uint' but actual is 'int64'\r\n119s     yaml_file_loader_test.go:261: 5 testcast: expect error but Mismatched type for flag 'test'. Expected 'uint' but actual is 'uint64'\r\n119s --- FAIL: TestYamlFileUint (0.00s)\r\n```",
@@ -25,13 +19,31 @@
     ],
     "labels": [
       "kind/bug",
-      "area/v2"
+      "area/v2",
+      "accepted"
     ],
     "github_state": "OPEN",
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "area/v2": "unknown",
+    "accepted": "author"
+  },
+  "simulation": "author_self_labelled",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1963,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "area/v2"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

@@ -7,12 +7,6 @@
     "number": 2173,
     "url": "https://github.com/urfave/cli/issues/2173"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "bug: zsh autocompletions",
     "body": "## My urfave/cli version is\n\nv3\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n- My project is using go modules.\n\n## Describe the bug\n\nCompletions aren't work for ZSH:\n\n```\nmahyar@tiger tmp % ./greet add - --generate-shell-completion\n--config:path to config file\n--help:show help\nmahyar@tiger tmp % ./greet add --conf --generate-shell-completion\nhelp:Shows a list of commands or help for one command\n```\n\n## To reproduce\n\nUse the example provided here: https://cli.urfave.org/v3/examples/completions/shell-completions/\n\n## Observed behavior\n\nIt did not autocomplete properly.\n\n## Expected behavior\n\nFor it to auto-complete to --config.\n\n## Additional context\n\nN/A\n\n## Want to fix this yourself?\n\nI've made a simple fix to the generated ZSH completion script that has it working on my system.\n\n## Run `go version` and paste its output here\n\n```\n# paste `go version` output in here\n```\n\n## Run `go env` and paste its output here\n\n```\n# paste `go env` output in here\n```\n",
@@ -26,7 +20,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2437,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

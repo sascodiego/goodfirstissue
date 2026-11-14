@@ -7,12 +7,6 @@
     "number": 2225,
     "url": "https://github.com/urfave/cli/issues/2225"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Improve `AllowExtFlags` robustness",
     "body": "## Checklist\n\n* [X] Are you running the latest v3 release?\n* [X] Did you check the manual for your release?\n* [X] Did you perform a search about this feature?\n\n## What problem does this solve?\n\n- cryptic error messages like `\"syntax error: expected flag.go:234\"`\n- errors requiring external boolean flags have a value when used\n- avoidable astonishment when `AllowExtFlags` flags behave differently from identical flags defined using urfave/cli\n\nRecently, while addressing CVE-2025-52881, I found urfave/cli/v3 became a transitive dependency of numerous programs with a large number of dependencies, many of which define flags using the standard golang \"flags\" package.\n\nThe support for external flags in urfave/cli/v3, `AllowExtFlags` [added code to set the value of each external flag to its default value.](https://github.com/urfave/cli/commit/9bb00e2e9d78514163e08bc45ff95017171e559b) While it seems reasonable that every flag would accept its default value, that is not always the case.\n\nIt's not clear to me that urfave/cli should ever fail in this case. That said, it is possible to identify a tiny subset of flags that are most likely to reject their default value, namely variable flags that use a pointer to a structure as the variable and lazily use the string representation of the zero-value of the structure instead of an empty string as the default. In any case, where urfave/cli does fail, the user would benefit from additional context.\n\nAll of the urfave/cli flag types follow a Val",
@@ -31,7 +25,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2227,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

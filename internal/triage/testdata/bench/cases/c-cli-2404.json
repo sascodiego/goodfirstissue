@@ -7,12 +7,6 @@
     "number": 2404,
     "url": "https://github.com/urfave/cli/issues/2404"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "flag_mutex_test.go: ineffective error-string assertion masks wrong error message",
     "body": "Found while reviewing #2386.\n\n**Bug in test harness (flag_mutex_test.go:107):** the assertion checking the error string uses `t.Logf` instead of `t.Errorf`/`require.Contains`:\n\n```go\nif !strings.Contains(err.Error(), test.errStr) {\n    t.Logf(\"Invalid error string %v\", err)\n}\n```\n\nSo a wrong error message never fails the test. This is currently masking a real discrepancy: the `\"set both flags\"` case passes `--i 11 --ai 12` and expects `\"option i cannot be set along with option ai\"`, but the actual error is `\"option i cannot be set along with option t\"`. `MutuallyExclusiveFlags.check` uses `f.Names()[0]`, which returns the primary name (`t`), not the alias used on the CLI (`ai`).\n\n**Fix:** change the assertion to `t.Errorf` (or `assert.Contains(t, err.Error(), test.errStr)`) so wrong messages fail, and decide whether the message should reference the flag name as typed on the command line (alias `ai`) rather than the primary name.\n\n**Test coverage gap (related):** the regression test added in #2386 (`--i --q`) only covers \"first member of group 0 × second member of group 1\". The mirror cases — second member of group 0 (`--s --q`), and the issue-reproduction layout where the conflicting flag is the second member of both groups — are untested. Recommend adding at least one such case to pin the cross-group fix.",
@@ -22,7 +16,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2410,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

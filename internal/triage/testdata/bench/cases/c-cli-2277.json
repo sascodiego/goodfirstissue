@@ -7,12 +7,6 @@
     "number": 2277,
     "url": "https://github.com/urfave/cli/issues/2277"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Dead code elimination partially disabled",
     "body": "`urfave/cli` directly uses `text/template`, and unfortunately this partially disables dead code elimination. However, \"partial\" in this context can result in significantly larger binaries depending on how many other dependencies you have. Full DCE can result in significant binary size reductions (50%+-).\n\nCobra recently added a fix/workaround for a similar issue:\nhttps://github.com/spf13/cobra/pull/1956\n\nI appreciate there may not be a non-breaking way to solve this in v3.",
@@ -50,7 +44,21 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2441,
+    "refused_by": null,
+    "original_labels": [
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

@@ -7,12 +7,6 @@
     "number": 2234,
     "url": "https://github.com/urfave/cli/issues/2234"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "An empty argument and all subsequent arguments are dropped",
     "body": "## My urfave/cli version is\n\nv3.6.0\n\n## Checklist\n\n- [X] Are you running the latest v3 release? ish. Issue still exists in v3.6.1\n- [X] Did you check the manual for your release?\n- [X] Did you perform a search about this problem?\n\n## Describe the bug\n\nAn empty arg and all subsequent arguments get dropped.\n\ni.e. if I have a command line like the following, `\"\"` and everything following are dropped\n\n```\n$ command subcommand -f=something \"\" arg2 arg3\n```\n\ngets treated as\n\n```\n$ command subcommand -f=something\n```\n\n## To reproduce\n\nAny `c.Run(ctx, []string{\"command\", \"\", \"arg2\"})` or similar will reproduce.\n\n## Observed behavior\n\ncommands with an empty argument misbehave or fail entirely.\n\n## Expected behavior\n\nI would expect the arguments to include the empty argument and all following arguments.\n\n## Want to fix this yourself?\n\nsure\n\n## Run `go version` and paste its output here\n\n```\n$ go version\ngo version go1.24.8 linux/amd64\n```\n\n## Run `go env` and paste its output here\n\n```\n$ go env\nAR='ar'\nCC='x86_64-linux-gnu-gcc'\nCGO_CFLAGS='-O2 -g'\nCGO_CPPFLAGS=''\nCGO_CXXFLAGS='-O2 -g'\nCGO_ENABLED='1'\nCGO_FFLAGS='-O2 -g'\nCGO_LDFLAGS='-O2 -g'\nCXX='x86_64-linux-gnu-g++'\nGCCGO='gccgo'\nGO111MODULE=''\nGOAMD64='v1'\nGOARCH='amd64'\nGOAUTH='netrc'\nGOBIN=''\nGOCACHE=<redacted>\nGOCACHEPROG=''\nGODEBUG=''\nGOENV=<redacted>\nGOEXE=''\nGOEXPERIMENT=''\nGOFIPS140='off'\nGOFLAGS=''\nGOGCCFLAGS='-fPIC -m64 -pthread -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=<redacted>/tmp/go-build569096055=/tmp/g",
@@ -32,7 +26,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2328,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

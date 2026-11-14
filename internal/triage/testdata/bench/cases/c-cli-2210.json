@@ -7,12 +7,6 @@
     "number": 2210,
     "url": "https://github.com/urfave/cli/issues/2210"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "`DefaultText` is not respected for generating documentation",
     "body": "## My urfave/cli version is\n\n_**( Put the version of urfave/cli that you are using here )**_\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n- My project is using go modules.\n- My project is automatically downloading the latest version (**renovate**).\n\n## Describe the bug\n\nAs per https://github.com/urfave/cli-docs/issues/11#issuecomment-3340478916\n\nI subled over the same problem, where i want to change the text for the default value.\n`Default: os.TempDir()` so the val changes depending on the system generating the docs :/\n\nThis makes a bad description at https://woodpecker-ci.org/docs/cli#exec (search for flag `--backend-local-temp-dir`)\n\n## To reproduce\n\nJust use a changing default and DefaultText and try to generate markdown docs ...\n\n## Observed behavior\n\nThe DefaultText works as expected, when used with the --help flag on a compiled cli binary\n\n## Expected behavior\n\nShow the DefaultText instead of resolving Default value.",
@@ -43,7 +37,27 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "status/waiting-for-response": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 17,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "status/waiting-for-response",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

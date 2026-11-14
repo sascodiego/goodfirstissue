@@ -7,12 +7,6 @@
     "number": 1916,
     "url": "https://github.com/urfave/cli/issues/1916"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Should I expect completion of nested command's flags to work?",
     "body": "### Discussed in https://github.com/urfave/cli/discussions/1915\r\n\r\n<div type='discussions-op-text'>\r\n\r\n<sup>Originally posted by **ldelossa** May 25, 2024</sup>\r\nHello, \r\n\r\nI have a root command called 'cmd'. \r\nNow I have a sub command hanging off this called \"sub-command\".\r\nThe cli.Command for \"sub-command\" defines 2 flags \"--a, --b\".\r\nAll commands have the \"EnableShellCompletion\" boolean set to true. \r\n\r\nI'm using `zsh`. Should I expect to see completion for `cmd subcommand --<Tab>`. \r\nMy assumption was to see completion for `--a, --b` but instead the only completion I get is for `--h, -help` essentially.</div>",
@@ -83,7 +77,17 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {},
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1918,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

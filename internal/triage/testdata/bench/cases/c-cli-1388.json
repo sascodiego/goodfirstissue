@@ -7,12 +7,6 @@
     "number": 1388,
     "url": "https://github.com/httpie/cli/issues/1388"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "No such file or directory: '~/.config/httpie/version_info.json'",
     "body": "## Checklist\r\n\r\n- [x] I've searched for similar issues.\r\n- [x] I'm using the latest version of HTTPie.\r\n\r\n---\r\n\r\n## Minimal reproduction code and steps\r\n\r\n1. do use `http` command, e.g. `http GET http://localhost:8004/consumers/test`\r\n\r\n## Current result\r\n\r\n```bash\r\n❯ http GET http://localhost:8004/consumers/test\r\nHTTP/1.1 200 \r\nConnection: keep-alive\r\nContent-Length: 0\r\nDate: Fri, 06 May 2022 06:28:00 GMT\r\nKeep-Alive: timeout=60\r\nX-B3-TraceId: baf0d94787afeb82\r\n\r\n\r\n\r\n\r\n~ on ☁️  (ap-southeast-1) \r\n❯ Traceback (most recent call last):\r\n  File \"/opt/homebrew/Cellar/httpie/3.2.0/libexec/lib/python3.10/site-packages/httpie/__main__.py\", line 19, in <module>\r\n    sys.exit(main())\r\n  File \"/opt/homebrew/Cellar/httpie/3.2.0/libexec/lib/python3.10/site-packages/httpie/__main__.py\", line 9, in main\r\n    exit_status = main()\r\n  File \"/opt/homebrew/Cellar/httpie/3.2.0/libexec/lib/python3.10/site-packages/httpie/core.py\", line 162, in main\r\n    return raw_main(\r\n  File \"/opt/homebrew/Cellar/httpie/3.2.0/libexec/lib/python3.10/site-packages/httpie/core.py\", line 44, in raw_main\r\n    return run_daemon_task(env, args)\r\n  File \"/opt/homebrew/Cellar/httpie/3.2.0/libexec/lib/python3.10/site-packages/httpie/internal/daemon_runner.py\", line 47, in run_daemon_task\r\n    DAEMONIZED_TASKS[options.task_id](env)\r\n  File \"/opt/homebrew/Cellar/httpie/3.2.0/libexec/lib/python3.10/site-packages/httpie/internal/update_warnings.py\", line 51, in _fetch_updates\r\n    with open_with_lockfile(file, 'w') as strea",
@@ -36,7 +30,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "bug": "unknown",
+    "new": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1389,
+    "refused_by": null,
+    "original_labels": [
+      "bug",
+      "new"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

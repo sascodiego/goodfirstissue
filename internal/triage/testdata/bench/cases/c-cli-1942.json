@@ -7,12 +7,6 @@
     "number": 1942,
     "url": "https://github.com/urfave/cli/issues/1942"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "BoolFlag Count and/or compound not working ",
     "body": "## My urfave/cli version is\r\n\r\n_**v2.27.2**_\r\n\r\n## Dependency Management\r\n\r\n- My project is using go modules.\r\n\r\n## Describe the bug\r\n\r\nThe v2 documentation states:\r\n\r\n> For bool flags you can specify the flag multiple times to get a count(e.g -v -v -v or -vvv)\r\n\r\nIt seems that you can specify the flag multiple times with `-v -v -v` but **not** with `-vvv`.\r\n\r\n## To reproduce\r\n\r\nMinimal example to reproduce:\r\n```\r\npackage main\r\n\r\nimport (\r\n\t\"fmt\"\r\n\t\"log\"\r\n\t\"os\"\r\n\r\n\t\"github.com/urfave/cli/v2\"\r\n)\r\n\r\nfunc main() {\r\n\tvar count int\r\n\r\n\tapp := &cli.App{\r\n\t\tFlags: []cli.Flag{\r\n\t\t\t&cli.BoolFlag{\r\n\t\t\t\tName:    \"verbosity\",\r\n\t\t\t\tAliases: []string{\"v\"},\r\n\t\t\t\tCount:   &count,\r\n\t\t\t},\r\n\t\t},\r\n\t\tAction: func(cCtx *cli.Context) error {\r\n\t\t\tfmt.Println(\"count\", count)\r\n\t\t\treturn nil\r\n\t\t},\r\n\t}\r\n\r\n\tif err := app.Run(os.Args); err != nil {\r\n\t\tlog.Fatal(err)\r\n\t}\r\n}\r\n\r\n``` \r\n\r\n## Observed behavior\r\n\r\nRunning this program without parameters works as expected.\r\nRunning with `-v` works as expected.\r\nRunning with `-v -v` works as expected.\r\nRunning with `-vv` does **not** work as expected and prints following message:\r\n\r\n```\r\n2024/07/01 12:17:32 flag provided but not defined: -vv\r\n```\r\n\r\n## Run `go version` and paste its output here\r\n\r\n```\r\ngo version go1.22.4 linux/amd64\r\n```\r\n",
@@ -32,7 +26,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "area/v2": "unknown",
+    "status/triage": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1953,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "area/v2",
+      "status/triage"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

@@ -7,12 +7,6 @@
     "number": 2285,
     "url": "https://github.com/urfave/cli/issues/2285"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Dynamic fish completions breaks fish completions",
     "body": "Kinda seems like this broke fish completion for me: \n\n```\n❯ ./result/bin/hei completion fish|source\n- (line 3): Unsupported use of '='. In fish, please use 'set string hei'.\nfunction __%!_(string=hei)perform_completion\n               ^~~~~~~~~^\nfrom sourcing file -\nsource: Error while reading file “<stdin>”\n```\n\n_Originally posted by @marcusramberg in https://github.com/urfave/cli/issues/2270#issuecomment-4005515642_\n\nand\n\nI have the same issue as @marcusramberg :\n\n```\n~/.local/share/fish/vendor_completions.d/toolname.fish (line 3): Unsupported use of '='. In fish, please use 'set string toolname'.\nfunction __%!_(string=toolname)perform_completion\n               ^~~~~~~~~~~~^\nfrom sourcing file ~/.local/share/fish/vendor_completions.d/toolname.fish\n\tcalled on line 1 of file ~/.config/fish/conf.d/toolname-forwarding.fish\nfrom sourcing file ~/.config/fish/conf.d/toolname-forwarding.fish\n\tcalled on line 223 of file embedded:config.fish\nfrom sourcing file embedded:config.fish\n\tcalled during startup\nsource: Error while reading file '/Users/de13lb/.local/share/fish/vendor_completions.d/toolname.fish'\n```\n\nfish, version 4.5.0\ngithub.com/urfave/cli/v3 v3.7.0 \n            ",
@@ -25,7 +19,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2286,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

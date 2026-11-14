@@ -7,12 +7,6 @@
     "number": 1904,
     "url": "https://github.com/urfave/cli/issues/1904"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Expose shell completions scripts in by default in the `completion` command",
     "body": "## Checklist\r\n\r\n* [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [x] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/manual.md).\r\n* [x] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\n\r\nMakes it easier for developers to add shell completion to the CLI tools they're building with `urfave/cli/v3`. This would make completion installation the same as the popular Cobra library, that is:\r\n\r\n`myapp completion zsh` prints the completion script for `zsh`. The user of the CLI gets to decide what to do with it:\r\n- put it into completions directory: `myapp completion zsh > /opt/homebrew/share/zsh/site-functions/_myapp` (on macOS), or\r\n- source it in-place: `. <(myapp completion zsh)`\r\n\r\nWe already have [completion scripts in this repository](https://github.com/urfave/cli/tree/main/autocomplete) for all major popular shells (`bash`, `zsh`, `pwsh`), and furthermore, these scripts are already bundled with the module:\r\n\r\nhttps://github.com/urfave/cli/blob/204d34fd57943cab87f9228e19b9b0230c65976a/completion.go#L14-L16\r\n\r\n\r\n## Solution description\r\n\r\nBy default, each CLI app made with `urfave/cli/v3` should have the `completion` command (hidden by default)\r\n\r\nI don't think",
@@ -56,7 +50,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "kind/feature": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1998,
+    "refused_by": null,
+    "original_labels": [
+      "kind/feature",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

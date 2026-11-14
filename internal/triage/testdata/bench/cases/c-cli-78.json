@@ -7,12 +7,6 @@
     "number": 78,
     "url": "https://github.com/httpie/cli/issues/78"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Syntax for nested JSON ",
     "body": "The simple examples work, but what about nested data?\nIn curl I do something like this:\n\n-d \\\n'\"credentials\": {\n    \"username\": \"me\",\n    \"key\": \"my-key\"}\n}'\n\nHow can I do this with httpie?\n",
@@ -37,7 +31,25 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "planned": "unknown",
+    "needs product design": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1169,
+    "refused_by": null,
+    "original_labels": [
+      "enhancement",
+      "planned",
+      "needs product design"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

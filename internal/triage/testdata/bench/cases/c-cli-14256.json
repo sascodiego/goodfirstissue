@@ -7,12 +7,6 @@
     "number": 14256,
     "url": "https://github.com/cli/cli/issues/14256"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Add `extrepo` as an unofficial installation method",
     "body": "### Describe the feature or problem you’d like to solve\n\nA clear and concise description of what the feature or problem is.\n\n### Proposed solution\n\n- Add installation via PPA. This sounds like,\n```bash\nsudo add-apt-repository ppa:gh/cli\nsudo apt update\nsudo apt install --assume-yes gh\n```\n\n### How will it benefit CLI and its users?\n\n- I find the installation commands for https://github.com/cli/cli/blob/v2.93.0/docs/install_linux.md#debian to be too verbose. This causes problems where copying and pasting text is not possible.\n```bash\n(type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \\\n\t&& sudo mkdir -p -m 755 /etc/apt/keyrings \\\n\t&& out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \\\n\t&& cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \\\n\t&& sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \\\n\t&& sudo mkdir -p -m 755 /etc/apt/sources.list.d \\\n\t&& echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \\\n\t&& sudo apt update \\\n\t&& sudo apt install gh -y\n```\n\n### Additional context\n\nAdd any other context like screenshots or mockups are helpful, if applicable.\n\n- See https://ubuntu.com/docs/launchpad/user/reference/packaging/ppas/ppa/ .\n",
@@ -65,7 +59,21 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "enhancement": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 14796,
+    "refused_by": null,
+    "original_labels": [
+      "enhancement"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

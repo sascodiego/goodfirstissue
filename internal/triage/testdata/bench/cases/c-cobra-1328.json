@@ -7,12 +7,6 @@
     "number": 1328,
     "url": "https://github.com/spf13/cobra/issues/1328"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "NOT_PLANNED",
-    "label_strength": "strong",
-    "label_note": "un mantenedor explicó por qué no se hace"
-  },
   "issue": {
     "title": "DisableFlagParsing should disable creation of the help flag?",
     "body": "I expected this to be the default behaviour but maybe there's a good argument for how it is today.\r\n\r\nIf you add a command with DisableFlagParsing, then `help cmd` will list `-h` as a flag, but running `cmd -h` will not print the help, it'll invoke Run() with ['-h']. If it's the command's responsibility to parse all of the flags, I think it makes sense to not add flags automatically.\r\n\r\nHere is a simplified example:\r\n```go\r\npackage main\r\nimport \"github.com/spf13/cobra\"\r\nfunc main() {\r\n\tcmd := &cobra.Command{\r\n\t\tUse:              \"root\",\r\n\t\tTraverseChildren: true,\r\n\t}\r\n\tsub := &cobra.Command{\r\n\t\tUse:                \"sub\",\r\n\t\tDisableFlagParsing: true,\r\n\t\tRun:                func(cmd *cobra.Command, args []string) {},\r\n\t}\r\n\tcmd.AddCommand(sub)\r\n\tcmd.SetArgs([]string{\"help\", \"sub\"})\r\n\tcmd.Execute()\r\n}\r\n```\r\n\r\nThe output is:\r\n```\r\nUsage:\r\n  root sub [flags]\r\n\r\nFlags:\r\n  -h, --help   help for sub\r\n```\r\n\r\nIs there any better way to disable this help flag than this?\r\n```go\r\n\tsub.InitDefaultHelpFlag()\r\n\tsub.Flags().MarkHidden(\"help\")\r\n```",
@@ -36,7 +30,23 @@
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "area/flags-args": "unknown",
+    "lifecycle/needs-pr": "unknown"
+  },
+  "simulation": "",
   "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "johnSchnake",
+    "original_labels": [
+      "area/flags-args",
+      "lifecycle/needs-pr"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "refused",

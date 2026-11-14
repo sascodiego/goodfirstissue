@@ -7,25 +7,37 @@
     "number": 1207,
     "url": "https://github.com/httpie/cli/issues/1207"
   },
-  "closure": {
-    "state": "CLOSED",
-    "state_reason": "COMPLETED",
-    "label_strength": "strong",
-    "label_note": "una PR mergeada la cerró: el trabajo realmente pasó"
-  },
   "issue": {
     "title": "Response headers sharing the same names get converted into a comma-separated list",
     "body": "## Checklist\r\n\r\n- [x] I've searched for similar issues.\r\n- [x] I'm using the latest version of HTTPie.\r\n\r\n---\r\n\r\n## Minimal reproduction code and steps\r\n\r\nMake a request to URL that returns repeated headers lines. Here’s an example express server that does that:\r\n\r\n```js\r\n// server.js\r\nconst express = require('express')\r\nconst fs = require('fs')\r\n\r\nconst app = express()\r\nconst port = 4000\r\n\r\napp.get('/', (req, res) => {\r\n  res.set('x-foo', ['bar', 'baz'])\r\n  res.send('Hello World!')\r\n})\r\n\r\napp.listen(port, () => {\r\n  console.log(`Example app listening at http://localhost:${port}`)\r\n})\r\n```\r\n\r\nThe run `node server.js` and get the response:\r\n\r\n```bash\r\nhttp :4000\r\n```\r\n\r\n## Current result\r\n\r\n\r\n```http\r\nx-foo: bar, baz\r\n```\r\n\r\n## Expected result\r\n\r\n\r\n\r\n```http\r\nx-foo: bar\r\nx-foo: baz\r\n```\r\n\r\n---\r\n\r\n@isidentical we’ve fixed this for requests, so let’s fix it for the responses as well.",
     "comments": [],
     "labels": [
       "bug",
-      "new"
+      "new",
+      "approved"
     ],
     "github_state": "OPEN",
     "github_state_reason": "",
     "linked_prs": []
   },
+  "labels_applied_by": {
+    "bug": "unknown",
+    "new": "unknown",
+    "approved": "author"
+  },
+  "simulation": "author_self_labelled",
   "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1208,
+    "refused_by": null,
+    "original_labels": [
+      "bug",
+      "new"
+    ],
+    "label_strength": "strong"
+  },
   "expected": {
     "kind": "",
     "intent": "approved",

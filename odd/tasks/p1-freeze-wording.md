@@ -217,3 +217,8 @@ abstención que produce ese desenlace.
 L32. El informe de la medición queda por escrito en `INFORME-TRIAJE.md`, con la matriz por clase
 emitida, la separación entre resolución determinista y modelo, lo que se puede afirmar y lo que
 no.
+
+L33. **PR #22**, contra `main`, con `main` mergeado en la rama (sin rebase, por decisión del
+owner): la historia se preserva y el conflicto con lo que ya estaba mergeado —`internal/nan`,
+la división de `internal/web`, la pantalla de issue— queda resuelto en un commit de merge.
+`make verify` verde después del merge. #14 sigue abierta: el cierre lo decide el owner.

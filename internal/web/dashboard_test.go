@@ -247,3 +247,23 @@ func TestTitlesAreEscaped(t *testing.T) {
 		t.Error("se esperaba el título escapado en la página")
 	}
 }
+
+// Tocar una issue la abre adentro de la app: el título de la fila apunta a la
+// pantalla propia y GitHub deja de ser el camino principal. El contexto de
+// repositorio y el filtro no se pierden al entrar (issue #6, S1 y S7).
+func TestDashboardTitleOpensTheIssueScreen(t *testing.T) {
+	h := newHandler(t, corpus(t))
+
+	for _, target := range []string{
+		"/?repo=spf13__cobra",
+		"/?repo=spf13__cobra&state=free",
+	} {
+		page := body(t, h, target)
+		if !strings.Contains(page, `href="/issue/spf13__cobra/2568"`) {
+			t.Errorf("en %s el título no abre la pantalla de la issue", target)
+		}
+		if strings.Contains(page, `href="https://github.com/spf13/cobra/issues/2568"`) {
+			t.Errorf("en %s el título sigue apuntando a GitHub", target)
+		}
+	}
+}

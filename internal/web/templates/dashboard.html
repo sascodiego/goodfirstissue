@@ -116,7 +116,7 @@
                      aria-label="Seleccionar #{{.Number}}">
             </td>
             <td class="c-num">{{.Number}}</td>
-            <td class="c-ttl"><a href="{{.URL}}" rel="noopener noreferrer">{{.Title}}</a></td>
+            <td class="c-ttl"><a href="/issue/{{$.Active.Key}}/{{.Number}}">{{.Title}}</a></td>
             <td class="c-lbl">
               {{if .HasLabel}}{{range .Labels}}<span class="chip{{if .Hit}} hit{{end}}">{{.Text}}</span>{{end}}
               {{else}}<span class="none">ninguna</span>{{end}}

@@ -1319,7 +1319,7 @@ internal/ghdata/         ✅ wrapper de `gh api graphql`: snapshot pinneado + PR
 internal/indexer/        ✅ wrapper de `codegraph init` + `.git/info/exclude`
 internal/pig/            ✅ wrapper del agente: PIG_HOME propio, JSONL, watchdog de silencio
 internal/explore/        ✅ contrato de salida embebido, parseo estricto, validación contra la traza
-internal/clef/           cliente, cola 1-en-vuelo, registro de decisiones
+internal/nan/            ✅ cliente HTTP: /v1/systemone con cola 1-en-vuelo, /v1/chat/completions en paralelo
 internal/triage/         P1: agrupación por union-find, preguntas, política §7.7
 internal/fit/            P3: estado por parte, preguntas, política §9.3
 internal/store/          ✅ JSON atómico, envoltura de esquema, snapshots, registro de repos, journal de decisiones

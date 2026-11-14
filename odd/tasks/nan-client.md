@@ -31,14 +31,13 @@ S10. Si Clef falla, la app no decide (I2): el error tipado lleva `Kind`, `Status
 
 | ID | Tarea | Specs | Ruta | Commit |
 |---|---|---|---|---|
-| T1 | `Options`, `New` con validación (key, URLs, piso de 50 s, `MaxRetries ≥ 0`) y tipo `Error` con mapeo de status/red | S4, S6, S10 | inline | C1 |
-| T2 | Tipos de `SystemOne`: `Noul`/`Choice`/`Score`, encode del request y decode del sobre real (§17.6) | S1 | inline | C1 |
-| T3 | Cola 1-en-vuelo con `ctx`; test de concurrencia máxima observada == 1 | S1, S7 | inline | C2 |
-| T4 | Reintentos: 401 sin reintento, 429 a 1 s, 5xx y red con backoff, agotado tipado | S3, S5, S9, S10 | inline | C2 |
-| T5 | `Chat` paralelo + decode de `choices[].message.content` | S2, S6 | inline | C3 |
-| T5b | `Chat` no reintenta 401 ni serializa; tope de concurrencia lo pone el llamador | S2, S6 | inline | C3 |
-| T6 | Timeout y `ctx` respetados de punta a punta contra un server de prueba cancelable | S4 | inline | C3 |
-| T7 | Doc del paquete + `PROYECTO.md` §17.3 + `make verify` verde | S8 | inline | C3 |
+| T1 | `Options`, `New` con validación (key, URLs, piso de 50 s, `MaxAttempts ≥ 0`) y tipo `Error` con mapeo de status/red | S4, S6, S10 | inline | `edd4b61` |
+| T2 | Tipos de `SystemOne`: `Noul`/`Choice`/`Score`, encode del request y decode del sobre real (§17.6) | S1 | inline | `edd4b61` |
+| T3 | Cola 1-en-vuelo con `ctx`; test de concurrencia máxima observada == 1 | S1, S7 | inline | `90f0af9` |
+| T4 | Reintentos: 401 sin reintento, 429 a 1 s, 5xx y red con backoff, agotado tipado | S3, S5, S9, S10 | inline | `edd4b61` |
+| T5 | `Chat` paralelo + decode de `choices[].message.content` | S2, S6 | inline | `cc383ed` |
+| T6 | Timeout y `ctx` respetados de punta a punta contra un server de prueba cancelable | S4 | inline | `edd4b61` |
+| T7 | Doc del paquete, `PROYECTO.md` §17.3 y `make verify` verde | S8 | inline | cierre |
 
 Riesgo: **ítem 4 (concurrencia)** — la cola de I1 y la prueba de que nunca hay dos en vuelo.
 Verificación independiente además de los tests, y revisión nativa con lentes `resilience` y `reliability`.
@@ -60,3 +59,9 @@ L5. Decisión (configuración del chat): no se agrega sección `chat` en esta en
 L6. Evidencia: `gh issue comment 5` → https://github.com/sascodiego/goodfirstissue/issues/5#issuecomment-6880899976
 
 L7. Evidencia (reintentos, I1): `PROYECTO.md` §10, fila I1: «Timeout ≥ 50 s, reintento ante `429` tras 1 s, máximo 5 intentos». El 429 entra en el alcance de T4 aunque el criterio de aceptación de la issue solo nombre `5xx` y red.
+
+L8. Evidencia (TDD en rojo): `go test ./internal/nan/` → «no non-test Go files» (RED de T1). Negativos de control ejecutados y observados: con `SystemOne` sin la cola, `TestSystemOneNeverHasTwoRequestsInFlight` falla con «the server saw 2 requests in flight, want 1»; con `Chat` reteniendo la cola, `TestChatRunsConcurrently` falla con «the server saw 1 requests in flight, want more than 1». Restaurado el código, ambos pasan. Esas corridas son la prueba de que los tests muerden.
+
+L9. Punto abierto (off-by-one de I1, no resuelto por código): I1 dice «máximo 5 intentos» y `config.clef.max_retries` vale 5, que con la lectura natural del campo son 1 + 5 = 6 intentos. El paquete expone `Options.MaxAttempts` (intentos totales, default 5 = la letra de I1) para no violar el invariante. Queda pendiente decidir si el cableado de #9 traduce `max_retries: 5` a 6 intentos (y se corrige I1) o si el campo significa 5 intentos totales (y se ajusta el ejemplo de configuración). No se tocó `internal/config` (decisión L5).
+
+L10. Nota de rebanadas: C1 quedó en 1255 líneas porque el cliente, el endpoint de decisión, el motor de reintentos y sus tests no compilan por separado sin stubs. C2 (cola, 189) y C3 (chat, 270) sí quedaron en tamaño revisable, y C2 aísla el ítem de riesgo 4 para que la revisión nativa lo pueda tomar solo. Si la revisión pide cortar C1, el corte posible es «tipos y validación» / «transporte y reintentos» / «endpoint y sobre de respuesta», con tres estados intermedios que hoy no existen.

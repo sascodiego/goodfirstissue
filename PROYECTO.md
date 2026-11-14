@@ -6,6 +6,8 @@
 **Reemplaza:** el documento de definición de producto y arquitectura v1.0, en todo lo relativo al **alcance del MVP** (sus secciones 13 y 18). La visión de producto, el análisis del problema y los principios de diseño del original siguen vigentes.
 
 **Historial**
+- **2.20** — la agrupación de duplicados **sale del MVP por tiempo** (`LIMITES.md` §1). **I12 se reformula**:
+  la unidad de evaluación es la issue sola. No se reescribe la entrada 2.1: registra lo que se decidió entonces.
 - **2.19** — el proyecto pasa a repositorio propio (`sascodiego/goodfirstissue`), no un fork. Sin remote hacia el repositorio oficial del hackathon: la ruta para abrir ahí una issue o un PR no existe. El historial completo y el material original se conservan; la procedencia queda declarada en `NOTICE.md` (§18).
 - **2.18** — persistencia de análisis (§17.9): registro de repositorios (`gfi repos`) y journal de decisiones append-only con bloqueo `flock`. El caché se indexa por `(issue, pasada, modelo, versión del prompt, commit)` (I14): la segunda corrida de la misma issue pasó de **1m49s a 0,023s**. Medido: SQLite puro Go cuesta 26 módulos y ~5 MB de binario; DuckDB 72 módulos, 34 MB y cgo, así que queda descartado.
 - **2.17** — persistencia y clonado (§17.3): `internal/store` con envoltura de esquema y escritura atómica, `internal/repo` con clonado shallow idempotente, `gfi fetch` y `gfi index`. Corpus real de dos lenguajes. El nombre canónico de GitHub resuelve renombrados (§5.2).
@@ -682,7 +684,7 @@ Lo que sí funciona es el **silencio del pipe**. PiG escribe un evento por líne
 
 La issue se juzga a sí misma **antes** de explorar el código, por una razón de producto y no técnica: *una issue mal armada le hace perder tiempo al contribuyente*. Explorarla primero sería gastar el recurso más caro en el caso que ya sabemos que no sirve.
 
-### 7.1. Agrupación: la unidad de evaluación es el grupo
+### 7.1. Agrupación: fuera del MVP por tiempo
 
 > **Diferida: fuera del MVP.** Agrupar duplicados exige decidir si dos textos describen el
 > mismo problema, y eso es trabajo de un modelo de lenguaje sobre cada par de candidatas:
@@ -1103,7 +1105,7 @@ Incumplir cualquiera invalida la demo.
 | **I9** | **Triaje antes de explore.** Nunca se gasta un explore en una issue que no pasó la compuerta de P1. |
 | **I10** | **Nunca se descarta por evidencia insuficiente.** Se duda en voz alta. Una issue mal armada se excluye diciendo qué le falta; una issue que no se puede clasificar se mantiene con la duda. |
 | **I11** | **El triaje corre sobre la caché local.** La red se usa solo en el fetch de §5.2. |
-| **I12** | **La unidad de evaluación es el grupo.** Los duplicados se absorben, no se descartan; la recomendación y el triaje son del grupo. |
+| **I12** | **La unidad de evaluación del MVP es la issue sola.** La agrupación de duplicados queda fuera del MVP por tiempo (`LIMITES.md` §1): comparar pares con un modelo no entra en el reloj. Cuando exista, los duplicados se absorberán en un grupo y no se descartarán. |
 | **I13** | **Solo los modelos de la lista constitucional.** `clef` más cinco flash. Un id fuera de ella impide el arranque; la lista es constante en código y `NAN_CHAT_MODEL` solo elige dentro de ella. |
 | **I14** | **Un resultado guardado declara la pregunta que responde.** El caché se indexa por `(issue, pasada, modelo, versión del prompt, commit)`. Si cambia cualquiera de los cinco, es otra pregunta y se recalcula. Nunca se reutiliza un veredicto ajeno ni se presenta como fresco. |
 

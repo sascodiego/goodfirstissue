@@ -1,0 +1,74 @@
+{
+  "id": "c-cli-cli-14609",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14609,
+    "url": "https://github.com/cli/cli/issues/14609"
+  },
+  "issue": {
+    "title": "gh release list -R https://github.com/cli/cli/ -> error",
+    "body": "### Describe the bug\n\n`gh release list -R https://github.com/cli/cli/` gives back:\n\n```\nnon-200 OK status code: 401 Unauthorized body: \"{\\r\\n  \\\"message\\\": \\\"Requires authentication\\\",\\r\\n  \\\"documentation_url\\\": \\\"https://docs.github.com/rest\\\",\\r\\n  \\\"status\\\": \\\"401\\\"\\r\\n}\"\n```\nInstead of listing available releases.\n\n### Affected version\n\n```\ngh version 2.102.0 (2026-09-30)\nhttps://github.com/cli/cli/releases/tag/v2.102.0\n```\n\nRunning on\n```\nDISTRIB_ID=Ubuntu\nDISTRIB_RELEASE=26.04\nDISTRIB_CODENAME=resolute\nDISTRIB_DESCRIPTION=\"Ubuntu 26.04.1 LTS\"\n```\n\n### Steps to reproduce the behavior\n\n1. Download `gh` using any browser from \"https://github.com/cli/cli/release\"\n2. Install `gh` using `dpkg -i gh_2.102.0_linux_amd64.deb`\n3. Try `gh release list -R https://github.com/cli/cli/`\n\n### Expected vs actual behavior\n\nShow list of available releases.\n\n### Logs\n\n```\n$ GH_DEBUG=api gh release list -R https://github.com/cli/cli/\n* Request at 2026-10-06 11:11:31.899403718 +0200 CEST m=+0.078085442\n* Request to https://api.github.com/graphql\n> POST /graphql HTTP/1.1\n> Host: api.github.com\n> Accept: application/vnd.github.merge-info-preview+json, application/vnd.github.nebula-preview\n> Authorization: \n> Content-Length: 83\n> Content-Type: application/json\n> Graphql-Features: merge_queue\n> Time-Zone: Europe/Berlin\n> User-Agent: GitHub CLI 2.102.0\n> X-Gh-Cache-Ttl: 24h0m0s\n> X-Github-Api-Version: 2022-11-28\n\n{\n  \"query\": \"query Release_fields{Release: __type(name: \\\"Release\\\"){fields{name}}",
+    "comments": [
+      {
+        "author": "tps800",
+        "body": "```\n$ GH_DEBUG=api gh release list -R https://github.com/cli/cli/releases/\ninvalid path: /cli/cli/releases/\n```\nRunning on Windows it works as expected.\n",
+        "author_association": ""
+      },
+      {
+        "author": "babakks",
+        "body": "Thanks for the issue, @tps800! 🙏\n\nI have a gut feeling that this is due to the feature detection cache. Can you please try `gh config clear-cache` and see if it happens again?\n\nIf it's the cache, the problem should be fixed in like 24h. But let's first make sure that's the real problem.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "williammartin",
+        "body": "@tps800 can you provide the output of `gh auth status` please.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "tps800",
+        "body": "```\n$ gh auth status\ngithub.com\n  ✓ Logged in to github.com account xxxxxx (keyring)\n  - Active account: true\n  - Git operations protocol: https\n  - Token: gho_************************************\n  - Token scopes: 'gist', 'read:org', 'repo', 'workflow'\n```",
+        "author_association": ""
+      },
+      {
+        "author": "williammartin",
+        "body": "@tps800 Does this still happen for you when you run `gh release list -R https://github.com/cli/cli/` or did it resolve?\n\nAlso, in your debug logs:\n\n```\n$ GH_DEBUG=api gh release list -R https://github.com/cli/cli/\n* Request at 2026-10-06 11:11:31.899403718 +0200 CEST m=+0.078085442\n* Request to https://api.github.com/graphql\n> POST /graphql HTTP/1.1\n> Host: api.github.com\n> Accept: application/vnd.github.merge-info-preview+json, application/vnd.github.nebula-preview\n> Authorization: \n```\n\nDid yo",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "tps800",
+        "body": "Problem solved. Was an old library from Linux. After updating the OS it seems to work now as expected.",
+        "author_association": ""
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

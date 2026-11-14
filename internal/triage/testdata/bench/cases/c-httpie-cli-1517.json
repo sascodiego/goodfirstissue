@@ -1,0 +1,55 @@
+{
+  "id": "c-httpie-cli-1517",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1517,
+    "url": "https://github.com/httpie/cli/issues/1517"
+  },
+  "issue": {
+    "title": "How to remove DEFAULT_UA?",
+    "body": "Hi, \r\n\r\nCould you tell me how to remove the DEFAULT_UA? First I thought there would be a simple --no-useragent setting or even --user-agent flag where I could quickly set an alias but apparently not then I tried making a default ~/.config/httpie/config.json file \r\n\r\n{\r\n    \"headers\": {\r\n        \"User-Agent\":\"\",\r\n}\r\n\r\n\r\nbut that didn't work either\r\n",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "Yes, just specify the header without any value.\r\n\r\n```bash\r\n$ http --offline pie.dev/headers User-Agent:\r\n```\r\n\r\n```http\r\nGET /headers HTTP/1.1\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate\r\nConnection: keep-alive\r\nHost: pie.dev\r\n```\r\n\r\nDocs: https://httpie.io/docs/cli/empty-headers-and-header-un-setting",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "new": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "new"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

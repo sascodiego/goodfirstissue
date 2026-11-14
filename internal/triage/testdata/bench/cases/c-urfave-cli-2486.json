@@ -1,0 +1,55 @@
+{
+  "id": "c-urfave-cli-2486",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2486,
+    "url": "https://github.com/urfave/cli/issues/2486"
+  },
+  "issue": {
+    "title": "Root command shell completion reads os.Args instead of the arguments passed to Run",
+    "body": "## My urfave/cli version is\n\nv3.14.0 (latest release). Also reproduced on main at 10f69fd3c38de86a3bc17810dcb7f818b494f027.\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n- My project is using go modules.\n\n## Describe the bug\n\nWhen shell completion is requested at the root command, `DefaultCompleteWithFlags` reads the global `os.Args` instead of the arguments passed to `Command.Run`. Subcommands read `cmd.Args()`, so they are not affected:\n\nhttps://github.com/urfave/cli/blob/10f69fd3c38de86a3bc17810dcb7f818b494f027/help.go#L256-L263\n\nA real shell completion works, because the shell starts the program and `main` passes `os.Args` to `Run`. The bug shows when `Run` gets other arguments: in tests, where `os.Args` holds the `go test` flags, and in a REPL or other embedded use, which `Run` already expects:\n\nhttps://github.com/urfave/cli/blob/10f69fd3c38de86a3bc17810dcb7f818b494f027/command_run.go#L130-L135\n\n## To reproduce\n\nSave the program below as `main.go` in an empty directory, then run:\n\n```sh\ngo mod init repro\ngo get github.com/urfave/cli/v3@v3.14.0",
+    "comments": [],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2489,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

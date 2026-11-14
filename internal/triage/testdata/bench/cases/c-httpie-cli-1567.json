@@ -1,0 +1,65 @@
+{
+  "id": "c-httpie-cli-1567",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1567,
+    "url": "https://github.com/httpie/cli/issues/1567"
+  },
+  "issue": {
+    "title": "Online doc error",
+    "body": "https://httpie.io/docs/cli/non-string-json-fields\r\n> hobbies:='[\"http\", \"pies\"]' \\      # Raw JSON — Array\r\n\r\nIn my test (PyPI ver.), it should be \r\n```\r\nhobbies='[\"http\", \"pies\"]'\r\n```\r\ninstead of\r\n```\r\nhobbies:='[\"http\", \"pies\"]' \r\n```",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "The linked docs section talks about embedding raw JSON. The `:=` notation achieves that. It embeds the JSON snippet as is, here resulting in a nested array:\r\n\r\n```bash\r\n$ http --offline pie.dev/post hobbies:='[\"http\", \"pies\"]'\r\n```\r\n\r\n```json\r\n{\r\n    \"hobbies\": [\r\n        \"http\",\r\n        \"pies\"\r\n    ]\r\n}\r\n```\r\n\r\nHere, however, we use `=`, which embeds the value as a string:\r\n\r\n```bash\r\n$ http --offline pie.dev/post hobbies='[\"http\", \"pies\"]'\r\n```\r\n\r\n```json\r\n{\r\n    \"hobbies\": \"[\\\"http\\\", \\\"pies",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "XizumiK",
+        "body": "> The linked docs section talks about embedding raw JSON. The `:=` notation achieves that. It embeds the JSON snippet as is, here resulting in a nested array:\r\n> \r\n> ```shell\r\n> $ http --offline pie.dev/post hobbies:='[\"http\", \"pies\"]'\r\n> ```\r\n> \r\n> ```json\r\n> {\r\n>     \"hobbies\": [\r\n>         \"http\",\r\n>         \"pies\"\r\n>     ]\r\n> }\r\n> ```\r\n> \r\n> Here, however, we use `=`, which embeds the value as a string:\r\n> \r\n> ```shell\r\n> $ http --offline pie.dev/post hobbies='[\"http\", \"pies\"]'\r\n> ```\r\n> \r\n>",
+        "author_association": ""
+      },
+      {
+        "author": "XizumiK",
+        "body": "> > The linked docs section talks about embedding raw JSON. The `:=` notation achieves that. It embeds the JSON snippet as is, here resulting in a nested array:\r\n> > ```shell\r\n> > $ http --offline pie.dev/post hobbies:='[\"http\", \"pies\"]'\r\n> > ```\r\n> > \r\n> > \r\n> >     \r\n> >       \r\n> >     \r\n> > \r\n> >       \r\n> >     \r\n> > \r\n> >     \r\n> >   \r\n> > ```json\r\n> > {\r\n> >     \"hobbies\": [\r\n> >         \"http\",\r\n> >         \"pies\"\r\n> >     ]\r\n> > }\r\n> > ```\r\n> > \r\n> > \r\n> >     \r\n> >       \r\n> >     \r\n> ",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "new": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "new"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

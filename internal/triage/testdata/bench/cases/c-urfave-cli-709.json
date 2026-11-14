@@ -1,0 +1,49 @@
+{
+  "id": "c-urfave-cli-709",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 709,
+    "url": "https://github.com/urfave/cli/issues/709"
+  },
+  "issue": {
+    "title": "Only environment variables",
+    "body": "Is there a way to have a variable that is only set through an environment variable?\r\n\r\nThanks!\r\n\r\n- Greg\r\n",
+    "comments": [
+      {
+        "author": "coilysiren",
+        "body": "Given that this is from last year, I think I'm comfortable closing it 🙂 feel free to re-open / open a new issue / comment in support if there's still interest here!",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,110 @@
+{
+  "id": "c-cli-cli-13840",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "cli/cli",
+    "number": 13840,
+    "url": "https://github.com/cli/cli/issues/13840"
+  },
+  "issue": {
+    "title": "[aw] No-Op Runs",
+    "body": "This issue tracks all no-op runs from agentic workflows in this repository. Each workflow run that completes with a no-op message (indicating no action was needed) posts a comment here.\n\n<details>\n<summary>What is a No-Op?</summary>\n\nA no-op (no operation) occurs when an agentic workflow runs successfully but determines that no action is required. For example:\n- A security scanner that finds no issues\n- An update checker that finds nothing to update\n- A monitoring workflow that finds everything is healthy\n\nThese are successful outcomes, not failures, and help provide transparency into workflow behavior.\n\n</details>\n\n<details>\n<summary>How This Helps</summary>\n\nThis issue helps you:\n- Track workflows that ran but determined no action was needed\n- Distinguish between failures and intentional no-ops\n- Monitor workflow health by seeing when workflows decide not to act\n\n</details>\n\n<details>\n<summary>Resources</summary>\n\n- [GitHub Agentic Workflows Documentation](https://github.com/github/gh-aw)\n\n</details>\n\n> [!TIP]\n> To stop a workflow from posting here, set `report-as-issue: false` in its frontmatter:\n> ```yaml\n> safe-outputs:\n>   noop:\n>     report-as-issue: false\n> ```\n\n---\n\n> This issue is automatically managed by GitHub Agentic Workflows. Do not close this issue manually.\n> \n> **No action to take** - Do not assign to an agent.\n\n<!-- gh-aw-noop-runs -->\n\n> - [x] expires <!-- gh-aw-expires: 2026-08-09T13:54:15.246Z --> on Aug 9, 2026, 1:54 PM UTC",
+    "comments": [
+      {
+        "author": "cli-triage",
+        "body": "### Issue Triage (skills-driven)\n\nIssue #13837 is already closed as not_planned with `invalid` and `suspected-spam` labels applied. The content (\"Start a new discussion\") is spam/invalid — no triage action needed.\n\n> Generated from [Issue Triage (skills-driven)](https://github.com/cli/cli/actions/runs/29097580359) · 21.3 AIC · ⊞ 5.1K · [◷](https://github.com/search?q=repo:cli%2Fcli+%22gh-aw-workflow-id:+issue-triage%22&type=issues)",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "This issue appears to be an automatically managed infrastructure tracking issue for agentic workflow no-op runs, not a user-reported bug or feature request for the `gh` CLI. Based on the issue body's explicit instructions (\"Do not assign to an agent\" / \"Do not close this issue manually\"), no classification labels are being suggested — applying labels like `off-topic` or `invalid` would trigger auto-close automation, which conflicts with the issue's stated management rules. No triage action is ne",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "### Issue Triage (skills-driven)\n\nIssue #13858 is already closed as spam with labels `invalid` and `suspected-spam`. The body is gibberish with no actionable content. No triage action required.\n\n> Generated from [Issue Triage (skills-driven)](https://github.com/cli/cli/actions/runs/29227928272) · 20 AIC · ⊞ 5.1K · [◷](https://github.com/search?q=repo:cli%2Fcli+%22gh-aw-workflow-id:+issue-triage%22&type=issues)",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "### Issue Triage (skills-driven)\n\nIssue #13859 (\"Pappa\") is already closed and labeled `invalid` and `suspected-spam`. The issue has no content - just empty template placeholders. No further triage action needed; appropriate labels are already applied.\n\n> Generated from [Issue Triage (skills-driven)](https://github.com/cli/cli/actions/runs/29227934320) · 14.6 AIC · ⊞ 5.1K · [◷](https://github.com/search?q=repo:cli%2Fcli+%22gh-aw-workflow-id:+issue-triage%22&type=issues)",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "### Issue Triage (skills-driven)\n\nIssue #13861 is already closed and labeled `invalid` + `suspected-spam` by automation. It is a spam submission with an empty body and numeric title. No further triage action needed.\n\n> Generated from [Issue Triage (skills-driven)](https://github.com/cli/cli/actions/runs/29227958930) · 16.3 AIC · ⊞ 5.1K · [◷](https://github.com/search?q=repo:cli%2Fcli+%22gh-aw-workflow-id:+issue-triage%22&type=issues)",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "### Issue Triage (skills-driven)\n\nIssue #13860 is already closed and labeled `invalid` and `suspected-spam` by automation. The issue has a numeric title (\"191751\") and empty body — it's clearly spam/invalid. No further triage action needed; no labels to add (allowlist labels already applied) and the issue is already closed.\n\n> Generated from [Issue Triage (skills-driven)](https://github.com/cli/cli/actions/runs/29227945394) · 16.3 AIC · ⊞ 5.1K · [◷](https://github.com/search?q=repo:cli%2Fcli+%22",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "### Issue Triage (skills-driven)\n\nIssue #13863 is already closed with 'invalid' and 'suspected-spam' labels. The issue has an empty body and a nonsensical title, and was closed by the actor immediately after creation. No further triage action needed.\n\n> Generated from [Issue Triage (skills-driven)](https://github.com/cli/cli/actions/runs/29228582217) · 22.3 AIC · ⊞ 5.1K · [◷](https://github.com/search?q=repo:cli%2Fcli+%22gh-aw-workflow-id:+issue-triage%22&type=issues)",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "### Issue Triage (skills-driven)\n\nIssue #13882 is already closed (not_planned) with labels invalid and suspected-spam. The body is an empty, unfilled bug report template — no additional triage action needed.\n\n> Generated from [Issue Triage (skills-driven)](https://github.com/cli/cli/actions/runs/29373854401) · 19.6 AIC · ⊞ 5.1K · [◷](https://github.com/search?q=repo:cli%2Fcli+%22gh-aw-workflow-id:+issue-triage%22&type=issues)",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "### Issue Triage (skills-driven)\n\nIssue #13883 (\"skip\" / \"skip\") is already closed with `invalid` and `suspected-spam` labels applied by automation. No further triage action required.\n\n> Generated from [Issue Triage (skills-driven)](https://github.com/cli/cli/actions/runs/29374405455) · 18.7 AIC · ⊞ 5.1K · [◷](https://github.com/search?q=repo:cli%2Fcli+%22gh-aw-workflow-id:+issue-triage%22&type=issues)",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "### Issue Triage (skills-driven)\n\nIssue #13884 is already closed and labeled as invalid/suspected-spam. The body is an empty bug report template with no real content, and the title is a single character. No further triage action needed.\n\n> Generated from [Issue Triage (skills-driven)](https://github.com/cli/cli/actions/runs/29393527140) · 18.8 AIC · ⊞ 5.1K · [◷](https://github.com/search?q=repo:cli%2Fcli+%22gh-aw-workflow-id:+issue-triage%22&type=issues)",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "### Issue Triage (skills-driven)\n\nIssue #13887 is spam/invalid - emoji-only title with empty body. It was already automatically closed and labeled `invalid` and `suspected-spam` by automation. No additional triage action required.\n\n> Generated from [Issue Triage (skills-driven)](https://github.com/cli/cli/actions/runs/29408138594) · 18.8 AIC · ⊞ 5.1K · [◷](https://github.com/search?q=repo:cli%2Fcli+%22gh-aw-workflow-id:+issue-triage%22&type=issues)",
+        "author_association": ""
+      },
+      {
+        "author": "cli-triage",
+        "body": "### Issue Triage (skills-driven)\n\nIssue #13896 is already closed (not_planned) with labels: invalid, suspected-spam. The body is an empty unfilled bug report template with title \"brew install gh\" and no actual content. No triage action needed — automation has already handled this correctly.\n\n> Generated from [Issue Triage (skills-driven)](https://github.com/cli/cli/actions/runs/29504565059) · 19.7 AIC · ⊞ 5.1K · [◷](https://github.com/search?q=repo:cli%2Fcli+%22gh-aw-workflow-id:+issue-triage%22",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "agentic-workflows"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "agentic-workflows": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "agentic-workflows"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

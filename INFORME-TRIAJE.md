@@ -7,7 +7,7 @@ Fecha: hackathon, noviembre 2026 · rama `feat/p1-bench` · issue #14.
 
 ## Qué se midió
 
-El corpus congelado tiene **271 casos** de cuatro repositorios (`spf13/cobra`, `httpie/cli`,
+El corpus congelado tiene **291 casos** de cuatro repositorios (`spf13/cobra`, `httpie/cli`,
 `cli/cli`, `urfave/cli`), y cada caso tiene **dos mitades separadas**:
 
 - la **issue que entra al triaje**: abierta, sin estado nativo, sin PRs y con las etiquetas de
@@ -23,7 +23,7 @@ corrida falla.
 | Bloque | Casos | Resueltos con un `if` | Pasan al modelo |
 |---|---|---|---|
 | Issues abiertas del corpus | 49 | **12** (cerrada · completada · rechazada · PR abierta · sin cuerpo) | 37 |
-| Cerradas simuladas como abiertas | 222 | **0** (el congelado quita estado y PRs) | 222 |
+| Cerradas simuladas como abiertas | 242 | **0** (el congelado quita estado y PRs) | 242 |
 
 Las **12 resoluciones deterministas aciertan 12 de 12**, porque el motivo nativo *es* la
 respuesta. En el set ciego **nada es determinístico por construcción**: es lo que hace que la
@@ -53,6 +53,35 @@ medición mida el modelo y no las reglas.
   No por lucidez del modelo, sino porque son basura del buzón de `cli/cli` — `brew install`,
   `Xxx`, correos sueltos, issues de una palabra. El juicio funciona; por eso el triaje lo
   muestra como categoría propia y no lo esconde dentro de otra.
+
+## 2 bis. El bloque de etiqueta débil: completadas sin PR mergeada
+
+Veinte issues que el proyecto cerró como completadas **sin** un cambio mergeado que las
+respalde. La etiqueta es débil a propósito: puede ser trabajo resuelto por otra vía, o un
+cierre por cansancio. **Este bloque mide ambigüedad, no acierto**, y por eso queda fuera de la
+precisión del 91 %.
+
+| Desenlace del triaje | Casos |
+|---|---|
+| `CANDIDATA` | **11** |
+| `SEGUNDA_RONDA` (eran preguntas) | 8 |
+| `DUDA` | 1 |
+| `MARCADA` | **0** |
+
+Dos lecturas:
+
+- **No rechazamos ninguna.** Sobre un bloque donde más de la mitad podrían no ser trabajo, el
+  triaje no descarta nada: recomienda o deriva. Es el comportamiento que buscábamos, y también
+  la razón por la que la segunda fase no puede ser opcional.
+- **De las 11 candidatas, ocho parecen trabajo genuino** que se resolvió sin PR enlazada
+  (`Content-Length not calculated in version 3.2.4`, `Embedded flags causes "unknown flag"`,
+  `DefaultCommand does not work when defined on a sub-Command`). Tres no lo son: una es
+  infraestructura del propio bot del proyecto (`[aw] Issue Triage could not verify...`), una es
+  trabajo de proceso (`Run CCR automatically on any targeted base branch`) y una es una pregunta
+  leída como bug (`Question: how to make flags required`).
+- **Y las ocho derivadas incluyen trabajo real de documentación**: «la generación de man pages no
+  está documentada en ningún lado», «cómo quitar `DEFAULT_UA`», «`https` no encontrado tras una
+  instalación limpia». Ese es exactamente el material que la segunda ronda debe promover.
 
 ## 3. Los dos números que hay que decir sin adornos
 

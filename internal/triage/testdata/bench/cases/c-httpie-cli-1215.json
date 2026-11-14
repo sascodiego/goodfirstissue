@@ -1,0 +1,52 @@
+{
+  "id": "c-httpie-cli-1215",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1215,
+    "url": "https://github.com/httpie/cli/issues/1215"
+  },
+  "issue": {
+    "title": "Support Bearer Authentication",
+    "body": "Bearer is a form of HTTP authentication through a header value (`Authorization: Bearer <token>`). It is pretty common and pretty well defined (by [RFC 6750](https://datatracker.ietf.org/doc/html/rfc6750)) so personally I'd say we should support it out of the box.",
+    "comments": [],
+    "labels": [
+      "enhancement",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "new": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1216,
+    "refused_by": null,
+    "original_labels": [
+      "enhancement",
+      "new"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

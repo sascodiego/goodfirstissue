@@ -1,0 +1,55 @@
+{
+  "id": "c-urfave-cli-2146",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2146,
+    "url": "https://github.com/urfave/cli/issues/2146"
+  },
+  "issue": {
+    "title": "OnUsageError function doesn't trigger for errors caused by mutually exclusive flags",
+    "body": "## My urfave/cli version is\n\nv3.3.3\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n<!--\n  Delete any of the following that do not apply:\n-->\n\n- My project is using go modules.\n\n## Describe the bug\n\nA clear and concise description of what the bug is.\n\n## To reproduce\n\n```go\npackage main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"log\"\n\t\"os\"\n\n\t\"github.com/urfave/cli/v3\"\n)\n\nvar (\n\tflagCSV = &cli.StringFlag{\n\t\tName: \"csv\",\n\t}\n\n\tflagFind = &cli.StringFlag{\n\t\tName: \"find\",\n\t}\n)\n\nfunc main() {\n\tcmd := &cli.Command{\n\t\tFlags: []cli.Flag{\n\t\t\tflagCSV,\n\t\t\tflagFind,\n\t\t},\n\t\tMutuallyExclusiveFlags: []cli.MutuallyExclusiveFlags{\n\t\t\t{\n\t\t\t\tFlags: [][]cli.Flag{\n\t\t\t\t\t{\n\t\t\t\t\t\tflagCSV,\n\t\t\t\t\t},\n\t\t\t\t\t{\n\t\t\t\t\t\tflagFind,\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t},\n\t\tAction: func(ctx context.Context, cmd *cli.Command) error {\n\t\t\tfmt.Println(\"Hello, world!\")\n\t\t\treturn nil\n\t\t},\n\t\tOnUsageError: func(_ context.Context, _ *cli.Command, err error, _ bool) error {\n\t\t\treturn err\n\t\t},\n\t}\n\n\tif err := cmd.Run(context.Background(), os.Args); err != nil {\n\t\tlog.Fatal(err)\n\t}\n}\n```\n\nCommand:\n\n```bash\ngo run main.go --find",
+    "comments": [],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2152,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

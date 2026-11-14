@@ -82,6 +82,8 @@ No son cortes: son cosas que probamos y no funcionan como suponíamos.
 | `done_defined` y `unambiguous` son el punto flojo | 25/34 y 30/34; una segunda redacción las empeoró. Se usan en disyunción y el error cae del lado seguro (CONDICIONADA) |
 | El árbol derivado de hechos pierde contra la pregunta compuesta | 27/37 contra 34/37 |
 | El banco no es neutral | la mitad de los casos son sintéticos o derivados; el bloque de rechazadas mudas es basura del buzón de `cli/cli` (`brew install`, `Xxx`, correos), no una prueba de clasificación |
+| La etiqueta «completada» es débil | sólo el 17 % de las cerradas como completadas tiene una PR mergeada que las cierra. El bloque sin corroboración (20 casos) mide ambigüedad, no acierto: 11 salen candidatas y ocho parecen trabajo real resuelto por otra vía |
+| Los ids del corpus colisionaban | `httpie/cli` y `cli/cli` compartían el prefijo `c-cli-`, así que un caso podía pisar a otro. Corregido a `owner-name-número`, con aserción de unicidad |
 | Ruido entre corridas idénticas | `has_evidence` dio 21/34 y 20/34 con la misma redacción: diferencias de un caso no son señal |
 
 ## Dos errores de medición propios, registrados

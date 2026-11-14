@@ -1,0 +1,55 @@
+{
+  "id": "c-cli-cli-14747",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14747,
+    "url": "https://github.com/cli/cli/issues/14747"
+  },
+  "issue": {
+    "title": "Run CCR automatically on any targeted base branch",
+    "body": "## Description\n\nI noticed in https://github.com/cli/cli/pull/14717 and other PRs that Copilot Code Review was not triggering automatically. Seems this is because our ruleset only applies when the base branch is `trunk`, which doesn't play right with stacked PRs.\n\n### Expected Outcome\n\nCCR runs automatically regardless of base branch.",
+    "comments": [
+      {
+        "author": "williammartin",
+        "body": "Done.\n\n```\ngh api repos/cli/cli/rulesets/4898070 --jq '{name,enforcement,conditions,rules,updated_at}'\n{\"conditions\":{\"ref_name\":{\"exclude\":[],\"include\":[\"~ALL\"]}},\"enforcement\":\"active\",\"name\":\"Copilot Code Review\",\"rules\":[{\"parameters\":{\"review_draft_pull_requests\":true,\"review_on_push\":false},\"type\":\"copilot_code_review\"}],\"updated_at\":\"2026-10-19T13:23:13.419+02:00\"}\n```",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "tech-debt"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "tech-debt": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "tech-debt"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,55 @@
+{
+  "id": "c-urfave-cli-2315",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2315,
+    "url": "https://github.com/urfave/cli/issues/2315"
+  },
+  "issue": {
+    "title": "Shell completion fails for `--` and `--prefix` flag patterns",
+    "body": "## My urfave/cli version is\n\nv3 (a9261cf1832b278c1c195c91f9ee961f5fc9554e)\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n- My project is using go modules.\n\n## Describe the bug\n\nShell completion does not show flag suggestions when the user types `--<TAB>` or `--partial<TAB>`.\n\n## To reproduce\n\n1. Create a CLI app with shell completion enabled and some flags\n2. Source the shell completion script\n3. Type `myapp --<TAB>` or `myapp --partial<TAB>`\n\n```go\npackage main\n\nimport (\n\t\"context\"\n\t\"os\"\n\n\t\"github.com/urfave/cli/v3\"\n)\n\nfunc main() {\n\tcmd := &cli.Command{\n\t\tName:                  \"myapp\",\n\t\tEnableShellCompletion: true,\n\t\tFlags: []cli.Flag{\n\t\t\t&cli.StringFlag{Name: \"config\"},\n\t\t\t&cli.BoolFlag{Name: \"verbose\"},\n\t\t},\n\t\tAction: func(ctx context.Context, c *cli.Command) error {\n\t\t\treturn nil\n\t\t},\n\t}\n\tcmd.Run(context.Background(), os.Args)\n}\n```\n\n## Observed behavior\n\n- `myapp --<TAB>` produces no completions\n- `myapp --prefix<TAB>` produces no completions\n- `myapp -<TAB>` appends another `-` and produces flag completions (correct)\n\n## Expected behavior\n",
+    "comments": [],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2316,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

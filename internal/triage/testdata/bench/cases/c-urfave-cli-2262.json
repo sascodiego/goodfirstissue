@@ -1,0 +1,61 @@
+{
+  "id": "c-urfave-cli-2262",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2262,
+    "url": "https://github.com/urfave/cli/issues/2262"
+  },
+  "issue": {
+    "title": "Split separator in StringSliceFlag ignored when using environment variable as source",
+    "body": "## My urfave/cli version is\n\n3.6.x (works in 3.5.0)\n\n## Checklist\n\n- [x] Are you running the latest v3 release? 3.6.2 is impacted\n- [x] Did you check the manual for your release? yes\n- [x] Did you perform a search about this problem?\n\n## Dependency Management\n\n- My project is using go modules.\n- My project is downloading the latest version when go get -u is ran\n\n## Describe the bug\n\nWe have:\n1. a command with  SliceFlagSeparator set to space (`\" \"`) instead of the default comma\n2. a stringsliceflag named \"a\" (for example) in that command that uses some environment variable (A) as alternate source\n\nWorking as expected, meaning slice returned by cmd.StringSlice is `[ \"0\", \"1\" ]`:\n* using `--a 0 --a 1` command-line options\n* using `--a \"0 1 \"` command-line\n\nNo longer working since 3.6.0, meaning slice returned by cmd.StringSlice is `[ \"0 1\" ]`:\n* using environment variable `A=\"0 1\"`\n\n> Note that `A=\"0,1\"` environment variable returns  `[ \"0\", \"1\" ]` although this is unexpected since slice separator was set to a spec.\n\n\n## To reproduce\n\nBuild a `main.go` file with the following content and run passing command-line options or environment variable\n\n```go\npackage main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"log\"\n\t\"os\"\n\n\t\"github.com/urfave/cli/v3\"\n)\n\nfunc main() {\n\tcmd := &cli.Command{\n\t\tFlags: []cli.Flag{\n\t\t\t&cli.StringSliceFlag{\n\t\t\t\tName:    \"a\",\n\t\t\t\tSources: cli.EnvVars(\"A\"),\n\t\t\t},\n\t\t},\n\t\t// Ignored by Sources: will use , instead for environment variables\n\t\tSliceFlagSeparator: \" \",\n\t\tAction",
+    "comments": [
+      {
+        "author": "cboitel",
+        "body": "I guess MapStringFlag are also impacted but haven't tested it",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2309,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

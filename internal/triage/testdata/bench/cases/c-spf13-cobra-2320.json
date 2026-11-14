@@ -1,0 +1,74 @@
+{
+  "id": "c-spf13-cobra-2320",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2320,
+    "url": "https://github.com/spf13/cobra/issues/2320"
+  },
+  "issue": {
+    "title": "Feature Question: Do you want to have an interactive option for command execution?",
+    "body": "I am playing around with some CLI tools and from time to time I am annoyed by typing all the provided sub commands in the required chain and to add also the required parameters ... good for scripts, a bit to much copy/pasting for playing around.\n\nI created for me some helper functions to use a fuzzy search approach to step from command to command, to make the experience in case more interactive. Since I am satisfied with the extension for myself, I wonder if you would like that I provide a PR to this code?\n\nI see the number of open PRs and want with my question only avoid additional pressure :)\n\nBR,\nEiko ",
+    "comments": [
+      {
+        "author": "marckhouzam",
+        "body": "I’m curious to see what user experience your tool provides. If it makes cobra better for everyone it will be welcomed. \n\nP.S. The project’s maintenance is admittedly very passive recently, but (speaking only for myself) if something new and existing comes along, I will try to squeeze extra time out of my daily schedule to get it merged. ",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "OkieOth",
+        "body": "Thank you for the response ... and don't worry, I will prepare a PR ... if it doesn't fit with your general idea for the lib, I will put it in a separate repo. It seems nicely to work in linux with zellij, not sure if it works for instance with powershell.",
+        "author_association": ""
+      },
+      {
+        "author": "OkieOth",
+        "body": "As mentioned in the PR, my changes could be a bit harsch. If you like and want to include the changes, but need changes in the PR feel free to nudge me",
+        "author_association": ""
+      },
+      {
+        "author": "OkieOth",
+        "body": "I am not able to lower the dependencies ... so I closed my PR. Since I still like my idea, I will later share the link to my repo lib (with examples here) ... maybe you find it useful.\n\nThank you for looking into my stuff. Thanky you for your efforts and keeping the idea of open source alive :)\n\nBR, Eiko",
+        "author_association": ""
+      },
+      {
+        "author": "OkieOth",
+        "body": "@marckhouzam I implemented the mentioned feature here:https://github.com/OkieOth/ic0bra \n... and I still like it X-D\n\nImplementing it in my own repo allowed also to include a history. \n\nAt least the repo illustrates what I had in mind. \n\nCheers Eiko",
+        "author_association": ""
+      },
+      {
+        "author": "marckhouzam",
+        "body": "Thanks!  I’ll definitely have a look",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

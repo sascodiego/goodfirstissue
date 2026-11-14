@@ -1,0 +1,43 @@
+{
+  "id": "c-spf13-cobra-2132",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2132,
+    "url": "https://github.com/spf13/cobra/issues/2132"
+  },
+  "issue": {
+    "title": "Embedded flags causes \"unknown flag\"",
+    "body": "If you use embedding to extend some flags for certain use cases you get the error `unknown flag`. For example, take a look at this code:\r\n\r\n```go\r\ntype mainFlagsCollection struct {\r\n\tskip       bool `default:\"false\" flag:\"skip\" info:\"Skip example\"`\r\n}\r\n\r\ntype extraFlagsCollection struct {\r\n\tmainFlagsCollection\r\n\tname string `default:\"\" flag:\"name\" info:\"Provide an example name\"`\r\n}\r\n```\r\n\r\nIn that, `name` will work, but `skip` will trigger the error.",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

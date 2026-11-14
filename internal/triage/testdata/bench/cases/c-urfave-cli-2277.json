@@ -1,0 +1,75 @@
+{
+  "id": "c-urfave-cli-2277",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2277,
+    "url": "https://github.com/urfave/cli/issues/2277"
+  },
+  "issue": {
+    "title": "Dead code elimination partially disabled",
+    "body": "`urfave/cli` directly uses `text/template`, and unfortunately this partially disables dead code elimination. However, \"partial\" in this context can result in significantly larger binaries depending on how many other dependencies you have. Full DCE can result in significant binary size reductions (50%+-).\n\nCobra recently added a fix/workaround for a similar issue:\nhttps://github.com/spf13/cobra/pull/1956\n\nI appreciate there may not be a non-breaking way to solve this in v3.",
+    "comments": [
+      {
+        "author": "seanamos",
+        "body": "See also the relevant discussion here: https://github.com/golang/go/issues/72895",
+        "author_association": ""
+      },
+      {
+        "author": "seanamos",
+        "body": "I did a quick experiment (really hacked together) to demonstrate how significant this is.\n\nIn the empty hello world example, the binary size dropped to 1.3mb from 2.0mb\n\n<img width=\"597\" height=\"158\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/27bcab29-d56b-434e-b5d5-109a249eafed\" />\n\nUsin my local fork in a more real world project with a binary size of 33mb, the size dropped to 8mb.\n\nThe approach I used? Swap out the usage of `text/template` for Datadog's fork: https://github.co",
+        "author_association": ""
+      },
+      {
+        "author": "seanamos",
+        "body": "> It looks like this should be in Go `stdlib`.\n\nIdeally yes. Currently the discussions there revolve around:\n\n1. Introducing a new template function, `ExecuteLite`, that would not do reflection.\n2. A new build tag to disable reflection in templating (runtime breakage likely).\n3. Try do some compiler wizardry with templating to keep DCE but ensure template method calls still work.\n\nI speculate 1 is most likely since it is the most practical and backwards compatible way to go about it. That said, ",
+        "author_association": ""
+      },
+      {
+        "author": "seanamos",
+        "body": "> This is a well-known Go binary size issue. The `text/template` and `html/template` packages import a lot of functionality for safety, which pulls in significant code.\n\nIt's not the size of the packages, but the use of `reflect.MethodByName` in those packages which is the issue. This disables method dead code elimination. This means instead of only used methods being compiled into your binary, all methods are. This is especially bad if you have quite a few dependencies.\n\nIf you use `reflect.Met",
+        "author_association": ""
+      },
+      {
+        "author": "seanamos",
+        "body": "@ldez I agree, I don't see a way to fix this without a breaking change.\nEven with my approach, which doesn't change the public surface area of the lib, it would still be a behavior breaking change.",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2441,
+    "refused_by": null,
+    "original_labels": [
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

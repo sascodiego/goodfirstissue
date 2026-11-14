@@ -1,0 +1,65 @@
+{
+  "id": "c-urfave-cli-1531",
+  "provenance": "real-closed",
+  "trap": "closed_refused_with_reason",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1531,
+    "url": "https://github.com/urfave/cli/issues/1531"
+  },
+  "issue": {
+    "title": "Minimize top-level API surface area for both usability clarity and maintenance reduction",
+    "body": "- [x] #1586 \r\n- [x] #1600\r\n- [x] #1587\r\n- [x] #1759 \r\n- [x] #1780\r\n- [x] #1791",
+    "comments": [
+      {
+        "author": "meatballhat",
+        "body": "(Continuing discussion from #833)\r\n\r\n> > context.Context is explicitly not meant to be extended\r\n> \r\n> @meatballhat any documentation or links to where that explicit convention maybe written?\r\n\r\n\r\n@marwan-at-work I should have explained myself better, sorry! The interpretation of the go docs I'm leaning on here comes from [the overview]()\r\n\r\n> Do not store Contexts inside a struct type; instead, pass a Context explicitly to each function that needs it. The Context should be the first parameter, ",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "meatballhat",
+        "body": "@marwan-at-work can you move [your comment](https://github.com/urfave/cli/issues/833#issuecomment-1328265820) over here? 🙇🏼",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "meatballhat",
+        "body": "@marwan-at-work Thank you for caring about this! 💖 Sorry for my (two weeks??) delay!\r\n\r\nThe places you reference in the standard library are great examples of how the core Go team adapted existing APIs after the `context` library was introduced, IIUC. Thankfully, we don't have those constraints in `github.com/urfave/cli/v3` 🎉 \r\n\r\nI'm leaning more and more towards wanting to remove the `*cli.Context` type completely, yep 👍🏼 with the goal being:\r\n\r\n```go\r\ntype ActionFunc func(context.Context, *Com",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "meatballhat",
+    "original_labels": [
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

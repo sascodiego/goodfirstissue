@@ -1,0 +1,49 @@
+{
+  "id": "c-httpie-cli-1167",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1167,
+    "url": "https://github.com/httpie/cli/issues/1167"
+  },
+  "issue": {
+    "title": "Encoding error with non-prettified encoded responses",
+    "body": "## Minimal reproduction code and steps\r\n\r\n```bash\r\n$ http -b --pretty=none https://raw.githubusercontent.com/Ousret/charset_normalizer/master/data/sample-chinese.txt\r\n```\r\n\r\n## Current result\r\n\r\n```\r\n����j��]Wikipedia�^�̡A������¦�F���ѤU���B�|�����B���H�ӡA�Ѧʬ�j�C�l�@�̡A����C�����|�]�C\r\n\r\n��F�G�����~�Q�G��ܤ@�A�Τv���~�G��Q�E�A���U��y���G�ʤ��Q�A�X�O�C�ʸU�ءF�G�Q�j�����K���A��^�����L�G�ʸU�C�x��D�ѤU���Ӧ@���Ӧ��F���N�U���A�X�����B�Hġ�@�A�j��_�j�C\r\n\r\n����@���A�X�j�ոܺ���C�m���l�����n��J�u���Aô�]�v�A�m����n��J�u��A��l�]�v�A��H�X���A���Nô�����l�]�C��´�����A�H���ڥ��A�����]�C\r\n\r\n�j��o���A�P�D�ݵo�F�p�s�D�B�Х��B�����B�ӾǡB�y���B��w���C����ئh�i�w�\\�ש��s�������F�\\�����׽֡A�ѱo�Pġ��A����_��ɨ�a��H�A�M�h��Ҹ��չ�A���K���G�C\r\n\r\n�Z���򤧵��A�Ҿڪ̡A�ꭲ���ۥѤ��ɳ\\�i��ĳ�A�G�i�ۥѼs�ǤѤU�աC\r\n\r\n�娥����l������~�C�i�A�����o��G�d�@�ʤK�Q�E�C\r\n   \r\ncommons:����\r\n        �n�H�M�T�A��������@�ɡJ����j��C\r\n```\r\n\r\n## Expected result\r\n\r\n```\r\n維基大典（Wikipedia）者，網路為礎；集天下知、四海言、眾人志，書百科焉。始作者，維基媒體基金會也。\r\n\r\n典肇乎庚辰年十二月廿一，及己丑年二月十九，收各方語言二百五十，合逾七百萬目；二十大卷佔八成，單英文卷亦過二百萬。悉文乃天下有志共筆而成；有意助之，幾網路、隨纂作，大典茁焉。\r\n\r\n維基一詞，出焉白話維基。《墨子閒詁》曰︰「維，繫也」，《說文》曰︰「基，牆始也」，其人合之，取意繫物之始也。維織網綱，以載根本，亦維基也。\r\n\r\n大典得幸，同道兼發；如新聞、教本、爾雅、太學、語錄、文庫等。其卷目多可逕閱修於瀏覽之器；蓋眾不論誰，俱得與纂綴，弗制于其時其地其人，然則典所載謬實，未免爭辯。\r\n\r\n凡維基之策，所據者，曰革奴自由文檔許可協議，故可自由廣傳天下耳。\r\n\r\n文言維基始於丙戌年七夕，迄今得文二千一百八十九。\r\n   \r\ncommons:卷首\r\n        聲象映響，具錄於維基共享︰維基大典。\r\n```\r\n\r\n---\r\n\r\n## Debug output\r\n\r\n```bash\r\n$ http --debug  --pretty=none https://raw.githubusercontent.com/Ousret/charset_normalizer/master/data/sample-chinese.txt\r\n```\r\n\r\n```\r\nHTTPie 2.6.0.dev",
+    "comments": [],
+    "labels": [
+      "bug"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "bug": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1168,
+    "refused_by": null,
+    "original_labels": [
+      "bug"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

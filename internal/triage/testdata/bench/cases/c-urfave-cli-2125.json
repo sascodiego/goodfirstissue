@@ -1,0 +1,63 @@
+{
+  "id": "c-urfave-cli-2125",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2125,
+    "url": "https://github.com/urfave/cli/issues/2125"
+  },
+  "issue": {
+    "title": "PathFlag regression in v3",
+    "body": "## My urfave/cli version is\nv3\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n- My project is using vendoring.\n\n## Describe the bug\n\nA clear and concise description of what the bug is.\n\n## To reproduce\n\n```go\n&cli.Command{\n\t\tName:      \"example\",\n\t\tFlags: []cli.Flag{\n\t\t\t&cli.PathFlag{\n\t\t\t\tName:     \"file\",\n\t\t\t\tAliases:  []string{\"f\"},\n\t\t\t},\n\t\t},\n\t}\n```\n\n## Expected behavior\n\nPathFlag exists/replaced with some approach",
+    "comments": [
+      {
+        "author": "imunhatep",
+        "body": "Thank you for clarifying this one, did I miss this one in the migration documentation v2 -> v3? Probably can be closed, if only to clarify this part in the docs.",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3",
+      "approved"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown",
+    "approved": "author"
+  },
+  "simulation": "author_self_labelled",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2136,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

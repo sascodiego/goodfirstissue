@@ -1,0 +1,43 @@
+{
+  "id": "c-spf13-cobra-2060",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2060,
+    "url": "https://github.com/spf13/cobra/issues/2060"
+  },
+  "issue": {
+    "title": "Completion should not complete the --help/-h and --version/-v flags if DisableFlagParsing==true ",
+    "body": "When a command sets `DisableFlagParsing = true` it requests the responsibility of doing all the flag parsing.\r\nIf there are flags for that command, Cobra may not even know about them.\r\nI've seen this used to provide plugins to a Cobra-based CLI.  The plugins must handle their own flags as the original CLI knows nothing about such flags.\r\n\r\nThe problem is that with #1813 the shell completion logic completes the `--help/-h` and `--version/-v` for all commands, even those that do their own flag handling (i.e., `DisableFlagParsing == true`).  I've seen this cause the `--help/-h` be completed twice for plugins: one time from cobra and one time from the plugin.\r\n\r\nI therefore feel that Cobra should not complete the `--help/-h` and `--version/-v` if `DisableFlagParsing==true`.\r\n\r\nSomewhat related to #1328 but for completion.",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2061,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

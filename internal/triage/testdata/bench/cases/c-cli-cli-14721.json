@@ -1,0 +1,43 @@
+{
+  "id": "c-cli-cli-14721",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14721,
+    "url": "https://github.com/cli/cli/issues/14721"
+  },
+  "issue": {
+    "title": "I wonder if actually we need both of these",
+    "body": "I wonder if actually we need both of these\r\n\r\n_Originally posted by @BagToad in https://github.com/cli/cli/pull/10943#discussion_r2112290089_\r\n            ",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

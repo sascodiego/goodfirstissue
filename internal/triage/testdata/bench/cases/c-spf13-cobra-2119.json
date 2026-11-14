@@ -1,0 +1,43 @@
+{
+  "id": "c-spf13-cobra-2119",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2119,
+    "url": "https://github.com/spf13/cobra/issues/2119"
+  },
+  "issue": {
+    "title": "Remove deprecated `ioutil.ReadAll`",
+    "body": "## Description\r\n\r\nReplace `ioutil.ReadAll` with `io.ReadAll`.\r\n\r\nSome tests in `command_test.go` use the `ioutil.ReadAll` function from `io/ioutils` package. This package is deprecated as of Go 1.16, and the documentation advises to replace it with `io.ReadAll`\r\n\r\n## References\r\n\r\n- `io/ioutil` package documentation: https://pkg.go.dev/io/ioutil\r\n- `ioutil.ReadAll` documentation: https://pkg.go.dev/io/ioutil#ReadAll",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2120,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

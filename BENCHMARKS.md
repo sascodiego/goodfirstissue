@@ -13,14 +13,14 @@ Una petición en vuelo por clave, en serie. Una corrida completa sobre 271 casos
 peticiones y unos 3 minutos. Sin `GFI_INTEGRATION` el test se saltea y `make verify` queda
 hermético.
 
-El corpus está en `internal/triage/testdata/bench/`: **271 casos**, cada uno con **dos
+El corpus está en `internal/triage/testdata/bench/`: **291 casos**, cada uno con **dos
 mitades separadas** —la issue tal como entra al triaje (abierta, sin PRs, sin estado nativo)
 y la resolución real—. Un test hace cumplir el congelado: si la mitad que entra al triaje
 tiene estado o PRs, falla.
 
 Composición: 188 issues que terminaron con una PR mergeada, 14 rechazadas con explicación de
-un mantenedor, 20 rechazadas sin explicación (techo puesto a propósito), y 49 abiertas con
-lectura propia. Cuatro repositorios: `spf13/cobra`, `httpie/cli`, `cli/cli`, `urfave/cli`.
+un mantenedor, 20 rechazadas sin explicación (techo puesto a propósito), 20 completadas sin PR
+mergeada (etiqueta débil: mide ambigüedad, no acierto) y 49 abiertas con lectura propia. Cuatro repositorios: `spf13/cobra`, `httpie/cli`, `cli/cli`, `urfave/cli`.
 
 ## 1. Árbol derivado contra pregunta compuesta
 
@@ -105,6 +105,10 @@ rechazada, PR abierta, sin cuerpo) y aciertan 12/12, porque el motivo nativo *es
 - **Recall sobre trabajo real: 89 %** (167 de 188).
 - **`MARCADA` no se emite nunca en este set**, porque marcar depende de la intención, que se
   movió a la segunda fase. Es el corte documentado en `LIMITES.md`, no un error de medición.
+- **El bloque de etiqueta débil** (20 completadas sin PR mergeada) se resuelve en 11
+  `CANDIDATA`, 8 `SEGUNDA_RONDA`, 1 `DUDA` y **0 `MARCADA`**: sobre material donde buena parte
+  podría no ser trabajo, el triaje no descarta nada. De las 11 candidatas, ocho parecen trabajo
+  real resuelto sin PR enlazada.
 - **`DUDA` es, de hecho, una buena señal de descarte**: 16 de las 17 dudas eran issues que el
   proyecto rechazó. Lo que está mal es la etiqueta, no el juicio: un 94 % de esas dudas son
   basura del buzón (`brew install`, `Xxx`, correos sueltos).

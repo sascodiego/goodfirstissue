@@ -1,0 +1,78 @@
+{
+  "id": "c-urfave-cli-1880",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1880,
+    "url": "https://github.com/urfave/cli/issues/1880"
+  },
+  "issue": {
+    "title": "DefaultCommand does not work when defined on a sub-Command",
+    "body": "## Checklist\r\n\r\n* [X] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [ ] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/manual.md).\r\n* [X] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\n\r\nThis maybe a bug. DefaultCommand should work on sub-commands too.\r\n\r\n## Solution description\r\n\r\nIf any Command anywhere has sub-commands and a DefaultCommand, then that should run by default.\r\n\r\n## Describe alternatives you've considered\r\n\r\nNone\r\n",
+    "comments": [
+      {
+        "author": "ananthb",
+        "body": "I've got a DefaultCommand on this sub-command which does not work: https://github.com/RealImage/bifrost/blob/36e773d2adcd2be64e69b871a80964829e6c2683/cmd/bf/ca.go#L28",
+        "author_association": ""
+      },
+      {
+        "author": "ananthb",
+        "body": "In that example above, I can invoke the `ca` subcommand either by not specifying any command and letting the root command's `DefaultCommand` execute `ca` or by directly calling `bf ca`. \r\n\r\nNeither option actually invokes the default command on `ca`, which is `serve`.\r\n\r\nIf I run `bf ca serve` it works. I expected a plain `bf` to be equivalent to `bf ca serve`.",
+        "author_association": ""
+      },
+      {
+        "author": "ananthb",
+        "body": "This might be simplistic but I thought of it as if a command has a default, then it should be executed if there are no arguments. Currently if a command at any level is run without arguments, this lib prints a help message. Setting a default command should replace that right?",
+        "author_association": ""
+      },
+      {
+        "author": "ananthb",
+        "body": "I expected [this](https://go.dev/play/p/eFQNeZ6OPJs) example to print `Hello, World!`.\r\nIt prints the help output for the `hello` command instead.\r\n\r\nHow can I get it to print `Hello, World!` when run without arguments?",
+        "author_association": ""
+      },
+      {
+        "author": "ananthb",
+        "body": "Perfect, thanks!",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

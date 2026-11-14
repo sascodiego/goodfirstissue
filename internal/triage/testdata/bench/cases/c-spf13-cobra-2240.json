@@ -1,0 +1,49 @@
+{
+  "id": "c-spf13-cobra-2240",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2240,
+    "url": "https://github.com/spf13/cobra/issues/2240"
+  },
+  "issue": {
+    "title": "Command passed to SetHelpFunc doesn't have a context",
+    "body": "When using `SetHelpFunc` the function gets given a `Command` object and you'd think you could use `Context()` to get the right context off the command, but it doesn't actually get set. \n\nWe hit this in pulumi: https://github.com/pulumi/pulumi/issues/18659\n\nI can work around via just a context.Background call instead, but feels like this should just work as the parent \"help\" command does have a context.",
+    "comments": [
+      {
+        "author": "Frassle",
+        "body": "Will see if I can raise a PR to fix this.",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2241,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

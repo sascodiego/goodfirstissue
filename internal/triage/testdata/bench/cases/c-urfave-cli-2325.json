@@ -1,0 +1,43 @@
+{
+  "id": "c-urfave-cli-2325",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2325,
+    "url": "https://github.com/urfave/cli/issues/2325"
+  },
+  "issue": {
+    "title": "Root Command.Writer doesn't propagate to subcommand Actions",
+    "body": "## Summary\n\nSetting `root.Writer` on a top-level `*cli.Command` does not always propagate to subcommands' Actions in v3. Subcommand Actions read from `cmd.Writer` (where `cmd` is the *subcommand* the Action was attached to), which appears to default to `os.Stdout` even when the parent's `Writer` was overridden.\n\n## Reproduction\n\n```go\npackage main\n\nimport (\n    \"bytes\"\n    \"context\"\n    \"fmt\"\n\n    \"github.com/urfave/cli/v3\"\n)\n\nfunc main() {\n    var buf bytes.Buffer\n    app := &cli.Command{\n        Name:   \"demo\",\n        Writer: &buf,\n        Commands: []*cli.Command{\n            {\n                Name: \"sub\",\n                Action: func(_ context.Context, c *cli.Command) error {\n                    fmt.Fprintln(c.Writer, \"from sub\")\n                    return nil\n                },\n            },\n        },\n    }\n    _ = app.Run(context.Background(), []string{\"demo\", \"sub\"})\n    fmt.Printf(\"buf=%q\\n\", buf.String())\n    // Observed: buf=\"\" (text went to os.Stdout)\n    // Expected: buf=\"from sub\\n\"\n}\n```\n\n## Workaround\n\nI recursively assign `Writer` and `ErrWriter` to every command in the tree before invoking `Run`:\n\n```go\nfunc setWriters(cmd *cli.Command, w io.Writer) {\n    cmd.Writer, cmd.ErrWriter = w, w\n    for _, sub := range cmd.Commands {\n        setWriters(sub, w)\n    }\n}\n```\n\nThis is the workaround in [cli-web-ops](https://github.com/coilysiren/cli-web-ops/blob/main/webops/routes.go) and [cli-mcp](https://github.com/coilysiren/cli-mcp) (via per-call writer override).",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2329,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,43 @@
+{
+  "id": "c-urfave-cli-2418",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2418,
+    "url": "https://github.com/urfave/cli/issues/2418"
+  },
+  "issue": {
+    "title": "A bare \"-\" argument silently discards all following arguments in parseFlags",
+    "body": "## Summary\n\nIn `parseFlags` (v3 `main`), the branch handling a lone `-` argument appends it to `posArgs` and then executes a plain `break`, which exits the entire rearrangement loop. Every remaining command-line argument after the `-` is dropped without error: `myapp - foo bar` ends up with `cmd.Args()` == `[\"-\"]`.\n\nStatic-analysis finding based on reading `main`; not executed here.\n\n## Location\n\n- File: `command_parse.go`\n- Function: `(*Command).parseFlags`\n- Relevant code:\n\n```go\n\tnumMinuses := 1\n\t// this is same as firstArg == \"-\"\n\tif len(firstArg) == 1 {\n\t\tposArgs = append(posArgs, firstArg)\n\t\tbreak\n\t}\n```\n\n## Problem\n\nCompare this branch with every sibling path in the same loop:\n\n- empty argument ? `append(posArgs, rargs[0])` + `continue`\n- `\"--\"` ? appends the arg (if completion mode) plus **all** of `rargs[1:]`, then returns\n- positional (`firstArg[0] != '-'`) ? `append(posArgs, firstArg)` + `continue`; if it names a subcommand, `append(posArgs, rargs...)` and return\n- non-letter after `-` (e.g. `-3`) ? `append(posArgs, rargs...)` + return\n\nThe lone `-` is the only hyphen-path that stops parsing *without preserving the unconsumed remainder*. Since the loop's post-statement only advances `rargs` between iterations, `break` here throws away `rargs[1:]` entirely.\n\n## Trigger / Reproduction\n\nBased on source reading:\n\n```console\n$ myapp - foo bar\n```\n\nIteration 1: `firstArg == \"-\"` ? `len(firstArg) == 1` matches ? `posArgs = [\"-\"]` ? `break`.\nResult: `cmd.Args().Len() == 1`",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2419,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

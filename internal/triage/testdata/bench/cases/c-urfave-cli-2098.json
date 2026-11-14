@@ -1,0 +1,54 @@
+{
+  "id": "c-urfave-cli-2098",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2098,
+    "url": "https://github.com/urfave/cli/issues/2098"
+  },
+  "issue": {
+    "title": "v3: context value added in Before missing in After when subcommands are involved",
+    "body": "When adding values to a context in a Before function that value is not present in the After function when a subcommand was run. Without the subcommand the value is present as expected.\n\nThe following test demonstrates that behavior and should pass:\n\n```go\nfunc TestCommand_Run_BeforeReturnNewContextSubcommand(t *testing.T) {\n        var receivedValFromAction, receivedValFromAfter string\n        type key string\n\n        bkey := key(\"bkey\")\n\n        cmd := &Command{\n                Name: \"bar\",\n                Before: func(ctx context.Context, cmd *Command) (context.Context, error) {\n                        return context.WithValue(ctx, bkey, \"bval\"), nil\n                },\n                After: func(ctx context.Context, cmd *Command) error {\n                        if val := ctx.Value(bkey); val == nil {\n                                return errors.New(\"bkey value not found\")\n                        } else {\n                                receivedValFromAfter = val.(string)\n                        }\n                        return nil\n                },\n                Commands: []*Command{\n                        {\n                                Name: \"baz\",\n                                Action: func(ctx context.Context, cmd *Command) error {\n                                        if val := ctx.Value(bkey); val == nil {\n                                                return errors.New(\"bkey value not found\")\n                                        } else {\n              ",
+    "comments": [
+      {
+        "author": "bystones",
+        "body": "My first attempt was this: https://github.com/bystones/cli/commit/acb130d5ded823301ba5b2b2a3a0c557735e45ef\nMoving the defer of the After function down and doing the same \"chain\" thing as the Before function fixes the test and keeps \"make test\" green as well.\n\nThe problem with that fix attempt is that it changes behavior around other error handling which seems to be currently untested. For example the following test passes before that change and breaks after: https://github.com/bystones/cli/commi",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "bystones",
+        "body": "@dearchap I might have found a solution, see PR #2108 ",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2108,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,102 @@
+{
+  "id": "c-urfave-cli-1069",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1069,
+    "url": "https://github.com/urfave/cli/issues/1069"
+  },
+  "issue": {
+    "title": "Add option to avoid that '[arguments...]' been printed",
+    "body": "## Checklist\r\n\r\n* [x] Are you running the latest v2 release? \r\n* [x] Did you check the manual for your release?\r\n* [x] Did you perform a search about this feature?\r\n\r\n## What problem does this solve?\r\n\r\n- By default, the help of a command shows the section `USAGE` with a text like:\r\n**cmd_name** `[global options] command [command options] [arguments...]`\r\nshowing `[arguments...]` even when your command is not going to use any argument.\r\n\r\n## Solution description\r\n\r\nAdd a boolean to indicate that `[arguments...]` does not been printed.\r\n",
+    "comments": [
+      {
+        "author": "coilysiren",
+        "body": "This makes sense to me @tredoe! Although I want to check to see if anyone else in @urfave/cli also thinks this is a good idea? Since I know we've had some concerns about there being too many options.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "coilysiren",
+        "body": "> not print that if the app does not support arguments\r\n\r\nis there a way to indicate that an app does not support arguments?",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "rliebz",
+        "body": "> is there a way to indicate that an app does not support arguments?\r\n\r\nLooks like there isn't—we expose the args as a string slice directly off of the flag set. We don't have a way to tell if a user application happens to call that function or not.\r\n\r\n>  Although I want to check to see if anyone else in @urfave/cli also thinks this is a good idea? Since I know we've had some concerns about there being too many options.\r\n\r\nI do see this as a common use case, but if we added a configurable field ",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "tredoe",
+        "body": "> > Although I want to check to see if anyone else in @urfave/cli also thinks this is a good idea? Since I know we've had some concerns about there being too many options.\r\n> \r\n> I do see this as a common use case, but if we added a configurable field for every common use case, we'd end up with a pretty big list of fields. It's trivial to pass a custom help template in for an `App`, so I'm in favor of not expanding our interface and letting users set the `CustomAppHelpTemplate` themselves:\r\n> \r\n",
+        "author_association": ""
+      },
+      {
+        "author": "rliebz",
+        "body": "HTTP solves a complex problem, as does a CLI library, so the number of knobs we end up with is definitely a product of that complexity. But part of managing software is trying to reduce the amount of complexity we have to deal with. For the `http` package, how many of those configuration fields have trivial alternatives?\r\n\r\nA few of the problems with having too many fields:\r\n- More code for library authors to maintain/test\r\n- Commitment to backward compatibility—we can't easily undo adding an op",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "tredoe",
+        "body": "> HTTP solves a complex problem, as does a CLI library, so the number of knobs we end up with is definitely a product of that complexity. But part of managing software is trying to reduce the amount of complexity we have to deal with. For the `http` package, how many of those configuration fields have trivial alternatives?\r\n> \r\nThe type Request from package HTTP was only an example; I have read the standard library so I know that it has many types with a *big list of fields*; more examples: type",
+        "author_association": ""
+      },
+      {
+        "author": "tredoe",
+        "body": "> A few of the problems with having too many fields:\r\n> \r\n>     * More code for library authors to maintain/test\r\n>     * Commitment to backward compatibility—we can't easily undo adding an option to a library\r\n>     * More interactions between options that could be the source of bugs or other unexpected behaviors\r\nYour points are valid for whatever code that been added; I mean that it is not exclusive to have \"many fields\" into a structure.\r\n\r\n> \r\n>     * Harder for users to find which configur",
+        "author_association": ""
+      },
+      {
+        "author": "coilysiren",
+        "body": "See also => https://github.com/urfave/cli/issues/1074",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "coilysiren",
+        "body": "I'm making this as `help wanted` primarily because the desired solution almost certainly includes the work required for this issue => https://github.com/urfave/cli/issues/1074",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "kind/feature",
+      "help wanted",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/feature": "unknown",
+    "help wanted": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2001,
+    "refused_by": null,
+    "original_labels": [
+      "kind/feature",
+      "help wanted",
+      "status/confirmed",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

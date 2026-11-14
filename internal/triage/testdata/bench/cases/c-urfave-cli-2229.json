@@ -1,0 +1,66 @@
+{
+  "id": "c-urfave-cli-2229",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2229,
+    "url": "https://github.com/urfave/cli/issues/2229"
+  },
+  "issue": {
+    "title": "--verbose flag gets interpreted as \"print version and exit\"",
+    "body": "## My urfave/cli version is\n\n_**3.6.1**_\n\n## Checklist\n\n- [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n<!--\n  Delete any of the following that do not apply:\n-->\n\n- My project is using go modules.\n- My project is using vendoring.\n- My project is automatically downloading the latest version.\n\n## Describe the bug\n\nAfter the upgrade from v2 to v3, our command starting always printing the version and exiting when passed `--verbose`.\n\nWe narrowed it down to the way `--verbose` is defined:\n\n```go\n&cli.BoolFlag{\n\tName:    \"verbose\",\n\tAliases: []string{\"v\"},\n},\n```\n\nIt looks like the `v` alias conflicts with [the default version flag](https://cli.urfave.org/v3/examples/flags/basics/#version-flags).\n\n## To reproduce\n\n* Define a boolean flag that has `v` as alias.\n* Call the command, setting the flag to true.\n\n[See in Go playground](https://go.dev/play/p/yfNGl3GTAer).\n\n## Observed behavior\n\nCommand prints version and exits.\n\n## Expected behavior\n\nOne of:\n\n* The clash on alias `v` is detected and the library returns an error or panics.\n* The custom flag definition completely ",
+    "comments": [
+      {
+        "author": "tcard",
+        "body": "Hey @dearchap, we already worked around this issue and it isn't really affecting us anymore.\n\nWe upgraded from version v2.27.7.\n\nRegardless of this is a regression or not, it seems to me this behavior should change.",
+        "author_association": ""
+      },
+      {
+        "author": "tcard",
+        "body": "I've added a link to [a repro in the Go playground](https://go.dev/play/p/yfNGl3GTAer).",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2330,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

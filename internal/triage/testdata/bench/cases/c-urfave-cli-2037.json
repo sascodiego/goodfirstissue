@@ -1,0 +1,55 @@
+{
+  "id": "c-urfave-cli-2037",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2037,
+    "url": "https://github.com/urfave/cli/issues/2037"
+  },
+  "issue": {
+    "title": "Support root level map keys in map sources",
+    "body": "## Checklist\r\n\r\n* [X] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [X] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/index.md).\r\n* [X] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\n\r\nThis issue is related to this one I opened here: https://github.com/urfave/cli-altsrc/issues/14\r\n\r\nI noticed the same issue of root keys not being considered also occurs in `urfave/cli` itself:\r\n\r\nExample:\r\n\r\n```go\r\nmapSource := cli.NewMapSource(\"config\", map[any]any{\r\n\t\"host\": \"localhost\",\r\n\t\"database\": map[any]any{\r\n\t\t\"url\": \"example.com\",\r\n\t},\r\n})\r\n\r\ncmd := &cli.Command{\r\n\tName: \"Example\",\r\n\tAction: func(ctx context.Context, cmd *cli.Command) error {\r\n\t\tfmt.Println(\"Host:\")\r\n\t\tfmt.Println(cmd.String(\"host\"))\r\n\t\tfmt.Println(\"Database URL:\")\r\n\t\tfmt.Println(cmd.String(\"database-url\"))\r\n\t\treturn nil\r\n\t},\r\n\tEnableShellCompletion: true,\r\n\tFlags: []cli.Flag{\r\n\t\t&cli.StringFlag{\r\n\t\t\tName:    \"host\",\r\n\t\t\tSources: cli.NewValueSourceChain(cli.NewMapValueSource(\"host\", mapSource)),\r\n\t\t},\r\n\t\t&cli.StringFlag{\r\n\t\t\tName:    \"database-url\",\r\n\t\t\tSources: cli.NewValueSourceChain(cli.NewMapValueSource(\"database.url\", mapSource)),\r\n\t\t},\r\n\t},\r\n}\r\n\r\ncmd.Run(context.Background(), os.Args)\r\n```\r",
+    "comments": [],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2047,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

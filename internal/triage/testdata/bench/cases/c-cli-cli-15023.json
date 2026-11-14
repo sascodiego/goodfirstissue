@@ -1,0 +1,55 @@
+{
+  "id": "c-cli-cli-15023",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "cli/cli",
+    "number": 15023,
+    "url": "https://github.com/cli/cli/issues/15023"
+  },
+  "issue": {
+    "title": "probe-permission-shape",
+    "body": "probe; nothing should be created",
+    "comments": [
+      {
+        "author": "dezren39",
+        "body": "Closed immediately: this was an automated probe of gh's permission-denied failure shape (noise, nothing intentional here). Apologies for the stray issue.",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "suspected-spam"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "suspected-spam": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "suspected-spam"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

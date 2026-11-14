@@ -1,0 +1,55 @@
+{
+  "id": "c-urfave-cli-976",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 976,
+    "url": "https://github.com/urfave/cli/issues/976"
+  },
+  "issue": {
+    "title": "v2 feature: allow flags after arguments",
+    "body": "## Checklist\r\n\r\n* [X] Are you running the latest v2 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n* [X] Did you check the manual for your release? The v2 manual is [here](https://github.com/urfave/cli/blob/master/docs/v2/manual.md)\r\n* [X] Did you perform a search about this feature? Here's the [Github guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\n\r\nI am writing a program which is invoked by another program (openvpn up-script) and it is invoked in a very specific way.  I really like this library, so I'd like to be able to use it as a command line parser.  The problem is that it seems that all flags must appear before all options.\r\n\r\nIn my specific case, openvpn will always call your script with exactly 10 arguments, then you can configure it to pass additional arguments.  This would result in an os.Args similar to this:\r\n`{\"tun0\", \"1\", \"2\"...\"10\", \"--flush\"}`.  The `--flush` is the flag that I'd like to be able to process with this library.\r\n\r\nIt seems like all flags either take no arguments (`BoolFlag`) or take one arugment (`StringFlag`).\r\n\r\nI've needed this for other projects, but having it for this project would be really great.\r\n\r\n## Solution description\r\n\r\nan `os.Args` value of `{\"a\", \"--bool-flag\", \"--string-flag\", \"abc\", \"b\"}` should have:\r\n\r\n* `ctx.Args() --> {\"a\", \"b\"}`\r\n* `ctx.BoolFlag(\"bool-flag\") --> tru",
+    "comments": [],
+    "labels": [
+      "kind/feature",
+      "area/v2",
+      "status/triage"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/feature": "unknown",
+    "area/v2": "unknown",
+    "status/triage": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1977,
+    "refused_by": null,
+    "original_labels": [
+      "kind/feature",
+      "area/v2",
+      "status/triage"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

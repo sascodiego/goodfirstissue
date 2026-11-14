@@ -1,0 +1,54 @@
+{
+  "id": "c-spf13-cobra-206",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 206,
+    "url": "https://github.com/spf13/cobra/issues/206"
+  },
+  "issue": {
+    "title": "Question: how to make flags required",
+    "body": "I'm defining some flags like this:\n\n```\n    follow_sync_gwCmd.PersistentFlags().String(\"url\", \"\", \"Sync Gateway URL\")\n    follow_sync_gwCmd.MarkPersistentFlagRequired(\"url\")\n```\n\nand even explicitly calling `ParseFlags` (out of desperation):\n\n```\n    Run: func(cmd *cobra.Command, args []string) {\n\n        if err := cmd.ParseFlags(args); err != nil {\n            log.Printf(\"err: %v\", err)\n        }\n                ...\n    },\n```\n\nand calling:\n\n```\n$ go run main.go follow_sync_gw\n```\n\nwith no `--url` flag, but cobra isn't throwing errors.\n\nI was expecting that if I set `MarkPersistentFlagRequired` but failed to pass the flag on the command line then the command would fail with an error and a usage example.\n",
+    "comments": [
+      {
+        "author": "n10v",
+        "body": "Fixed in #502",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "marckhouzam",
+        "body": "> It's unfortunate that enforcing required flags natively is solely dependent on shell completion scripts. This just passes the buck to the user, who now has to inject the script into their shell in order for the app to run as it's designed.\r\n\r\n@copejon  I'm not sure I understand what you mean.  What scenario is causing you problems?\r\n",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

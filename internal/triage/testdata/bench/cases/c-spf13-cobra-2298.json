@@ -1,0 +1,64 @@
+{
+  "id": "c-spf13-cobra-2298",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2298,
+    "url": "https://github.com/spf13/cobra/issues/2298"
+  },
+  "issue": {
+    "title": "[Docs] Requesting info on repeated flags",
+    "body": "Hello!\nIn some programs such as SSH I can repeat the -v flag in their CLI to invoke different behaviors. For example -v will print info level logs, while `-v -v`, or `-vv` will print debug level logs, and `-vvv, -v -v -v` will be more verbose and so on. \n\nI'd like to know if this is possible, and how to do it programmatically.\n\nIf the info is provided in this issue, I'd be happy to put it into a PR for the user guide to complete this request.",
+    "comments": [
+      {
+        "author": "marckhouzam",
+        "body": "Cobra, through spf13/pflag supports repeating flags but not in the way you describe above (at least I’m not aware of anything like that).\n\nRepeating flags will be something like `adduser -u user1 -u user2 -u user3`. The type of flag that repeat are the ones named `*Array` and `*Slice` in the pflag api. \n\nTo achieve something like `-vv` and `-vvv` in cobra you will need to use different long flags for each incantation: `--vv` and `--vvv` (notice the double `-` used for long flags).  \n\nIf we compa",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "Bjohnson131",
+        "body": "  @marckhouzam  Interesting. would you like a PR for docs on this?",
+        "author_association": ""
+      },
+      {
+        "author": "marckhouzam",
+        "body": "That would be nice. I notice we don’t have any doc about repeating flags",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "Bjohnson131",
+        "body": "Sounds good, I'll work a PR tonight 👍🏻 ",
+        "author_association": ""
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2316,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

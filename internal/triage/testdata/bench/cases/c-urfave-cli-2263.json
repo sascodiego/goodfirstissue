@@ -1,0 +1,55 @@
+{
+  "id": "c-urfave-cli-2263",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2263,
+    "url": "https://github.com/urfave/cli/issues/2263"
+  },
+  "issue": {
+    "title": "v3.6.2 adds empty line to stderr when cli.Exit is called with empty message",
+    "body": "## My urfave/cli version is\n\nv3.3.3\n\n## Checklist\n\n- [ ] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [x] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Dependency Management\n\n<!--\n  Delete any of the following that do not apply:\n-->\n\n- My project is using go modules.\n\n## Describe the bug\n\nThe change from https://github.com/urfave/cli/pull/2237 that is released in version v3.6.2 causes empty line to be added to stderr if cli.Exit is called with an empty message such as:\n\n`cli.Exit(\"\", exitError.ExitCode())`\n\n## To reproduce\n\ncli.Exit(\"\", exitError.ExitCode())\n\n## Observed behavior\n\nOur test assertions are now broken due to unnecessary empty line in the output.\n\n## Expected behavior\n\nI want to understand if this was intentional, because Exit accepts empty string as valid input. I believe it should either not accept it, or not add unnecessary empty lines.\n\n",
+    "comments": [],
+    "labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2310,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

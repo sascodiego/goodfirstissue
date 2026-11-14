@@ -1,0 +1,55 @@
+{
+  "id": "c-urfave-cli-2206",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2206,
+    "url": "https://github.com/urfave/cli/issues/2206"
+  },
+  "issue": {
+    "title": "The boolean flag is not behaving as intended.",
+    "body": "## My urfave/cli version is\n\n_**cli/v3**_\n\n## Checklist\n\n- [X] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n- [X] Did you check the manual for your release? The v3 manual is [here](https://cli.urfave.org/v3/getting-started/)\n- [X] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## Describe the bug\n\nI'm using a Boolean flag and want to set it to 1/0 or true/false. But if I separate it with a space, the value isn't read and defaults to true. The same thing happens if I omit the value. But if I use key=value separated by the = sign, everything works correctly. \n\nThe documentation says I can use both: a space or =:\nhttps://github.com/urfave/cli/blob/19d941b4749b4d9878033b80d29bdc5e2916a62a/docs/v3/examples/flags/basics.md?plain=1#L73. \n\nBut in the code, I found that this is ignored:\nhttps://github.com/urfave/cli/blob/19d941b4749b4d9878033b80d29bdc5e2916a62a/command_parse.go#L153\n\ntrace:\n```\n## URFAVE CLI TRACE github.com/urfave/cli/v3@v3.4.1/command_parse.go:79 (github.com/urfave/cli/v3.(*Command).parseFlags) rearrange:1 (cmd=\"modify\") [\"--fooBar\" \"false\"]\n## URFAVE CLI TRACE github.com/urfave/cli/v3@v3.4.1/command_parse.go:128 (github.com/urfave/cli/v3.(*Command).parseFlags) parseFlags (shortOptionHandling=%!q(bool=false))\n## URFAVE CLI TRACE github.com/urfave/cli",
+    "comments": [],
+    "labels": [
+      "kind/documentation",
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/documentation": "unknown",
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2340,
+    "refused_by": null,
+    "original_labels": [
+      "kind/documentation",
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

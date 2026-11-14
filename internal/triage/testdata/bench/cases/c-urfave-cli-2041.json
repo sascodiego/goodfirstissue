@@ -1,0 +1,58 @@
+{
+  "id": "c-urfave-cli-2041",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2041,
+    "url": "https://github.com/urfave/cli/issues/2041"
+  },
+  "issue": {
+    "title": "Flag Action should be called when value is set by alternative sources. ",
+    "body": "## Checklist\r\n\r\n* [x] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n`v3.0.0-beta1`\r\n* [x] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/index.md).\r\n* [x] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## What problem does this solve?\r\nFix action beeing called for all circumstances when a value is set by either a flag or alternative source. Currently the flag action is only executed when given as argument. \r\n\r\nexample: \r\n```\r\n\t\tFlags: []cli.Flag{\r\n\t\t\t&cli.StringFlag{\r\n\t\t\t\tName:    flag_log_level,\r\n\t\t\t\tUsage:   \"The log level (trace, debug, info, warn, error, fatal, panic)\",\r\n\t\t\t\tValue:   \"info\",\r\n\t\t\t\tSources: cli.EnvVars(flagEnv(flag_log_level)),\r\n\t\t\t\tAction: func(ctx context.Context, cmd *cli.Command, value string) error {\r\n\t\t\t\t\tlog.Info(\"Setting log level to \", value)\r\n\t\t\t\t\tlevel, err := log.ParseLevel(value)\r\n\t\t\t\t\tif err != nil {\r\n\t\t\t\t\t\treturn err\r\n\t\t\t\t\t}\r\n\t\t\t\t\tlog.SetLevel(level)\r\n\t\t\t\t\treturn nil\r\n\t\t\t\t},\r\n\t\t\t},\r\n```\r\n## Solution description\r\n\r\nWhen a env var is set, the action should be called. \r\n\r\n## Describe alternatives you've considered\r\nnot using in this case as it is has no consistent experience for users.\r\n",
+    "comments": [
+      {
+        "author": "project0",
+        "body": "@dearchap indeed, setting Local true populates the value. Is this the intended behavior? If so, documenting it would be beneficial in this case. ",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2221,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

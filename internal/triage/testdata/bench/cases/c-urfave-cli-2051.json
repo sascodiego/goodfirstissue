@@ -1,0 +1,52 @@
+{
+  "id": "c-urfave-cli-2051",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2051,
+    "url": "https://github.com/urfave/cli/issues/2051"
+  },
+  "issue": {
+    "title": "Text flags",
+    "body": "## Checklist\n\n* [X] Are you running the latest v3 release? The list of releases is [here](https://github.com/urfave/cli/releases).\n* [X] Did you check the manual for your release? The v3 manual is [here](https://github.com/urfave/cli/blob/main/docs/v3/index.md).\n* [X] Did you perform a search about this feature? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\n\n## What problem does this solve?\n\nThe standard library's `flag` package has had `flag.TextVar` since 1.19 which allows any type that satisfies `encoding.TextMarshaller` and `encoding.TextUnmarshaller` to be set using flags. A good use for this is to set log level using strings such as `slog.LevelVar`.\n\nOther logging packages such as `go.uber.org/zap` satisfies these interfaces for its atomic level type. You can have a logger before the log level has been set. It'll be ready before arguments have been parsed and output structured logs in case of a parse error.\n\n## Solution description\n\nImplement `TextValue` and `TextFlag`.\n\n## Describe alternatives you've considered\n\nHere's what I had to implement to get the functionality. It would be nice to see this being supported by this package.\n\n```go\npackage clix\n\nimport (\n\t\"encoding\"\n\t\"strings\"\n\n\t\"github.com/urfave/cli/v3\"\n)\n\ntype TextMarshalUnMarshaller interface {\n\tencoding.TextMarshaler\n\tencoding.TextUnmarshaler\n}\n\ntype TextFlag = cli.FlagBase[TextMarshalUnMarshaller, cli",
+    "comments": [],
+    "labels": [
+      "kind/feature",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/feature": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2415,
+    "refused_by": null,
+    "original_labels": [
+      "kind/feature",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

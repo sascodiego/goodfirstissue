@@ -1,0 +1,52 @@
+{
+  "id": "c-urfave-cli-2076",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2076,
+    "url": "https://github.com/urfave/cli/issues/2076"
+  },
+  "issue": {
+    "title": "Subcommands do not display help for GLOBAL OPTIONS",
+    "body": "Version: 706f78e\n\nMy initial look for a the cause is that the default `SubcommandHelpTemplate` does not contain:\n```\n{{if .VisiblePersistentFlags}}\n\nGLOBAL OPTIONS:{{template \"visiblePersistentFlagTemplate\" .}}{{end}}\n```\n\nSee `CommandHelpTemplate` where this is implemented.",
+    "comments": [],
+    "labels": [
+      "kind/bug",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2359,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

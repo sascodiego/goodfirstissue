@@ -1,0 +1,43 @@
+{
+  "id": "c-urfave-cli-2496",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2496,
+    "url": "https://github.com/urfave/cli/issues/2496"
+  },
+  "issue": {
+    "title": "Required mutually exclusive flags are enforced before a subcommand parses inherited flags",
+    "body": "A required `MutuallyExclusiveFlags` group on a parent command is enforced before the subcommand parses the flag, so the same command line fails or succeeds depending on where the flag sits relative to the subcommand name.\n\n```go\ncmd := &cli.Command{\n    Name: \"root\",\n    MutuallyExclusiveFlags: []cli.MutuallyExclusiveFlags{{\n        Required: true,\n        Flags:    [][]cli.Flag{{&cli.StringFlag{Name: \"alpha\"}}},\n    }},\n    Commands: []*cli.Command{{\n        Name:   \"sub\",\n        Action: func(context.Context, *cli.Command) error { return nil },\n    }},\n}\n\ncmd.Run(ctx, []string{\"root\", \"sub\", \"--alpha\", \"hello\"}) // error: one of these flags needs to be provided: alpha\ncmd.Run(ctx, []string{\"root\", \"--alpha\", \"hello\", \"sub\"}) // ok\n```\n\nGroup flags are persistent by default and v3 accepts flags after the subcommand name; the same group with `Required: false` works after the name, and a plain `Required: true` flag is validated on the leaf after parsing. Only this group is checked early, because `command_run.go` walks the parent chain for `MutuallyExclusiveFlags` before it resolves and dispatches to the subcommand (the reason the parent-chain walk exists is that the subcommand inherits those flags, which it has not parsed yet at that point).\n\nExpected: `Required` only adds the presence check; the group is validated by the command that actually runs, after it has parsed the inherited flags. `root sub` (flag absent) must still fail with the same message.\n\nI have a patch that mov",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2497,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

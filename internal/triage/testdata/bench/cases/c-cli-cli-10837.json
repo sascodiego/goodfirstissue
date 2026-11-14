@@ -1,0 +1,76 @@
+{
+  "id": "c-cli-cli-10837",
+  "provenance": "real-closed",
+  "trap": "closed_refused_with_reason",
+  "source": {
+    "repository": "cli/cli",
+    "number": 10837,
+    "url": "https://github.com/cli/cli/issues/10837"
+  },
+  "issue": {
+    "title": "Unable to install pinned SHA when extension uses binary releases",
+    "body": "### Describe the bug\n\nWhen installing an extension using a pinned SHA, the gh CLI is unable to install from source for a commit when it has binary releases.\n\n### Affected version\n\n```\ngh version 2.70.0 (2025-04-11)\n```\n\n### Steps to reproduce the behavior\n\nInstall gh-notify with a commit sha, that will work because the extension has no releases:\n```console\n$ gh extension install meiji163/gh-notify --pin 556df2eecdc0f838244a012759da0b76bcfeb2e7\nCloning into '/Users/leighmcculloch/.local/share/gh/extensions/gh-notify'...\nremote: Enumerating objects: 379, done.\nremote: Counting objects: 100% (224/224), done.\nremote: Compressing objects: 100% (113/113), done.\nremote: Total 379 (delta 149), reused 146 (delta 105), pack-reused 155 (from 1)\nReceiving objects: 100% (379/379), 121.24 KiB | 1.86 MiB/s, done.\nResolving deltas: 100% (181/181), done.\n✓ Installed extension meiji163/gh-notify\n✓ Pinned extension at 556df2eecdc0f838244a012759da0b76bcfeb2e7\n```\nInstall gh-dash with a comit sha, that will fail because the extension has releases:\n```console\n$ gh extension install dlvhdr/gh-dash --pin 605b25ac07928bfc13cde36c312a506d5bb01779 # v4.14.0\nX Could not find a release of dlvhdr/gh-dash for 605b25ac07928bfc13cde36c312a506d5bb01779\n````\n\n### Expected vs actual behavior\n\nI expected all extensions to be installable with a pinned commit sha and for it to be a security best practice to pin extension installs to a commit sha so that the user is in complete control of what gets installed since ",
+    "comments": [
+      {
+        "author": "BagToad",
+        "body": "Drive by thoughts, but maybe there's room for improvement in our `gh extension install` help docs:\n\n```\nFor remote repositories, the GitHub CLI first looks for the release artifacts assuming\nthat it's a binary extension i.e. prebuilt binaries provided as part of the release.\nIn the absence of a release, the repository itself is cloned assuming that it's a\nscript extension i.e. prebuilt executable or script exists on its root.\n```\n\nI'll open a small PR to communicate what I think could be improve",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "leighmcculloch",
+        "body": "The problem with the existing behaviour of using releases as a decision branch for binary vs source, is that any extension that exists without a release can work, up until it's tagged, then all existing SHA pins fail.\n\n> * Would you expect `gh` to compile arbitrary SHAs at install time locally on your computer?\n\nYes, I think so, by running some common command.",
+        "author_association": ""
+      },
+      {
+        "author": "BagToad",
+        "body": "Given we support precompiled extensions from any ecosystem that can create a binary like Go and Rust and anything else someone can use to create a binary, I don't think there is going to be a common command.\n\nEven if we were able to mostly determine what commands to run to build any arbitrary extension, I think we open the door to dependency & versioning issues that come with the territory of compiling locally from source; I don't think this aligns with the plug and play experience that `gh` ext",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "BagToad",
+        "body": "Closing because I don't see a path forward, per https://github.com/cli/cli/issues/10837#issuecomment-2819660781",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "enhancement",
+      "more-info-needed",
+      "gh-extension"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "more-info-needed": "unknown",
+    "gh-extension": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "BagToad",
+    "original_labels": [
+      "enhancement",
+      "more-info-needed",
+      "gh-extension"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

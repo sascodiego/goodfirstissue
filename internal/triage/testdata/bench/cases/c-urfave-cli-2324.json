@@ -1,0 +1,43 @@
+{
+  "id": "c-urfave-cli-2324",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2324,
+    "url": "https://github.com/urfave/cli/issues/2324"
+  },
+  "issue": {
+    "title": "Add Command.Walk(fn) and Command.Path() convenience methods",
+    "body": "## Summary\n\nAdd two small convenience methods to `*cli.Command` that several third-party extensions reimplement today:\n\n```go\n// Walk visits cmd and every descendant in pre-order. Returning a non-nil\n// error from fn short-circuits the walk and is returned to the caller.\nfunc (cmd *Command) Walk(fn func(*Command) error) error\n\n// Path returns the path of command names from the root to cmd, inclusive.\n// Each element is a Command.Name. Useful for tools that need to manipulate\n// the segments (dot-joined for tool names, slash-joined for URLs, etc).\n// FullName(), which already exists, is equivalent to strings.Join(cmd.Path(), \" \").\nfunc (cmd *Command) Path() []string\n```\n\n## Motivation\n\nI maintain a family of small urfave/cli extensions where each repo independently reimplements both of these:\n\n- [cli-mcp](https://github.com/coilysiren/cli-mcp) — projects a command tree as an MCP server. `registerTree` is a hand-rolled walker; tool names are dot-joined paths.\n- [cli-web-docs](https://github.com/coilysiren/cli-web-docs) — emits static HTML docs. `buildNavList` and `renderPerPage` each walk the tree; nav slugs use dash-joined paths.\n- [cli-web-ops](https://github.com/coilysiren/cli-web-ops) — mobile-first MCP-client web UI. Walks an MCP tool surface, but the underlying motivation is the same.\n\nThe pattern across all three is:\n\n```go\nvar walk func(prefix []string, cmd *cli.Command)\nwalk = func(prefix []string, cmd *cli.Command) {\n    if cmd.Hidden { return }\n    path := append(pre",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2353,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

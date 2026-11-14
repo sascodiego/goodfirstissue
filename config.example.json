@@ -1,0 +1,43 @@
+{
+  "server": {
+    "addr": ":8080"
+  },
+  "repos": {
+    "clone_dir": "var/repos"
+  },
+  "store": {
+    "dir": "var/store"
+  },
+  "github": {
+    "max_issues": 150,
+    "page_size": 100,
+    "timeout": "1m0s"
+  },
+  "indexer": {
+    "binary": "codegraph",
+    "timeout": "5m0s"
+  },
+  "explore": {
+    "binary": "pig",
+    "model": "deepseek-v4-flash",
+    "home": "var/pig",
+    "tools": [
+      "read",
+      "ls",
+      "grep",
+      "mcp__codegraph__codegraph_explore"
+    ],
+    "idle_warn": "20s",
+    "idle_kill": "1m30s",
+    "budget": "3m0s"
+  },
+  "clef": {
+    "url": "https://api.nan.builders/v1/systemone",
+    "timeout": "1m0s",
+    "max_retries": 5
+  },
+  "models": {
+    "explore": "deepseek-v4-flash",
+    "profile_extract": "glm5.3-flash"
+  }
+}

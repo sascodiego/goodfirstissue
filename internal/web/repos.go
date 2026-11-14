@@ -137,6 +137,17 @@ func (h *Handler) fetchAndStore(ctx context.Context, owner, name string) (string
 	}); err != nil {
 		return "", err
 	}
+
+	// Un nombre canónico distinto deja la clave pedida sin repositorio: si se quedara en el
+	// registro, el rail mostraría el mismo repositorio dos veces, una con el pin viejo. Se
+	// guarda primero la entrada nueva y después se borra la vieja, así el rail nunca ve cero.
+	if requested := store.RepoName(owner, name); requested != key {
+		if err := h.store.RemoveRepo(requested); err != nil {
+			// El fetch salió bien: fallar la respuesta entera por la limpieza sería peor que
+			// dejar un aviso en el registro.
+			slog.Error("quitar la entrada vieja del registro", "key", requested, "err", err)
+		}
+	}
 	return key, nil
 }
 
@@ -205,7 +216,9 @@ func parseRepoInput(raw string) (owner, name string, err error) {
 		if parseErr != nil {
 			return "", "", fmt.Errorf("%q no es un enlace válido", trimmed)
 		}
-		if host := strings.ToLower(u.Host); host != "github.com" && host != "www.github.com" {
+		// Hostname y no Host: un enlace pegado desde el navegador puede traer :443, y el
+		// puerto no cambia de qué GitHub se habla.
+		if host := strings.ToLower(u.Hostname()); host != "github.com" && host != "www.github.com" {
 			return "", "", fmt.Errorf("el enlace tiene que ser de GitHub, no de %q", u.Host)
 		}
 		target = strings.Trim(u.Path, "/")

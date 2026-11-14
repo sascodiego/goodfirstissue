@@ -76,6 +76,10 @@ func TestAddRepoStoresTheSameKeyFromEitherInputForm(t *testing.T) {
 		{"full https url", "https://github.com/spf13/cobra"},
 		{"url with a trailing path", "https://github.com/spf13/cobra/"},
 		{"url with .git", "https://github.com/spf13/cobra.git"},
+		{"url with an explicit port", "https://github.com:443/spf13/cobra"},
+		// GitHub devuelve el nombre canónico, así que las mayúsculas del pedido no abren una
+		// segunda clave: la clave sale de la respuesta, no del texto tipeado.
+		{"different case", "SPF13/Cobra"},
 		{"surrounding spaces", "  spf13/cobra  "},
 	} {
 		t.Run(input.name, func(t *testing.T) {
@@ -106,7 +110,9 @@ func TestAddRepoStoresTheSameKeyFromEitherInputForm(t *testing.T) {
 			if !st.HasSnapshot("spf13__cobra") {
 				t.Error("the snapshot was not saved")
 			}
-			if len(f.calls) != 1 || f.calls[0] != "spf13/cobra" {
+			// Se pide tal como se escribió, sin reescribir el caso: GitHub resuelve el
+			// nombre. La clave guardada, en cambio, sale siempre de la respuesta.
+			if len(f.calls) != 1 || !strings.EqualFold(f.calls[0], "spf13/cobra") {
 				t.Errorf("fetcher calls = %v", f.calls)
 			}
 		})
@@ -352,6 +358,23 @@ func TestRefreshFollowsARenameAndKeepsOneEntry(t *testing.T) {
 	if canonical, ok := st.Alias("httpie/httpie"); !ok || canonical != "httpie/cli" {
 		t.Errorf("alias = %q, %v", canonical, ok)
 	}
+
+	// El alias solo no alcanza: si la entrada vieja queda en el registro, el rail lista el
+	// mismo repositorio dos veces, una con el pin que ya no existe. Se afirma sobre el
+	// registro, que es lo que lee la pantalla.
+	repos, err := st.Repos()
+	if err != nil {
+		t.Fatalf("Repos() error = %v", err)
+	}
+	if len(repos) != 1 {
+		t.Fatalf("registry has %d entries (%+v), want exactly one", len(repos), repos)
+	}
+	if repos[0].Key != "httpie__cli" {
+		t.Errorf("registry key = %q, want httpie__cli", repos[0].Key)
+	}
+	if _, ok, _ := st.Repo("httpie__httpie"); ok {
+		t.Error("the stale key survived the rename")
+	}
 }
 
 // S1, S3, S11: los dos controles del rail hacen lo que dicen. El formulario del alta queda
@@ -381,6 +404,20 @@ func TestDashboardOffersTheRealControls(t *testing.T) {
 	}
 	if strings.Contains(page, `<a class="btn" href`) {
 		t.Error("Refrescar is still a link to the same URL")
+	}
+
+	// S11: la espera se dice. No hay test de navegador, así que lo que se afirma es el
+	// contrato que el cliente necesita para poder hacerlo, y que borrarlo haga fallar algo.
+	if !strings.Contains(form, "data-busy") || !strings.Contains(form, `class="busy"`) {
+		t.Error("the add form has no busy state to show while it waits")
+	}
+	if !strings.Contains(page, `class="inline" method="post"`) ||
+		!strings.Contains(page, "data-busy") {
+		t.Error("the refresh form has no busy state")
+	}
+	js := body(t, h, "/static/app.js")
+	if !strings.Contains(js, "form[data-busy]") {
+		t.Error("the client never looks for the busy forms")
 	}
 }
 

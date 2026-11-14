@@ -1,0 +1,68 @@
+{
+  "id": "c-cli-cli-14394",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14394,
+    "url": "https://github.com/cli/cli/issues/14394"
+  },
+  "issue": {
+    "title": "`gh pr list` with flags fails JSON parsing",
+    "body": "### Describe the bug\n\nWhen `gh pr list` is called with filters such as `--author`, it seemingly fails to parse JSON:\n\n```sh\n$ gh pr list --author \"@me\"\ninvalid character 'd' after object key\n\n$ gh pr list --search \"status:success review:required\"\ninvalid character 'd' after object key\n```\n\nHowever, `gh pr list` without the flags works. The surrounding quotes do not change the outcome. This is on a repo in GitHub Enterprise.\n\n### Affected version\n\n```\n$ gh version\ngh version 2.100.0 (2026-09-03)\nhttps://github.com/cli/cli/releases/tag/v2.100.0\n```\n\n### Steps to reproduce the behavior\n\nIn a GitHub repo, run `gh pr list` with a filtering flag (any of the examples in `gh pr list --help` seem to trigger this).\n\n### Logs\n\n```sh\n$ GH_DEBUG=api gh pr list --author \"@me\"\n[git remote -v]\n[git config --get-regexp ^remote\\..*\\.gh-resolved$]\n* Request at 2026-09-08 11:06:07.741531 -0400 EDT m=+0.106614667\n* Request to https://api.github.com/graphql\n> POST /graphql HTTP/1.1\n> Host: api.github.com\n> Accept: application/vnd.github.merge-info-preview+json, application/vnd.github.nebula-preview\n> Authorization: token ████████████████████\n> Content-Length: 417\n> Content-Type: application/json; charset=utf-8\n> Graphql-Features: merge_queue\n> Time-Zone: America/New_York\n> User-Agent: GitHub CLI 2.100.0\n> X-Github-Api-Version: 2022-11-28\n\nGraphQL query:\nfragment repo on Repository {\n    id\n    databaseId\n    name\n    owner { login }\n    viewerPermission\n    defaultBranchRef {\n      name\n    }\n    ",
+    "comments": [
+      {
+        "author": "williammartin",
+        "body": "@yrahul3910 can you try `gh config clear-cache` and then `gh pr list --author \"@me\"` again and see whether this reproduces?",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "yrahul3910",
+        "body": "Oh huh, that did work. Thanks! Maybe this was just a one-off thing, so I'll close the issue.",
+        "author_association": ""
+      },
+      {
+        "author": "williammartin",
+        "body": "It's probably https://github.com/cli/go-gh/issues/252. Gonna re open this to make sure we get it fixed, thanks!\n\nHistorically, `gh` was very much a \"type things on your terminal\" or \"run one off automation commands\", or even \"run many commands sequentially\" and less \"have many instances running at once (particularly via agents)\" so we need to do a better job of making it parallel safe.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "bug",
+      "priority-3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "bug": "unknown",
+    "priority-3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "bug",
+      "priority-3"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

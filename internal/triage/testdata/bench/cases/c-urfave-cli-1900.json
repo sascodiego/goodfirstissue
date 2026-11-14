@@ -1,0 +1,65 @@
+{
+  "id": "c-urfave-cli-1900",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1900,
+    "url": "https://github.com/urfave/cli/issues/1900"
+  },
+  "issue": {
+    "title": "Man page generation feature is not documented anywhere",
+    "body": "One of the bullet points listing `cli`'s features in README says: \"`man` and markdown format documentation generation\".\r\n\r\nWhere is this feature documented? I could not find it.",
+    "comments": [
+      {
+        "author": "meatballhat",
+        "body": "@bartekpacia In support of making the core library smaller and only using stdlib dependencies, we decided to move these capabilities out into [urfave/cli-docs](https://github.com/urfave/cli-docs) but, to your point, this relationship is not well-documented 😬. WDYT about making this issue a child-of/tracked-by #1891 ?",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "bartekpacia",
+        "body": "Yeah, agreed 👍\r\n\r\n\r\nbtw I already updated v3 readme on master branch to reflect this",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "bartekpacia",
+        "body": "This is fixed. Our README now mentions the https://github.com/urfave/cli-docs repo :)",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "kind/documentation"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/documentation": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "kind/documentation"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

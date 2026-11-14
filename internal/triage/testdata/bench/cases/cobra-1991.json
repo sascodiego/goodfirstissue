@@ -1,0 +1,38 @@
+{
+  "id": "cobra-1991",
+  "provenance": "real",
+  "trap": "usage_question_answered",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 1991,
+    "url": "https://github.com/spf13/cobra/issues/1991"
+  },
+  "issue": {
+    "title": "How to retrieve parent command flag value?",
+    "body": "There are two commands: main and sub-command. In the main command there is PersistentFlag `name`. \n\nAs i understand there are three options:\n- define flag `name` in the sub-command. But if there are dozen sub-command with same logic which requires a `name` then code smell\n- call `parent()`... i'm implementing command in a way when it doesn't 'know' anything about parents\n- use viper. that's anti-pattern \"God object\". (btw, please help me integrate viper to a sub-command as dependency but not global object)\n\nFrom my point of view the method PersistentFlags.Lookup() should recursively search for the value of the flag starting from the current subcommand and moving up through the ancestors until it finds the value or reaches the root. \n\n```\nfunc recursiveFlagLookup(cmd *cobra.Command, flagName string) (string, error) {\n\tflag := cmd.PersistentFlags().Lookup(flagName)\n\n\tif flag != nil && flag.Value != nil {\n\t\treturn flag.Value.String(), nil\n\t}\n\n\tif cmd.Parent() != nil {\n\t\treturn recursiveFlagLookup(cmd.Parent(), flagName)\n\t}\n\n\treturn \"\", fmt.Errorf(\"flag '%s' not found\", flagName)\n}\n```\n\nBut i'm new in Go and Cobra and maybe already exists nice solution. Please help.",
+    "comments": [
+      {
+        "author": "marckhouzam",
+        "body": "What I’ve seen is the use of a global variable in the package where the `main` command was declared along with its persistent flag. ",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "question",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": ""
+}

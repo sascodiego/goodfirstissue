@@ -1,0 +1,44 @@
+{
+  "id": "cobra-2193",
+  "provenance": "real",
+  "trap": "bug_without_trace_but_with_steps",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2193,
+    "url": "https://github.com/spf13/cobra/issues/2193"
+  },
+  "issue": {
+    "title": "BUG: Incorrect copy of command context from parent to child (trivial fix)",
+    "body": "Found in cobra v1.8.1 (latest at time of writing)\n\nReproduce:\nI execute the root command with a context ( ExecuteContext(ctx) ), my arguments resolve to a sub command and the context is passed down to the executing command- CORRECT\nI execute this again with a different context.  This time the context is not passed and I get the previous context.  - INCORRECT\n\nThe context is changed in the root command so if my args indicated the root command, this command would execute with the different context as expected.  This means that the behaviour is inconsistent with sub commands compared to the root command\n\nI think the problem lies in command.go at lines 1111-1115\n\n```go\n// We have to pass global context to children command\n// if context is present on the parent command.\nif cmd.ctx == nil {\n    cmd.ctx = c.ctx\n}\n```\ncmd is the execute command and c is the root\nThe check is for context present on the child, not the parent as stated in the comment\n\nThe code should read\n\n```go\n// We have to pass global context to children command\n// if context is present on the parent command.\nif c.ctx != nil {\n    cmd.ctx = c.ctx\n}\n```\nConsider if there should be any check at all, whatever context the root has, it was passed with the execute command and is the context expected in the executing command.   Even if nil, it should replace the child?\n",
+    "comments": [
+      {
+        "author": "AtricoSoftware",
+        "body": "After checking the code, the check for a parent context is unnecessary, a previous check ensures that this cannot be nil\nRe-committed with no check\nPR: #2194",
+        "author_association": "NONE"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 2416,
+        "state": "OPEN",
+        "merged": false
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "already_working"
+}

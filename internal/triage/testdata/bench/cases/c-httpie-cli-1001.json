@@ -1,0 +1,60 @@
+{
+  "id": "c-httpie-cli-1001",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1001,
+    "url": "https://github.com/httpie/cli/issues/1001"
+  },
+  "issue": {
+    "title": "https command not found after fresh installation",
+    "body": "Hi guys,\r\n\r\nAny time I install httpie on Ubuntu (`sudo apt-get install httpie`), the `http` command works perfectly fine afterwards.\r\n\r\nHowever, `https` is never found.\r\n\r\n![image](https://user-images.githubusercontent.com/7287076/101105247-f712d200-35c4-11eb-8322-0058d53550e5.png)\r\n\r\nI have had this on all machines where I tried this so far, WSL on Windows, as well as native Ubuntu 19.x and 20.x.\r\nWhat do I need to do to get https command working as well, and what needs to change in the installation instructions, because I can't imagine I'm the only one encountering this?",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "@batjko it should work out of the box, but I can see the Ubuntu version very old. We’re working on having it updated to the latest 2.x. In the meantime, I’d recommend you installing HTTPie via pip.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "batjko",
+        "body": "Ok thanks, I'll try that instead.",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "packaging"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "packaging": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "packaging"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

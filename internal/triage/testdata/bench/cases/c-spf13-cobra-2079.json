@@ -1,0 +1,89 @@
+{
+  "id": "c-spf13-cobra-2079",
+  "provenance": "real-closed",
+  "trap": "closed_refused_with_reason",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2079,
+    "url": "https://github.com/spf13/cobra/issues/2079"
+  },
+  "issue": {
+    "title": "[Bug] SetArgs doesn't reset flag value",
+    "body": "See following test code. Call `SetArgs` won't reset flag value, `Execute()` also won't reset flag value too.\r\n```go\r\nfunc TestSetArgs(t *testing.T) {\r\n\tgetCMD := func() *Command {\r\n\t\tcmd := &Command{\r\n\t\t\tUse: \"testcmd\",\r\n\t\t\tRunE: func(cmd *Command, args []string) error {\r\n\t\t\t\ta, _ := cmd.Flags().GetBool(\"a\")\r\n\t\t\t\tb, _ := cmd.Flags().GetBool(\"b\")\r\n\t\t\t\tc, _ := cmd.Flags().GetBool(\"c\")\r\n\t\t\t\tswitch {\r\n\t\t\t\tcase a && b, a && c, b && c:\r\n\t\t\t\t\treturn fmt.Errorf(\"a,b,c only one could be true\")\r\n\t\t\t\t}\r\n\t\t\t\treturn nil\r\n\t\t\t},\r\n\t\t}\r\n\t\tf := cmd.Flags()\r\n\t\tf.BoolP(\"a\", \"a\", false, \"a,b,c only one could be true\")\r\n\t\tf.BoolP(\"b\", \"b\", false, \"a,b,c only one could be true\")\r\n\t\tf.Bool(\"c\", false, \"a,b,c only one could be true\")\r\n\t\treturn cmd\r\n\t}\r\n\r\n\tcmd := getCMD()\r\n\r\n\t// step 1\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--a=true\",\r\n\t})\r\n\tassertNoErr(t, cmd.Execute()) // PASS\r\n\r\n\t// step 2\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--b=true\",\r\n\t})\r\n\tt.Log(cmd.Flags().Changed(\"a\")) // true\r\n\tassertNoErr(t, cmd.Execute()) // FAIL, output error msg is \"a,b,c only one could be true\"\r\n\r\n\t// step 3\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--c=true\",\r\n\t})\r\n\tassertNoErr(t, cmd.Execute()) // FAIL, output error msg is \"a,b,c only one could be true\"\r\n\r\n\t// step 4\r\n\tcmd.SetArgs([]string{\r\n\t\t\"--a=false\",\r\n\t\t\"--b=false\",\r\n\t\t\"--c=true\",\r\n\t})\r\n\tassertNoErr(t, cmd.Execute()) // PASS\r\n}\r\n```",
+    "comments": [
+      {
+        "author": "marckhouzam",
+        "body": "Thanks for the report @levisyin .  Can you explain in what scenario this is a problem?\r\nIn a real program execution, `cmd.Execute()` is only called once I believe, and therefore this problem will not happen.\r\nOn the next run of the program, the flags will all be reset.",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "levisyin",
+        "body": "> Thanks for the report @levisyin . Can you explain in what scenario this is a problem? In a real program execution, `cmd.Execute()` is only called once I believe, and therefore this problem will not happen. On the next run of the program, the flags will all be reset.\r\n\r\nHi sir, we use this in test case. As `SetArgs` comment described, `SetArgs` is particularly useful when testing, so we can call `SetArgs` to overrid arguments for the command, and call cmd.Execute() again in the same context.\r\n\r",
+        "author_association": ""
+      },
+      {
+        "author": "marckhouzam",
+        "body": "Ok, I understand.  This does seem limiting.  I have to think about this a bit as there may be backwards-compatibility issues in changing the behaviour of `SetArgs()`",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "levisyin",
+        "body": "How about changing the `func ParseFlags` as PR #2080 did, reset flags to default value before `err := c.Flags().Parse(args)`, when flags were parsed before \r\n\r\n![image](https://github.com/spf13/cobra/assets/150114626/6dc27fb0-fca7-4182-9888-6ff34c24c2e7)\r\n",
+        "author_association": ""
+      },
+      {
+        "author": "marckhouzam",
+        "body": "@levisyin I actually hit this problem today when writing unit tests.  What I did was reset the relevant flags myself in the tests.\r\n\r\nI recommend you implement this solution in your own tests.\r\nChanging things in Cobra could have unexpected impacts on existing users and that would be worse than the problem reported.\r\n\r\nSo, although I agree it can be annoying, since it can be fixed by the project using cobra, I will close this issue as \"won't fix\".",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "levisyin",
+        "body": "@marckhouzam Hi sir, I met another issue with this bug. It's too difficult to implement the solution in my own tests as following.\r\n```go\r\nfunc SetArgs(cmd *cobra.Command, args []string) {\r\n\tif cmd.Flags().Parsed() {\r\n\t\tcmd.Flags().Visit(func(pf *pflag.Flag) {\r\n\t\t\tif err := pf.Value.Set(pf.DefValue); err != nil {\r\n\t\t\t\tpanic(fmt.Errorf(\"reset argument[%s] value error %v\", pf.Name, err))\r\n\t\t\t}\r\n\t\t})\r\n\t}\r\n\tcmd.SetArgs(args)\r\n}\r\n```\r\n----\r\n\r\n1. As `SliceValue` type with calling `Set` will append to ",
+        "author_association": ""
+      },
+      {
+        "author": "levisyin",
+        "body": "@marckhouzam Hi sir, can we reopen this issue, I indeed couldn't find a better way for implementing the solution in my own project tests, could you please give me some suggestions😀",
+        "author_association": ""
+      },
+      {
+        "author": "marckhouzam",
+        "body": "@levisyin `type Value interface` is not part of Cobra.  It is defined in a different project `github.com/spf13/pflag`.\r\n\r\nHowever, two thoughts on this:\r\n1. Aren't the slices always separated by commas (`,`)?  Or is there a way to choose a different separator?\r\n2. Since this is for your tests, you probably know the default value and not have to read it from `DefValue`.  You therefore should be able to use `Replace()` with that value.",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "levisyin",
+        "body": "@marckhouzam Hi sir, thanks for the reminder.\r\n\r\nFor thought 1, after I reviewed again, the builtin implements of `SliceValue` are always separated by commas `,`, but for custom implements, we are not sure\r\n\r\nFor thought 2, since this is aimed to be a `util function` for all tests, it shouldn't care about the test case itself IMO",
+        "author_association": ""
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "marckhouzam",
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

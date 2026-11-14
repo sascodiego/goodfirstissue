@@ -1,0 +1,55 @@
+{
+  "id": "c-urfave-cli-2260",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2260,
+    "url": "https://github.com/urfave/cli/issues/2260"
+  },
+  "issue": {
+    "title": "A recent change breaks custom help Commands",
+    "body": "The recent change at https://github.com/urfave/cli/blob/fd14621cbcd644aa35483480d40f7cdf7b69f4c0/command_run.go#L144C29-L144C53 assumes any command named \"help\" must be the default Help handler. This breaks applications with custom Help commands.\n\nThere are lots of reasons to want a custom Help command. e.g. to write to the cmd.Root()'s OutWriter or ErrWriter instead of to stdout.\n",
+    "comments": [
+      {
+        "author": "Juneezee",
+        "body": "Fixed by #2319 (v3.9.0). Details in https://github.com/urfave/cli/pull/2261#issuecomment-6386085072.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2319,
+    "refused_by": null,
+    "original_labels": [
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

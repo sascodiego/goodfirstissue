@@ -1,0 +1,36 @@
+{
+  "id": "syn-not-planned",
+  "provenance": "synthetic",
+  "trap": "declined_by_native_state_reason",
+  "issue": {
+    "title": "Add a gRPC transport",
+    "body": "Please add a gRPC transport alongside HTTP.\n",
+    "comments": [
+      {
+        "author": "maintainer",
+        "body": "Closing as not planned: this project is deliberately HTTP-only.",
+        "author_association": "OWNER"
+      }
+    ],
+    "labels": [
+      "enhancement"
+    ],
+    "github_state": "CLOSED",
+    "github_state_reason": "NOT_PLANNED",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "refused",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "declined",
+  "project": "httpie__cli"
+}

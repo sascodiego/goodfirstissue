@@ -1,0 +1,63 @@
+{
+  "id": "c-spf13-cobra-1328",
+  "provenance": "real-closed",
+  "trap": "closed_refused_with_reason",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 1328,
+    "url": "https://github.com/spf13/cobra/issues/1328"
+  },
+  "issue": {
+    "title": "DisableFlagParsing should disable creation of the help flag?",
+    "body": "I expected this to be the default behaviour but maybe there's a good argument for how it is today.\r\n\r\nIf you add a command with DisableFlagParsing, then `help cmd` will list `-h` as a flag, but running `cmd -h` will not print the help, it'll invoke Run() with ['-h']. If it's the command's responsibility to parse all of the flags, I think it makes sense to not add flags automatically.\r\n\r\nHere is a simplified example:\r\n```go\r\npackage main\r\nimport \"github.com/spf13/cobra\"\r\nfunc main() {\r\n\tcmd := &cobra.Command{\r\n\t\tUse:              \"root\",\r\n\t\tTraverseChildren: true,\r\n\t}\r\n\tsub := &cobra.Command{\r\n\t\tUse:                \"sub\",\r\n\t\tDisableFlagParsing: true,\r\n\t\tRun:                func(cmd *cobra.Command, args []string) {},\r\n\t}\r\n\tcmd.AddCommand(sub)\r\n\tcmd.SetArgs([]string{\"help\", \"sub\"})\r\n\tcmd.Execute()\r\n}\r\n```\r\n\r\nThe output is:\r\n```\r\nUsage:\r\n  root sub [flags]\r\n\r\nFlags:\r\n  -h, --help   help for sub\r\n```\r\n\r\nIs there any better way to disable this help flag than this?\r\n```go\r\n\tsub.InitDefaultHelpFlag()\r\n\tsub.Flags().MarkHidden(\"help\")\r\n```",
+    "comments": [
+      {
+        "author": "johnSchnake",
+        "body": "That is interesting. Thanks for showing a simple workaround for now.\r\n\r\nI don't personally know of a reason you'd want to keep the help flag defined there if parsing is disabled. I'd be happy to review a PR if you (or someone else) can make the narrow change.",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "watk",
+        "body": "Thanks, I'm no longer using cobra so feel free to close this given that there's a simple workaround anyway.",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "area/flags-args",
+      "lifecycle/needs-pr"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "area/flags-args": "unknown",
+    "lifecycle/needs-pr": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": "johnSchnake",
+    "original_labels": [
+      "area/flags-args",
+      "lifecycle/needs-pr"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,36 @@
+{
+  "id": "syn-refused-soft",
+  "provenance": "synthetic",
+  "trap": "soft_refusal_that_is_not_a_decision",
+  "issue": {
+    "title": "Rework the help output layout",
+    "body": "The help output should be reorganised into sections.\n",
+    "comments": [
+      {
+        "author": "maintainer",
+        "body": "I am not sure we should do this, but let us see what other people think first.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA",
+    "only_for_requester": false,
+    "fits_direction": false
+  },
+  "expect_pre_gate": "",
+  "project": "httpie__cli"
+}

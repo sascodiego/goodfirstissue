@@ -1,0 +1,43 @@
+{
+  "id": "cobra-2207",
+  "provenance": "real",
+  "trap": "feature_with_open_pr",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2207,
+    "url": "https://github.com/spf13/cobra/issues/2207"
+  },
+  "issue": {
+    "title": "Suggestions when \"unknown flag\" happens",
+    "body": "Cobra will print automatic suggestions when \"unknown command\" errors happen.\n\nIt would be useful to have the same feature for flags.",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 154,
+        "state": "MERGED",
+        "merged": true
+      },
+      {
+        "number": 2483,
+        "state": "OPEN",
+        "merged": false
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "already_working"
+}

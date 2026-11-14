@@ -1,0 +1,38 @@
+{
+  "id": "cobra-2176",
+  "provenance": "real",
+  "trap": "evidence_that_does_not_reach",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2176,
+    "url": "https://github.com/spf13/cobra/issues/2176"
+  },
+  "issue": {
+    "title": "How does record executed commands and parameters",
+    "body": "for example:\n\ninput:\nmain-cobra import -i aaa -c ddd\n\noutput\nimport -i aaa -c ddd\n",
+    "comments": [
+      {
+        "author": "marckhouzam",
+        "body": "Maybe `fmt.Println(os.Args[1:])`",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "question",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "DUDA"
+  },
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,43 @@
+{
+  "id": "c-urfave-cli-2433",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2433,
+    "url": "https://github.com/urfave/cli/issues/2433"
+  },
+  "issue": {
+    "title": "Single-rune Unicode flags can be emitted by completion but not parsed",
+    "body": "## My urfave/cli version is\n\nv3.12.0 (`9b981a04295de5121091c479f8a7a0476d2e8d38`)\n\n## Checklist\n\n- [x] I am running the latest v3 release.\n- [x] I checked the v3 manual.\n- [x] I searched existing issues and pull requests for this problem.\n\n## Dependency Management\n\n- My project is using Go modules.\n\n## Describe the bug\n\nSingle-rune Unicode flag names are handled inconsistently. Shell completion counts runes and emits a single-dash flag such as `-ש`, but help formatting counts bytes and displays `--ש`. More importantly, the parser examines `rune(firstArg[1])`, which converts only the first UTF-8 byte rather than decoding the first rune.\n\nFor `ש`, the first byte is `0xD7`; converting that byte to a rune produces `×`, which is not a letter. The parser therefore classifies `-ש` as a positional argument and never sets the registered flag.\n\n## To reproduce\n\n```go\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n\n    \"github.com/urfave/cli/v3\"\n)\n\nfunc main() {\n    const name = \"ש\"\n    cmd := &cli.Command{\n        Name:  \"app\",\n        Flags: []cli.Flag{&cli.StringFlag{Name: name}},\n        Action: func(_ context.Context, cmd *cli.Command) error {\n            fmt.Printf(\"value=%q args=%q\\n\", cmd.String(name), cmd.Args().Slice())\n            return nil\n        },\n    }\n    _ = cmd.Run(context.Background(), []string{\"app\", \"-\" + name, \"value\", \"operand\"})\n}\n```\n\n## Observed behavior\n\n```text\nvalue=\"\" args=[\"-ש\" \"value\" \"operand\"]\n```\n\nHelp formatting also prefixes this single-rune name w",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2434,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

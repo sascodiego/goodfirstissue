@@ -1,0 +1,35 @@
+{
+  "id": "httpie-1422",
+  "provenance": "real",
+  "trap": "terse_feature_with_parity",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1422,
+    "url": "https://github.com/httpie/cli/issues/1422"
+  },
+  "issue": {
+    "title": "binding to an IP",
+    "body": "Hello,\n\nIt would be great to be able to bind a local IP address like curl does:\ncurl --interface zz.zz.zz.zz http://example.com/\n",
+    "comments": [],
+    "labels": [
+      "enhancement",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA"
+  },
+  "expect_pre_gate": ""
+}

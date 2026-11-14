@@ -1,0 +1,28 @@
+{
+  "id": "syn-empty-body",
+  "provenance": "synthetic",
+  "trap": "title_only",
+  "issue": {
+    "title": "Does not work",
+    "body": "",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "other",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "no_content",
+  "project": "httpie__cli"
+}

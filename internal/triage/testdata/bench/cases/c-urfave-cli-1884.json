@@ -1,0 +1,61 @@
+{
+  "id": "c-urfave-cli-1884",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 1884,
+    "url": "https://github.com/urfave/cli/issues/1884"
+  },
+  "issue": {
+    "title": "Shell completions are broken when login shell is different than currently active shell",
+    "body": "## My urfave/cli version is\r\n\r\n2.27.1\r\n\r\n## Checklist\r\n\r\n- [x] Are you running the latest v2 release? The list of releases is [here](https://github.com/urfave/cli/releases).\r\n- [x] Did you check the manual for your release? The v2 manual is [here](https://github.com/urfave/cli/blob/main/docs/v2/manual.md)\r\n- [x] Did you perform a search about this problem? Here's the [GitHub guide](https://help.github.com/en/github/managing-your-work-on-github/using-search-to-filter-issues-and-pull-requests) about searching.\r\n\r\n## Dependency Management\r\n\r\n- [x] My project is using go modules.\r\n\r\n## Describe the bug\r\n\r\nShell completions to show are determined by looking at contents of the `$SHELL` environment variable, which isn't a reliable way to do this because [the current login shell isn't always the current active shell](https://askubuntu.com/questions/590899/how-do-i-check-which-shell-i-am-using#comment821399_590903).\r\n\r\nhttps://github.com/urfave/cli/blob/7656c5fb838ca8a6febca43100147d317b544fd3/help.go#L153-L161\r\n\r\n## To reproduce\r\n\r\nHere's [my simple CLI app](https://github.com/bartekpacia/fhome) with shell completions.\r\n\r\n## Observed behavior\r\n\r\n\r\nMy shell is Zsh, and when I run:\r\n\r\n```\r\n$ fhome [tab]\r\nconfig     -- Manage system configuration\r\nevent      -- Manage events\r\nhelp    h  -- Shows a list of commands or help for one command\r\nobject  o  -- Manage objects\r\n```\r\n\r\nbut when I run Bash first and then trigger completions, my CLI tools still outputs Zsh-style completions:\r\n\r\n```\r",
+    "comments": [
+      {
+        "author": "bartekpacia",
+        "body": "This is not actually fixed since the fix introduced a regression and had to be reverted in #1997.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "kind/bug",
+      "area/v2",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/bug": "unknown",
+    "area/v2": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2298,
+    "refused_by": null,
+    "original_labels": [
+      "kind/bug",
+      "area/v2",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

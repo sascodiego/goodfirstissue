@@ -1,0 +1,34 @@
+{
+  "id": "httpie-1661",
+  "provenance": "real",
+  "trap": "project_state_question",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1661,
+    "url": "https://github.com/httpie/cli/issues/1661"
+  },
+  "issue": {
+    "title": "State of the project",
+    "body": "I am just wondering what's the state of the project?\n\nI see the last commit was 9 months ago and latest release almost a year ago.",
+    "comments": [],
+    "labels": [
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "question",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": ""
+}

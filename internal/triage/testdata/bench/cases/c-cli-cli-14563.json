@@ -1,0 +1,58 @@
+{
+  "id": "c-cli-cli-14563",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14563,
+    "url": "https://github.com/cli/cli/issues/14563"
+  },
+  "issue": {
+    "title": "`gh issue artifact` stack map",
+    "body": "This is a \"map\" issue for the PR stack listed below. It should be closed when the final PR in the stack is merged.\n\nThis stack adds `gh issue artifact`, a command group in preview for the Markdown documents and links attached to an issue. It has six commands: `list`, `view`, `create`, `edit`, `delete` and `download`. The stack also changes `--attach` in two ways that `create` needs, documents the commands in the `gh` agent skill, lets `edit` restore an earlier version, and adds artifact URLs.\n\n```bash\ngh issue artifact create 142 signin-plan.md --attach ./signin-flow.png\n```\n\nThe design is in #14529, with one issue per command: #14523 (`list`), #14524 (`view`), #14525 (`create`), #14526 (`edit`), #14527 (`delete`) and #14528 (`download`). Each design issue has a screen for every scenario.\n\n### The stack 🥞\n\nTwelve pull requests, listed in reading order from the bottom. Each is based on the one below it. The total is about 3,200 lines of production code, a 440-line generated mock, 10,600 lines of tests and 110 lines of docs across 53 files, so most of the bulk is tests. Each code pull request has a video of the built `gh` in [bagtoad/issue-artifacts-demo](https://github.com/bagtoad/issue-artifacts-demo).\n\n| # | PR | What it adds |\n| --- | --- | --- |\n| 1 | #14564 | `--attach` resolves references in a `--body-file` against the file's own directory |\n| 2 | #14565 | `--attach` uploads one set of files for several Markdown documents |\n| 3 | #14566 | The command group, its API clien",
+    "comments": [],
+    "labels": [
+      "enhancement",
+      "core",
+      "gh-pr",
+      "gh-issue"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "core": "unknown",
+    "gh-pr": "unknown",
+    "gh-issue": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "enhancement",
+      "core",
+      "gh-pr",
+      "gh-issue"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

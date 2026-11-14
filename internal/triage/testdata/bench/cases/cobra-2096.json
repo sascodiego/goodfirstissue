@@ -1,0 +1,38 @@
+{
+  "id": "cobra-2096",
+  "provenance": "real",
+  "trap": "bug_with_reproduction_and_no_pull_request",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2096,
+    "url": "https://github.com/spf13/cobra/issues/2096"
+  },
+  "issue": {
+    "title": "Fish completion fails due to `eval` and subshell execution during completion",
+    "body": "### What happened?\n\nI have a program (`grafana-manager`) that uses `cobra 1.8.0` for command line handling and generating the necessary shell completion for `fish-shell`.\n\nIf I run my command as show below, then it work as expected (no error message) and the program receives the `--dashboard-name` value as written on the shell prompt ✅.\n\n```fish\n./grafana-manager public-dashboards delete --organization-id 3 --dashboard-name \"k8s (public)\"\n```\n\nHowever, if I attempt to add further arguments to my command by pressing `tab`, the completion fails with an error (see below). \nIt appears the generation completion for `fish` tries to substitute/execute the command `public`. This results in `fish` showing errors on the terminal and the completion to fail.\n\nI opened an issue (https://github.com/fish-shell/fish-shell/issues/10194) with the fish-shell team but they recommended to follow upstream. They also provided additional information.\n\n```\nfish: Unknown command: public\nin command substitution\n        called on line 1 of file -\nin command substitution\n        called on line 25 of file -\nin function '__grafana_manager_perform_completion'\n        called on line 1 of file -\nin command substitution\n        called on line 67 of file -\nin function '__grafana_manager_perform_completion_once'\n        called on line 89 of file -\nin function '__grafana_manager_requires_order_preservation'\nin command substitution\n- (line 1): Unknown command\nGRAFANA_MANAGER_ACTIVE_HELP=0 ./grafana-manager __compl",
+    "comments": [
+      {
+        "author": "aureq",
+        "body": "Seems related to https://github.com/spf13/cobra/pull/2095\n\nThanks @krobelus",
+        "author_association": "NONE"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "CANDIDATA"
+  },
+  "expect_pre_gate": ""
+}

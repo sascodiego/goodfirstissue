@@ -1,0 +1,35 @@
+{
+  "id": "httpie-1338",
+  "provenance": "real",
+  "trap": "support_question_about_a_third_party",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1338,
+    "url": "https://github.com/httpie/cli/issues/1338"
+  },
+  "issue": {
+    "title": "can't install chocolatey issues with python error code 1603",
+    "body": "Failures\n - python3 (exited 1603) - Error while running 'C:\\ProgramData\\chocolatey\\lib\\python3\\tools\\chocolateyInstall.ps1'.\n See log for details.\nAttempting to install but having this issue, have been trying to find resources for this error but no luck. Anyone familiar with this error and what to do?",
+    "comments": [],
+    "labels": [
+      "windows",
+      "awaiting-response"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "question",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": ""
+}

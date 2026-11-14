@@ -1,0 +1,65 @@
+{
+  "id": "c-httpie-cli-1300",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1300,
+    "url": "https://github.com/httpie/cli/issues/1300"
+  },
+  "issue": {
+    "title": "Unable to See Status Code in Output",
+    "body": "## Checklist\r\n\r\n- [ X] I've searched for similar issues.\r\n- [ X] I'm using the latest version of HTTPie.\r\n\r\n---\r\n\r\n## Minimal reproduction code and steps\r\n\r\n1. Run local web service that returns 401 for endpoint :8080/get-values\r\n2. Run HTTPie against endpoint\r\n\r\n## Current result\r\n\r\n**Curl output:**\r\n```sh\r\n$ curl -v 'http://localhost:8080/get-values'       \r\n*   Trying ::1...\r\n* TCP_NODELAY set\r\n* Connected to localhost (::1) port 8080 (#0)\r\n> GET /get-values HTTP/1.1\r\n> Host: localhost:8080\r\n> User-Agent: curl/7.64.1\r\n> Accept: */*\r\n> \r\n< HTTP/1.1 401 \r\n< Content-Type: application/json\r\n< Transfer-Encoding: chunked\r\n< Date: Sat, 19 Feb 2022 00:01:22 GMT\r\n< \r\n* Connection #0 to host localhost left intact\r\n* <body redacted>\r\n```\r\n**HTTPie output:**\r\n```sh\r\n$ http --verbose ':8080/get-values' \r\nGET /get-values HTTP/1.1\r\nAccept: */*\r\nAccept-Encoding: gzip, deflate\r\nConnection: keep-alive\r\nHost: localhost:8080\r\nUser-Agent: HTTPie/3.0.2\r\n\r\n\r\n\r\nHTTP/1.1 \r\nConnection: keep-alive\r\nContent-Type: application/json\r\nDate: Sat, 19 Feb 2022 00:02:54 GMT\r\nKeep-Alive: timeout=60\r\nTransfer-Encoding: chunked\r\n<body redacted>\r\n```\r\n\r\n## Expected result\r\n\r\nExpecting to see `HTTP/1.1  401` instead of just `HTTP/1.1 `.\r\n\r\n## Debug output\r\n\r\nPlease re-run the command with `--debug`, then copy the entire command & output and paste both below:\r\n\r\n```bash\r\n$ http --debug ':8080/get-values'\r\nHTTPie 3.0.2\r\nRequests 2.27.1\r\nPygments 2.11.2\r\nPython 3.10.2 (main, Feb  2 2022, 08:42:42) [Clang 13.0.0 (cla",
+    "comments": [
+      {
+        "author": "EarthCitizen",
+        "body": "@isidentical \r\n\r\nI did some additional testing. Spring Boot does not send a reason phrase on the status line of the response:\r\n\r\nSpring Boot raw status line:\r\n```\r\nHTTP/1.1 404\r\n```\r\nWhich in HTTPie results in:\r\n```\r\n$ http ':8080/not-exists'\r\nHTTP/1.1 \r\nConnection: keep-alive\r\nContent-Type: application/json\r\nDate: Tue, 22 Feb 2022 22:10:52 GMT\r\nKeep-Alive: timeout=60\r\nTransfer-Encoding: chunked\r\nVary: Origin\r\nVary: Access-Control-Request-Method\r\nVary: Access-Control-Request-Headers\r\n\r\n{\r\n    \"e",
+        "author_association": ""
+      },
+      {
+        "author": "EarthCitizen",
+        "body": "For an example Spring Boot project:\r\n\r\nhttps://start.spring.io/#!type=gradle-project&language=java&platformVersion=2.6.3&packaging=jar&jvmVersion=11&groupId=com.example&artifactId=demo&name=demo&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.demo&dependencies=web\r\n\r\nClick \"Generate\" on that page, which will download a zip. In that project folder, run this to start the server:\r\n\r\n```\r\n./gradlew bootRun\r\n```\r\n\r\nThis will start a server on port 8080, which should give 404 ",
+        "author_association": ""
+      },
+      {
+        "author": "jkbrzt",
+        "body": "@isidentical I think this was introduced with the addition of the Pie theme. Please see #811.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "bug"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "bug": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1301,
+    "refused_by": null,
+    "original_labels": [
+      "bug"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

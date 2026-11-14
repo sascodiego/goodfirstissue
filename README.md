@@ -107,3 +107,11 @@ El README original del hackathon se conserva **sin modificar** en [`README.hacka
 | [examples/](examples/) | Clientes mínimos en curl, Python y Node.js |
 
 Este repositorio **no es un fork**: el material de arriba es una copia del repositorio del hackathon, que **no declara licencia**. Qué se copió, de dónde y bajo qué condiciones está en [`NOTICE.md`](NOTICE.md).
+
+## Límites y mediciones
+
+- [`INFORME-TRIAJE.md`](INFORME-TRIAJE.md) — el resultado de pasar la muestra ciega por el
+  triaje real, con la matriz por clase emitida.
+- [`LIMITES.md`](LIMITES.md) — qué no hace el sistema, por qué, y qué costaría cerrarlo.
+- [`BENCHMARKS.md`](BENCHMARKS.md) — los resultados que decidieron el diseño, con el corpus y
+  el comando para reproducirlos.

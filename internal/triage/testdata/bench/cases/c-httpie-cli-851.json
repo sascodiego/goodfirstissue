@@ -1,0 +1,55 @@
+{
+  "id": "c-httpie-cli-851",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 851,
+    "url": "https://github.com/httpie/cli/issues/851"
+  },
+  "issue": {
+    "title": "yum install httpie - not working?",
+    "body": "Help?\r\n\r\n`# yum install httpie\r\nCentOS-8 - AppStream                                                                                                         718 kB/s | 6.4 MB     00:09\r\nCentOS-8 - Base                                                                                                              1.4 MB/s | 5.0 MB     00:03\r\nCentOS-8 - Extras                                                                                                            2.3 kB/s | 2.1 kB     00:00\r\nExtra Packages for Enterprise Linux 8 - x86_64                                                                               865 kB/s | 5.6 MB     00:06\r\n\r\nNo match for argument: httpie\r\n`",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "HTTPie for CentOS is _usually_ available in the [EPEL repo](https://fedoraproject.org/wiki/EPEL):\r\n\r\n\r\n```bash\r\ndnf install epel-release\r\ndnf install httpie\r\n```\r\n\r\nIf the HTTPie RPM package hasn’t been updated for the latest CentOS (as it currently seems to be the case with CentOS 8), you can still [install HTTPie using pip](https://httpie.org/docs#windows-etc):\r\n\r\n```bash\r\npip install httpie\r\n```\r\n",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "packaging"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "packaging": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "packaging"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

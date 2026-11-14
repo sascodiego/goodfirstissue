@@ -1,0 +1,49 @@
+{
+  "id": "c-cli-cli-14749",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14749,
+    "url": "https://github.com/cli/cli/issues/14749"
+  },
+  "issue": {
+    "title": "Dependabot triage should avoid agent jobs when no work exists",
+    "body": "### Describe the feature or problem you’d like to solve\n\nFollow on from #14739\n\nCurrently, the hourly Dependabot triage workflow starts its generated `agent` job even when its deterministic worklist is empty.\n\nThe pre-flight step correctly found that #14716 had already been assessed, produced an empty worklist, and caused zero model invocations.\n\n```shell\n$ tmp=$(mktemp -d); gh aw audit 39137237820 --repo cli/cli --artifacts usage,agent -o \"$tmp\" >/dev/null; run_dir=$(find \"$tmp\" -type f -name audit.json -exec dirname {} \\; | head -1); grep -E 'PR #[0-9]+: (already assessed|needs assessment)|Work list:' \"$run_dir/workflow-logs/3_agent.txt\" | sed -E 's/^.*Z //' | tail -2; jq '{working_set:.working_set}' \"$run_dir/usage/activity/summary.json\"; rm -rf \"$tmp\"\n```\n\n```text\nPR #14716: already assessed at 35c2bf381bb42655fb40ec8ebf2e0a0548ef7543, skipping\nWork list: 0 PR(s) -> /tmp/gh-aw/dependabot-worklist.json\n{\n  \"working_set\": {\n    \"cumulative_input_tokens\": 0,\n    \"peak_input_tokens\": 0,\n    \"invocations\": 0\n  }\n}\n```\n\nHowever, `gh-aw` records the job as started before its harness observes the noop. The daily guardrail then treats the empty accounting file as unknown and applies the `max-ai-credits` fallback.\n\nFive consecutive no-work runs were each counted as `1000` AIC, which exhausted the `5000` daily guardrail.\n\n```shell\n$ gh run view 39141727797 --repo cli/cli --log | grep -E 'Computed run AIC.*(39137237820|39132745345|39128819878|39124342426|39120364428)|Completed AIC in",
+    "comments": [],
+    "labels": [
+      "tech-debt"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "tech-debt": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 14750,
+    "refused_by": null,
+    "original_labels": [
+      "tech-debt"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

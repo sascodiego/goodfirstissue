@@ -1,0 +1,34 @@
+{
+  "id": "cobra-2364",
+  "provenance": "real",
+  "trap": "terse_but_classifiable",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2364,
+    "url": "https://github.com/spf13/cobra/issues/2364"
+  },
+  "issue": {
+    "title": "Nushell completion",
+    "body": "Suggestion: Add nushell completion in addition to the current bash, fish, powershell, and zsh completion",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA",
+    "only_for_requester": false,
+    "fits_direction": true
+  },
+  "expect_pre_gate": ""
+}

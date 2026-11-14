@@ -1,0 +1,64 @@
+{
+  "id": "c-spf13-cobra-1658",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 1658,
+    "url": "https://github.com/spf13/cobra/issues/1658"
+  },
+  "issue": {
+    "title": "Define a security policy",
+    "body": "`cobra` needs a security policy.\r\n\r\nGenerally, this should define:\r\n- How users should report vulnerabilities\r\n- How cobra maintainers respond\r\n- How known security vulnerabilities and CVEs are communicated to the community\r\n\r\n[Inspiration from Open Web Application Security Project](https://cheatsheetseries.owasp.org/cheatsheets/Vulnerable_Dependency_Management_Cheat_Sheet.html)\r\n\r\nWe'd also like any input from the community since, in the end, all these policies serve the community",
+    "comments": [
+      {
+        "author": "jpmcb",
+        "body": "We do mention this in the contributing guide: https://github.com/spf13/cobra/issues/1601#issuecomment-1042633735\r\n\r\nBut we should create a `SECURITY.md` and enter these policies in GitHub",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [
+      "admin",
+      "kind/security",
+      "lifecycle/frozen",
+      "help-wanted"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "admin": "unknown",
+    "kind/security": "unknown",
+    "lifecycle/frozen": "unknown",
+    "help-wanted": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2253,
+    "refused_by": null,
+    "original_labels": [
+      "admin",
+      "kind/security",
+      "lifecycle/frozen",
+      "help-wanted"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

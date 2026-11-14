@@ -1,0 +1,65 @@
+{
+  "id": "c-urfave-cli-2030",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2030,
+    "url": "https://github.com/urfave/cli/issues/2030"
+  },
+  "issue": {
+    "title": "Can't use `-` as option value",
+    "body": "For example we have a subcommand/command flag:\r\n\r\n```go\r\n&cli.StringFlag{\r\n          Name:     \"output\",\r\n          Usage:    \"output file name\",\r\n          Aliases:  []string{\"o\"},\r\n          Required: false,\r\n          Value:    \"\",\r\n},\r\n```\r\n\r\nand then in command handler we have the following code:\r\n\r\n```go\r\noutFile := cCtx.String(\"output\")\r\n\r\nif outFile == \"-\" {     // traditional UNIX convention\r\n    outFile = \"/dev/stdout\"\r\n}\r\n\r\n// code that writes output\r\n\r\n```\r\n\r\nIn UNIX I can do:\r\n\r\n```\r\n$ foo bar -o file.txt\r\n$ foo bar -o /dev/stdout\r\n$ foo bar -o -                         # the same\r\n$ foo bar -o-                          # works in UNIX, doesn't in THE CLI\r\n```\r\n\r\n`-o-` works under `getopt` , works under `argparse`, but doesn't under the cli.\r\n\r\nthe cli prints error:\r\n\r\n```\r\nIncorrect Usage: flag provided but not defined: -o-\r\n```",
+    "comments": [
+      {
+        "author": "unera",
+        "body": "> I know this was working in v2.\r\n\r\nI'm sorry, but I checked in v2, not v3.\r\n\r\nNow I'll try to switch to v3 and come back.",
+        "author_association": ""
+      },
+      {
+        "author": "unera",
+        "body": "Yes, I switched to v3 and can reproduce the error, too",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "status/triage",
+      "area/v3",
+      "accepted"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "area/v3": "unknown",
+    "accepted": "author"
+  },
+  "simulation": "author_self_labelled",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2031,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

@@ -1,0 +1,28 @@
+{
+  "id": "syn-panic-with-bom",
+  "provenance": "synthetic",
+  "trap": "panic_with_bom_control",
+  "issue": {
+    "title": "Panic when the config file has a BOM",
+    "body": "Running `app --config cfg.json` panics when the file starts with a UTF-8 BOM.\n\n```\npanic: invalid character ï»¿ looking for beginning of value\n```\n\nVersion 2.1.0, Windows.\n",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "CANDIDATA"
+  },
+  "expect_pre_gate": "",
+  "project": "httpie__cli"
+}

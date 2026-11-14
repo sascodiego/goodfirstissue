@@ -1,0 +1,58 @@
+{
+  "id": "c-httpie-cli-243",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 243,
+    "url": "https://github.com/httpie/cli/issues/243"
+  },
+  "issue": {
+    "title": "Response time",
+    "body": "Could be handy to see a requests response time in verbose or with some other flag.\n",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "🎉 This feature is now publicly available in [HTTPie for Terminal 3.0](https://httpie.io/blog/httpie-3.0.0): \r\n\r\n👉 https://httpie.io/docs/cli/response-meta",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "enhancement",
+      "planned"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "enhancement": "unknown",
+    "planned": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1250,
+    "refused_by": null,
+    "original_labels": [
+      "enhancement",
+      "planned"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

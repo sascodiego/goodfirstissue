@@ -1,0 +1,52 @@
+{
+  "id": "c-spf13-cobra-379",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 379,
+    "url": "https://github.com/spf13/cobra/issues/379"
+  },
+  "issue": {
+    "title": "Best way to call a (sub)-command programmatically?",
+    "body": "I'd like to have an \"install\" command that programmatically calls 3+ commands that each individually register themselves as sub-commands with \"install\" as their parent.\r\n\r\nI'm sorry if I missed it but I wasn't able to see what would be the best way to execute a command from within the context of the parent command. Thanks for any guidance!",
+    "comments": [],
+    "labels": [
+      "kind/support",
+      "area/lib"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/support": "unknown",
+    "area/lib": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "kind/support",
+      "area/lib"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

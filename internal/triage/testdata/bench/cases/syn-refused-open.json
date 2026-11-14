@@ -1,0 +1,34 @@
+{
+  "id": "syn-refused-open",
+  "provenance": "synthetic",
+  "trap": "refused_in_prose_but_still_open",
+  "issue": {
+    "title": "Add a built-in HTTP/3 server",
+    "body": "Please ship an HTTP/3 server so the tool can serve as a test origin.\n",
+    "comments": [
+      {
+        "author": "owner",
+        "body": "We will not add a server to this project: it is a client, and that is not going to change.",
+        "author_association": "OWNER"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "refused",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "",
+  "project": "httpie__cli"
+}

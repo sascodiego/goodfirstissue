@@ -1,0 +1,37 @@
+{
+  "id": "httpie-1458",
+  "provenance": "real",
+  "trap": "feature_with_a_standard_citation",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1458,
+    "url": "https://github.com/httpie/cli/issues/1458"
+  },
+  "issue": {
+    "title": "Feature Request: Support special-use domain names like localhost.",
+    "body": "## Checklist\n\n- [x] I've searched for similar feature requests. There is an FR from 2015: #373\n\n---\n\n## Enhancement request\n\nHTTPie should resolve special domain names [per RFC6761](https://datatracker.ietf.org/doc/rfc6761/\n), unless HTTPie uses a name resolution library that isn't part of the code base. According to the RFC:\n>  Name resolution APIs and libraries SHOULD recognize localhost\n> names as special and SHOULD always return the IP loopback address\n>      for address queries and negative responses for all other query\n>       types.  Name resolution APIs SHOULD NOT send queries for\n>       localhost names to their configured caching DNS server(s).\n\n\n\n\n---\n\n## Problem it solves\n\nI use k3d to develop software. It assigns localhost domains to Services, for example: `grafana.k3d.localhost:8080`. If httpie resolved .localhost domain names as the loopback address I could use it for scripting in my local development environment. As it stands, I'm using CURL, but httpie is faster and more pleasant to write.\n\n---\n\n## Additional information, screenshots, or code examples\n\n\nCurl has implemented support for this somewhat recently: https://github.com/curl/curl/pull/9296\n…\n",
+    "comments": [],
+    "labels": [
+      "enhancement",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA",
+    "only_for_requester": false,
+    "fits_direction": true
+  },
+  "expect_pre_gate": ""
+}

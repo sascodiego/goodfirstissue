@@ -1,0 +1,50 @@
+{
+  "id": "cobra-2217",
+  "provenance": "real",
+  "trap": "proposal_with_design_discussion",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2217,
+    "url": "https://github.com/spf13/cobra/issues/2217"
+  },
+  "issue": {
+    "title": "OAuth2 Support in Cobra Through Integration or Libraries",
+    "body": "While building an internal CLI tool with Cobra, I needed to integrate authentication with our backend services using OAuth2. Specifically, I was looking to implement the [[device authorization flow](https://datatracker.ietf.org/doc/html/rfc8628)](https://datatracker.ietf.org/doc/html/rfc8628). However, I found that there wasn’t an easy-to-use library for this purpose that integrates well with Cobra.\n\n### Suggestion\n\nTo address this, I started developing a library, [[cobra-oauth2](https://github.com/nauthera/cobra-oauth2)](https://github.com/nauthera/cobra-oauth2), aimed at simplifying the integration of OAuth2 flows into Cobra-based CLI tools. The library is in its early stages and currently supports basic features, but it is designed to be easy to use and extend.\n\nHere’s a basic example of how to use `cobra-oauth2`:\n\n![demo](https://github.com/user-attachments/assets/85730a22-c4cb-4876-bf14-69dab1cd70b7)\n\n\n#### Example Usage\n\n**1. Main Application Setup**\n\nDefine your main entry point and execute your Cobra CLI:\n\n```go\npackage main\n\nimport \"github.com/nauthera/cobra-oauth2/examples/basic/cmd\"\n\nfunc main() {\n\tcmd.Execute()\n}\n```\n\n**2. Root Command Setup**\n\nSet up the root command and initialize OAuth2 commands:\n\n```go\npackage cmd\n\nimport (\n\t\"net/url\"\n\t\"os\"\n\n\t\"github.com/nauthera/cobra-oauth2/pkg/auth\"\n\t\"github.com/nauthera/cobra-oauth2/pkg/storage\"\n\t\"github.com/spf13/cobra\"\n)\n\nconst CLIENT_ID = \"my-client-id\"\n\nvar rootCmd = &cobra.Command{\n\tUse: \"cobra-oauth2\",\n}\n\nfunc Execut",
+    "comments": [
+      {
+        "author": "jpmcb",
+        "body": "Interesting: it seems the design is sane. Your root command executes some of the components from the library which is how I've seen this type of flow work in other cases. One thing I've thought about and wondered if it makes sense to bring into cobra is an idea of command \"middleware\" that developers can build into all commands that have registered middleware.\n\n> Is there a specific need or demand for an OAuth2 library that integrates seamlessly with Cobra?\n\nFrom a `spf13/cobra` standpoint, prob",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "michaelbeutler",
+        "body": "I agree that Cobra is an incredibly powerful tool for building CLI applications, but there seems to be an opportunity to further enhance its extensibility. It would be fantastic if there was a built-in plugin feature that would allow users to easily extend their Cobra-based CLI apps without directly modifying the core codebase.\n\nHere’s an idea for a potential plugin interface that could be added:\n\n```go\n// Plugin is an interface that all plugins must implement\ntype Plugin interface {\n\t// Initial",
+        "author_association": "NONE"
+      },
+      {
+        "author": "jpmcb",
+        "body": "Yeah, this is something we faced when building Tanzu Community Edition at VMware: there's not a great way to extend the existing capabilities of a CLI without either\n\na) modifying the core code / libraries\nb) calling other programs through `os.Exec`\n\nThoughts on a plugin system @marckhouzam ? What has Tanzu been doing more recently?",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA",
+    "only_for_requester": false,
+    "fits_direction": false
+  },
+  "expect_pre_gate": ""
+}

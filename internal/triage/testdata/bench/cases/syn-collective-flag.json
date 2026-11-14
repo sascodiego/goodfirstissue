@@ -1,0 +1,32 @@
+{
+  "id": "syn-collective-flag",
+  "provenance": "synthetic",
+  "trap": "feature_that_serves_everyone",
+  "issue": {
+    "title": "Add a global --timeout flag",
+    "body": "Every command needs a timeout; today each one invents its own. A global flag would settle it for everybody.\n",
+    "comments": [],
+    "labels": [
+      "enhancement"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CANDIDATA",
+    "only_for_requester": false,
+    "fits_direction": true
+  },
+  "expect_pre_gate": "",
+  "project": "httpie__cli"
+}

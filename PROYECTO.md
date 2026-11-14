@@ -262,7 +262,7 @@ Ninguna se oculta. `MARCADA` y `CONDICIONADA` aparecen en la lista principal con
 
 ### 2.3. Fuera de alcance
 
-Construir un indexador propio · workers asíncronos · object storage · clonación en vivo durante la demo · extracción de DOCX · GitHub App · webhooks · análisis incremental · modelo de costes · rúbricas numéricas · marketplace · reputación · ejecución de tests del repositorio · generación de PR. La extracción de PDF y la descarga por URL **sí** están en alcance, con el cómo aún abierto (§17.8.1).
+Agrupación de duplicados (diferida: ver §7.1) · construir un indexador propio · workers asíncronos · object storage · clonación en vivo durante la demo · extracción de DOCX · GitHub App · webhooks · análisis incremental · modelo de costes · rúbricas numéricas · marketplace · reputación · ejecución de tests del repositorio · generación de PR. La extracción de PDF y la descarga por URL **sí** están en alcance, con el cómo aún abierto (§17.8.1).
 
 ---
 
@@ -683,6 +683,13 @@ Lo que sí funciona es el **silencio del pipe**. PiG escribe un evento por líne
 La issue se juzga a sí misma **antes** de explorar el código, por una razón de producto y no técnica: *una issue mal armada le hace perder tiempo al contribuyente*. Explorarla primero sería gastar el recurso más caro en el caso que ya sabemos que no sirve.
 
 ### 7.1. Agrupación: la unidad de evaluación es el grupo
+
+> **Diferida: fuera del MVP.** Agrupar duplicados exige decidir si dos textos describen el
+> mismo problema, y eso es trabajo de un modelo de lenguaje sobre cada par de candidatas:
+> no entra en el tiempo del hackathon. La unidad de evaluación del MVP es **la issue sola**.
+> El costo está asumido: un reporte escueto que duplica a otro completo se juzga por su
+> propio texto y puede quedar marcado como falto de contexto. Lo que sigue en esta sección
+> queda como diseño registrado, no como comportamiento del producto.
 
 Varias issues reportan el mismo problema. Tratarlas por separado produce tres errores concretos:
 

@@ -1,0 +1,36 @@
+{
+  "id": "syn-off-direction",
+  "provenance": "synthetic",
+  "trap": "feature_against_the_project_direction",
+  "issue": {
+    "title": "Add a built-in GUI",
+    "body": "This tool needs a graphical interface for people who do not use a terminal.\n",
+    "comments": [
+      {
+        "author": "maintainer",
+        "body": "Interesting, but we have deliberately stayed a CLI.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA",
+    "only_for_requester": false,
+    "fits_direction": false
+  },
+  "expect_pre_gate": "",
+  "project": "httpie__cli"
+}

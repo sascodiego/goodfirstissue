@@ -1,0 +1,36 @@
+{
+  "id": "syn-refused-design",
+  "provenance": "synthetic",
+  "trap": "refused_in_prose_but_still_open",
+  "issue": {
+    "title": "Bundle third-party plugins into the binary",
+    "body": "I would like to bundle my plugins so I can ship one file.\n",
+    "comments": [
+      {
+        "author": "maintainer",
+        "body": "Plugins are out of scope by design. We do not plan to support them.",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "enhancement"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "refused",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "",
+  "project": "httpie__cli"
+}

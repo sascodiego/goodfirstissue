@@ -1,0 +1,66 @@
+{
+  "id": "c-spf13-cobra-1636",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 1636,
+    "url": "https://github.com/spf13/cobra/issues/1636"
+  },
+  "issue": {
+    "title": "Define help for just the root command ",
+    "body": "I had a bit of difficulty adjusting the help output for the root command. \r\nTo start off with the problem, I would like to group commands in `help` for only the root cmd, and keep rest of the command's`help` as the default. \r\n\r\nI am stuck for the following reasons:\r\n\r\n1. I can use `SetHelpCommand` which does not get passed to children. However, I cannot overwrite the flag behaviour in my root's `Run` due to `execute` always returning ErrHelp: \r\n```\r\n\tif helpVal {\r\n\t\treturn flag.ErrHelp\r\n\t}\r\n```\r\nErrHelp states that \"ErrHelp is the error returned if the flag -help is invoked but no such flag is defined.\", but doesn't seem to be the case in this if statement. \r\n\r\n\r\nThe end result here, is that \r\na) it is localized to root for `root help` or `root`, but\r\nb) when the flags are called `root -h` or `root --help`, it outputs a different format. \r\n\r\nIdeally, I'd like it to detect that the flag was defined by user, and skip to Run, instead of error'ing out. \r\n\r\n2. I can use `SetUsageTemplate` and use groups (using Annotations) to organize each one's subcommands. However, there seems to be no way to 'detect' which command is being run. This is the code I have so far \r\n```\r\n\r\nfunc rootUsageTemplate(cmd *cobra.Command) string {\r\n\tvar template = `Usage:{{if .Runnable}}\r\n{{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}\r\n{{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}\r\n\r\nAliases:\r\n{{.NameAndAliases}}{{end}}{{if .HasExample}}\r\nx\r\nExamples:\r\n{{.Example}}{{end}}{{if .HasAvailable",
+    "comments": [
+      {
+        "author": "jpmcb",
+        "body": "I'm not sure I follow.\r\n\r\nCan you provide an example workflow of what you want vs what you've experienced? Thanks much!",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "johnSchnake",
+        "body": "For the template you can add an extra template method to detect if its the root command: https://github.com/spf13/cobra/blob/eb3b6397b1b5d1b0a2cd66a9afe0520f480c0a87/cobra.go#L69\r\n\r\nSo use your custom template with some new method (e.g. \"isRoot\") and just write the template so that if that method returns true, to do something else.\r\n\r\nYou can grab the default help template and just modify it to take into account your 'if root...' logic so its the same otherwise.",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [
+      "kind/feature",
+      "triage/needs-info",
+      "lifecycle/needs-proposal"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "kind/feature": "unknown",
+    "triage/needs-info": "unknown",
+    "lifecycle/needs-proposal": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "kind/feature",
+      "triage/needs-info",
+      "lifecycle/needs-proposal"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

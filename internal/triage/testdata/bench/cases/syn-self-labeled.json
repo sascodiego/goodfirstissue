@@ -1,0 +1,33 @@
+{
+  "id": "syn-self-labeled",
+  "provenance": "synthetic",
+  "trap": "author_applied_bug_and_urgent_labels",
+  "issue": {
+    "title": "urgent: integration with AcmeCloud is missing",
+    "body": "This is urgent for us: the tool cannot talk to AcmeCloud, our internal platform. Please add a driver for it so we do not have to shell out. Marking as bug and urgent because it blocks our migration.\n",
+    "comments": [],
+    "labels": [
+      "bug",
+      "urgent"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA",
+    "only_for_requester": true,
+    "fits_direction": false
+  },
+  "expect_pre_gate": "",
+  "project": "httpie__cli"
+}

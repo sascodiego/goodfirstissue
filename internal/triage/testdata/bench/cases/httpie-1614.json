@@ -1,0 +1,76 @@
+{
+  "id": "httpie-1614",
+  "provenance": "real",
+  "trap": "bug_with_several_attempts",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1614,
+    "url": "https://github.com/httpie/cli/issues/1614"
+  },
+  "issue": {
+    "title": "AssertionError when trying to POST with bearer auth",
+    "body": "## Checklist\n\n- [X] I've searched for similar issues.\n- [X] I'm using the latest version of HTTPie.\n\n---\n\n## Minimal reproduction code and steps\n\n```\n/Users/Khayet https POST --auth-type bearer --auth $TOKEN \"https://example.org\"\n```\n\n\n## Current result\n```\nTraceback (most recent call last):\n  File \"/opt/homebrew/bin/http\", line 8, in <module>\n    sys.exit(main())\n             ~~~~^^\n  File \"/opt/homebrew/Cellar/httpie/3.2.4/libexec/lib/python3.13/site-packages/httpie/__main__.py\", line 9, in main\n    exit_status = main()\n  File \"/opt/homebrew/Cellar/httpie/3.2.4/libexec/lib/python3.13/site-packages/httpie/core.py\", line 162, in main\n    return raw_main(\n        parser=parser,\n    ...<2 lines>...\n        env=env\n    )\n  File \"/opt/homebrew/Cellar/httpie/3.2.4/libexec/lib/python3.13/site-packages/httpie/core.py\", line 77, in raw_main\n    parsed_args = parser.parse_args(\n        args=args,\n        env=env,\n    )\n  File \"/opt/homebrew/Cellar/httpie/3.2.4/libexec/lib/python3.13/site-packages/httpie/cli/argparser.py\", line 176, in parse_args\n    self._guess_method()\n    ~~~~~~~~~~~~~~~~~~^^\n  File \"/opt/homebrew/Cellar/httpie/3.2.4/libexec/lib/python3.13/site-packages/httpie/cli/argparser.py\", line 416, in _guess_method\n    assert not self.args.request_items\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\n## Expected result\n\nProbably an error message telling me what is wrong about the invocation and how to do it correctly. I'm new to httpie and guess that I did somethin",
+    "comments": [],
+    "labels": [
+      "bug",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 1666,
+        "state": "CLOSED",
+        "merged": false
+      },
+      {
+        "number": 1675,
+        "state": "CLOSED",
+        "merged": false
+      },
+      {
+        "number": 1804,
+        "state": "OPEN",
+        "merged": false
+      },
+      {
+        "number": 1805,
+        "state": "CLOSED",
+        "merged": false
+      },
+      {
+        "number": 1808,
+        "state": "CLOSED",
+        "merged": false
+      },
+      {
+        "number": 1837,
+        "state": "CLOSED",
+        "merged": false
+      },
+      {
+        "number": 1879,
+        "state": "OPEN",
+        "merged": false
+      },
+      {
+        "number": 1944,
+        "state": "CLOSED",
+        "merged": false
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "already_working"
+}

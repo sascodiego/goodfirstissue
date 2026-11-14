@@ -1,0 +1,49 @@
+{
+  "id": "c-httpie-cli-1473",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1473,
+    "url": "https://github.com/httpie/cli/issues/1473"
+  },
+  "issue": {
+    "title": "Installation instructions for Ubuntu outdated",
+    "body": "About the main [README](https://github.com/httpie/httpie/tree/master/docs#debian-and-ubuntu) of the docs.\r\n\r\nSince Ubuntu 21.10, the [apt-key](https://manpages.ubuntu.com/manpages/impish/en/man8/apt-key.8.html) management utility is deprecated and should not be used anymore. Therefore, the docs should be corrected. Also, they assume you are working as the superuser. I suggest adding `sudo` .",
+    "comments": [],
+    "labels": [
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "new": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1475,
+    "refused_by": null,
+    "original_labels": [
+      "new"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

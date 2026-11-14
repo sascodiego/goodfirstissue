@@ -1,0 +1,49 @@
+{
+  "id": "c-cli-cli-14740",
+  "provenance": "real-closed",
+  "trap": "closed_refused_without_reason",
+  "source": {
+    "repository": "cli/cli",
+    "number": 14740,
+    "url": "https://github.com/cli/cli/issues/14740"
+  },
+  "issue": {
+    "title": "Bug",
+    "body": "<!--\nFor security vulnerabilities, first report through GitHub's bug bounty program:\nhttps://hackerone.com/github\nFor other security-related concerns or questions, report privately through GitHub\nSecurity Advisories: https://github.com/cli/cli/security/advisories\nDo not use public issues for security reports or questions.\n-->\n\n### Describe the bug\n\nA clear and concise description of what the bug is. \n\n### Affected version\n\nPlease run `gh version` and paste the output below.\n\n### Steps to reproduce the behavior\n\n1. Type this '...'\n2. View the output '....'\n3. See error\n\n### Expected vs actual behavior\n\nA clear and concise description of what you expected to happen and what actually happened.\n\n### Logs\n\nPaste the activity from your command line. Redact if needed.\n\n<!-- Note: Set `GH_DEBUG=true` for verbose logs or `GH_DEBUG=api` for verbose logs with HTTP traffic details. -->\n",
+    "comments": [],
+    "labels": [
+      "suspected-spam"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "suspected-spam": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "refused",
+    "state_reason": "NOT_PLANNED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "suspected-spam"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "refused",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "MARCADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

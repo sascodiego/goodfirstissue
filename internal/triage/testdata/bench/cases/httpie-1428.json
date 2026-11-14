@@ -1,0 +1,37 @@
+{
+  "id": "httpie-1428",
+  "provenance": "real",
+  "trap": "feature_from_a_template",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1428,
+    "url": "https://github.com/httpie/cli/issues/1428"
+  },
+  "issue": {
+    "title": "Support different keywords for Bearer authentication",
+    "body": "## Checklist\n\n- [x] I've searched for similar feature requests.\n\n---\n\n## Enhancement request\n\nAdding support for different keywords than \"Bearer\" for Bearer authentication.\n\n---\n\n## Problem it solves\n\nThe default keyword in Falcon and Django REST Framework is \"Token\" instead of \"Bearer\". In HTTPie the only possible keyword is Bearer. Due to this it is not possible to use HTTPie with projects which does not explicitly use the keyword Bearer.\n",
+    "comments": [],
+    "labels": [
+      "enhancement",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA",
+    "only_for_requester": false,
+    "fits_direction": true
+  },
+  "expect_pre_gate": ""
+}

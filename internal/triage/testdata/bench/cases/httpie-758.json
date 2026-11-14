@@ -1,0 +1,57 @@
+{
+  "id": "httpie-758",
+  "provenance": "real",
+  "trap": "feature_approved_but_taken",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 758,
+    "url": "https://github.com/httpie/cli/issues/758"
+  },
+  "issue": {
+    "title": "[Feature] Define http request in a .http file",
+    "body": "First of all, thanks for a great http client. I've recommended it to quite a few coworkers by now and a lot of appreciation has been returned!\n\nIntellij has a build in http client which supports something called .http files.\n\nhttps://blog.jetbrains.com/phpstorm/2017/09/editor-based-rest-client/\n\nTo sum up the above link you can define http request in a file and have them executed.\n\nBeing able to define a file with various http requests and have that file executed by httpie would be so awesome! This could be used for stress testing, integration testing or executed in a CI pipeline for various reasons and probably several other use cases.\n\nAny comments?",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "@GotoCode it’s coming—stay tuned!",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "jkbrzt",
+        "body": "@stonecharioteer Yes, it is! No timeline yet, though.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "tonsV2",
+        "body": "@jakubroztocil Are there any updates on this matter?\n\nI've been needing this for quite a few years now and there might be people here, myself included, which would be willing to work on this.",
+        "author_association": "NONE"
+      }
+    ],
+    "labels": [
+      "enhancement",
+      "needs product design"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 1619,
+        "state": "OPEN",
+        "merged": false
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "approved",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "already_working"
+}

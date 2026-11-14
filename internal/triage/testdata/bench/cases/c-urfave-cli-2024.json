@@ -1,0 +1,63 @@
+{
+  "id": "c-urfave-cli-2024",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "urfave/cli",
+    "number": 2024,
+    "url": "https://github.com/urfave/cli/issues/2024"
+  },
+  "issue": {
+    "title": "v3 error: flag_timestamp.go:92:44: undefined: time.TimeOnly",
+    "body": "```\r\n/go/pkg/mod/github.com/urfave/cli/v3@v3.0.0-beta1/flag_timestamp.go:92:44: undefined: time.TimeOnly\r\n```\r\nhttps://ci.codeberg.org/repos/13526/pipeline/30/6",
+    "comments": [
+      {
+        "author": "6543",
+        "body": "yes",
+        "author_association": "CONTRIBUTOR"
+      },
+      {
+        "author": "6543",
+        "body": "thanks ❤️ ",
+        "author_association": "CONTRIBUTOR"
+      }
+    ],
+    "labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "status/triage": "unknown",
+    "area/v3": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 2026,
+    "refused_by": null,
+    "original_labels": [
+      "status/triage",
+      "area/v3"
+    ],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

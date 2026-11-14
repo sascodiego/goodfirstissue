@@ -1,0 +1,54 @@
+{
+  "id": "c-httpie-cli-825",
+  "provenance": "real-closed",
+  "trap": "closed_completed_merged_pr",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 825,
+    "url": "https://github.com/httpie/cli/issues/825"
+  },
+  "issue": {
+    "title": "Please add option to reformat XML body",
+    "body": "```\r\n$ TERM=xterm-256color http http://localhost:8081/api/grid-service/GridInquiryService/GridInquiry @SOAP.realtime.xml\r\nHTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-Length: 921\r\nContent-Type: text/xml;charset=ISO-8859-1\r\nDate: Sun, 29 Dec 2019 10:07:58 GMT\r\n\r\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Body><ns4:realtimeResponse xmlns:ns4=\"http://rdc.com/soap/GridInquiry\" xmlns:ns3=\"http://rdc.com/soap\" xmlns:ns2=\"http://service.rdc.com\"><return><ns2:Status><ns2:StatusCode>0</ns2:StatusCode><ns2:Severity>INFO</ns2:Severity></ns2:Status><ns2:GridInquiryStatusRec><ns2:GridInquiryId>3380</ns2:GridInquiryId><ns2:GridInquiryStatus><ns2:GridInquiryStatusCode>COMPLETE</ns2:GridInquiryStatusCode></ns2:GridInquiryStatus></ns2:GridInquiryStatusRec><ns2:GridInquiryResultsRec><ns2:GridInquiryId>3380</ns2:GridInquiryId><ns2:GridInquiryStatus><ns2:GridInquiryStatusCode>COMPLETE</ns2:GridInquiryStatusCode></ns2:GridInquiryStatus><ns2:GridInquiryReviewStatus><ns2:GridInquiryReviewStatusCode>NOMATCH</ns2:GridInquiryReviewStatusCode></ns2:GridInquiryReviewStatus></ns2:GridInquiryResultsRec></return></ns4:realtimeResponse></soap:Body></soap:Envelope>\r\n```\r\n![image](https://user-images.githubusercontent.com/720349/71555361-6e96c380-2a3c-11ea-8952-02878e9928e8.png)\r\n\r\nSo output even colorized. But it lack of indentation structure. It will be very cool to see said `--reformat` option (f.e. like in [highlight](https://gitlab.com/saalen/highlight)).\r\n",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "I would love to have this, but  I‘m not aware of any decent formatter that would preserve namespaces, etc.  There have been a few naive attempts:\r\n\r\nhttps://github.com/jakubroztocil/httpie/issues?q=xml+format.",
+        "author_association": "MEMBER"
+      },
+      {
+        "author": "Hubbitus",
+        "body": "https://pypi.org/project/xmlformatter/\r\nhttps://docs.python.org/3/library/xml.dom.minidom.html\r\nhttps://lxml.de/tutorial.html all are not decent?",
+        "author_association": ""
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {},
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_with_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": 1129,
+    "refused_by": null,
+    "original_labels": [],
+    "label_strength": "strong"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "approved",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "CANDIDATA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

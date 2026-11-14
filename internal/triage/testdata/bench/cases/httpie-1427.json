@@ -1,0 +1,34 @@
+{
+  "id": "httpie-1427",
+  "provenance": "real",
+  "trap": "question_disguised_as_feature_request",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1427,
+    "url": "https://github.com/httpie/cli/issues/1427"
+  },
+  "issue": {
+    "title": "support for Oauth 2.0?",
+    "body": "I see there are some conversation about adding support for Oauth 2.0. in 2013. Does httpie support it now?\n\n",
+    "comments": [],
+    "labels": [
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "question",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": ""
+}

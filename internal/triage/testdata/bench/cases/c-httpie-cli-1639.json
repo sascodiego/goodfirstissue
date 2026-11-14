@@ -1,0 +1,63 @@
+{
+  "id": "c-httpie-cli-1639",
+  "provenance": "real-closed",
+  "trap": "closed_completed_uncorroborated",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1639,
+    "url": "https://github.com/httpie/cli/issues/1639"
+  },
+  "issue": {
+    "title": "Content-Length not calculated in version 3.2.4",
+    "body": "## Checklist\n\n- [x] I've searched for similar issues.\n- [x] I'm using the latest version of HTTPie.\n\n---\n\n## Minimal reproduction code and steps\n\n`nc -l 8888`  \nthen call\n```\nhttp -vvv --ignore-stdin POST http://localhost:8888/api/deployment/notify \"Authorization:\n Token dummy\" message=\"\\`app:4.72.4\\` - OK\" deploymentId=\"2025-06-24_01\" environment=\"frankfu\nrt\"\n```\n\ni call httpie from `alpine:3.21` docker container where is `httpie 3.2.4`\nif you wanna try `httpie 3.2.3` use `alpine:3.20`\n\n## Current result\nIn version `3.2.4` this results in automaticaly selecting chunked encoding, as you can see in `netcat` output\n`Transfer-Encoding: chunked`\n\nIn version `3.2.3` the content-length is calculated as it should \n…\n\n## Expected result\nDo not use chunked encoding because its not necessary\n…\n\n---\n\n## Debug output\n\nPlease re-run the command with `--debug`, then copy the entire command & output and paste both below:\n\n```bash\n$ http --debug http --debug --ignore-stdin POST http://localhost:8888/api/deployment/notify \"Authorization: Token dummy\" message=\"\\`app:4.72.4\\` - OK\" deploymentId=\"2025-06-24_01\" environment=\"frankfurt\"\n\nHTTPie 3.2.4\nRequests 2.32.4\nPygments 2.19.2\nPython 3.11.13 (main, Jun  4 2025, 17:07:38) [GCC 14.2.0]\n/usr/local/bin/python3.11\nLinux 6.11.0-26-generic\n\n<Environment {'apply_warnings_filter': <function Environment.apply_warnings_filter at 0x75aa224a3740>,\n 'args': Namespace(),\n 'as_silent': <function Environment.as_silent at 0x75aa224a3600>,\n 'colors': 8,\n 'confi",
+    "comments": [
+      {
+        "author": "marekhanzlik",
+        "body": "After more digging it seems that it can be related to https://github.com/httpie/cli/issues/1637 because on my side the Conten-Type header is also missing and i am unable to specify it manualy either",
+        "author_association": ""
+      },
+      {
+        "author": "marekhanzlik",
+        "body": "Resolved by https://github.com/alpine-docker/multi-arch-docker-images/issues/23",
+        "author_association": ""
+      }
+    ],
+    "labels": [
+      "bug",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "labels_applied_by": {
+    "bug": "unknown",
+    "new": "unknown"
+  },
+  "simulation": "",
+  "duplicates": [],
+  "truth": {
+    "resolution": "completed_without_merged_pr",
+    "state_reason": "COMPLETED",
+    "merged_pr": null,
+    "refused_by": null,
+    "original_labels": [
+      "bug",
+      "new"
+    ],
+    "label_strength": "weak"
+  },
+  "expected": {
+    "kind": "",
+    "intent": "undecided",
+    "self_contained": false,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": false,
+    "outcome": "INDETERMINADA"
+  },
+  "closed_label": true,
+  "expect_pre_gate": ""
+}

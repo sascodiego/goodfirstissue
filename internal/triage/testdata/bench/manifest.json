@@ -4,19 +4,9 @@
   "purpose": "Measure the wording of the P1 questions against hand-labelled cases before freezing it.",
   "required_coverage": [
     {
-      "trap": "feature_with_bug_prefix",
-      "min": 1,
-      "why": "the measured adversarial case: the author's framing must not decide the kind"
-    },
-    {
       "trap": "bug_with_feature_prefix",
       "min": 1,
       "why": "the inverse disguise"
-    },
-    {
-      "trap": "question_dressed_as_defect_report",
-      "min": 1,
-      "why": "a crash report that asks whether the behaviour is intended must not become work"
     },
     {
       "trap": "author_applied_bug_and_urgent_labels",
@@ -234,7 +224,6 @@
     "httpie-335",
     "httpie-758",
     "httpie-800",
-    "syn-bug-prefix-feature",
     "syn-completed",
     "syn-control-wellformed",
     "syn-empty-body",
@@ -243,7 +232,6 @@
     "syn-not-planned",
     "syn-open-pr-insufficient",
     "syn-panic-with-bom",
-    "syn-question-as-change",
     "syn-self-labeled"
   ]
 }

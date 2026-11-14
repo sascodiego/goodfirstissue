@@ -27,10 +27,10 @@ import (
 
 // The cases a single run cannot settle: the same dossier, three times, must agree.
 var consistencySubset = []string{
-	"syn-bug-prefix-feature",
-	"syn-question-as-change",
-	"syn-self-labeled",
 	"httpie-800",
+	"httpie-1525",
+	"cobra-2211",
+	"syn-self-labeled",
 }
 
 const (

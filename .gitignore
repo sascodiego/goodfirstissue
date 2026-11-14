@@ -1,5 +1,9 @@
 .env
 .env.*
+!.env.example
 __pycache__/
 node_modules/
 .DS_Store
+/bin/
+/var/
+config.json

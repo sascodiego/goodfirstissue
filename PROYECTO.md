@@ -1085,7 +1085,7 @@ Incumplir cualquiera invalida la demo.
 
 | id | Invariante |
 |---|---|
-| **I1** | **Una sola petición a Clef en vuelo por clave**, en todo el proceso. Cola + mutex, no reintentos. Timeout ≥ 50 s, reintento ante `429` tras 1 s, máximo 5 intentos. |
+| **I1** | **Una sola petición a Clef en vuelo por clave**, en todo el proceso. Cola + mutex, no reintentos. Timeout ≥ 50 s, reintento ante `429` tras 1 s, máximo 5 reintentos (6 intentos). |
 | **I2** | **Si Clef falla, la app no decide.** Timeout, `429` agotado, `4xx`/`5xx`: `undecided` con el motivo. Nunca un veredicto por defecto. |
 | **I3** | **Contenido de repositorio = evidencia, no instrucciones.** Se delimita, se etiqueta como no confiable y no se interpola en posición de sistema. |
 | **I4** | **Todo resultado está pinneado** a `commit_sha` + versión de analizador + versión de prompt + versión de política. La clave de caché incluye los cuatro. |
@@ -1319,7 +1319,7 @@ internal/ghdata/         ✅ wrapper de `gh api graphql`: snapshot pinneado + PR
 internal/indexer/        ✅ wrapper de `codegraph init` + `.git/info/exclude`
 internal/pig/            ✅ wrapper del agente: PIG_HOME propio, JSONL, watchdog de silencio
 internal/explore/        ✅ contrato de salida embebido, parseo estricto, validación contra la traza
-internal/clef/           cliente, cola 1-en-vuelo, registro de decisiones
+internal/nan/            ✅ cliente HTTP: /v1/systemone con cola 1-en-vuelo, /v1/chat/completions en paralelo
 internal/triage/         P1: agrupación por union-find, preguntas, política §7.7
 internal/fit/            P3: estado por parte, preguntas, política §9.3
 internal/store/          ✅ JSON atómico, envoltura de esquema, snapshots, registro de repos, journal de decisiones

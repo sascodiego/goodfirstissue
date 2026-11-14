@@ -99,3 +99,5 @@ El README original del hackathon se conserva **sin modificar** en [`README.hacka
 | [docs/retos/04-tema-libre.md](docs/retos/04-tema-libre.md) | La regla del reto que jugamos |
 | [docs/retos/](docs/retos/) | Los cuatro retos |
 | [examples/](examples/) | Clientes mínimos en curl, Python y Node.js |
+
+Este repositorio **no es un fork**: el material de arriba es una copia del repositorio del hackathon, que **no declara licencia**. Qué se copió, de dónde y bajo qué condiciones está en [`NOTICE.md`](NOTICE.md).

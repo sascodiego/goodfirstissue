@@ -83,22 +83,22 @@ func TestIssueRendersTheWholeThread(t *testing.T) {
 	page := rec.Body.String()
 
 	for _, want := range []string{
-		"#1272",                       // el número
-		"Hidden Commands Should be",   // el título
-		"kind/bug",                    // etiquetas verbatim, sin normalizar
-		"good-first-issue",            //
-		"lifecycle/needs-pr",          //
-		"abierta",                     // el estado
-		"#1984",                       // la PR vinculada
-		"2026-11-11",                  // actualizada
-		"2026-03-04",                  // abierta
-		"<code>Use</code>",            // el cuerpo pasó por el render
-		"Reproduced on main.",         // los comentarios
-		"Any update?",                 //
-		"Still open, PRs welcome.",    //
+		"#1272",                         // el número
+		"Hidden Commands Should be",     // el título
+		"kind/bug",                      // etiquetas verbatim, sin normalizar
+		"good-first-issue",              //
+		"lifecycle/needs-pr",            //
+		"abierta",                       // el estado
+		"#1984",                         // la PR vinculada
+		"2026-11-11",                    // actualizada
+		"2026-03-04",                    // abierta
+		"<code>Use</code>",              // el cuerpo pasó por el render
+		"Reproduced on main.",           // los comentarios
+		"Any update?",                   //
+		"Still open, PRs welcome.",      //
 		`href="https://example.com/pr"`, // un enlace del cuerpo, permitido
-		"4 comentarios",               // el conteo
-		"Abrir en GitHub",             // el enlace a GitHub, como acción secundaria
+		"4 comentarios",                 // el conteo
+		"Abrir en GitHub",               // el enlace a GitHub, como acción secundaria
 	} {
 		if !strings.Contains(page, want) {
 			t.Errorf("falta %q en la pantalla", want)

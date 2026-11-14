@@ -120,6 +120,43 @@ func TestRateLimitWaitsOneSecond(t *testing.T) {
 	}
 }
 
+// S9: the ceiling applies to a 429 too, and every wait is one fixed second. Without this the
+// only evidence for "at most 5 attempts" came from the 5xx path, by analogy.
+func TestRateLimitExhaustionIsTypedAndCounted(t *testing.T) {
+	var calls atomic.Int32
+	w := &waits{}
+	tc := newTestClient(t, func(rw http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		rw.WriteHeader(http.StatusTooManyRequests)
+	}, func(opts *nan.Options) {
+		opts.MaxAttempts = 5
+		opts.Sleep = w.sleep
+	})
+
+	_, err := tc.Client.SystemOne(context.Background(), nan.SystemOneRequest{
+		Model: "clef", State: "x", Questions: sampleQuestions,
+	})
+	e := asError(t, err)
+	if e.Kind != nan.KindRateLimited {
+		t.Errorf("Kind = %q, want %q", e.Kind, nan.KindRateLimited)
+	}
+	if e.Attempts != 5 {
+		t.Errorf("Attempts = %d, want 5", e.Attempts)
+	}
+	if got := calls.Load(); got != 5 {
+		t.Errorf("server saw %d requests, want 5", got)
+	}
+	seen := w.list()
+	if len(seen) != 4 {
+		t.Fatalf("waits = %v, want 4 waits between 5 attempts", seen)
+	}
+	for i, d := range seen {
+		if d != time.Second {
+			t.Errorf("wait %d = %v, want the fixed 1s of I1", i, d)
+		}
+	}
+}
+
 // S5: a transport failure is a network failure and it is retried, not reported as a
 // decision.
 func TestNetworkErrorIsRetriedAndTyped(t *testing.T) {

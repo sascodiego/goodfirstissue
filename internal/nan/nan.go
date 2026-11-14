@@ -80,7 +80,10 @@ type Options struct {
 	// takes DefaultMaxAttempts; one disables retries.
 	MaxAttempts int
 
-	// HTTPClient overrides the transport. Nil builds one with Timeout.
+	// HTTPClient overrides the transport. Nil builds one with Timeout. An injected client's
+	// own Timeout governs, and it must be zero, meaning bounded only by the caller's context,
+	// or at least MinTimeout: a shorter transport would abandon requests the service is still
+	// answering, which is the failure the floor exists to prevent.
 	HTTPClient *http.Client
 
 	// Sleep waits between attempts. Nil uses a real timer. Tests inject it so the backoff
@@ -146,6 +149,8 @@ func New(opts Options) (*Client, error) {
 	client := opts.HTTPClient
 	if client == nil {
 		client = &http.Client{Timeout: timeout}
+	} else if client.Timeout > 0 && client.Timeout < MinTimeout {
+		return nil, cfgErr("http client timeout %s is below the API minimum %s", client.Timeout, MinTimeout)
 	}
 	sleep := opts.Sleep
 	if sleep == nil {
@@ -191,7 +196,7 @@ func (c *Client) post(ctx context.Context, op, target string, body, out any, ser
 		return &Error{Op: op, Kind: KindRequest, Err: err}
 	}
 
-	for attempt := 1; attempt <= c.maxAttempts; attempt++ {
+	for attempt := 1; ; attempt++ {
 		if err := ctx.Err(); err != nil {
 			return contextError(op, attempt-1, err)
 		}
@@ -209,14 +214,13 @@ func (c *Client) post(ctx context.Context, op, target string, body, out any, ser
 			return nil
 		}
 		failure.Attempts = attempt
-		if !retry || attempt == c.maxAttempts {
+		if !retry || attempt >= c.maxAttempts {
 			return failure
 		}
 		if err := c.sleep(ctx, waitFor(failure, attempt)); err != nil {
 			return contextError(op, attempt, err)
 		}
 	}
-	return &Error{Op: op, Kind: KindRequest, Err: errors.New("no attempt was made")}
 }
 
 // attempt sends exactly one request.

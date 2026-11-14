@@ -77,6 +77,32 @@ func TestNewRejectsTimeoutBelowTheAPIMinimum(t *testing.T) {
 	}
 }
 
+// S4: injecting a transport cannot bypass the floor. Handing the client a 5 s transport
+// would put requests in flight that the service is still answering, which is the failure the
+// floor exists to prevent.
+func TestNewRejectsAnInjectedClientBelowTheMinimum(t *testing.T) {
+	_, err := nan.New(nan.Options{
+		APIKey:     testKey,
+		Timeout:    nan.MinTimeout,
+		HTTPClient: &http.Client{Timeout: 5 * time.Second},
+	})
+	e := asError(t, err)
+	if e.Kind != nan.KindConfig {
+		t.Errorf("Kind = %q, want %q", e.Kind, nan.KindConfig)
+	}
+	if !strings.Contains(err.Error(), "50s") {
+		t.Errorf("error does not name the minimum: %v", err)
+	}
+}
+
+// A transport without a timeout defers every bound to the caller's context, which cannot be
+// shorter than the floor by accident.
+func TestNewAcceptsAnInjectedClientWithoutATimeout(t *testing.T) {
+	if _, err := nan.New(nan.Options{APIKey: testKey, HTTPClient: &http.Client{}}); err != nil {
+		t.Fatalf("New(injected client) error = %v", err)
+	}
+}
+
 func TestNewAcceptsTheMinimumTimeout(t *testing.T) {
 	if _, err := nan.New(nan.Options{APIKey: testKey, Timeout: nan.MinTimeout}); err != nil {
 		t.Fatalf("New(50s) error = %v", err)

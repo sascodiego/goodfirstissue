@@ -740,7 +740,7 @@ Las decisiones por pares se cierran con union-find. Un grupo es un conjunto cone
 
 #### Consecuencias
 
-- **La unidad de evaluación es el grupo**, no la issue. El `state` lleva el cuerpo completo del miembro más rico, los títulos de los demás y `report_count`.
+- Cuando exista, **la unidad de evaluación es el grupo**, no la issue. El `state` lleva el cuerpo completo del miembro más rico, los títulos de los demás y `report_count`.
 - Las issues duplicadas no se descartan: se **absorben** (`absorbed`) y quedan apuntando al grupo. Siguen visibles.
 - La recomendación es del grupo, con el reporte más completo como puerta de entrada.
 - `cluster_has_open_work ≥ 0,5` → **MARCADA: ya está siendo trabajada.** Además de Clef hay señal determinista: `state` cerrado con `state_reason=completed`, o una PR abierta enlazada.

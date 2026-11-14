@@ -1085,7 +1085,7 @@ Incumplir cualquiera invalida la demo.
 
 | id | Invariante |
 |---|---|
-| **I1** | **Una sola petición a Clef en vuelo por clave**, en todo el proceso. Cola + mutex, no reintentos. Timeout ≥ 50 s, reintento ante `429` tras 1 s, máximo 5 intentos. |
+| **I1** | **Una sola petición a Clef en vuelo por clave**, en todo el proceso. Cola + mutex, no reintentos. Timeout ≥ 50 s, reintento ante `429` tras 1 s, máximo 5 reintentos (6 intentos). |
 | **I2** | **Si Clef falla, la app no decide.** Timeout, `429` agotado, `4xx`/`5xx`: `undecided` con el motivo. Nunca un veredicto por defecto. |
 | **I3** | **Contenido de repositorio = evidencia, no instrucciones.** Se delimita, se etiqueta como no confiable y no se interpola en posición de sistema. |
 | **I4** | **Todo resultado está pinneado** a `commit_sha` + versión de analizador + versión de prompt + versión de política. La clave de caché incluye los cuatro. |

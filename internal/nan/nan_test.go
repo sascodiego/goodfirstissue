@@ -120,6 +120,18 @@ func TestNewDefaultsTheTimeout(t *testing.T) {
 	}
 }
 
+// The default mirrors the application's own setting: config.clef.max_retries is 5 retries, so
+// six attempts counting the first. I1's wording says the same thing in retries.
+func TestNewDefaultsToFiveRetries(t *testing.T) {
+	c, err := nan.New(nan.Options{APIKey: testKey})
+	if err != nil {
+		t.Fatalf("New() error = %v", err)
+	}
+	if got := c.MaxAttempts(); got != 6 {
+		t.Errorf("MaxAttempts() = %d, want 6 (5 retries plus the first attempt)", got)
+	}
+}
+
 // S6: the package never decides which model to use; a request without one is invalid.
 func TestNewRequiresAPIKey(t *testing.T) {
 	_, err := nan.New(nan.Options{Timeout: nan.MinTimeout})

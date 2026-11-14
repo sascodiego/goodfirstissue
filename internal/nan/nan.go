@@ -42,8 +42,9 @@ const (
 	// DefaultTimeout applies when Options.Timeout is zero.
 	DefaultTimeout = 60 * time.Second
 
-	// DefaultMaxAttempts is I1's ceiling: "máximo 5 intentos". Attempts, not retries.
-	DefaultMaxAttempts = 5
+	// DefaultMaxAttempts is I1's ceiling expressed as attempts: five retries after the first
+	// one, which is what config.clef.max_retries already means by its name.
+	DefaultMaxAttempts = 6
 
 	// retryBase is the first wait after a 5xx or a network failure; it doubles per attempt.
 	retryBase = 500 * time.Millisecond

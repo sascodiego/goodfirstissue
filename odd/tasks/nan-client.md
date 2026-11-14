@@ -73,3 +73,5 @@ L11. Evidencia (verificación independiente, `gentle-ai-verify`, commit `593669c
 - **`queue_test.go` podía colgarse**: `<-sleeping` sin cota; una regresión que hiciera exitoso el primer intento colgaba el test hasta el timeout global de 10 m. Ahora falla con mensaje.
 
 Nits relevados y no accionados, con motivo: `release` no va en `defer` (un panic en `attempt` mata el proceso igual); `KindTimeout` del propio cliente es reintentable, así que el peor caso de una llamada es 5 × 50 s + esperas — queda para revisar cuando #9 cablee `clef.timeout`, anotado junto al off-by-one de L9.
+
+L12. Decisión (cierra L9): **5 reintentos**, o sea 6 intentos contando el primero — el número es arbitrario y se fija acá para no volver a discutirlo. `DefaultMaxAttempts` pasa de 5 a 6 con test propio en rojo observado (`MaxAttempts() = 5, want 6`), y `PROYECTO.md:1088` (I1) pasa a «máximo 5 reintentos (6 intentos)». El cableado de #9 pasa `1 + cfg.Clef.MaxRetries`.

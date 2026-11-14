@@ -10,3 +10,8 @@ config.json
 
 # Engram: bindings y chunks de sync son estado local de cada máquina
 .engram/
+
+# design/: el estado de la herramienta de canvas es local de cada máquina
+design/**/.screenshots/
+design/**/comments.json
+design/**/handoffs.json

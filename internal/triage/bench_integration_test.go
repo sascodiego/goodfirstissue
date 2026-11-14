@@ -53,11 +53,12 @@ type question struct {
 // answer is what comes back: a probability for a yes/no, a label plus probabilities for
 // a choice.
 type answer struct {
-	Type        string
-	Noul        float64
-	Choice      string
-	Confidence  float64
-	Probability float64
+	Type          string
+	Noul          float64
+	Choice        string
+	Confidence    float64
+	Probability   float64
+	Probabilities map[string]float64
 }
 
 var kindCriteria = map[string]string{
@@ -258,6 +259,7 @@ func decodeAnswers(raw []byte) (map[string]answer, error) {
 			decoded.Noul = *a.Noul
 		}
 		decoded.Probability = a.Probabilities[a.Choice]
+		decoded.Probabilities = a.Probabilities
 		out[id] = decoded
 	}
 	return out, nil
@@ -274,12 +276,16 @@ func noulMap(answers map[string]answer) map[string]float64 {
 }
 
 type benchRun struct {
-	Case   string             `json:"case"`
-	Trap   string             `json:"trap"`
-	Expect Expected           `json:"expect"`
-	Has    map[string]float64 `json:"substance"`
-	Kind   string             `json:"kind_flat"`
-	Intent string             `json:"intent"`
+	Case       string             `json:"case"`
+	Trap       string             `json:"trap"`
+	Expect     Expected           `json:"expect"`
+	Has        map[string]float64 `json:"substance"`
+	Kind       string             `json:"kind_flat"`
+	KindProb   map[string]float64 `json:"kind_probabilities"`
+	KindConf   float64            `json:"kind_confidence"`
+	Intent     string             `json:"intent"`
+	IntentProb map[string]float64 `json:"intent_probabilities"`
+	IntentConf float64            `json:"intent_confidence"`
 }
 
 func TestBenchMeasuresWording(t *testing.T) {
@@ -327,12 +333,16 @@ func TestBenchMeasuresWording(t *testing.T) {
 		noul := noulMap(substance)
 		derived := DerivedKind(noul)
 		run := benchRun{
-			Case:   c.ID,
-			Trap:   c.Trap,
-			Expect: c.Expected,
-			Has:    noul,
-			Kind:   substance["kind"].Choice,
-			Intent: intent["intent"].Choice,
+			Case:       c.ID,
+			Trap:       c.Trap,
+			Expect:     c.Expected,
+			Has:        noul,
+			Kind:       substance["kind"].Choice,
+			KindProb:   substance["kind"].Probabilities,
+			KindConf:   substance["kind"].Confidence,
+			Intent:     intent["intent"].Choice,
+			IntentProb: intent["intent"].Probabilities,
+			IntentConf: intent["intent"].Confidence,
 		}
 		runs = append(runs, run)
 

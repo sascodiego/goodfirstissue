@@ -31,15 +31,15 @@ Rama `feat/issue-screen` · worktree `/src/worktrees/goodfirstissue/feat-issue-s
 
 | ID | Tarea | Specs | Ruta | Commit |
 |---|---|---|---|---|
-| T1 | `markdown_test.go` en rojo: `<script>`, `<img onerror>`, `javascript:` y enlaces http/https | S3 | inline | `c1` |
-| T2 | `markdown.go`: escapado total primero, después el subconjunto | S3 | inline | `c1` |
-| T3 | `issue_test.go` en rojo: 200 con las piezas de la 1272, 404 × 2, href del título, «Abrir en GitHub», los tres bloques | S1, S2, S4, S5, S6, S8 | inline | `c2` |
-| T4 | `issue.go`: modelo y handler sobre el rail de `view.go` | S2, S4, S5, S7 | inline | `c2` |
-| T5 | `templates/issue.html`, stubs `partials/{triage,evidence,fit}.html`, una línea en `routes.go` y `screenIssue` en `screens.go` | S2, S8 | inline | `c2` |
-| T6 | Dashboard: `href` del título a la pantalla, sin tocar nada más | S1, S6, S9 | inline | `c2` |
-| T7 | CSS nuevo, si hace falta, en `design/app.css` y `internal/web/static/app.css` (idénticos) | S2 | inline | `c2` |
-| T8 | `make verify` y mirada a mano de las cuatro rutas contra `var/store` | S4, S10 | inline | cierre |
-| T9 | README, si documenta rutas | S9 | inline | cierre |
+| T1 | `markdown_test.go` en rojo: `<script>`, `<img onerror>`, `javascript:` y enlaces http/https | S3 | inline | `cf4aec5` |
+| T2 | `markdown.go`: escapado total primero, después el subconjunto | S3 | inline | `cf4aec5` |
+| T3 | `issue_test.go` en rojo: 200 con las piezas de la 1272, 404 × 2, href del título, «Abrir en GitHub», los tres bloques | S1, S2, S4, S5, S6, S8 | inline | `92a8d34` |
+| T4 | `issue.go`: modelo y handler; el rail se arma con `buildPage`, no con una copia | S2, S4, S5, S7 | inline | `92a8d34` |
+| T5 | `templates/issue.html`, stubs `partials/{triage,evidence,fit}.html`, una línea en `routes.go` y `screenIssue` en `screens.go` | S2, S8 | inline | `92a8d34` |
+| T6 | Dashboard: `href` del título a la pantalla, sin tocar nada más | S1, S6, S9 | inline | `92a8d34` |
+| T7 | CSS nuevo, aditivo, en `design/app.css` y `internal/web/static/app.css` (idénticos) | S2 | inline | `92a8d34` |
+| T8 | `make verify`, mirada a mano contra `var/store` y diff del dashboard contra `main` | S4, S10 | inline | cierre |
+| T9 | README, si documenta rutas | S9 | inline | descartada: el README no lista rutas |
 
 ## Log
 
@@ -48,3 +48,7 @@ Rama `feat/issue-screen` · worktree `/src/worktrees/goodfirstissue/feat-issue-s
 **L2** — El usuario condiciona el sello a comprobar la sincronía con el origen, verbatim: «Por las dudas antes fijate que main este sincronizada con el origen si esto es asi esta sellado». Verificado: `main` y `origin/main` en `410eb05`, 0 adelante, 0 atrás. Plan sellado con las tres recomendaciones: rama `feat/issue-screen`; los tres stubs como parciales `templates/partials/{triage,evidence,fit}.html`; sin maqueta previa en `design/issue/`.
 
 **L3** — Evidencia de exploración, antes de escribir: la dependencia #4 está cerrada y `routes.go`/`screens.go`/`view.go` ya existen; `screens_test.go` ya usa `issue` como segunda pantalla en su fixture; `main` no tiene `internal/triage` ni `internal/profile`, así que #6 no depende de ninguna ola; el corpus local `var/store/spf13__cobra` trae la 1272 con 4 comentarios, 3 etiquetas y 6 PRs; `design/app.css` y `internal/web/static/app.css` están idénticos y `make design-check` falla el build si dejan de estarlo.
+
+**L4** — Evidencia de cierre. RED observado: `undefined: renderMarkdown` en los seis casos de T1, y `undefined: screenIssue` en los tests de la pantalla antes de escribirla. GREEN: `go test ./...` completo y `make verify` (build, test, vet, golangci-lint con 0 issues, design-check) verde. A mano contra el corpus real (`var/store` copiado al worktree, servidor en un puerto libre): `/issue/spf13__cobra/1272` → 200 con título, las tres etiquetas verbatim, `abierta`, las 6 PRs, las dos fechas, el cuerpo con su enlace https convertido y los 4 comentarios; `/issue/httpie__cli/1974` → 200 con el `<img …>` del autor escapado y sin `<img` en el HTML; `/issue/spf13__cobra/981` → 200 con 10 comentarios y sin `<script` ni `onerror=`; issue inexistente, repo inexistente y número no numérico → 404. Diff del dashboard contra `main` sobre siete URLs (sin filtro, `state=free`, `state=taken`, `nolabel=1`, búsqueda, repo inexistente): el único cambio son los `c-ttl` de las 150 filas, cero líneas fuera de ahí, y el 404 byte a byte igual. CSS: 0 líneas eliminadas, así que ninguna regla existente puede haber cambiado. `app.css` idéntico en `design/` y `internal/web/static/`.
+
+**L5** — Decisiones que el plan no fijaba y se resolvieron dentro del alcance sellado: (a) el rail de la pantalla de issue es compacto —repo activo, cifras y «← Volver al corpus»— en vez de la lista completa de repositorios, para no duplicar el marcado del rail ni tocar `templates/dashboard.html` más allá del `href` (S9); (b) el rail se arma llamando a `buildPage` con el repo pedido, así el contexto de repositorio se calcula en un solo lugar; (c) el `<title>` de la pantalla es `#número título · repo`. Sigue pendiente un parcial `rail` compartido si la ola 2 lo pide.

@@ -30,11 +30,11 @@ S9. Una cita que no aparece en el CV **no se borra en silencio**: se devuelve co
 
 | ID | Tarea | Specs | Ruta | Commit |
 |---|---|---|---|---|
-| T1 | tipos, `prompt.md` embebido, `Version()` y `Parse` del esqueleto | S7, S8 | inline | — |
-| T2 | auditoría de citas contra el CV y `insufficient_information` | S1, S2, S9 | inline | — |
-| T3 | `Extract` con `httptest`: CV en `user`, reglas en `system`, CV vacío sin request | S5, S6 | inline | — |
-| T4 | caché por `(texto, modelo, versión)` | S3 | inline | — |
-| T5 | perfil vigente guardado, doc del paquete, §17.3 y `make verify` | S4 | inline | — |
+| T1 | tipos, `prompt.md` embebido, `Version()` y `Parse` del esqueleto | S7, S8 | inline | `da49ef7` |
+| T2 | auditoría de citas contra el CV e `insufficient_information` | S1, S2, S9 | inline | `2bf8868` |
+| T3 | `Extract` con `httptest`: CV en `user`, reglas en `system`, CV vacío sin request | S5, S6 | inline | `ca8bf14` |
+| T4 | caché por `(texto, modelo, versión)` | S3 | inline | `d842e2e` |
+| T5 | perfil vigente guardado, doc del paquete, §17.3 y `make verify` | S4 | inline | `e968f67` |
 
 Riesgo: **ítem 2** — el guardarraíl de I3 sobre contenido no confiable (el CV puede traer
 instrucciones). Verificación independiente y revisión con lentes `risk` y `reliability`.
@@ -56,3 +56,9 @@ L6. Decisión (cita): de borrado a aviso (S9). Sigue habiendo auditoría determi
 L7. Evidencia (conflicto documental resuelto por precedencia): `PROYECTO.md:1477` dice «una lista de capacidades con nivel, fuente y evidencia (§9.1)» y `PROYECTO.md:1030-1037` muestra `nivel: profesional | declarado | demostrado` por skill. La issue #8 prohibía «niveles» leyendo `nivel` como pericia. `PROYECTO.md` manda sobre la issue (`AGENTS.md`): el nivel describe **cómo consta** en el CV (`declarado`, `demostrado`, `inferido`), no cuánto sabe la persona. Sigue prohibida la escala de dificultad de la issue (§9.3). Registrado en la issue.
 
 L8. Decisión (techo de verbosidad, S8): cuatro secciones, una línea por ítem, sin párrafos. El `state` de P3 tiene ~16k tokens y comparte presupuesto con la issue y la evidencia de P2: un perfil verborrágico le roba tokens a lo que decide. Fuera de alcance: cronograma por lenguaje, historia laboral detallada, PDF y URL (§17.8.1), toda la UI (#10).
+
+L9. Evidencia (TDD en rojo): `go test ./internal/profile/` → «no non-test Go files» (RED de T1); `doc.Audit undefined` (RED de T2); `undefined: profile.Extractor` (RED de T3); `unknown field Store` + `undefined: cacheKey` (RED de T4); `undefined: profile.Save` (RED de T5).
+
+L10. Defecto que encontró el propio test de T1: un nombre de formación legítimo lleva « — » adentro («Licenciatura en Sistemas — Universidad X»), y el split posicional lo tomaba como campo. Se corrigió el parser, no el fixture: el nombre son los segmentos iniciales sin `:` y los campos se reconocen por la clave. Un test que no puede fallar no prueba nada, pero un test que falla por el fixture equivocado tampoco.
+
+L11. Nota de rebanadas: 5 commits de 510/150/430/295/160 líneas. T1 quedó sobre la guía de ~400 por el mismo motivo que en #5: tipos, prompt y parser no existen por separado sin stubs. El log del doc lleva el mapa tarea→commit.

@@ -1,0 +1,41 @@
+{
+  "id": "httpie-335",
+  "provenance": "real",
+  "trap": "feature_approved_by_maintainer",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 335,
+    "url": "https://github.com/httpie/cli/issues/335"
+  },
+  "issue": {
+    "title": "Hide Authorization header credentials in verbose mode",
+    "body": "When the request headers are being echoed back, I'd like the default behavior to be to ***\\* out the credentials.\n\nInstead of this being displayed:\n`Authorization: Basic aHR0cGllOmlzQXdlc29tZQ==`\nI'd like to see:\n`Authorization: Basic ************************`\n\nSimilarly:\n`Authorization: Bearer *******************************`\n\nMaybe a new option (like --show-creds) could be used to show the credentials.\n",
+    "comments": [
+      {
+        "author": "jkbrzt",
+        "body": "Good idea. People accidentally share sensitive data like this all the time. Thinking out loud:\n- Having this on by default goes slightly against having the output verbatim.\n- `Authorization` isn't the only header with sensitive values out there (think all the `Token`, `X-API-Token`, etc.).\n",
+        "author_association": "MEMBER"
+      }
+    ],
+    "labels": [
+      "enhancement",
+      "needs product design"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "approved",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA"
+  },
+  "expect_pre_gate": ""
+}

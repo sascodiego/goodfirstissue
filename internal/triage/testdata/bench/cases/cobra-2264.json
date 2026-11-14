@@ -1,0 +1,48 @@
+{
+  "id": "cobra-2264",
+  "provenance": "real",
+  "trap": "usage_question_short",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2264,
+    "url": "https://github.com/spf13/cobra/issues/2264"
+  },
+  "issue": {
+    "title": "How can I bundle static resources in cobra to build package?",
+    "body": "Hi, I want to bundle static resources in cobra. Is there any way to achieve this? Looking forward to your reply！",
+    "comments": [
+      {
+        "author": "LegendZDY",
+        "body": "Thank you very much for your reply. I have searched many places and recommend using go: embed. Will Cobra implement similar go: embed functionality in the future?",
+        "author_association": "NONE"
+      },
+      {
+        "author": "LegendZDY",
+        "body": "I use cobra to build packages, which is very convenient, but it is not very convenient to use go to call AI models in some recently written tools. I will use python scripts to call AI models, so cobra often needs to include scripts in other languages when building packages. It would be great if this function could be available",
+        "author_association": "NONE"
+      },
+      {
+        "author": "marckhouzam",
+        "body": "go:embed can be used with cobra. No special support needed",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "question",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": ""
+}

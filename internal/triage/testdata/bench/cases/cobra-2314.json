@@ -1,0 +1,43 @@
+{
+  "id": "cobra-2314",
+  "provenance": "real",
+  "trap": "capability_question",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2314,
+    "url": "https://github.com/spf13/cobra/issues/2314"
+  },
+  "issue": {
+    "title": "Is it possible to handle -h and --help differently?",
+    "body": "Many programs show a short help message with `-h` and a detailed one with `--help`. Currently cobra handles both options in the same way. Is it possible to change this somehow with custom help messages?",
+    "comments": [
+      {
+        "author": "marckhouzam",
+        "body": "Interesting question. You may be able to figure out which form of the flag was used on the command line in your custom function.",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "TLINDEN",
+        "body": "My current simple workaround is to catch `-h` before cobra takes over:\n\n```go\n[..]\n        rootCmd.SetUsageTemplate(strings.TrimSpace(usage) + \"\\n\")\n\n        if slices.Contains(os.Args, \"-h\") {\n                fmt.Println(shortusage)\n                os.Exit(0)\n        }\n\n        err := rootCmd.Execute()\n        if err != nil {\n                os.Exit(1)\n        }\n```",
+        "author_association": "NONE"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "question",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": ""
+}

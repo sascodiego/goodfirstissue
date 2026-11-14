@@ -1,0 +1,48 @@
+{
+  "id": "cobra-2376",
+  "provenance": "real",
+  "trap": "bug_already_worked",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2376,
+    "url": "https://github.com/spf13/cobra/issues/2376"
+  },
+  "issue": {
+    "title": "bug: `ValidArgsFunction` receives partial input when argument contains colons in Bash",
+    "body": "# Description\nWhen using dynamic shell completion via `ValidArgsFunction`, splitting on colons `:` causes the input string `toComplete` to be truncated. Instead of receiving the full logical argument, the function receives only the segment after the last colon, while the prefix is moved into the `args` slice.\n\nThis makes implementing context-aware completions for URI-like schemes (e.g., `local:/path`, `s3://bucket`) or filesystem providers extremely brittle and non-portable across shells.\n\n# Minimum Viable Example (MVE)\n```golang\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\n\t\"github.com/spf13/cobra\"\n)\n\nfunc main() {\n\trootCmd := &cobra.Command{\n\t\tUse: \"repro\",\n\t}\n\n\tlsCmd := &cobra.Command{\n\t\tUse:   \"ls <path>\",\n\t\tShort: \"Reproduction for colon split issue\",\n\t\tArgs:  cobra.MaximumNArgs(1),\n\t\tValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {\n\t\t\t// Log inputs to a file to inspect what the shell is sending\n\t\t\tf, _ := os.OpenFile(\"repro.log\", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)\n\t\t\tif f != nil {\n\t\t\t\tdefer f.Close()\n\t\t\t\t_, _ = f.WriteString(fmt.Sprintf(\"args: %v, toComplete: %q\\n\", args, toComplete))\n\t\t\t}\n\n\t\t\t// We expect to see the full \"local:/path\" here to provide suggestions.\n\t\t\t// However, in Bash, \"local:\" ends up in 'args' and toComplete is just the path.\n\t\t\treturn []string{\"local:/tmp/file1\", \"local:/tmp/file2\"}, cobra.ShellCompDirectiveNoFileComp\n\t\t},\n\t\tRun: func(cmd *cobra.Command, args []string) {\n\t\t\tfmt.Pri",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 2406,
+        "state": "CLOSED",
+        "merged": false
+      },
+      {
+        "number": 2408,
+        "state": "OPEN",
+        "merged": false
+      },
+      {
+        "number": 3398,
+        "state": "CLOSED",
+        "merged": false
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "already_working"
+}

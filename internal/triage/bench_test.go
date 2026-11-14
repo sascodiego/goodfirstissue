@@ -161,7 +161,7 @@ func TestBenchCasesAreComplete(t *testing.T) {
 	cases, _ := loadBench(t)
 
 	kinds := map[string]bool{"bug": true, "feature": true, "question": true, "spam": true, "other": true}
-	intents := map[string]bool{"authorized": true, "neutral": true, "declined": true}
+	intents := map[string]bool{"approved": true, "undecided": true, "refused": true}
 	outcomes := map[string]bool{"CANDIDATA": true, "CONDICIONADA": true, "MARCADA": true, "no_verdict": true}
 	seen := map[string]bool{}
 

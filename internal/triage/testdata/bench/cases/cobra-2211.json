@@ -1,0 +1,38 @@
+{
+  "id": "cobra-2211",
+  "provenance": "real",
+  "trap": "documentation_error",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2211,
+    "url": "https://github.com/spf13/cobra/issues/2211"
+  },
+  "issue": {
+    "title": "Incorrect Cobra install command in Cobra documentation",
+    "body": "Under the install section in Cobra.dev documentation site, the installation command ```go get -u github.com/spf13/cobra/cobra``` provided is incorrect.\n\nThe current behavior when you try installing cobra using that command is this output. ```go: module github.com/spf13/cobra@upgrade found (v1.8.1), but does not contain package github.com/spf13/cobra/cobra```\n\nThe correct installation command should be ```go get -u github.com/spf13/cobra``` which installs cobra v1.8.1 successfully",
+    "comments": [
+      {
+        "author": "balagrivine",
+        "body": "Skimming through the past issues, I've realized that the README is the one actively up-to-date rather than the documentation website, and the issue is well addressed. The install command provided in the README is ```go get -u github.com/spf13/cobra@latest``` which is the correct way to install the latest version (v1.8.1).\n\nI just felt that it's good to address the disparity present in the docs website since it will be the first point of reference for may newcomers :)",
+        "author_association": "NONE"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "other",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": ""
+}

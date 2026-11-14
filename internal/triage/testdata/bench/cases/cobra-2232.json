@@ -1,0 +1,43 @@
+{
+  "id": "cobra-2232",
+  "provenance": "real",
+  "trap": "feature_forwarded_from_another_project",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2232,
+    "url": "https://github.com/spf13/cobra/issues/2232"
+  },
+  "issue": {
+    "title": "Allow overwriting the type of tab complete in powershell with a environment variable to support alterative completion providers",
+    "body": "I initially made this issue under chezmoi, but was told I should make it in the upstream cobra repo instead.\n\nhttps://github.com/twpayne/chezmoi/issues/4251\n\n\nCurrently tab completion in PowerShell just looks up the what name of the function that is providing the completion. However, if a non standard function is used the completions default to the least detailed option. For example, if one was to use the [PSFzf](https://github.com/kelleyma49/PSFzf?tab=readme-ov-file#tab-expansion) tab completion which uses fzf to display a preview of the different options like the 'MenuComplete' function then instead of seeing the description it won't show anything. Would it be possible to add a check to see if an environment variable has been set, something like chezmoi_completion_mode, and if so use that to determine the mode? Then in the event that it is not set default back to using the name of the function.",
+    "comments": [
+      {
+        "author": "marckhouzam",
+        "body": "IIUC, you would like a user to be able to set a cobra-specific variable (such as `chezmoi_completion_mode`) which would specify one of `TabCompleteNext`, `Complete` or `MenuComplete` and would take precedence over the call to `Get-PSReadLineKeyHandler`?\n\nThat sounds reasonable.  Feel free to submit a PR and thanks for the suggestion.\n\nWhich of the three completion options does PSFzf need?",
+        "author_association": "COLLABORATOR"
+      },
+      {
+        "author": "Nova38",
+        "body": "Yep that is exactly it. It would probably want to use the 'MenuComplete' option. \nI'll put together a pr!",
+        "author_association": "NONE"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA"
+  },
+  "expect_pre_gate": ""
+}

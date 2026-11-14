@@ -1,0 +1,43 @@
+{
+  "id": "cobra-2297",
+  "provenance": "real",
+  "trap": "non_code_community_resource",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2297,
+    "url": "https://github.com/spf13/cobra/issues/2297"
+  },
+  "issue": {
+    "title": "Add Interactive Learning Platform to Community Resources",
+    "body": "Hey Cobra team!\n\nI've been working on an interactive learning platform for Cobra and thought you might be interested in adding it to your community resources. I recently did something similar for Gin, and the team was really supportive.\n\nThe platform is at https://github.com/RezaSi/go-interview-practice and covers the main Cobra concepts:\n\n- Basic CLI commands and structure\n- Working with flags and arguments\n- Subcommands and data persistence\n- Advanced features like custom completions\n\nThe Go community has been really supportive of this approach to learning, and it's been great to see developers getting hands-on practice with these frameworks.\n\nThe Gin team was kind enough to add it to their community page:\n- Gin: https://gin-gonic.com/en/docs/learning-resources/\n\nI was wondering if you'd consider adding a community section to your docs? It could include links to learning resources, community projects, and tools like this platform. The platform gives developers hands-on practice with Cobra without any setup - they can just jump in and start coding. I think it complements your existing docs really well.\n\nHere are the links:\n- GitHub: https://github.com/RezaSi/go-interview-practice\n- Cobra Package: https://github.com/RezaSi/go-interview-practice/tree/main/packages/cobra\n\n<img height=\"600\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/e8a6fe1c-1e1b-48b9-b02d-1c459f92951c\" />\n<img height=\"600\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/12e24a02-a10",
+    "comments": [
+      {
+        "author": "RezaSi",
+        "body": "@jpmcb ",
+        "author_association": "NONE"
+      },
+      {
+        "author": "RezaSi",
+        "body": "@spf13  @eparis @n10v @umarcor @marckhouzam  Hey.\n\nquick follow-up. The live Cobra track is here: https://app.gointerview.dev/packages/cobra. Happy to open a small docs-only PR to add it to community resources if that helps.\n\nFor reference, similar listings are live in:\n\n- Gin: https://gin-gonic.com/en/docs/learning-resources/\n- Fiber: https://docs.gofiber.io/next/extra/learning-resources\n",
+        "author_association": "NONE"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "other",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": ""
+}

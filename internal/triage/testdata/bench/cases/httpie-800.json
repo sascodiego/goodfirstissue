@@ -28,7 +28,7 @@
   "duplicates": [],
   "expected": {
     "kind": "feature",
-    "intent": "authorized",
+    "intent": "approved",
     "self_contained": true,
     "has_evidence": false,
     "unambiguous": false,

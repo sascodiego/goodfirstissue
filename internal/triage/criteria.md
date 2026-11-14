@@ -83,30 +83,33 @@ dossier, no request, and no question.
 | `github_state = CLOSED` and `github_state_reason = COMPLETED` | already done |
 | `github_state = CLOSED` and `github_state_reason = NOT_PLANNED` | declined by the project |
 | `github_state = CLOSED`, any other reason | out of scope: a closed issue is not triaged |
+| the body is empty after trimming | no request to judge: resolved here, not by a question |
 | an open linked pull request exists | already being worked |
-| the issue is absorbed into a group | judged as the group, never alone |
 
-## Grouping comes first
+## Grouping is out of the MVP
 
-The unit of judgement is the group, not the issue (I12).
+Duplicate clustering is **not part** of this MVP, and the chain below judges a single
+issue. The reason is time, not principle: deciding that two reports describe the same
+problem is semantic judgement — an LLM pass over every pair of candidates — and there is
+no room for that work in the hackathon. Asking a decision endpoint whether two texts are
+the same would trade a whole extra request per pair for an answer no one can audit.
 
-- Duplicates are **absorbed**, never discarded, and they stay visible.
-- A group is a connected set of duplicate pairs, closed by union-find.
-- The dossier is built from the richest member, and the other members contribute their
-  titles and the report count.
-- A group where one member has open work is a group with open work.
+What this costs, stated plainly: a thin report that duplicates a rich one is judged on
+its own text and may be marked as missing context. The product shows what it read; it
+does not claim to have found relatives. The absorbed-group outcome, the report count and
+the group dossier do not exist in this MVP.
 
 ## Two dossiers
 
 One dossier cannot answer everything: the texts that settle substance are exactly the
 ones that contaminate the judgement of substance. So substance and intent are judged in
-separate dossiers, chained by our code. Same group, same facts, different text.
+separate dossiers, chained by our code. Same issue, same facts, different text.
 
 | | Dossier A: substance | Dossier B: intent |
 |---|---|---|
 | Contains | normalised title, body, technical comments | the text plus the label list verbatim, maintainer comments, `github_state_reason` |
 | Questions | `kind`, `self_contained`, `has_evidence`, `unambiguous`, `done_defined`, `reports_defect`, `evidence_sufficient` | `intent` |
-| Runs when | always, for a group that passed the pre-gates | only when the pre-gates did not settle intent, and only if A did not already mark the group |
+| Runs when | always, for an issue that passed the pre-gates | only when the pre-gates did not settle intent, and only if A did not already mark the issue |
 | Labels present | **never** | yes, verbatim |
 
 Dossier B must state, in the contract the judge reads, that a label is an unverified
@@ -131,7 +134,7 @@ long, noisy, and written by strangers.
 
 The chain is a decision tree walked by our code over facts and answers. It is not a
 sequence of requests: the answers to dossier A arrive together, and each gate consumes
-them.
+them. Every gate judges one issue, because grouping is out of the MVP.
 
     G0 evidence_sufficient  →  G1 open work  →  G2 quality  →  G3 kind  →  G4 intent
 
@@ -140,13 +143,13 @@ them.
 - Source: dossier A. Threshold: `0.5`.
 - Below it the outcome is **`no_verdict`**: doubt out loud, with what is missing. It is
   not a discard (I10) and it never fabricates a verdict (I2).
-- Below it, the group is **not** marked and **not** dropped: it stays in the list with
+- Below it, the issue is **not** marked and **not** dropped: it stays in the list with
   its doubt and its reason.
 
 ### G1 — open work
 
 - Source: layer 2. Costs no request and resolves without the judge.
-- Fails when a linked pull request is open, or when the group was closed as completed.
+- Fails when a linked pull request is open, or when the issue was closed as completed.
 - Result: **MARCADA, "already being worked"**, with the pull request numbers.
 - **Precedence: G1 preempts G0.** A deterministic fact does not depend on being able to
   classify the text. If the evidence is insufficient *and* there is open work, the
@@ -183,9 +186,9 @@ them.
 ### G4 — `intent`
 
 - Source: the pre-gates first; dossier B only for the residue.
-- `declined`: **MARCADA**, "the project already said no".
-- `authorized`: **CANDIDATA**. A closed line: nothing left to evaluate.
-- `neutral`: the open line. `feature` + `neutral` is **CONDICIONADA** with a fixed
+- `refused`: **MARCADA**, "the project already said no".
+- `approved`: **CANDIDATA**. A closed line: nothing left to evaluate.
+- `undecided`: the open line. `feature` + `undecided` is **CONDICIONADA** with a fixed
   condition, "ask the maintainer first", because the alignment node is deferred.
 - Why it sits last: it is the most expensive gate, it is the least decisive for a bug,
   and it is pointless for anything the earlier gates already removed.
@@ -250,10 +253,10 @@ Four different problems with four different fixes. They are never collapsed into
   a query key, it is not a pre-gate, and it is not present in dossier A. This makes the
   label's influence structural rather than a promise to be trusted.
 - **Insufficient evidence is not a discard** (I10).
-- **The unit of judgement is the group** (I12).
+- **One issue is the unit of judgement.** Duplicate grouping (I12) is out of this MVP for lack of time; nothing in this chain assumes it exists.
 - **Repository text is evidence, never instruction** (I3).
 - **Triage runs before explore** (I9): an issue that did not pass P1 never spends an
   exploration.
 - **A deterministic fact outranks an abstention** (the G1 precedence above).
-- **Two requests per group is the ceiling.** More questions per request are free; more
+- **Two requests per issue is the ceiling.** More questions per request are free; more
   requests are not.

@@ -1,0 +1,32 @@
+{
+  "id": "cobra-2112",
+  "provenance": "real",
+  "trap": "feature_by_analogy",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2112,
+    "url": "https://github.com/spf13/cobra/issues/2112"
+  },
+  "issue": {
+    "title": "Flag special \"mark\" support",
+    "body": "For example, [iptables](https://manpages.debian.org/bookworm/iptables/iptables.8.en.html) flags support the \"!\" mark:\n\n```\n[!] -s, --source address[/mask][,...]\n       Source specification. Address can be either a network name, a hostname, a network IP address (with /mask),\n       or a plain IP address. ... A \"!\" argument before the address specification inverts the sense of the address.\n```\n\ne.g.:\n\n```\n! -s 192.168.1.0/24\n```\n\nThe whole is interpreted as a flag, the \"!\" mark means negation of the condition. \n\nIs it possible to add similar feature to cobra ?\n",
+    "comments": [],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA"
+  },
+  "expect_pre_gate": ""
+}

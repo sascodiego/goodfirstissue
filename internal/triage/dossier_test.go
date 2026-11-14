@@ -121,6 +121,7 @@ func TestPrescreenResolvesNativeFacts(t *testing.T) {
 		{"closed for another reason", "CLOSED", "REOPENED", nil, true, ReasonClosed},
 		{"open with an open pull request", "OPEN", "", openPR, true, ReasonAlreadyWorking},
 		{"lowercase native values", "closed", "not_planned", nil, true, ReasonDeclined},
+		{"open pull request wins over the rest", "open", "", openPR, true, ReasonAlreadyWorking},
 	}
 
 	for _, tt := range tests {
@@ -168,5 +169,17 @@ func TestNormalizeTitleStripsDeclaredPrefixes(t *testing.T) {
 				t.Errorf("NormalizeTitle = {%q %q}, want {%q %q}", title, declared, tt.wantTitle, tt.wantDeclared)
 			}
 		})
+	}
+}
+
+// A body with nothing in it is not thin evidence: it is no request at all. Asking a judge
+// about it spends a request to learn nothing, so the deterministic layer settles it, and
+// this is a product decision recorded in criteria.md, not a threshold.
+func TestPrescreenRejectsAnEmptyBody(t *testing.T) {
+	issue := sampleIssue()
+	issue.Body = "   \n\t "
+	got := Prescreen(issue)
+	if !got.Skip || got.Reason != ReasonNoContent {
+		t.Errorf("Prescreen = {%v %q}, want {%v %q}", got.Skip, got.Reason, true, ReasonNoContent)
 	}
 }

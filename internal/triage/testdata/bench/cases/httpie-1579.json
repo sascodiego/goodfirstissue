@@ -1,0 +1,35 @@
+{
+  "id": "httpie-1579",
+  "provenance": "real",
+  "trap": "feature_requested_as_a_question",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1579,
+    "url": "https://github.com/httpie/cli/issues/1579"
+  },
+  "issue": {
+    "title": "Can you add support for multilingual languages?",
+    "body": "## Checklist\n\n- [x] I've searched for similar feature requests.\n\n---\n\n## Enhancement request\n\nThe interface supports switching to multiple languages, including Russian, Chinese, Japanese, and more.\n\n---\n\n## Additional information, screenshots, or code examples\n\nutf-8 supports multiple languages\n",
+    "comments": [],
+    "labels": [
+      "enhancement",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "CONDICIONADA"
+  },
+  "expect_pre_gate": ""
+}

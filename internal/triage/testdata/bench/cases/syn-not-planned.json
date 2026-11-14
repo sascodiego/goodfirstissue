@@ -22,7 +22,7 @@
   "duplicates": [],
   "expected": {
     "kind": "feature",
-    "intent": "declined",
+    "intent": "refused",
     "self_contained": true,
     "has_evidence": false,
     "unambiguous": true,

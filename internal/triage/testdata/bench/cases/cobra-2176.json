@@ -25,7 +25,7 @@
   "duplicates": [],
   "expected": {
     "kind": "question",
-    "intent": "neutral",
+    "intent": "undecided",
     "self_contained": false,
     "has_evidence": false,
     "unambiguous": false,

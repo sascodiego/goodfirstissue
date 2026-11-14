@@ -3,8 +3,8 @@
   "provenance": "synthetic",
   "trap": "feature_with_bug_prefix",
   "issue": {
-    "title": "Bug: `--output` does not support YAML",
-    "body": "Bug: running `tool export --output yaml` fails with \"unsupported format\".\n\nJSON and TOML work today; YAML is not implemented. My team wants YAML so our CI can feed the export straight into a linter. Please add it behind the same `--output` flag.\n",
+    "title": "Bug: no way to export as YAML",
+    "body": "Bug: there is no way to get a YAML export out of this tool. Our CI pipeline cannot consume JSON, so we are stuck piping through a converter.\n\nCould you add `--output yaml` next to the existing formats? We do not need anything fancy, the same shape as TOML is fine.\n",
     "comments": [],
     "labels": [
       "bug"
@@ -16,7 +16,7 @@
   "duplicates": [],
   "expected": {
     "kind": "feature",
-    "intent": "neutral",
+    "intent": "undecided",
     "self_contained": true,
     "has_evidence": false,
     "unambiguous": true,

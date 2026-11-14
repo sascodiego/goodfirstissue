@@ -14,14 +14,14 @@
   "duplicates": [],
   "expected": {
     "kind": "other",
-    "intent": "neutral",
+    "intent": "undecided",
     "self_contained": false,
     "has_evidence": false,
     "unambiguous": false,
     "done_defined": false,
     "reports_defect": false,
     "evidence_sufficient": false,
-    "outcome": "no_verdict"
+    "outcome": "MARCADA"
   },
-  "expect_pre_gate": ""
+  "expect_pre_gate": "no_content"
 }

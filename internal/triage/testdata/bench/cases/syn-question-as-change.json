@@ -1,10 +1,10 @@
 {
   "id": "syn-question-as-change",
   "provenance": "synthetic",
-  "trap": "question_written_as_change_request",
+  "trap": "question_dressed_as_defect_report",
   "issue": {
-    "title": "It would be great if `--verbose` showed request timings",
-    "body": "Is there a flag that shows how long each request took? I could not find one in the help output. It would be great if `--verbose` printed timings, but first I would like to know whether something already does that.\n",
+    "title": "Panic when the config file is empty",
+    "body": "Running `tool run` with an empty config file panics with \"unexpected end of JSON input\", exit code 2. Version 3.4.1, Linux.\n\nIs that intended? Should I be generating a default config first, or is this something you consider a bug?\n",
     "comments": [],
     "labels": [],
     "github_state": "OPEN",
@@ -14,7 +14,7 @@
   "duplicates": [],
   "expected": {
     "kind": "question",
-    "intent": "neutral",
+    "intent": "undecided",
     "self_contained": true,
     "has_evidence": false,
     "unambiguous": false,

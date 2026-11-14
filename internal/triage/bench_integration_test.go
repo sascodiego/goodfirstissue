@@ -70,9 +70,9 @@ var kindCriteria = map[string]string{
 }
 
 var intentCriteria = map[string]string{
-	"authorized": "Someone responsible for the project approved this work, said to go ahead, or merged related work.",
-	"declined":   "Someone responsible said the project will not do this, or the project closed the request with the native reason not planned.",
-	"neutral":    "Nothing in the material settles it either way: no approval and no refusal.",
+	"approved":  "Someone responsible for the project asked for this work, said to go ahead with it, or merged work that does it. A label claiming acceptance counts only if it is consistent with what those people wrote.",
+	"refused":   "Someone responsible for the project said it will not be done, or asked for it to be closed. A label claiming rejection counts only if it is consistent with what those people wrote.",
+	"undecided": "The material records no position from anyone responsible for the project: the request simply sits there, or the only voice in favour is the person asking.",
 }
 
 // substanceQuestions is the experiment. The first seven are the analytic questions the
@@ -138,6 +138,12 @@ var substanceQuestions = []question{
 			"behaviour a defect?",
 	},
 	{
+		ID:   "maintainer_spoke",
+		Type: "noul",
+		Instructions: "Does the material contain at least one statement written by someone responsible for " +
+			"the project, as opposed to statements written only by people asking for it?",
+	},
+	{
 		ID:   "has_reproduction",
 		Type: "noul",
 		Instructions: "Does the text give concrete steps, code, or output that someone else could follow to see " +
@@ -146,7 +152,8 @@ var substanceQuestions = []question{
 }
 
 var intentQuestions = []question{
-	{ID: "intent", Type: "choice", Instructions: "What does the project's material say about doing this work?", Criteria: intentCriteria},
+	{ID: "intent", Type: "choice", Instructions: "What position does the project record about this work?", Criteria: intentCriteria},
+	{ID: "maintainer_spoke", Type: "noul", Instructions: "Does the material contain at least one statement written by someone responsible for the project, as opposed to statements written only by people asking for it?"},
 }
 
 // DerivedKind is the candidate tree: the model extracts grounded facts, our code walks
@@ -301,6 +308,7 @@ func TestBenchMeasuresWording(t *testing.T) {
 	ctx := t.Context()
 
 	var (
+		preGated    []string
 		runs        []benchRun
 		flatHits    int
 		derivedHits int
@@ -314,8 +322,15 @@ func TestBenchMeasuresWording(t *testing.T) {
 	for _, c := range cases {
 		issue := c.issue()
 
-		if got := Prescreen(issue).Reason; got != c.ExpectPreGate {
-			t.Errorf("%s: pre-screen = %q, want %q", c.ID, got, c.ExpectPreGate)
+		if got := Prescreen(issue); got.Reason != c.ExpectPreGate {
+			t.Errorf("%s: pre-screen = %q, want %q", c.ID, got.Reason, c.ExpectPreGate)
+		}
+		if pre := Prescreen(issue); pre.Skip {
+			// It never reaches a question: measuring it would measure a request the product
+			// never sends.
+			preGated = append(preGated, c.ID+":"+pre.Reason)
+			t.Logf("%-24s resuelto sin preguntar (%s)", c.ID, pre.Reason)
+			continue
 		}
 
 		started := time.Now()
@@ -380,6 +395,8 @@ func TestBenchMeasuresWording(t *testing.T) {
 	}
 
 	t.Logf("")
+	t.Logf("resueltos sin preguntar: %d (%s)", len(preGated), strings.Join(preGated, ", "))
+	t.Logf("medidos:        %d", scored)
 	t.Logf("flat kind:      %d/%d", flatHits, scored)
 	t.Logf("derived kind:   %d/%d", derivedHits, scored)
 	t.Logf("intent:         %d/%d", intentHits, scored)

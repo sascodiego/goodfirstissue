@@ -14,19 +14,14 @@
       "why": "the inverse disguise"
     },
     {
-      "trap": "question_written_as_change_request",
+      "trap": "question_dressed_as_defect_report",
       "min": 1,
-      "why": "a question phrased as a request must not become work"
+      "why": "a crash report that asks whether the behaviour is intended must not become work"
     },
     {
       "trap": "author_applied_bug_and_urgent_labels",
       "min": 1,
       "why": "labels written by the requester are claims, not facts"
-    },
-    {
-      "trap": "duplicate_group_absorption",
-      "min": 1,
-      "why": "the unit of judgement is the group (I12)"
     },
     {
       "trap": "bug_with_nine_linked_prs",
@@ -117,34 +112,137 @@
       "trap": "bug_with_evidence_control",
       "min": 1,
       "why": "a real bug with a debug trace"
+    },
+    {
+      "trap": "feature_approved_by_maintainer",
+      "min": 1,
+      "why": "approval written by a maintainer is the intent signal that matters"
+    },
+    {
+      "trap": "feature_approved_but_taken",
+      "min": 1,
+      "why": "approved and already being worked: the pre-gate must win"
+    },
+    {
+      "trap": "feature_requested_as_a_question",
+      "min": 1,
+      "why": "a request phrased as a question is still a request"
+    },
+    {
+      "trap": "question_that_reads_as_a_bug",
+      "min": 1,
+      "why": "a crash report that asks whether it is intended is a question"
+    },
+    {
+      "trap": "documentation_error",
+      "min": 1,
+      "why": "wrong documentation is not code work"
+    },
+    {
+      "trap": "non_code_community_resource",
+      "min": 1,
+      "why": "a request outside the codebase must be marked, not explored"
+    },
+    {
+      "trap": "support_question_about_a_third_party",
+      "min": 1,
+      "why": "the failure is in another project"
+    },
+    {
+      "trap": "behaviour_explained_as_by_design",
+      "min": 1,
+      "why": "existing behaviour reported as broken: P1 cannot settle intent"
+    },
+    {
+      "trap": "bug_with_several_attempts",
+      "min": 1,
+      "why": "many attempts with no decision"
+    },
+    {
+      "trap": "release_artifact_missing",
+      "min": 1,
+      "why": "the defect is in delivery, not in the source"
+    },
+    {
+      "trap": "feature_by_analogy",
+      "min": 1,
+      "why": "a feature justified only by another tool"
+    },
+    {
+      "trap": "feature_with_a_standard_citation",
+      "min": 1,
+      "why": "a standard cited as the specification"
+    },
+    {
+      "trap": "proposal_with_design_discussion",
+      "min": 1,
+      "why": "discussion without a decision"
+    },
+    {
+      "trap": "feature_forwarded_from_another_project",
+      "min": 1,
+      "why": "the request was moved here from elsewhere"
+    },
+    {
+      "trap": "usage_question_answered",
+      "min": 1,
+      "why": "a question already answered: nothing to work"
+    },
+    {
+      "trap": "capability_question",
+      "min": 1,
+      "why": "asking whether something is possible"
     }
   ],
   "required_provenance": {
-    "real": 8,
+    "real": 20,
     "synthetic": 8
   },
   "cases": [
+    "cobra-1394",
+    "cobra-1949",
+    "cobra-1991",
+    "cobra-2096",
+    "cobra-2103",
+    "cobra-2112",
     "cobra-2176",
     "cobra-2188",
     "cobra-2193",
     "cobra-2207",
+    "cobra-2211",
+    "cobra-2217",
+    "cobra-2232",
+    "cobra-2264",
+    "cobra-2297",
+    "cobra-2314",
     "cobra-2364",
+    "cobra-2376",
+    "httpie-1338",
     "httpie-1422",
     "httpie-1427",
+    "httpie-1428",
+    "httpie-1458",
     "httpie-1463",
+    "httpie-1488",
     "httpie-1525",
+    "httpie-1579",
+    "httpie-1589",
+    "httpie-1614",
+    "httpie-1622",
     "httpie-1661",
     "httpie-1898",
+    "httpie-335",
+    "httpie-758",
     "httpie-800",
     "syn-bug-prefix-feature",
     "syn-completed",
     "syn-control-wellformed",
-    "syn-duplicate-group",
     "syn-empty-body",
     "syn-feature-prefix-bug",
     "syn-no-repro-bug",
     "syn-not-planned",
     "syn-open-pr-insufficient",
+    "syn-panic-with-bom",
     "syn-question-as-change",
     "syn-self-labeled"
   ]

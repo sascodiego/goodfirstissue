@@ -89,3 +89,23 @@ disyunción y el error cae del lado seguro: CONDICIONADA de más, nunca descarte
 L7. Ruido observado: `has_evidence` dio 21/23 y 20/23 con la misma redacción. Las decisiones
 se tomaron con umbral de 3 casos, no de 1. La segunda pasada se escribió mirando la primera:
 su mejora incluye ajuste al set, y cualquier redacción futura se mide sobre casos nuevos.
+
+L8. Agrupación de duplicados **fuera del MVP** por decisión del owner: decidir si dos textos
+reportan el mismo problema es trabajo de un modelo de lenguaje sobre cada par, y no hay
+tiempo. Documentado en `PROYECTO.md` §2.3 y §7.1, y en `criteria.md`. La unidad pasa a ser
+la issue sola; I12 no aplica en el MVP.
+
+L9. `intent` reescrita: opciones `approved` / `refused` / `undecided`, todas en positivo y
+con el criterio de qué cuenta como evidencia; se quitó de la pregunta el caso nativo que ya
+resuelve la pre-compuerta, y se sumó el nodo `maintainer_spoke` para separar «nadie habló» de
+«alguien habló sin decidir». Sobre 34 casos medidos acierta 33/34.
+
+L10. Casos inválidos corregidos: el disfraz de feature ya no confiesa que la capacidad no
+existe; el caso de pregunta se reemplazó por un reporte de crash que pregunta si el
+comportamiento es intencional; y los casos con estado nativo cerrado, cuerpo vacío o PR
+abierta dejaron de medirse con el modelo, porque la pre-compuerta los resuelve antes: ahora
+el banco los reporta como «resueltos sin preguntar».
+
+L11. El banco creció a 46 casos, 35 reales de los dos repositorios del corpus. Con datos
+reales el acierto de punta a punta es 34/46 (74 %), no el 96 % que sugería el set sintético:
+`done_defined` y `unambiguous` son responsables de seis de las doce fallas.

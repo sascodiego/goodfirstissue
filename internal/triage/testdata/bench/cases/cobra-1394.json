@@ -1,0 +1,58 @@
+{
+  "id": "cobra-1394",
+  "provenance": "real",
+  "trap": "feature_approved_but_taken",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 1394,
+    "url": "https://github.com/spf13/cobra/issues/1394"
+  },
+  "issue": {
+    "title": "Proposal: Make command suggestion messages configurable",
+    "body": "Hi, we have a project where clear definitions were made, what the output of the CLI has to look like. We appreciate the automatic suggestions if a command was misspelled. Sadly it seems like we cannot customize the suggestion message and the default message doesn't really fit with the rest of the CLI. \n\nIs there a possibility to make a `SetSuggestFunc()` like it's been done with `SetHelpFunc()`?\n\nThis could be used to change the suggestion message:\n\n```go\nrootCmd.SetSuggestFunc(func(suggestedCommands []*cobra.Command) {\n    var commandNames string\n    for _, command := range suggestedCommands {\n        \tcommandNames += command.Use + \" \"\n    }\n    fmt.Printf(\"Did you mean any of [%s]\", commandNames)\n})\n```",
+    "comments": [
+      {
+        "author": "MarvinJWendt",
+        "body": "Not stale",
+        "author_association": "NONE"
+      },
+      {
+        "author": "johnSchnake",
+        "body": "Seems narrowly focused, clear, and consistent with other features we've implemented. 👍 ",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [
+      "kind/feature",
+      "area/docs-generation",
+      "lifecycle/needs-pr"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": [
+      {
+        "number": 2218,
+        "state": "OPEN",
+        "merged": false
+      },
+      {
+        "number": 2444,
+        "state": "OPEN",
+        "merged": false
+      }
+    ]
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "feature",
+    "intent": "approved",
+    "self_contained": true,
+    "has_evidence": false,
+    "unambiguous": true,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": "already_working"
+}

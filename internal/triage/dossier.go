@@ -17,6 +17,7 @@ const (
 	ReasonDeclined       = "declined"
 	ReasonAlreadyWorking = "already_working"
 	ReasonClosed         = "closed"
+	ReasonNoContent      = "no_content"
 )
 
 // The state has a token ceiling, so the body is the one section that gets cut. Every
@@ -110,6 +111,11 @@ func Prescreen(issue Issue) PrescreenResult {
 			// Someone is already working on it; recommending it would duplicate work.
 			return PrescreenResult{Skip: true, Reason: ReasonAlreadyWorking}
 		}
+	}
+	if strings.TrimSpace(issue.Body) == "" {
+		// There is no request to judge. This is not doubt about thin evidence: it is the
+		// absence of anything to read, so it is resolved without asking, like a closed issue.
+		return PrescreenResult{Skip: true, Reason: ReasonNoContent}
 	}
 	return PrescreenResult{}
 }

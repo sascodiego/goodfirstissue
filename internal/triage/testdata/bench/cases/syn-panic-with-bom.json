@@ -1,7 +1,7 @@
 {
-  "id": "syn-duplicate-group",
+  "id": "syn-panic-with-bom",
   "provenance": "synthetic",
-  "trap": "duplicate_group_absorption",
+  "trap": "panic_with_bom_control",
   "issue": {
     "title": "Panic when the config file has a BOM",
     "body": "Running `app --config cfg.json` panics when the file starts with a UTF-8 BOM.\n\n```\npanic: invalid character ï»¿ looking for beginning of value\n```\n\nVersion 2.1.0, Windows.\n",
@@ -11,19 +11,10 @@
     "github_state_reason": "",
     "linked_prs": []
   },
-  "duplicates": [
-    {
-      "title": "config file not parsed",
-      "body": "my json config is not read. it has a bom maybe?"
-    },
-    {
-      "title": "Crash on startup with Notepad-saved JSON",
-      "body": "Same crash as the BOM issue. Notepad adds the bytes and the parser dies."
-    }
-  ],
+  "duplicates": [],
   "expected": {
     "kind": "bug",
-    "intent": "neutral",
+    "intent": "undecided",
     "self_contained": true,
     "has_evidence": true,
     "unambiguous": true,

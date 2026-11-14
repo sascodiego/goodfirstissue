@@ -1,0 +1,51 @@
+{
+  "id": "httpie-1622",
+  "provenance": "real",
+  "trap": "bug_with_environment_and_steps",
+  "source": {
+    "repository": "httpie/cli",
+    "number": 1622,
+    "url": "https://github.com/httpie/cli/issues/1622"
+  },
+  "issue": {
+    "title": "macOS system certs don't seem to be used; getting: certificate verify failed: unable to get local issuer certificate",
+    "body": "## Checklist\n\n- [x] I've searched for similar issues.\n- [x] I'm using the latest version of HTTPie.\n\n---\n\n## Minimal reproduction code and steps\n\n1. Install httpie trough \"pip install httpie\"\n2. use http/https cmd line to make a request\n3. get the expected http return code (200 i.e.)\n\n## Current result\n\nI get  \"certificate verify failed: unable to get local issuer certificate\"\n\n\n```\nhttps HEAD https://raw.githubusercontent.com/Homebrew/homebrew-core/HEAD/Formula/h/httpie.rb\n\nhttps: error: SSLError: HTTPSConnectionPool(host='raw.githubusercontent.com', port=443): Max retries exceeded with url: /Homebrew/homebrew-core/HEAD/Formula/h/httpie.rb (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1020)'))) while doing a HEAD request to URL: https://raw.githubusercontent.com/Homebrew/homebrew-core/HEAD/Formula/h/httpie.rb\n\n```\n\n## Expected result\n\nExpect the same as bellow but without need to use \"--verify=/etc/ssl/cert.pem \"\n\n```\nhttps --verify=/etc/ssl/cert.pem HEAD https://raw.githubusercontent.com/Homebrew/homebrew-core/HEAD/Formula/h/httpie.rb\nHTTP/1.1 200 OK\nAccept-Ranges: bytes\nAccess-Control-Allow-Origin: *\nCache-Control: max-age=300\nConnection: keep-alive\nContent-Encoding: gzip\nContent-Length: 2388\nContent-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; sandbox\nContent-Type: text/plain; charset=utf-8\nCross-Origin-Resource-Policy: cross-origin\nDate: Tue, 1",
+    "comments": [
+      {
+        "author": "mike-pt",
+        "body": "So I found this:\n\n```\nls -lah /Library/Frameworks/Python.framework/Versions/3.13/etc/openssl\ntotal 0\ndrwxrwxr-x@ 2 root  admin    64B  7 Oct 06:42 .\ndrwxrwxr-x@ 3 root  admin    96B  7 Oct 06:42 ..\n\n```\n\nI'm wondering if httpie is actually not using certifi (while requests is)\n\n```\n>>> import ssl\n>>> print(ssl.get_default_verify_paths())\nDefaultVerifyPaths(cafile=None, capath=None, openssl_cafile_env='SSL_CERT_FILE', openssl_cafile='/Library/Frameworks/Python.framework/Versions/3.13/etc/openssl/",
+        "author_association": "NONE"
+      },
+      {
+        "author": "mike-pt",
+        "body": "As a workaround I will set env > REQUESTS_CA_BUNDLE=/etc/ssl/cert.pem (I prefer to use the system one its usually up to date), ofc I could set to certifi dir but I do believe there is a bug here.",
+        "author_association": "NONE"
+      },
+      {
+        "author": "mike-pt",
+        "body": "Found the issue, it was when we started to work around a previous issue with requests lib:\n\nhttps://github.com/httpie/cli/blob/master/httpie/compat.py#L104\n\nBut it seems now this fails on macOS because it doesnt seem to include any certs in the default python dir:\n/Library/Frameworks/Python.framework/Versions/3.13/etc/openssl/\n\nThis should probably be symlinked to the system one but its just empty",
+        "author_association": "NONE"
+      }
+    ],
+    "labels": [
+      "bug",
+      "new"
+    ],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "bug",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": true,
+    "done_defined": true,
+    "reports_defect": true,
+    "evidence_sufficient": true,
+    "outcome": "CANDIDATA"
+  },
+  "expect_pre_gate": ""
+}

@@ -16,7 +16,7 @@
   "duplicates": [],
   "expected": {
     "kind": "bug",
-    "intent": "neutral",
+    "intent": "undecided",
     "self_contained": true,
     "has_evidence": false,
     "unambiguous": false,

@@ -1,0 +1,38 @@
+{
+  "id": "cobra-2103",
+  "provenance": "real",
+  "trap": "question_that_reads_as_a_bug",
+  "source": {
+    "repository": "spf13/cobra",
+    "number": 2103,
+    "url": "https://github.com/spf13/cobra/issues/2103"
+  },
+  "issue": {
+    "title": "'MarkFlagsRequiredTogether' does not work as intended. Am I wrong?",
+    "body": "```\ncmd\nㄴroot.go\nㄴtest\n    ㄴcmd.go\n    ㄴtest_cmd.go\n    ㄴtest_sub.go\n```\n\n```golang\n// root.go\n...\nfunc init() {\n\tRootCmd.PersistentFlags().StringVar(&profile, \"profile\", \"default\", \"input dev profile, if needed\")\n...\n\tRootCmd.AddCommand(test.GetCommands()...)\n}\n```\n\n```golang\n// cmd.go\nvar commands []*cobra.Command\n\nfunc addCommand(command *cobra.Command) {\n\tcommands = append(commands, command)\n}\n\nfunc GetCommands() []*cobra.Command {\n\treturn commands\n}\n\n```\n\n```golang\n// test.go\n\nvar (\n\tpath           string\n\ttestCmd      = &cobra.Command{\n\t\tUse:   \"test\",\n\t\tShort: \"testCmd\",\n\t\tLong:  \"Test Command\",\n\t}\n)\n\nfunc init() {\n\ttestCmd.PersistentFlags().StringVar(&path, \"path\", \"\", \"Path to mount\")\n\taddCommand(testCmd)\n}\n```\n\n```golang\n//test_sub.go\nvar testSubCmd = &cobra.Command{\n\tUse:   \"sub\",\n\tShort: \"test.testSubCmd\",\n\tLong:  \"Test Job\",\n\tRun: func(cmd *cobra.Command, args []string) {\n\t},\n}\n\nfunc init() {\n\ttestSubCmd.MarkFlagsRequiredTogether(\"path\")\n\ttestCmd.AddCommand(testSubCmd)\n}\n```\n\nAfter writing this, I thought \"path\" would only work to require when running testSubCmd. However, I was able to see the error that \"path\" was required when requesting another command (for example, a command of another package implemented in the same way). (This was not only true for 'MarkFlagsRequiredTogether' but also for 'MarkFlagRequired' and so on.)\nIn this case, is there a way to resolve it in cobra?\n",
+    "comments": [
+      {
+        "author": "marckhouzam",
+        "body": "This is probably because you have declared `--path` as a persistent flag: `testCmd.PersistentFlags().StringVar(&path, \"path\", \"\", \"Path to mount\")`.  A persistent flag applies to the command and all its sub-commands.\nYou can instead try: `testCmd.Flags().StringVar(&path, \"path\", \"\", \"Path to mount\")` ",
+        "author_association": "COLLABORATOR"
+      }
+    ],
+    "labels": [],
+    "github_state": "OPEN",
+    "github_state_reason": "",
+    "linked_prs": []
+  },
+  "duplicates": [],
+  "expected": {
+    "kind": "question",
+    "intent": "undecided",
+    "self_contained": true,
+    "has_evidence": true,
+    "unambiguous": false,
+    "done_defined": false,
+    "reports_defect": false,
+    "evidence_sufficient": true,
+    "outcome": "MARCADA"
+  },
+  "expect_pre_gate": ""
+}

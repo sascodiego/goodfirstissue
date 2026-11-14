@@ -11,8 +11,11 @@ import (
 // de la de al lado, que es todo el punto de esta partición.
 const screenDashboard = "dashboard"
 
+// screenIssue es la pantalla de una issue del corpus.
+const screenIssue = "issue"
+
 // screenNames son las pantallas que el binario sabe renderizar.
-var screenNames = []string{screenDashboard}
+var screenNames = []string{screenDashboard, screenIssue}
 
 // partialPattern son los bloques que cualquier pantalla puede enganchar.
 const partialPattern = "templates/partials/*.html"

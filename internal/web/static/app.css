@@ -700,6 +700,199 @@ tbody tr:last-child td {
   color: var(--fg-2);
 }
 
+/* ---------- pantalla de issue ---------- */
+
+.rail-hint {
+  margin: 0.55rem 1rem 0;
+  font: 11px var(--sans);
+}
+
+.rail-hint a {
+  color: var(--fg-3);
+  text-decoration: none;
+}
+
+.rail-hint a:hover {
+  color: var(--fg);
+}
+
+.num {
+  font: 400 15px var(--mono);
+  color: var(--fg-3);
+}
+
+.issue {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 16rem;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.issue-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--line);
+}
+
+/* El texto del autor y los comentarios comparten la misma lectura: prosa
+   angosta, bloques de código con scroll y enlaces subrayados, porque adentro
+   del cuerpo un enlace no tiene el color de acento de la app. */
+.issue-body,
+.comment .text {
+  max-width: 72ch;
+  color: var(--fg-2);
+}
+
+.issue-body p,
+.comment .text p {
+  margin: 0 0 0.85rem;
+}
+
+.issue-body p:last-child,
+.comment .text p:last-child {
+  margin-bottom: 0;
+}
+
+.issue-body ul,
+.issue-body ol,
+.comment .text ul,
+.comment .text ol {
+  margin: 0 0 0.85rem;
+  padding-left: 1.25rem;
+}
+
+.issue-body li,
+.comment .text li {
+  margin: 0.15rem 0;
+}
+
+.issue-body pre,
+.comment .text pre {
+  margin: 0 0 0.85rem;
+  padding: 0.6rem 0.75rem;
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+
+.issue-body pre:last-child,
+.comment .text pre:last-child {
+  margin-bottom: 0;
+}
+
+.issue-body pre code,
+.comment .text pre code {
+  font-size: 12px;
+}
+
+.issue-body a,
+.comment .text a {
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.issue-body a:hover,
+.comment .text a:hover {
+  color: var(--accent);
+}
+
+.labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+}
+
+.prs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 11px var(--mono);
+}
+
+.prs li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prs a {
+  color: var(--fg-2);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.prs a:hover {
+  color: var(--fg);
+}
+
+/* El estado del hilo no es un veredicto: se pinta como hecho, no como logro. */
+.st.open {
+  color: var(--accent);
+}
+
+.st.closed {
+  color: var(--state-taken);
+}
+
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.5rem;
+}
+
+.thread h2 {
+  margin: 0;
+  font: 600 9.5px/1 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.comment {
+  padding: 0.75rem 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+
+.comment .who {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.55rem;
+  font: 11px var(--mono);
+  color: var(--fg-3);
+}
+
+.comment .who b {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.comment .who time {
+  margin-left: auto;
+}
+
+.assoc {
+  padding: 0.05rem 0.35rem;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font: 9.5px var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--fg-3);
+}
+
 /* ---------- movimiento y tamaños ---------- */
 
 @media (prefers-reduced-motion: no-preference) {
@@ -721,6 +914,17 @@ tbody tr:last-child td {
 
   .stats div:nth-child(3n) {
     border-right: 0;
+  }
+
+  .issue {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .issue-side {
+    padding-left: 0;
+    padding-top: 0.9rem;
+    border-left: 0;
+    border-top: 1px solid var(--line);
   }
 }
 

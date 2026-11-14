@@ -174,9 +174,9 @@ func redirectToRepo(w http.ResponseWriter, r *http.Request, key, estado string) 
 // rejectCrossSite corta el POST que viene de otra página, y devuelve true cuando ya
 // respondió.
 //
-// El binario escucha en 0.0.0.0:8080 por defecto, así que «es local» no es un argumento: un
-// sitio cualquiera abierto en el mismo navegador puede postear a localhost y escribir en el
-// store. Se mira lo que el navegador dice del origen (Sec-Fetch-Site), y si no lo dice se
+// El binario escucha en todas las interfaces por defecto —va a correr en un VPS—, así que «es
+// local» no es un argumento: un sitio cualquiera abierto en el mismo navegador puede postear
+// a localhost y escribir en el store. Se mira lo que el navegador dice del origen (Sec-Fetch-Site), y si no lo dice se
 // compara Origin con Host. Es la defensa mínima y suficiente para un endpoint que no tiene
 // sesión que robar: no hay token porque no hay nada que el token proteja de más.
 func rejectCrossSite(w http.ResponseWriter, r *http.Request) bool {

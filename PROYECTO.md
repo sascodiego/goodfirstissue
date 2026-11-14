@@ -1,11 +1,12 @@
 # PROYECTO.md — GoodFirstIssue
 
-**Versión:** 2.18
+**Versión:** 2.19
 **Fecha:** 2026-11-13
 **Estado:** Documento rector del MVP para el #2 Hackathon NaN (Reto 4 — tema libre)
 **Reemplaza:** el documento de definición de producto y arquitectura v1.0, en todo lo relativo al **alcance del MVP** (sus secciones 13 y 18). La visión de producto, el análisis del problema y los principios de diseño del original siguen vigentes.
 
 **Historial**
+- **2.19** — el proyecto pasa a repositorio propio (`sascodiego/goodfirstissue`), no un fork. Sin remote hacia el repositorio oficial del hackathon: la ruta para abrir ahí una issue o un PR no existe. El historial completo y el material original se conservan; la procedencia queda declarada en `NOTICE.md` (§18).
 - **2.18** — persistencia de análisis (§17.9): registro de repositorios (`gfi repos`) y journal de decisiones append-only con bloqueo `flock`. El caché se indexa por `(issue, pasada, modelo, versión del prompt, commit)` (I14): la segunda corrida de la misma issue pasó de **1m49s a 0,023s**. Medido: SQLite puro Go cuesta 26 módulos y ~5 MB de binario; DuckDB 72 módulos, 34 MB y cgo, así que queda descartado.
 - **2.17** — persistencia y clonado (§17.3): `internal/store` con envoltura de esquema y escritura atómica, `internal/repo` con clonado shallow idempotente, `gfi fetch` y `gfi index`. Corpus real de dos lenguajes. El nombre canónico de GitHub resuelve renombrados (§5.2).
 - **2.16** — sistema de configuración (§17.7 reescrita): JSON con defaults, validación que rechaza modelos fuera del allowlist y herramientas de escritura, duraciones legibles, y `config.example.json` generado desde el código con test de deriva. Los tres wrappers implementados (§17.3).
@@ -1542,7 +1543,8 @@ La corrida cacheada imprime qué reutilizó, cuándo se produjo y bajo qué vers
 
 ## 18. Reglas de trabajo
 
-- El desarrollo ocurre en el fork `sascodiego/nan-hackathon-clef`. El remote `upstream` (`helmcode/nan-hackathon-clef`) es **solo lectura**: no se abren issues ni pull requests contra él.
+- El desarrollo ocurre en `sascodiego/goodfirstissue`, un repositorio propio. **No hay remote hacia `helmcode/nan-hackathon-clef`**: el repositorio oficial del hackathon no es alcanzable desde este clon. La procedencia del material copiado está en `NOTICE.md`.
+- Cada issue se trabaja en su rama `feat/<slug>` o `fix/<slug>` desde `main`, y entra por pull request contra `main` del propio repo.
 - Entorno verificado: Go 1.27.3, `codegraph` 1.6.2, `gh` 2.46.0 autenticado. Una clave de NaN por persona: una petición a Clef en vuelo por clave.
 - Documentación, mensajes de interfaz e identificadores: inglés en el código, español en los documentos.
 - Un test en rojo antes de cada regla de decisión. La política de §7.7 y §9.3 se prueba con casos fijos, no con llamadas a la red.

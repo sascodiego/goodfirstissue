@@ -36,12 +36,16 @@ Orden de precedencia ante cualquier contradicción:
 
 | Remote | Uso |
 |---|---|
-| `origin` → `sascodiego/nan-hackathon-clef` | destino de todo el trabajo. `pushDefault`. |
-| `upstream` → `helmcode/nan-hackathon-clef` | **solo lectura.** |
+| `origin` → `sascodiego/goodfirstissue` | **el único remoto.** Destino de todo el trabajo. `pushDefault`. |
 
-**Regla dura: nunca abrir issues ni pull requests contra `helmcode/nan-hackathon-clef`.** Es el repositorio oficial del hackathon, no el nuestro.
+**No hay remote hacia `helmcode/nan-hackathon-clef`.** El repositorio oficial del hackathon no está configurado: no existe una ruta desde este clon para abrir una issue, un pull request ni un push contra él. El material que se copió de ahí está registrado en `NOTICE.md`.
 
-Rama de trabajo: `feat/mvp` (crear desde `main` si no existe). No commitear directo a `main`.
+Flujo de trabajo, a partir de acá:
+
+- Cada issue se trabaja en su propia rama `feat/<slug>` o `fix/<slug>`, creada desde `main`.
+- El trabajo entra por pull request contra `main` del propio repo. Nunca commit directo a `main`.
+- `main` es la rama de integración y la única que se publica.
+- Antes de crear una issue o un PR, verificar contra qué repositorio se habla: `gh repo set-default --view` debe decir `sascodiego/goodfirstissue`.
 
 ## Estado del proyecto
 

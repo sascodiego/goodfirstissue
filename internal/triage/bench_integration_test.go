@@ -83,8 +83,9 @@ var substanceQuestions = []question{
 	{
 		ID:   "self_contained",
 		Type: "noul",
-		Instructions: "Can this issue be understood and started from the text alone, without asking for " +
-			"context that is not here: a chat, a video, a screenshot, or a private discussion?",
+		Instructions: "Does this text state what is being asked clearly enough that someone who has not " +
+			"spoken to the author could start, without material that is not here: a recording, a " +
+			"screenshot, or a private conversation?",
 	},
 	{
 		ID:   "has_evidence",
@@ -113,8 +114,8 @@ var substanceQuestions = []question{
 	{
 		ID:   "evidence_sufficient",
 		Type: "noul",
-		Instructions: "Is there enough in this text to classify the issue with grounds, as opposed to guessing " +
-			"out of caution or politeness?",
+		Instructions: "Is the text enough to decide what kind of request this is, regardless of how much work " +
+			"the request would be or how thin or unwelcome it looks?",
 	},
 	{
 		ID:   "asks_for_information",
@@ -123,9 +124,11 @@ var substanceQuestions = []question{
 			"something changed?",
 	},
 	{
-		ID:           "asks_for_new_behaviour",
-		Type:         "noul",
-		Instructions: "Does the text ask for behaviour that it also indicates does not exist today?",
+		ID:   "asks_for_new_behaviour",
+		Type: "noul",
+		Instructions: "Does the text ask the software to do something it does not do, where the thing asked " +
+			"for is a capability the software was never meant to have, rather than a correction of the " +
+			"behaviour that is failing?",
 	},
 	{
 		ID:   "describes_existing_behaviour",

@@ -133,9 +133,7 @@ The chain is a decision tree walked by our code over facts and answers. It is no
 sequence of requests: the answers to dossier A arrive together, and each gate consumes
 them.
 
-```
-G0 evidence_sufficient  →  G1 open work  →  G2 quality  →  G3 kind  →  G4 intent
-```
+    G0 evidence_sufficient  →  G1 open work  →  G2 quality  →  G3 kind  →  G4 intent
 
 ### G0 — `evidence_sufficient`
 
@@ -191,6 +189,38 @@ G0 evidence_sufficient  →  G1 open work  →  G2 quality  →  G3 kind  →  G
   condition, "ask the maintainer first", because the alignment node is deferred.
 - Why it sits last: it is the most expensive gate, it is the least decisive for a bug,
   and it is pointless for anything the earlier gates already removed.
+
+### What the benchmark settled, and what it left open
+
+Measured on the corpus under `testdata/bench/` (`prompt.md` carries the full record).
+These are conclusions of measurement, not preferences:
+
+| Question | Agreement | Consequence |
+|---|---|---|
+| `kind`, one composite question | 22 of 23 | the category is asked, not derived |
+| `kind`, derived from grounded nodes | 18 of 23 | the tree was tested and is **not** adopted |
+| `intent` | 22 of 23 | labels plus maintainer prose are enough, and the label never decides alone |
+| `self_contained` | 21 of 23 | usable as a gate |
+| `evidence_sufficient` | 22 of 23 | usable as a gate |
+| `reports_defect` | 22 of 23 | usable as a gate |
+| `has_evidence` | 20 of 23 | usable, with one case of run-to-run drift |
+| `unambiguous` | 19 of 23 | the weakest; see below |
+| `done_defined` | 19 of 23 | the weakest; see below |
+
+Two consequences bind the implementation:
+
+- **`kind` stays a single question.** Do not rebuild the derived tree: it lost by four
+  cases, and the mechanism is known — a grounded node about "behaviour that does not
+  exist yet" also fires on every bug report, because a fix produces behaviour that does
+  not exist either.
+- **`unambiguous` and `done_defined` are kept in disjunction**, as the policy already
+  says, and the error direction is accepted on purpose: when they fire wrongly they make
+  an issue CONDICIONADA, which keeps it visible with its condition. They never discard.
+  A wording that reaches twenty or more cases replaces them; until then they are the
+  measured weak point of the chain, and a fresh case set has to confirm any replacement.
+
+No conclusion here is drawn from a single case: repeated runs showed a drift of one case
+on `has_evidence`, so differences of one are noise and differences of three are not.
 
 ## Outcomes
 

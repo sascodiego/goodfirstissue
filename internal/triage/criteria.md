@@ -41,6 +41,30 @@ order, and what each answer permits. It contains no wording of its own: the ques
 live in `prompt.md`, and which wording survives is decided by the benchmark under
 `testdata/bench/`.
 
+## What this pass decides, and what it does not
+
+This pass answers one question: **is this issue worth spending the expensive passes on,
+and if not, with which reason and which mark.** It decides that with deterministic facts
+plus one or two cheap judgements, and it stops there.
+
+What it does **not** decide, because later rounds have material this pass does not:
+
+| Question | Decided by |
+|---|---|
+| does this question turn into work? | a second round with the comments (a maintainer answering "that is undocumented" is a documentation task) |
+| is the bug findable without a reproduction? | exploration, reading the code |
+| is the request really in the project's direction, in detail? | exploration plus the alignment node |
+| was the author's label honest? | P2, with the code in hand |
+| what is the contributor missing? | P3, against a profile |
+
+Two consequences of that boundary:
+
+- **`MARCADA` is not terminal.** It means "not recommended now, here is why"; the issue
+  keeps its reason and enters the review queue. A later round with better material may
+  overturn it, and that is expected.
+- **A judgement this pass cannot support is not invented here.** If the material cannot
+  settle a question, the answer is the doubt, not a guess, and the doubt is reported.
+
 ## Vocabulary
 
 | Name | Meaning |

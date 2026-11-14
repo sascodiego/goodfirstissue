@@ -183,3 +183,21 @@ func TestPrescreenRejectsAnEmptyBody(t *testing.T) {
 		t.Errorf("Prescreen = {%v %q}, want {%v %q}", got.Skip, got.Reason, true, ReasonNoContent)
 	}
 }
+
+// Every maintainer comment reaches the intent dossier. Keeping only the last few dropped
+// the approval once already: it is usually the first reply, not the last.
+func TestIntentDossierKeepsEveryMaintainerComment(t *testing.T) {
+	issue := sampleIssue()
+	issue.Comments = nil
+	for i := 0; i < 10; i++ {
+		issue.Comments = append(issue.Comments, Comment{
+			Author: "m", Body: "comment number " + string(rune('A'+i)), AuthorAssociation: "MEMBER",
+		})
+	}
+	got := IntentDossier(issue)
+	for i := 0; i < 10; i++ {
+		if !strings.Contains(got, "comment number "+string(rune('A'+i))) {
+			t.Errorf("intent dossier dropped maintainer comment %d:\n%s", i, got)
+		}
+	}
+}

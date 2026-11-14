@@ -31,9 +31,10 @@ const maxDossierChars = 4000
 const (
 	maxComments     = 3
 	maxCommentChars = 600
-	// The intent dossier gets a bigger budget: it is the only material that answers the
-	// question, and the decision is often buried among replies that say nothing.
-	maxProjectComments = 6
+	// Every maintainer comment reaches the intent dossier: a cap dropped the answer once
+	// already. The bound is the dossier ceiling, not a count, so a pathological thread is
+	// cut by size and says so, instead of by position and hiding the decision.
+	maxProjectVoiceChars = 6000
 )
 
 // The marker is part of the text the judge reads, not a note for the log. Silently
@@ -287,9 +288,15 @@ func projectComments(issue Issue) []Comment {
 		}
 		other = append(other, c)
 	}
+	// Decision-shaped comments come first, then the rest, and the budget cuts the tail:
+	// the last thing dropped is the one that reads like an answer.
 	kept := append(decision, other...)
-	if len(kept) > maxProjectComments {
-		kept = kept[:maxProjectComments]
+	total := 0
+	for i, c := range kept {
+		total += len(c.Body)
+		if total > maxProjectVoiceChars {
+			return kept[:i]
+		}
 	}
 	return kept
 }

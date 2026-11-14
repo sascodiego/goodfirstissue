@@ -18,6 +18,13 @@ import (
 // ErrNoIssues reports a repository with nothing open. It is not a failure of the fetch.
 var ErrNoIssues = errors.New("ghdata: the repository has no open issues")
 
+// ErrRepoNotFound reports a name GitHub does not know, or one this token cannot see.
+// It is the caller's input that is wrong, not the fetch that broke, and the interface
+// has to be able to say so: answering «no such repository» with a 500 hides the typo
+// behind a server error. GraphQL carries the difference in the error type, so it is
+// read from there and never guessed from the prose of a message.
+var ErrRepoNotFound = errors.New("ghdata: the repository does not exist")
+
 // Repository is the pinned snapshot identity of one fetch.
 type Repository struct {
 	NameWithOwner   string
@@ -298,6 +305,7 @@ func decode(raw []byte) (*decodeTarget, error) {
 			} `json:"repository"`
 		} `json:"data"`
 		Errors []struct {
+			Type    string `json:"type"`
 			Message string `json:"message"`
 		} `json:"errors"`
 	}
@@ -305,7 +313,11 @@ func decode(raw []byte) (*decodeTarget, error) {
 		return nil, fmt.Errorf("ghdata: decode: %w", err)
 	}
 	if len(payload.Errors) > 0 {
-		return nil, fmt.Errorf("ghdata: graphql: %s", payload.Errors[0].Message)
+		first := payload.Errors[0]
+		if first.Type == "NOT_FOUND" {
+			return nil, fmt.Errorf("%w: %s", ErrRepoNotFound, first.Message)
+		}
+		return nil, fmt.Errorf("ghdata: graphql: %s", first.Message)
 	}
 
 	r := payload.Data.Repository

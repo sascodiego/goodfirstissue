@@ -99,7 +99,7 @@ func corpus(t *testing.T) *store.Store {
 
 func newHandler(t *testing.T, st *store.Store) *Handler {
 	t.Helper()
-	h, err := NewHandler(st)
+	h, err := NewHandler(Options{Store: st})
 	if err != nil {
 		t.Fatalf("NewHandler() error = %v", err)
 	}

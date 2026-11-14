@@ -168,3 +168,28 @@ func TestFetchValidatesInput(t *testing.T) {
 		t.Fatal("want an error for a missing owner")
 	}
 }
+
+// A repository that does not exist is not a failure of ours: the web layer answers 400
+// for it and 500 only for what actually broke. GraphQL says which one it is with the
+// error type, so the distinction is carried as a sentinel instead of by matching prose.
+func TestDecodeTellsAMissingRepositoryFromAnyOtherFailure(t *testing.T) {
+	missing := []byte(`{"errors":[{"type":"NOT_FOUND","path":["repository"],
+		"message":"Could not resolve to a Repository with the name 'nope/nope'."}]}`)
+	if _, err := decode(missing); !errors.Is(err, ErrRepoNotFound) {
+		t.Errorf("err = %v, want ErrRepoNotFound", err)
+	}
+
+	// The negative control: any other GraphQL failure must stay a plain error, or the
+	// handler would answer 400 to a rate limit and hide a real problem.
+	other := []byte(`{"errors":[{"type":"RATE_LIMITED","message":"API rate limit exceeded"}]}`)
+	_, err := decode(other)
+	if err == nil {
+		t.Fatal("want an error for a rate limit")
+	}
+	if errors.Is(err, ErrRepoNotFound) {
+		t.Errorf("err = %v, must not be ErrRepoNotFound", err)
+	}
+	if !strings.Contains(err.Error(), "rate limit") {
+		t.Errorf("err = %v, want the GraphQL message kept", err)
+	}
+}

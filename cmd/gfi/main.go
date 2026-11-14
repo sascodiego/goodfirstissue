@@ -134,7 +134,15 @@ func runServer(args []string) error {
 		return err
 	}
 
-	handler, err := web.NewHandler(st)
+	handler, err := web.NewHandler(web.Options{
+		Store:   st,
+		Fetcher: &ghdata.Client{},
+		GitHub: ghdata.Options{
+			MaxIssues: cfg.GitHub.MaxIssues,
+			PageSize:  cfg.GitHub.PageSize,
+		},
+		Timeout: cfg.GitHub.Timeout.Get(),
+	})
 	if err != nil {
 		return err
 	}

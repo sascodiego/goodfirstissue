@@ -28,16 +28,19 @@ const maxLabelOptions = 25
 
 // pageData es lo único que ven las plantillas.
 type pageData struct {
-	Title    string
-	Repos    []repoView
-	HasRepo  bool
-	Active   repoView
-	Stats    statsView
-	Rows     []rowView
-	Labels   []string
-	Filter   filter
-	Shown    int
-	Total    int
+	Title   string
+	Repos   []repoView
+	HasRepo bool
+	Active  repoView
+	Stats   statsView
+	Rows    []rowView
+	Labels  []string
+	Filter  filter
+	Shown   int
+	Total   int
+	// Estado es la frase que confirma el alta o el refresco. Sale de una lista blanca de
+	// códigos, nunca del texto que venga en la URL.
+	Estado   string
 	Commit   string
 	Fetched  string
 	Language string
@@ -140,6 +143,7 @@ func buildPage(st *store.Store, q url.Values) (pageData, error) {
 
 	data.HasRepo = true
 	data.Active = data.Repos[indexOfRepo(data.Repos, active.Key)]
+	data.Estado = estadoText(q.Get("estado"))
 	data.FreeHref = toggleStateURL(f, active.Key)
 	data.NoLabelHref = toggleNoLabelURL(f, active.Key)
 	data.Commit = shortSHA(active.CommitSHA)
@@ -167,6 +171,18 @@ func buildPage(st *store.Store, q url.Values) (pageData, error) {
 	data.Shown = len(data.Rows)
 
 	return data, nil
+}
+
+// estadoText traduce el código que deja el POST en la URL. Un valor que no está en la
+// lista no se muestra: la pantalla no repite texto que vino de afuera.
+func estadoText(code string) string {
+	switch code {
+	case "alta":
+		return "Se agregó"
+	case "refresco":
+		return "Refrescado"
+	}
+	return ""
 }
 
 func toggleStateURL(f filter, key string) string {

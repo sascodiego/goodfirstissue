@@ -66,6 +66,44 @@ func (s *Store) SaveRepo(entry RepoEntry) error {
 	return s.Write(registryName, current)
 }
 
+// RemoveRepo drops one repository from the registry, and does nothing when the key is not
+// there.
+//
+// Existe por el renombrado: GitHub manda sobre el nombre, así que refrescar httpie/httpie
+// guarda el snapshot bajo httpie__cli. Sin borrar la entrada vieja, el rail lista el mismo
+// repositorio dos veces y una de las dos con un pin que ya no existe.
+func (s *Store) RemoveRepo(key string) error {
+	if key == "" {
+		return errors.New("store: repo key is required")
+	}
+
+	lock, err := s.lock(registryName)
+	if err != nil {
+		return err
+	}
+	defer lock.release()
+
+	current, err := s.readRegistry()
+	if err != nil {
+		return err
+	}
+
+	kept := current.Repos[:0]
+	removed := false
+	for _, entry := range current.Repos {
+		if entry.Key == key {
+			removed = true
+			continue
+		}
+		kept = append(kept, entry)
+	}
+	if !removed {
+		return nil
+	}
+	current.Repos = kept
+	return s.Write(registryName, current)
+}
+
 // Repos lists the known repositories, ordered by name.
 func (s *Store) Repos() ([]RepoEntry, error) {
 	current, err := s.readRegistry()

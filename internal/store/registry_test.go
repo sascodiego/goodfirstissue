@@ -109,3 +109,36 @@ func TestRepoFindsByKey(t *testing.T) {
 		t.Errorf("Repo(unknown) = %v,%v, want false and no error", ok, err)
 	}
 }
+
+// A renamed repository must not appear twice: the old key has to be dropped, and asking to
+// drop a key that is not there must not be an error. The second half matters because the
+// caller does it on every fetch that GitHub answers with a different name.
+func TestRemoveRepoDropsOnlyTheGivenKey(t *testing.T) {
+	s := newStore(t)
+	for _, e := range []RepoEntry{
+		{Name: "httpie/httpie", Key: "httpie__httpie"},
+		{Name: "spf13/cobra", Key: "spf13__cobra"},
+	} {
+		if err := s.SaveRepo(e); err != nil {
+			t.Fatalf("SaveRepo(%s) error = %v", e.Key, err)
+		}
+	}
+
+	if err := s.RemoveRepo("httpie__httpie"); err != nil {
+		t.Fatalf("RemoveRepo() error = %v", err)
+	}
+	repos, err := s.Repos()
+	if err != nil {
+		t.Fatalf("Repos() error = %v", err)
+	}
+	if len(repos) != 1 || repos[0].Key != "spf13__cobra" {
+		t.Fatalf("Repos() = %+v, want only spf13__cobra", repos)
+	}
+
+	if err := s.RemoveRepo("nunca__existio"); err != nil {
+		t.Errorf("removing an absent key = %v, want no error", err)
+	}
+	if err := s.RemoveRepo(""); err == nil {
+		t.Error("removing the empty key = nil, want an error")
+	}
+}

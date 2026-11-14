@@ -44,4 +44,17 @@ Issue #4 · rama `feat/split-web-by-screen` · base `main` @ 1a7d843.
 
 **L5** (borde de rebanada): T3 y T4 se commitean juntos como una sola unidad revisable aunque el diffstat sume ~700 líneas, porque es una mudanza: `view.go` pierde 313 líneas y `dashboard.go` gana 289, y el neto es +77. Partir una mudanza en dos commits artificiales empeora la revisión, no la mejora. T5 va aparte porque sí cambia aserciones.
 
+**L6** (cierre, evidencia medida):
+
+- Commits: `0937b96` (T2), `9f4b69b` (T3), `c9e2bd7` (T4), `9ff150c` (T5).
+- **S1**: HTML byte a byte idéntico a `main` en 15 URLs más el store nil y el store vacío: 84.366 bytes en ambos lados, `diff` vacío. Se midió dos veces, antes y después de T5.
+- **S2**: `git diff --stat main -- cmd/ scripts/ design/ Makefile` vacío. `NewHandler(st *store.Store) (*Handler, error)` y `(h *Handler) Routes() http.Handler` con la misma forma.
+- **S3**: `handler.go` 52, `routes.go` 17, `dashboard.go` 286, `view.go` 174, `screens.go` 50. `view.go` bajó de 417 a 174 líneas.
+- **S4/S5**: `dashboard.html` renombrado, `partials/add-repo.html` con el formulario del rail, `parseScreens` con `Clone()` por pantalla y error de arranque si falta `"content"`.
+- **S6**: 17 tests, todos verdes: `handler_test.go` 2, `dashboard_test.go` 13, `screens_test.go` 2. `gofmt -l` vacío.
+- **S7**: `make verify` verde: build estático, `go test ./...` (9 paquetes ok), `go vet ./...`, `golangci-lint run` con 0 issues, `design-check` sin salida. `app.css` y `app.js` intactos.
+- **S8**: `routes.go` sostiene las dos rutas; una pantalla nueva agrega una entrada en `screenNames` y una línea en `Routes()`.
+
+**Nota de rebanadas**: el diff total contra `main` es +768/−547 líneas en 11 archivos, pero la mayor parte es mudanza (`view.go` → `dashboard.go`, `index.html` → `dashboard.html`, `handler_test.go` → `dashboard_test.go`). El neto de código productivo es +77 líneas, casi todo el mecanismo de plantillas.
+
 **Evidencia** (medida en el worktree): `handler.go` 71 líneas, `view.go` 417, `handler_test.go` 369 con 14 `func Test`, `templates/index.html` 162, `templates/layout.html` 14. Consumidores externos del paquete: solo `cmd/gfi/main.go:137` (`web.NewHandler`) y `:144` (`handler.Routes()`).

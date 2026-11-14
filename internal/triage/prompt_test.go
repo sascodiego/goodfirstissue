@@ -25,12 +25,13 @@ var frozenQuestions = []string{
 	"done_defined",
 	"reports_defect",
 	"evidence_sufficient",
-	"intent",
+	"only_for_requester",
+	"fits_direction",
 }
 
 func bankQuestion(t *testing.T, id string) question {
 	t.Helper()
-	for _, q := range append(append([]question{}, substanceQuestions...), intentQuestions...) {
+	for _, q := range append(append([]question{}, substanceQuestions...), alignmentQuestions...) {
 		if q.ID == id {
 			return q
 		}

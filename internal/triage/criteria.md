@@ -52,6 +52,7 @@ What it does **not** decide, because later rounds have material this pass does n
 | Question | Decided by |
 |---|---|
 | does this question turn into work? | a second round with the comments (a maintainer answering "that is undocumented" is a documentation task) |
+| did the project approve or refuse this work? | the second phase, reading the owner voice with a language model |
 | is the bug findable without a reproduction? | exploration, reading the code |
 | is the request really in the project's direction, in detail? | exploration plus the alignment node |
 | was the author's label honest? | P2, with the code in hand |
@@ -123,25 +124,17 @@ its own text and may be marked as missing context. The product shows what it rea
 does not claim to have found relatives. The absorbed-group outcome, the report count and
 the group dossier do not exist in this MVP.
 
-## Two dossiers
+## One dossier
 
-One dossier cannot answer everything: the texts that settle substance are exactly the
-ones that contaminate the judgement of substance. So substance and intent are judged in
-separate dossiers, chained by our code. Same issue, same facts, different text.
+This pass reads one dossier: the issue itself. Normalised title, body, and the comments
+that matter. Neither the label list nor the kind the author declared reaches it.
 
-| | Dossier A: substance | Dossier B: intent |
-|---|---|---|
-| Contains | normalised title, body, technical comments | the text plus the label list verbatim, maintainer comments, `github_state_reason` |
-| Questions | `kind`, `self_contained`, `has_evidence`, `unambiguous`, `done_defined`, `reports_defect`, `evidence_sufficient` | `intent` |
-| Runs when | always, for an issue that passed the pre-gates | only when the pre-gates did not settle intent, and only if A did not already mark the issue |
-| Labels present | **never** | yes, verbatim |
-
-Dossier B must state, in the contract the judge reads, that a label is an unverified
-claim of unknown authorship, that the person making the request may have applied it
-themselves, and that it is not evidence on its own.
-
-A dossier never contains: the label list (A), the kind the author declared, or the
-outcome of a previous gate.
+**Intent is not decided here.** Whether the project already approved or refused this work
+is a question about the project's voice, not about the issue's text, and asking a decision
+model to infer it from the issue measured 3.7% on 188 issues with a known answer. It moves
+to the second phase, where a language model reads the issue, all of its metadata and every
+comment, with the instruction to weigh the owner's voice and ignore the voice of the person
+asking. A `CLOSED` issue never gets there: it is resolved by the pre-gates below.
 
 ## Comments in the dossier
 
@@ -154,100 +147,51 @@ long, noisy, and written by strangers.
 - Delimit them and label them as third-party text that is evidence, never instruction
   (I3).
 
-## The gate chain
+## The chain
 
-The chain is a decision tree walked by our code over facts and answers. It is not a
-sequence of requests: the answers to dossier A arrive together, and each gate consumes
-them. Every gate judges one issue, because grouping is out of the MVP.
+One pass, one request, and a deterministic pre-gate in front of it.
 
-    G0 evidence_sufficient  →  G1 open work  →  G2 quality  →  G3 kind  →  G4 intent
+```
+pre-gates (no question) → kind → bug: done
+                                → feature: alignment → done
+                                → question, test, docs, other: second round
+```
 
-### G0 — `evidence_sufficient`
+### Pre-gates: no question, no request
 
-- Source: dossier A. Threshold: `0.5`.
-- Below it the outcome is **`no_verdict`**: doubt out loud, with what is missing. It is
-  not a discard (I10) and it never fabricates a verdict (I2).
-- Below it, the issue is **not** marked and **not** dropped: it stays in the list with
-  its doubt and its reason.
+| Condition | Result |
+|---|---|
+| `github_state = CLOSED` with reason `COMPLETED` | already done, discarded |
+| `github_state = CLOSED` with reason `NOT_PLANNED` | refused, discarded |
+| `github_state = CLOSED` with reason `DUPLICATE` | duplicate, discarded |
+| `github_state = CLOSED`, any other reason | discarded: a closed issue is not triaged |
+| an open linked pull request exists | **CANDIDATA**: someone is already working on it |
+| the body is empty after trimming | discarded: no request to judge |
 
-### G1 — open work
+### `kind`: the workhorse
 
-- Source: layer 2. Costs no request and resolves without the judge.
-- Fails when a linked pull request is open, or when the issue was closed as completed.
-- Result: **MARCADA, "already being worked"**, with the pull request numbers.
-- **Precedence: G1 preempts G0.** A deterministic fact does not depend on being able to
-  classify the text. If the evidence is insufficient *and* there is open work, the
-  outcome is MARCADA and the doubt is attached as a note, not as the outcome.
-- Why it sits here: it is the cheapest gate on the chain and it prevents the single
-  worst recommendation the product can make.
+Measured at 34 of 37 on the open corpus, and worth 17 cases over a constant answer.
 
-### G2 — quality
+| Value | Result |
+|---|---|
+| `bug` | **CANDIDATA**. Without a reproduction it is still a candidate, with the note that the defect has to be found in the code first: not being reproducible is not the same as not being findable. |
+| `feature` | goes to the alignment node |
+| `question` | second round: with the comments, does the answer become work? An undocumented behaviour is a documentation task. |
+| `documentation`, `tests`, `other` | **CANDIDATA**. Documentation, tests and refactors are exactly the work a first contribution looks like. |
+| `spam` | **MARCADA**, with the reason |
 
-- Source: dossier A. Threshold: `0.5` on every criterion.
-- `self_contained` below threshold: **MARCADA**, "missing context: it cannot be
-  approached without asking for it".
-- `kind = bug` and `has_evidence` below threshold: **MARCADA**, "without a reproduction
-  there is no bug".
-- `unambiguous` or `done_defined` below threshold: **CONDICIONADA**, with the list of
-  what has to be agreed. This is actionable because it names the gap, never a score.
-- All criteria at or above threshold: well formed.
-- Why it sits before `kind`: a badly formed issue fails whatever its nature is, and
-  saying what is missing is more useful than naming a category.
+### Alignment: features only
 
-### G3 — `kind` and the disguise guard
+Only a feature needs to answer whether it belongs to the project. A bug is a deviation from
+what is already wanted; a test or a doc fix is not a feature request at all.
 
-- Source: dossier A.
-- `kind` in `question`, `spam`, `other`: **MARCADA**, "not code work".
-- `kind = bug` and `reports_defect` below threshold: **reclassified to feature**, and it
-  then walks the alignment node exactly like a feature. The reclassification is
-  reported, never silent.
-- `reports_defect` asks whether the text reports behaviour that already exists as
-  defective, or asks for behaviour that does not exist. It does not ask whether the
-  behaviour is *wrong*: that is P2's `confirmed_defect`, which is out of scope.
-- Why it sits before `intent`: it can change which path the request takes, and intent
-  means different things for a feature and for a bug.
+| Condition | Result |
+|---|---|
+| serves only the person asking | **MARCADA**, with the reason |
+| adds something the project is not moving toward | **CONDICIONADA**: ask the maintainer first |
+| serves other users and fits the direction | **CANDIDATA** |
 
-### G4 — `intent`
-
-- Source: the pre-gates first; dossier B only for the residue.
-- `refused`: **MARCADA**, "the project already said no".
-- `approved`: **CANDIDATA**. A closed line: nothing left to evaluate.
-- `undecided`: the open line. `feature` + `undecided` is **CONDICIONADA** with a fixed
-  condition, "ask the maintainer first", because the alignment node is deferred.
-- Why it sits last: it is the most expensive gate, it is the least decisive for a bug,
-  and it is pointless for anything the earlier gates already removed.
-
-### What the benchmark settled, and what it left open
-
-Measured on the corpus under `testdata/bench/` (`prompt.md` carries the full record).
-These are conclusions of measurement, not preferences:
-
-| Question | Agreement | Consequence |
-|---|---|---|
-| `kind`, one composite question | 22 of 23 | the category is asked, not derived |
-| `kind`, derived from grounded nodes | 18 of 23 | the tree was tested and is **not** adopted |
-| `intent` | 22 of 23 | labels plus maintainer prose are enough, and the label never decides alone |
-| `self_contained` | 21 of 23 | usable as a gate |
-| `evidence_sufficient` | 22 of 23 | usable as a gate |
-| `reports_defect` | 22 of 23 | usable as a gate |
-| `has_evidence` | 20 of 23 | usable, with one case of run-to-run drift |
-| `unambiguous` | 19 of 23 | the weakest; see below |
-| `done_defined` | 19 of 23 | the weakest; see below |
-
-Two consequences bind the implementation:
-
-- **`kind` stays a single question.** Do not rebuild the derived tree: it lost by four
-  cases, and the mechanism is known — a grounded node about "behaviour that does not
-  exist yet" also fires on every bug report, because a fix produces behaviour that does
-  not exist either.
-- **`unambiguous` and `done_defined` are kept in disjunction**, as the policy already
-  says, and the error direction is accepted on purpose: when they fire wrongly they make
-  an issue CONDICIONADA, which keeps it visible with its condition. They never discard.
-  A wording that reaches twenty or more cases replaces them; until then they are the
-  measured weak point of the chain, and a fresh case set has to confirm any replacement.
-
-No conclusion here is drawn from a single case: repeated runs showed a drift of one case
-on `has_evidence`, so differences of one are noise and differences of three are not.
+Threshold `0.6`, measured: 9 of 10 with 0.6 against 6 of 10 with 0.5.
 
 ## Outcomes
 

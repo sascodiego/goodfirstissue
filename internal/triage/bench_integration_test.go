@@ -69,12 +69,6 @@ var kindCriteria = map[string]string{
 	"other":    "It describes work that fits none of the above, such as documentation, tests, or project process.",
 }
 
-var intentCriteria = map[string]string{
-	"approved":  "Someone responsible for the project asked for this work, said to go ahead with it, or merged work that does it. A label claiming acceptance counts only if it is consistent with what those people wrote.",
-	"refused":   "Someone responsible for the project said it will not be done, or asked for it to be closed. A label claiming rejection counts only if it is consistent with what those people wrote.",
-	"undecided": "The material records no position from anyone responsible for the project: the request simply sits there, or the only voice in favour is the person asking.",
-}
-
 // substanceQuestions is the experiment. The first seven are the analytic questions the
 // design already had; the four after them are grounded nodes of the candidate tree, and
 // they exist to test whether a category derived from concrete facts beats a category the
@@ -166,11 +160,6 @@ var alignmentQuestions = []question{
 		Instructions: "Judged against what the project's documentation and recent history show it is trying to " +
 			"be, would this request move it further in that direction, or away from it?",
 	},
-}
-
-var intentQuestions = []question{
-	{ID: "intent", Type: "choice", Instructions: "What position does the project record about this work?", Criteria: intentCriteria},
-	{ID: "maintainer_spoke", Type: "noul", Instructions: "Does the material contain at least one statement written by someone responsible for the project, as opposed to statements written only by people asking for it?"},
 }
 
 // DerivedKind is the candidate tree: the model extracts grounded facts, our code walks
@@ -372,13 +361,8 @@ func TestBenchMeasuresWording(t *testing.T) {
 		}
 		answersAt := time.Since(started)
 
-		intent, err := client.ask(ctx, IntentDossier(issue), intentQuestions)
-		if err != nil {
-			t.Fatalf("%s: intent request: %v", c.ID, err)
-		}
-
 		var alignment map[string]float64
-		if run0 := substance["kind"]; run0.Choice == "feature" && intent["intent"].Choice == "undecided" {
+		if substance["kind"].Choice == "feature" {
 			// The tree only walks here: a feature nobody approved, whose value to the
 			// project is the open question.
 			project := c.Project
@@ -408,26 +392,22 @@ func TestBenchMeasuresWording(t *testing.T) {
 			KindProb:   substance["kind"].Probabilities,
 			KindConf:   substance["kind"].Confidence,
 			Alignment:  alignment,
-			Intent:     intent["intent"].Choice,
-			IntentProb: intent["intent"].Probabilities,
-			IntentConf: intent["intent"].Confidence,
+			IntentProb: map[string]float64{},
 		}
 		run.Closed = c.ClosedLabel
-		run.TreeOutcome = TreeOutcome(c.issue(), substance, intent["intent"].Choice, alignment)
-		run.FlatOutcome = FlatOutcome(c.issue(), substance, intent["intent"].Choice)
+		run.TreeOutcome = TreeOutcome(c.issue(), substance, alignment)
+		run.FlatOutcome = FlatOutcome(c.issue(), substance)
 		runs = append(runs, run)
 
 		if c.ClosedLabel {
 			closed++
 			closedByTrap[c.Trap] = append(closedByTrap[c.Trap], c.ID)
-			if run.Intent == c.Expected.Intent {
-				intentByTrap[c.Trap]++
-			}
+
 			if run.TreeOutcome == c.Expected.Outcome {
 				treeByTrap[c.Trap]++
 			} else {
-				t.Logf("FALLA %-22s %-28s esperaba %-12s árbol=%-12s intent=%-9s :: %s",
-					c.Trap, c.ID, c.Expected.Outcome, run.TreeOutcome, run.Intent, c.Issue.Title)
+				t.Logf("FALLA %-22s %-28s esperaba %-12s árbol=%-12s :: %s",
+					c.Trap, c.ID, c.Expected.Outcome, run.TreeOutcome, c.Issue.Title)
 			}
 			if c.Truth.LabelStrength == "strong" {
 				strong++
@@ -446,9 +426,8 @@ func TestBenchMeasuresWording(t *testing.T) {
 					weakTree++
 				}
 			}
-			t.Logf("%-24s cerrada como %-12s fuerza=%-6s intent %-10s got=%-10s(p=%.2f) árbol=%-12s esp=%s",
-				c.ID, c.Truth.StateReason, c.Truth.LabelStrength, c.Expected.Intent,
-				run.Intent, intent["intent"].Probability, run.TreeOutcome, c.Expected.Outcome)
+			t.Logf("%-24s cerrada como %-12s fuerza=%-6s árbol=%-12s esp=%s",
+				c.ID, c.Truth.StateReason, c.Truth.LabelStrength, run.TreeOutcome, c.Expected.Outcome)
 			continue
 		}
 
@@ -479,10 +458,9 @@ func TestBenchMeasuresWording(t *testing.T) {
 			}
 		}
 
-		t.Logf("%-24s kind %-8s flat=%-8s(p=%.2f) derived=%-8s intent %-10s got=%-10s(p=%.2f) evsuf=%.2f latency=%s",
+		t.Logf("%-24s kind %-8s flat=%-8s(p=%.2f) derived=%-8s evsuf=%.2f latency=%s",
 			c.ID, c.Expected.Kind, run.Kind, substance["kind"].Probability,
-			derived, c.Expected.Intent, run.Intent, intent["intent"].Probability,
-			noul["evidence_sufficient"], answersAt.Round(time.Millisecond))
+			derived, noul["evidence_sufficient"], answersAt.Round(time.Millisecond))
 	}
 
 	treeHits, flatOutcomeHits, aligned, alignedHits := 0, 0, 0, 0
@@ -563,17 +541,11 @@ func reportConsistency(t *testing.T, ctx context.Context, client clefClient, cas
 			if err != nil {
 				t.Fatalf("%s: consistency request: %v", id, err)
 			}
-			againIntent, err := client.ask(ctx, IntentDossier(issue), intentQuestions)
-			if err != nil {
-				t.Fatalf("%s: consistency intent request: %v", id, err)
-			}
+
 			if again["kind"].Choice != base.Kind {
 				t.Errorf("%s pass %d: kind moved %q -> %q", id, pass, base.Kind, again["kind"].Choice)
 			}
-			if againIntent["intent"].Choice != base.Intent {
-				t.Errorf("%s pass %d: intent moved %q -> %q", id, pass, base.Intent, againIntent["intent"].Choice)
-			}
-			t.Logf("consistency %-24s pass %d: kind=%s intent=%s", id, pass, again["kind"].Choice, againIntent["intent"].Choice)
+			t.Logf("consistency %-24s pass %d: kind=%s", id, pass, again["kind"].Choice)
 		}
 	}
 }
@@ -632,7 +604,7 @@ func prescreen(issue Issue) string {
 }
 
 // FlatOutcome is the chain as frozen in criteria.md: independent gates in a fixed order.
-func FlatOutcome(issue Issue, substance map[string]answer, intent string) string {
+func FlatOutcome(issue Issue, substance map[string]answer) string {
 	if pre := prescreen(issue); pre != "" {
 		return "MARCADA"
 	}
@@ -654,14 +626,9 @@ func FlatOutcome(issue Issue, substance map[string]answer, intent string) string
 	if kind == "bug" && at("reports_defect") < 0.5 {
 		kind = "feature"
 	}
+	_ = kind
 	if at("done_defined") < 0.5 || at("unambiguous") < 0.5 {
 		return "CONDICIONADA"
-	}
-	if kind == "feature" && intent == "undecided" {
-		return "CONDICIONADA"
-	}
-	if intent == "refused" {
-		return "MARCADA"
 	}
 	return "CANDIDATA"
 }
@@ -669,19 +636,13 @@ func FlatOutcome(issue Issue, substance map[string]answer, intent string) string
 // TreeOutcome is the tree the owner proposed: approval ends the walk, refusal ends it,
 // and only a feature nobody decided on reaches the alignment node, where the question is
 // whether the request serves the project or only the person asking.
-func TreeOutcome(issue Issue, substance map[string]answer, intent string, alignment map[string]float64) string {
+func TreeOutcome(issue Issue, substance map[string]answer, alignment map[string]float64) string {
 	if pre := prescreen(issue); pre != "" {
 		return "MARCADA"
 	}
 	at := func(id string) float64 { return substance[id].Noul }
 	kind := substance["kind"].Choice
 
-	if intent == "approved" {
-		return "CANDIDATA"
-	}
-	if intent == "refused" {
-		return "MARCADA"
-	}
 	if at("evidence_sufficient") < 0.5 {
 		return "no_verdict"
 	}

@@ -164,7 +164,7 @@ func (s *Session) Analyze(ctx context.Context, in Input) (*Result, error) {
 	}
 	out, err := run(ctx, pig.Request{
 		Dir:           in.Dir,
-		Prompt:        PromptFor(in.NameWithOwner, in.CommitSHA, in.Issue.Number, in.Issue.Title, in.Issue.Body, in.Issue.Labels),
+		Prompt:        PromptFor(in.NameWithOwner, in.CommitSHA, in.Issue.Number, in.Issue.Title, in.Issue.Body),
 		Model:         s.Model,
 		Tools:         s.Tools,
 		Home:          s.Home,

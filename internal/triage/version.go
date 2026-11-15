@@ -19,4 +19,7 @@ var Criteria string
 
 // PolicyVersion names the mechanism, and it is written down in criteria.md as well. The two
 // are checked against each other by the tests, so a version bump cannot be forgotten.
-const PolicyVersion = "p1-1"
+//
+// p1-2 drops the label section from the intent dossier: a stored verdict produced while the
+// judge could read the labels answers a question this build no longer asks (I14).
+const PolicyVersion = "p1-2"

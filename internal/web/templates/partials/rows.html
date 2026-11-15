@@ -1,0 +1,36 @@
+{{/* Las filas de la tabla, aparte: la pantalla del corpus las incluye y GET /explore/rows
+     las vuelve a pedir para cambiar el <tbody> mientras la cola avanza. Una sola copia del
+     marcado de una fila, dos formas de pedirla. */}}
+{{define "rows"}}{{range .Rows}}{{$row := .}}
+          <tr>
+            <td class="c-sel">
+              <input type="checkbox" class="row-sel" form="analizar" name="issue" value="{{$row.Number}}"
+                     aria-label="Seleccionar #{{$row.Number}}">
+            </td>
+            <td class="c-num">{{$row.Number}}</td>
+            <td class="c-ttl"><a href="/issue/{{$.Active.Key}}/{{$row.Number}}">{{$row.Title}}</a></td>
+            <td class="c-lbl">
+              {{if $row.HasLabel}}{{range $row.Labels}}<span class="chip{{if .Hit}} hit{{end}}">{{.Text}}</span>{{end}}
+              {{else}}<span class="none">ninguna</span>{{end}}
+            </td>
+            <td class="c-state"><span class="st {{$row.State}}">{{$row.StateText}}</span></td>
+            <td class="c-pr{{if not $row.HasPR}} dash{{end}}">{{if $row.HasPR}}#{{$row.PR}}{{else}}—{{end}}</td>
+            <td class="c-date">{{$row.Updated}}</td>
+            <td class="c-com{{if $row.NoComments}} dash{{end}}">{{$row.Comments}}</td>
+            <td class="c-run">
+              {{with index $row.Stages 0}}<span class="run{{with .State}} {{.}}{{end}}"{{if eq .State "running"}} data-live="1"{{end}}>{{.StateText}}{{if .Silence}} {{.Silence}}s{{end}}{{with .Duration}} · {{.}}{{end}}{{with .Age}} · {{.}}{{end}}</span>{{if .Note}}<span class="run-note">{{.Note}}</span>{{end}}{{end}}
+            </td>
+            <td class="c-cancel">
+              {{with index $row.Stages 0}}{{if or (eq .State "queued") (eq .State "running")}}
+              <form method="post" action="/explore/cancel" class="row-cancel">
+                <input type="hidden" name="repo" value="{{$.Active.Key}}">
+                <input type="hidden" name="issue" value="{{$row.Number}}">
+                <button type="submit" title="Cancelar el análisis de #{{$row.Number}}"
+                        aria-label="Cancelar el análisis de #{{$row.Number}}">✕</button>
+              </form>
+              {{end}}{{end}}
+            </td>
+          </tr>
+          {{else}}
+          <tr class="no-rows"><td colspan="10">Ninguna issue coincide con este filtro.</td></tr>
+          {{end}}{{end}}

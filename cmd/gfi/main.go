@@ -3,7 +3,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -122,6 +121,12 @@ func runServer(args []string) error {
 			return err
 		}
 		cfg = loaded
+		// Las rutas del archivo son relativas al directorio desde el que se arranca, y el
+		// servidor las entrega a procesos hijos cuyo cwd es otro (el clon): sin resolverlas
+		// acá, PIG_HOME se lee desde el clon y el agente arranca sin configuración ni clave.
+		if err := cfg.Resolve("."); err != nil {
+			return err
+		}
 		if err := cfg.EnsureDirs(); err != nil {
 			return err
 		}
@@ -144,6 +149,19 @@ func runServer(args []string) error {
 		},
 		Timeout:   cfg.GitHub.Timeout.Get(),
 		Extractor: profileExtractor(cfg, st),
+		// La cola corre la misma sesión que `gfi explore`: la pantalla y la consola
+		// comparten la clave del journal, así que lo analizado por una sirve a la otra.
+		Workers: cfg.Explore.Workers,
+		Explore: web.ExploreOptions{
+			Model:    cfg.Explore.Model,
+			Models:   config.AllowedChatModels,
+			Tools:    cfg.Explore.Tools,
+			Home:     cfg.Explore.Home,
+			Binary:   cfg.Explore.Binary,
+			IdleWarn: cfg.Explore.IdleWarn.Get(),
+			IdleKill: cfg.Explore.IdleKill.Get(),
+			Budget:   cfg.Explore.Budget.Get(),
+		},
 	})
 	if err != nil {
 		return err
@@ -399,6 +417,9 @@ func runIndex(args []string) error {
 
 // runExplore turns one issue from the frozen corpus into evidence, reusing an identical
 // previous analysis instead of paying for it twice.
+//
+// The analysis itself lives in internal/explore: the web server runs the same session, so a
+// result produced by one is reusable by the other.
 func runExplore(args []string) error {
 	fs := flag.NewFlagSet("explore", flag.ContinueOnError)
 	configPath := fs.String("config", "", "path to config.json")
@@ -449,123 +470,92 @@ func runExplore(args []string) error {
 		return fmt.Errorf("issue #%d is not in the snapshot of %s", number, repoKey)
 	}
 
-	rec, err := st.LoadIndex(repoKey)
-	if err != nil {
-		return fmt.Errorf("no index for %s: run `gfi index %s` first", requested, requested)
-	}
-	if rec.CommitSHA != snap.Repository.CommitSHA {
-		fmt.Printf("  warning     index is at %s but the snapshot pins %s\n",
-			short(rec.CommitSHA), short(snap.Repository.CommitSHA))
-	}
-
-	// Everything that can change the answer is part of the key, so a changed prompt, a
-	// changed model or a moved commit misses instead of reusing a stale verdict.
-	cacheKey := store.Key{
-		Issue:         number,
-		Pass:          store.PassExplore,
-		Model:         cfg.Explore.Model,
-		PromptVersion: explore.Version(),
+	in := explore.Input{
+		Repository:    repoKey,
+		NameWithOwner: snap.Repository.NameWithOwner,
 		CommitSHA:     snap.Repository.CommitSHA,
+		Issue:         *issue,
+		Force:         *force,
 	}
-	decisions, err := st.Decisions(repoKey)
-	if err != nil {
-		return err
-	}
-	if !*force {
-		if cached, ok := decisions.Get(cacheKey); ok {
-			var previous explore.Record
-			if err := json.Unmarshal(cached.Verdict, &previous); err == nil && previous.Evidence != nil {
-				fmt.Printf("cached      %s#%d analysed %s, %s of work reused\n",
-					repoKey, number, cached.At.Format("2006-01-02 15:04 UTC"),
-					(time.Duration(cached.LatencyMs) * time.Millisecond).Round(time.Millisecond))
-				fmt.Printf("              prompt %s · model %s · commit %s\n",
-					cacheKey.PromptVersion, cacheKey.Model, short(cacheKey.CommitSHA))
-				fmt.Printf("              use -force to run it again\n")
-				printEvidence(&previous)
-				return nil
-			}
-			// A verdict that no longer decodes is not reused; the run below replaces it.
-			fmt.Printf("  stale       the stored analysis is unreadable, running again\n")
+	rec, err := explore.IndexFor(st, in)
+	switch {
+	case errors.Is(err, explore.ErrNoIndex):
+		return fmt.Errorf("no index for %s: run `gfi index %s` first", requested, requested)
+	case err != nil:
+		var stale *explore.StaleIndexError
+		if !errors.As(err, &stale) {
+			return err
 		}
+		fmt.Printf("  warning     index is at %s but the snapshot pins %s\n",
+			short(stale.Index), short(stale.Corpus))
 	}
+	in.Dir = rec.Path
 
-	// The application owns the agent's configuration: generated, never inherited.
-	if err := pig.WriteConfig(cfg.Explore.Home, pig.DefaultConfig(config.AllowedChatModels)); err != nil {
-		return err
-	}
-	skillPath, err := explore.Prepare(cfg.Explore.Home)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("exploring %s#%d with %s\n", repoKey, number, cfg.Explore.Model)
-	out, err := pig.Run(context.Background(), pig.Request{
-		Dir:           rec.Path,
-		Prompt:        explore.PromptFor(snap.Repository.NameWithOwner, snap.Repository.CommitSHA, issue.Number, issue.Title, issue.Body, issue.Labels),
-		Model:         cfg.Explore.Model,
-		Tools:         cfg.Explore.Tools,
-		SystemPrompts: []string{explore.Prompt},
-		Skills:        []string{skillPath},
-		Home:          cfg.Explore.Home,
-		IdleWarn:      cfg.Explore.IdleWarn.Get(),
-		IdleKill:      cfg.Explore.IdleKill.Get(),
-		Budget:        cfg.Explore.Budget.Get(),
+	sess := &explore.Session{
+		Store:    st,
+		Model:    cfg.Explore.Model,
+		Models:   config.AllowedChatModels,
+		Tools:    cfg.Explore.Tools,
+		Home:     cfg.Explore.Home,
+		Binary:   cfg.Explore.Binary,
+		IdleWarn: cfg.Explore.IdleWarn.Get(),
+		IdleKill: cfg.Explore.IdleKill.Get(),
+		Budget:   cfg.Explore.Budget.Get(),
+		OnRun: func() {
+			fmt.Printf("exploring %s#%d with %s\n", repoKey, number, cfg.Explore.Model)
+		},
 		OnIdle: func(silence time.Duration) {
 			fmt.Printf("  idle        no output for %s: waiting for the model\n", silence.Round(time.Second))
 		},
-	})
-	if err != nil {
-		return err
 	}
 
-	r := explore.Record{
-		Repository: repoKey,
-		CommitSHA:  snap.Repository.CommitSHA,
-		Issue:      number,
-		Model:      cfg.Explore.Model,
-		Metrics: explore.Metrics{
-			TotalMs:    out.Total.Milliseconds(),
-			FirstMs:    out.FirstEvent.Milliseconds(),
-			LongestGap: out.LongestGap.Milliseconds(),
-			ToolCalls:  len(out.ToolCalls),
-			Stalled:    out.Stalled,
-			TimedOut:   out.TimedOut,
-			Complete:   out.Complete(),
-		},
+	res, err := sess.Analyze(context.Background(), in)
+	if res == nil {
+		return err
 	}
+	if res.Reused {
+		fmt.Printf("cached      %s#%d analysed %s, %s of work reused\n",
+			repoKey, number, res.Previous.At.Format("2006-01-02 15:04 UTC"),
+			(time.Duration(res.Previous.LatencyMs) * time.Millisecond).Round(time.Millisecond))
+		fmt.Printf("              prompt %s · model %s · commit %s\n",
+			res.Previous.PromptVersion, res.Previous.Model, short(res.Previous.CommitSHA))
+		fmt.Printf("              use -force to run it again\n")
+		printEvidence(res.Record)
+		return nil
+	}
+	if res.StaleCache {
+		fmt.Printf("  stale       the stored analysis is unreadable, running again\n")
+	}
+
+	r := res.Record
 	fmt.Printf("  complete    %v (exit %d, %d tool calls, %s)\n",
-		r.Metrics.Complete, out.ExitCode, r.Metrics.ToolCalls, out.Total.Round(time.Millisecond))
+		r.Metrics.Complete, res.Outcome.ExitCode, r.Metrics.ToolCalls,
+		time.Duration(r.Metrics.TotalMs)*time.Millisecond)
 	if !r.Metrics.Complete {
-		fmt.Printf("  stalled=%v timedout=%v stderr=%s\n", out.Stalled, out.TimedOut, out.Stderr)
+		fmt.Printf("  stalled=%v timedout=%v stderr=%s\n",
+			res.Outcome.Stalled, res.Outcome.TimedOut, res.Outcome.Stderr)
 	}
-
-	evidence, parseErr := explore.Parse(out.Answer)
-	if parseErr == nil {
-		r.Evidence = evidence
-		r.Violations = evidence.Verify(explore.Traces(out.ToolCalls))
+	if res.Compacted {
+		fmt.Printf("  compacted   journal rewritten with %d analyses\n", countAnalyses(st, repoKey))
 	}
-
-	verdict, err := json.Marshal(r)
 	if err != nil {
 		return err
 	}
-	if err := decisions.Put(store.Decision{Key: cacheKey, LatencyMs: r.Metrics.TotalMs, Verdict: verdict}); err != nil {
-		return err
-	}
-	if compacted, cerr := decisions.Compact(); cerr != nil {
-		fmt.Printf("  warning     journal compaction failed: %v\n", cerr)
-	} else if compacted {
-		fmt.Printf("  compacted   journal rewritten with %d analyses\n", decisions.Len())
-	}
 
-	if parseErr != nil {
-		return parseErr
-	}
-	printEvidence(&r)
+	printEvidence(r)
 	// One fact, one place: the journal is the only copy of this analysis. A second file
 	// beside it would drift from the cached verdict the moment either one changed.
 	fmt.Printf("  journal     %s\n", st.Path(repoKey+"/decisions.jsonl"))
 	return nil
+}
+
+// countAnalyses reports how many answers the journal holds for one repository.
+func countAnalyses(st *store.Store, repoKey string) int {
+	d, err := st.Decisions(repoKey)
+	if err != nil {
+		return 0
+	}
+	return d.Len()
 }
 
 // printEvidence reports one analysis. Cached and fresh runs print the same thing, so a

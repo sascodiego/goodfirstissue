@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{.Title}}</title>
   <link rel="stylesheet" href="/static/app.css">
+  {{/* Sin JS la página no puede cambiar la tabla sola: mientras la cola tiene trabajo, el
+       navegador la vuelve a pedir cada cinco segundos. Con JS esto no se usa. */}}
+  {{if .Live}}<noscript><meta http-equiv="refresh" content="5"></noscript>{{end}}
 </head>
 <body>
   {{template "content" .}}

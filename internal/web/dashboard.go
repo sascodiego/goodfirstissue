@@ -66,6 +66,13 @@ type pageData struct {
 	// Toggles del filtro, ya resueltos como URL para que funcionen sin JS.
 	FreeHref    string
 	NoLabelHref string
+	// CandidateHref lleva a las issues que el triaje recomendo. Es el filtro que hace util al
+	// embudo: dice cuantas son y deja verlas sin buscarlas a mano.
+	CandidateHref string
+	IsCandidate   bool
+	// CanFit dice si este binario puede correr el encaje. Sin eso el boton no se dibuja: un
+	// boton que no puede cumplir es peor que su ausencia.
+	CanFit bool
 }
 
 // statsView son las cifras del encabezado. Todas se cuentan sobre el corpus
@@ -136,6 +143,8 @@ func (h *Handler) dashboard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	// El boton del encaje solo se dibuja si este binario puede correrlo.
+	data.CanFit = h.fit != nil
 	h.render(w, screenDashboard, data)
 }
 
@@ -199,6 +208,11 @@ func buildPageWith(st *store.Store, q url.Values, jobs *queue) (pageData, error)
 	}
 	data.FreeHref = toggleStateURL(f, active.Key)
 	data.NoLabelHref = toggleNoLabelURL(f, active.Key)
+	data.IsCandidate = f.State == filterCandidate
+	data.CandidateHref = f.withState(filterCandidate).url(active.Key)
+	if data.IsCandidate {
+		data.CandidateHref = f.withoutState().url(active.Key)
+	}
 	data.Commit = shortSHA(active.CommitSHA)
 	data.Fetched = formatDate(active.FetchedAt)
 
@@ -228,6 +242,11 @@ func buildPageWith(st *store.Store, q url.Values, jobs *queue) (pageData, error)
 			continue
 		}
 		result, hasVerdict := verdictOf(journal, is.Number, active.CommitSHA)
+		// El filtro de candidatas se resuelve contra el journal: la issue no lleva la
+		// respuesta, el registro si.
+		if f.State == filterCandidate && (!hasVerdict || result.Outcome != triage.Candidate) {
+			continue
+		}
 		data.Rows = append(data.Rows, newRow(is, result, hasVerdict))
 	}
 	data.Shown = len(data.Rows)
@@ -261,6 +280,12 @@ func estadoText(code string) string {
 		return "Cancelado"
 	case "vaciada":
 		return "Cola vaciada"
+	case "encaje":
+		return "Encaje calculado sobre las candidatas que tienen exploración"
+	case "encaje-error":
+		return "El encaje no pudo correr: el registro quedó como estaba"
+	case "encaje-sin-clave":
+		return "Este binario no puede encajar: arrancó sin configuración o sin NAN_KEY"
 	}
 	return ""
 }

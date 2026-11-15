@@ -38,9 +38,13 @@ type filter struct {
 }
 
 const (
-	filterAll   = ""
-	filterTaken = "taken"
-	filterFree  = "free"
+	filterAll       = ""
+	filterTaken     = "taken"
+	filterFree      = "free"
+	// filterCandidate no es un hecho del corpus: es lo que decidio el triaje. Se resuelve
+	// contra el journal, no contra la issue, asi que buildPageWith la aplica despues de leer
+	// el veredicto.
+	filterCandidate = "candidate"
 )
 
 func parseFilter(q url.Values) filter {
@@ -50,7 +54,7 @@ func parseFilter(q url.Values) filter {
 		Label:   q.Get("label"),
 		NoLabel: q.Get("nolabel") == "1",
 	}
-	if f.State != filterTaken && f.State != filterFree {
+	if f.State != filterTaken && f.State != filterFree && f.State != filterCandidate {
 		f.State = filterAll
 	}
 	return f

@@ -69,6 +69,12 @@
             Analizar <span id="sel-count">0</span> seleccionadas
           </button>
         </form>
+        {{if .CanFit}}
+        <form class="inline" method="post" action="/fit" data-busy>
+          <input type="hidden" name="repo" value="{{.Active.Key}}">
+          <button class="btn" type="submit" title="Corre Clef sobre las candidatas que tienen exploraci&oacute;n guardada">Encajar candidatas</button>
+        </form>
+        {{end}}
         {{if .Live}}
         <form class="inline" method="post" action="/explore/clear">
           <input type="hidden" name="repo" value="{{.Active.Key}}">
@@ -135,6 +141,7 @@
       </select>
 
       <a class="f{{if eq .Filter.State "free"}} is-on{{end}}" href="{{.FreeHref}}">solo libres</a>
+      <a class="f{{if .IsCandidate}} is-on{{end}}" href="{{.CandidateHref}}" title="Lo que decidi&oacute; el triaje, no lo que dice la etiqueta">solo candidatas</a>
       <a class="f{{if .Filter.NoLabel}} is-on{{end}}" href="{{.NoLabelHref}}">sin etiqueta</a>
 
       <noscript><button class="btn" type="submit">Filtrar</button></noscript>

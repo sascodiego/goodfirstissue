@@ -23,6 +23,7 @@ func (h *Handler) Routes() http.Handler {
 	mux.HandleFunc("POST /explore/clear", h.exploreClear)
 	mux.HandleFunc("POST /explore/cancel-all", h.exploreCancelAll)
 	mux.HandleFunc("GET /explore/rows", h.exploreRows)
+	mux.HandleFunc("POST /fit", h.fitRun)
 	mux.Handle("GET /static/", http.StripPrefix("/static/", h.static))
 	return mux
 }

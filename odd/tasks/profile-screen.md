@@ -44,21 +44,21 @@ Rama `feat/10-profile-screen` · worktree `/src/worktrees/goodfirstissue/feat-10
 
 | ID | Tarea | Specs | Ruta | Commit |
 |---|---|---|---|---|
-| T1 | `internal/pig/run_test.go` en rojo: `Tools` vacío arma `-nt --no-mcp` sin `-e builtin:mcp` | S14 | inline | `0fd6eb7` |
-| T2 | `internal/pig/run.go`: rama sin herramientas en `buildArgs` | S14 | inline | `0fd6eb7` |
-| T3 | `internal/config/config_test.go` en rojo: sección `profile` con defaults, `idle_kill > idle_warn`, `budget ≥ idle_kill`; `config.example.json` regenerado | S11, S14 | inline | `0fd6eb7` |
-| T4 | `internal/config/config.go`: sección `Profile` y su validación | S11, S14 | inline | `0fd6eb7` |
-| T5 | `internal/profile/extract_test.go` en rojo: la corrida recibe el prompt de sistema y el CV delimitado, sin herramientas; CV vacío no ejecuta el agente; corrida incompleta es error | S9, S11, S14, S15 | inline | `fb7d8ed` |
-| T6 | `internal/profile/extract.go`: `Extract` sobre el agente inyectado, clasificación de `invalid_api_key` | S7, S11 | inline | `fb7d8ed` |
-| T7 | `internal/profile/revisions_test.go` en rojo: cada guardado agrega revisión, la vigente es la última, las viejas se conservan | S12, S13 | inline | `fb7d8ed` |
-| T8 | `internal/profile/revisions.go`: revisiones inmutables en `profile/revisions.json` | S12, S13 | inline | `fb7d8ed` |
-| T9 | `internal/web/profile_test.go` en rojo: POST vacío, POST con instrucciones inyectadas, render de la cita, aviso de cita no encontrada, `insufficient_information`, 401, falla del agente, escape del CV, CV guardado con su fecha, edición válida e inválida, 503 sin agente | S1–S10, S12 | inline | `8f0d4a1` |
-| T10 | `internal/web/profile.go`: GET/POST y POST de edición; estados y validación | S1–S10, S12 | inline | `8f0d4a1` |
-| T11 | `internal/web/templates/profile.html`, una línea en `routes.go`, `screenProfile` en `screens.go`, `Options.Extractor` | S1–S8, S10 | inline | `8f0d4a1` |
-| T12 | CSS aditivo en `design/app.css` y `internal/web/static/app.css` (idénticos) | S3, S4, S7 | inline | `8f0d4a1` |
-| T13 | Enlace «Perfil» en el rail de `dashboard.html` y `issue.html` | S1 | inline | `8f0d4a1` |
-| T14 | `cmd/gfi/main.go`: extractor desde `profile.*` y `models.profile_extract`; sin `pig`, la pantalla degrada a 503 | S11, S7 | inline | `8f0d4a1` |
-| T15 | `PROYECTO.md` §17.7: fila de la sección `profile`; `make verify` | S16 | inline | `8f0d4a1` |
+| T1 | `internal/pig/run_test.go` en rojo: `Tools` vacío arma `-nt --no-mcp` sin `-e builtin:mcp` | S14 | inline | `9255a8e` |
+| T2 | `internal/pig/run.go`: rama sin herramientas en `buildArgs` | S14 | inline | `9255a8e` |
+| T3 | `internal/config/config_test.go` en rojo: sección `profile` con defaults, `idle_kill > idle_warn`, `budget ≥ idle_kill`; `config.example.json` regenerado | S11, S14 | inline | `9255a8e` |
+| T4 | `internal/config/config.go`: sección `Profile` y su validación | S11, S14 | inline | `9255a8e` |
+| T5 | `internal/profile/extract_test.go` en rojo: la corrida recibe el prompt de sistema y el CV delimitado, sin herramientas; CV vacío no ejecuta el agente; corrida incompleta es error | S9, S11, S14, S15 | inline | `7d247e2` |
+| T6 | `internal/profile/extract.go`: `Extract` sobre el agente inyectado, clasificación de `invalid_api_key` | S7, S11 | inline | `7d247e2` |
+| T7 | `internal/profile/revisions_test.go` en rojo: cada guardado agrega revisión, la vigente es la última, las viejas se conservan | S12, S13 | inline | `7d247e2` |
+| T8 | `internal/profile/revisions.go`: revisiones inmutables en `profile/revisions.json` | S12, S13 | inline | `7d247e2` |
+| T9 | `internal/web/profile_test.go` en rojo: POST vacío, POST con instrucciones inyectadas, render de la cita, aviso de cita no encontrada, `insufficient_information`, 401, falla del agente, escape del CV, CV guardado con su fecha, edición válida e inválida, 503 sin agente | S1–S10, S12 | inline | `ab31f0f` |
+| T10 | `internal/web/profile.go`: GET/POST y POST de edición; estados y validación | S1–S10, S12 | inline | `ab31f0f` |
+| T11 | `internal/web/templates/profile.html`, una línea en `routes.go`, `screenProfile` en `screens.go`, `Options.Extractor` | S1–S8, S10 | inline | `ab31f0f` |
+| T12 | CSS aditivo en `design/app.css` y `internal/web/static/app.css` (idénticos) | S3, S4, S7 | inline | `da9a63d` |
+| T13 | Enlace «Perfil» en el rail de `dashboard.html` y `issue.html` | S1 | inline | `da9a63d` |
+| T14 | `cmd/gfi/main.go`: extractor desde `profile.*` y `models.profile_extract`; sin `pig`, la pantalla degrada a 503 | S11, S7 | inline | `da9a63d` |
+| T15 | `PROYECTO.md` §17.7: fila de la sección `profile`; `make verify` | S16 | inline | `da9a63d` |
 
 ## Log
 
@@ -79,3 +79,15 @@ L7. Decisión (navegación, S1): «Sí» del usuario. El rail del dashboard y el
 L8. Alcance fuera de esta rebanada: PDF y URL (§17.8.1), encaje P3 (#13), elegir o restaurar una revisión vieja, editar el CV original, maqueta nueva en `design/`.
 
 L9. Riesgo: **ítem 2** — la pantalla renderiza contenido no confiable (el CV pegado y la respuesta del modelo). Verificación independiente además de `make verify`.
+
+L10. Rebanadas: cuatro commits de 129 / 711 / 1119 / 629 líneas. Dos cortes se decidieron al commitear: el núcleo del paquete (`pig` + `config` + `profile`) quedó en dos commits en vez de uno porque el transporte y la sección de configuración se revisan por separado; y la pantalla se separó de su presentación (`app.css`, rails, `main.go`, `PROYECTO.md`) para que el revisor lea primero qué hace y después cómo se ve. Los tests viajan con el comportamiento que fijan, nunca aparte: por eso dos de las rebanadas superan la guía de ~400, y queda dicho acá.
+
+L11. Decisiones de implementación dentro del plan sellado:
+
+- **Una duda no se persiste.** `insufficient_information` se muestra con su motivo y no crea revisión ni toca el documento en efecto: una duda no es un resultado, y guardarla como si lo fuera sería inventar un documento vacío que P3 leería después.
+- **Editar el documento no necesita agente.** Guardar una corrección es una escritura en el store; un binario que arrancó sin `NAN_KEY` tiene que poder leer y corregir lo que ya está guardado. Solo el formulario de pegado desaparece cuando no hay agente. Corregido sobre la entrega inicial, que respondía 503 a la edición; test nuevo en rojo: «POST /profile/document status = 503, want 303».
+- **Los estados de falla responden 200 con la pantalla entera.** El pedido al binario salió bien; lo que falló fue la extracción, y la pantalla lo dice con la evidencia del agente. El 400 queda para la entrada del usuario y el 503 para el binario sin agente o sin store.
+
+L12. Evidencia (TDD en rojo, observada antes de cada grupo): «unknown field Extractor in struct literal of type Options» (plomería); «POST con cv \"\": status = 501, want 400», «status = 501, want 303», «la pantalla no dice \"insufficient_information\"», «no hay bloque propio para la clave rechazada», «GET /profile status = 501, want 200», «el rail de / no lleva al perfil». Verde: los 16 tests de la pantalla y `go test ./...` completo.
+
+L13. Evidencia (checks): `make verify` exit 0 (build, `go test ./...`, `go vet`, `golangci-lint` 0 issues, `gofmt`, `make design-check` con los dos `app.css` idénticos byte a byte).

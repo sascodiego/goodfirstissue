@@ -52,7 +52,9 @@ Esqueleto funcionando, producto en construcción. Sin decoración:
 | ✅ Tool calling verificado | `/v1/chat/completions` devuelve `finish_reason: "tool_calls"` en los cinco modelos permitidos |
 | ✅ Preflight de prerequisitos | `./scripts/preflight.sh` |
 | ✅ Árbol de decisiones y diseño del flujo | [`PROYECTO.md`](PROYECTO.md) |
-| ⏳ Corpus, triaje, explore, encaje | ver la ruta en `PROYECTO.md` §2.1.2 |
+| ✅ Cola de análisis desde la pantalla | el botón encola de verdad: hasta tres `pig` en paralelo, cancelar por issue y vaciar la cola |
+| ✅ Evidencia en la pantalla de issue | archivos con `path:line` y su relación, con el pin del análisis a la vista |
+| ⏳ Triaje preliminar y encaje | ver la ruta en `PROYECTO.md` §2.1.2 |
 
 ## Correr
 
@@ -70,6 +72,27 @@ make verify                    # build + test + lint + design-check
 
 El servidor lee `config.json` si está, y arranca con los defaults si no: escucha en
 `0.0.0.0:7117`, con `-addr` y `server.addr` para cambiarlo.
+
+### Analizar desde la pantalla
+
+El botón «Analizar N seleccionadas» encola de verdad. La cola vive en el servidor, así que
+navegar no la corta: volvés y sigue donde estaba.
+
+- **Paralelismo:** `explore.workers` en `config.json`, de 1 a 3 (por defecto 3). Cada worker
+  es un proceso `pig` con su propio `codegraph`: subirlo más no entra en una laptop.
+- **Un análisis cuesta ~1m49s** (medido). La pantalla dice cuánto falta con ese número:
+  3 en cola a 3 en paralelo son ~1m49s; a 1 en paralelo, ~5m27s.
+- **Cancelar por fila** corta el proceso del agente; **vaciar la cola** descarta lo que espera
+  y deja correr lo que ya está en curso; **cancelar todo** hace las dos cosas. Lo cancelado no
+  escribe en el journal: una corrida cortada no responde ninguna pregunta.
+- **Tope por pedido:** 50 issues. Con 1.000 seleccionadas, la app lo dice en vez de encolar
+  diez horas de trabajo.
+- **Lo ya analizado no se paga dos veces.** La clave es `(issue, pass, modelo, versión del
+  prompt, commit)`; si coincide, la fila dice «reutilizado, de hace X» en milisegundos.
+- **Sin `NAN_KEY`, sin índice, o con el índice en otro commit que el corpus**, no se encola y
+  cada fila dice qué correr para arreglarlo.
+- El triaje preliminar es la compuerta de P1 y todavía no está conectado: hoy se analiza lo
+  que selecciones. La cola ya es por etapa, así que el triaje entra como una etapa más.
 
 Si lo vas a dejar público, que sea detrás del proxy y no desnudo: la app no tiene
 autenticación y el alta de repositorios escribe en el store y gasta el rate limit del token

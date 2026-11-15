@@ -1455,7 +1455,7 @@ Un archivo parcial solo nombra lo que cambia; el resto toma su default. Las secc
 | `store.dir` | corpus congelado y resultados (`var/store`) |
 | `github` | `max_issues`, `page_size`, `timeout` — **sin filtro por etiqueta** |
 | `indexer` | binario, `timeout` |
-| `explore` | binario, modelo, `PIG_HOME`, allowlist de herramientas, `idle_warn`, `idle_kill`, `budget` |
+| `explore` | binario, modelo, `PIG_HOME`, allowlist de herramientas, `idle_warn`, `idle_kill`, `budget`, `workers` (1–3, la cola de la pantalla) |
 | `clef` | URL, `timeout`, `max_retries` |
 | `models` | `explore` y `profile_extract`; las acciones de decisión son constantes de código |
 

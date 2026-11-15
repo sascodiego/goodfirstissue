@@ -40,12 +40,13 @@ Issue #12 · rama `feat/12-explore-web` · base `main` @ 4b8684e.
 | ID | Spec | Route | Commit |
 | --- | --- | --- | --- |
 | T1 | — | documento de seguimiento y espejo en Engram | `docs(odd): track the explore queue from the dashboard` |
-| T2 | S5, S8 | sesión única de análisis en `internal/explore`, compartida con el CLI | `refactor(explore): share one analysis session with the CLI` |
-| T3 | S2, S3, S7, S9, S10, S13, S14 | cola, rutas, wiring en `internal/web/explore.go` | `feat(web): queue explore runs with cancel and drain` |
-| T4 | S1, S4, S6, S11, S12 | parcial de evidencia, escalera por fila, parcial de filas | `feat(web): show the evidence block and live stage state` |
-| T5 | S15 | docs y `make verify` | `docs(web): document the explore queue and its limits` |
+| T2 | S5, S8 | sesión única de análisis en `internal/explore`, compartida con el CLI | `47e0240 refactor(explore): share one analysis session with the CLI` |
+| T3 | S2, S3, S7, S9, S10, S13, S14 | cola, rutas, wiring en `internal/web/explore.go` | `aa2b1a8 feat(config)` + `28594e9 feat(web): queue explore runs with cancel and drain` |
+| T4 | S1, S4, S6, S11, S12 | parcial de evidencia, escalera por fila, parcial de filas | `488e539 feat(web): show the evidence block and live stage state` |
+| T5 | S15 | docs y `make verify` | ver L9 |
 
 ## Log
+
 
 **L1** (pedido original, verbatim): «Vamos a trabajar en un nuevo worktree en la issue #12»
 
@@ -57,4 +58,8 @@ Issue #12 · rama `feat/12-explore-web` · base `main` @ 4b8684e.
 
 **L5** (verbatim): «1. Lo mas sencillo, estamos a contrareloj. 2. Sellado» — S6 queda en **A** (manda §8.2, la UI degrada violaciones) y el plan queda sellado con el alcance de S1–S15.
 
-**L6** Worktree `/src/worktrees/goodfirstissue/feat-12-explore-web`, rama `feat/12-explore-web` desde `main`. Baseline en el worktree: `go build ./...` ok, `go test ./internal/...` 11 paquetes ok, `make design-check` ok. Corpus disponible sin red: `var/store/spf13__cobra` con el análisis de la #1272 cuya clave coincide con el `Version()` actual (`2c5927dda0f1`), y `var/store/*/index.json` para los dos repos. `NAN_KEY` está en `.env`, no en el entorno del servidor: la verificación en vivo lo exporta.
+**L7** El commit de T2 quedó en 601 líneas cambiadas, por encima de la unidad de ~400 que pide el workflow: la sesión compartida (`session.go` + sus 5 tests), el callback nuevo de `pig` y el CLI reescrito no se separan sin dejar un commit intermedio que no compila o que duplica el camino de código. Se registra acá en vez de fingir que fue una unidad. T3 se partió en dos commits (config y cola) y T4 en uno, para que el revisor tenga cortes.
+
+**L8** T3 se delegó a un worker (`gentle-ai-worker`) por presupuesto de contexto del orquestador, con el handoff por referencia a este documento. Evidencia que devolvió: RED observado en `internal/config` (`Workers undefined`) y en `internal/web` (`undefined: StageRequest`), cuatro mutaciones temporales que rompen y luego se revierten, `go test -count=5` y `-race -count=2` verdes, `golangci-lint` en 0. El orquestador revisó el código, corrigió un `%w` sobre un error nil en el mensaje de `stalled`, y escribió T4.
+
+**L9** Worktree `/src/worktrees/goodfirstissue/feat-12-explore-web`, rama `feat/12-explore-web` desde `main`. Baseline en el worktree: `go build ./...` ok, `go test ./internal/...` 11 paquetes ok, `make design-check` ok. Corpus disponible sin red: `var/store/spf13__cobra` con el análisis de la #1272 cuya clave coincide con el `Version()` actual (`2c5927dda0f1`), y `var/store/*/index.json` para los dos repos. `NAN_KEY` está en `.env`, no en el entorno del servidor: la verificación en vivo lo exporta.

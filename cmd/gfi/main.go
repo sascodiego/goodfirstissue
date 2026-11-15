@@ -109,6 +109,9 @@ func runConfig(args []string) error {
 	fmt.Printf("  pig home    %s\n", cfg.Explore.Home)
 	fmt.Printf("  explore     %s · %s\n", cfg.Explore.Model, cfg.Explore.Binary)
 	fmt.Printf("  tools       %v\n", cfg.Explore.Tools)
+	// The portrait job is the one that writes an agent home and runs a model of its own: a
+	// configuration that names it wrong is worth seeing before the first run.
+	fmt.Printf("  brief       %s · %s\n", cfg.Models.ProjectBrief, cfg.ProjectBrief.Home)
 	return nil
 }
 

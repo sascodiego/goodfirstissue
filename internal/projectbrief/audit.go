@@ -38,44 +38,36 @@ func (d *Document) Audit(cloneDir string) []Item {
 
 // citationExists reports whether the cited file is inside the clone and carries that line.
 func citationExists(root string, evidence Evidence, lines map[string]int) bool {
-	path, ok := resolveInClone(root, evidence.Path)
-	if !ok {
-		return false
-	}
-	count, read := lines[path]
-	if !read {
-		count = countLines(path)
-		lines[path] = count
+	count, checked := lines[evidence.Path]
+	if !checked {
+		count = countLinesInClone(root, evidence.Path)
+		lines[evidence.Path] = count
 	}
 	return count >= evidence.Line
 }
 
-// resolveInClone turns a citation into a real path, and refuses anything that leaves the clone.
-func resolveInClone(root, cited string) (string, bool) {
-	joined := filepath.Join(root, filepath.FromSlash(cited))
-	resolved, err := filepath.EvalSymlinks(joined)
-	if err != nil {
-		return "", false
+// countLinesInClone opens the cited file, proves it is the one that was validated, and counts its
+// lines. Anything it cannot prove is -1, which no citation matches.
+//
+// Resolving a path and then opening it would be two syscalls with a window between them: a link
+// swapped in that window would be read from wherever it now points. So the file is opened and its
+// descriptor compared with the identity of the path that was checked — os.SameFile — and a path
+// that changed under us fails closed instead of being followed (I3).
+func countLinesInClone(root, cited string) int {
+	resolved, validated, ok := resolveInClone(root, cited)
+	if !ok {
+		return -1
 	}
-	inside := resolved == root || strings.HasPrefix(resolved, root+string(os.PathSeparator))
-	if !inside {
-		return "", false
-	}
-	info, err := os.Stat(resolved)
-	if err != nil || !info.Mode().IsRegular() {
-		return "", false
-	}
-	return resolved, true
-}
-
-// countLines is how many lines the file has, or -1 when it cannot be read. A line beyond the end
-// of a file is not evidence: the claim points at nothing.
-func countLines(path string) int {
-	file, err := os.Open(path)
+	file, err := os.Open(resolved)
 	if err != nil {
 		return -1
 	}
 	defer func() { _ = file.Close() }()
+
+	opened, err := file.Stat()
+	if err != nil || !os.SameFile(validated, opened) {
+		return -1
+	}
 
 	scanner := bufio.NewScanner(file)
 	// A generated file with a very long line is still a file: raise the scanner's ceiling instead
@@ -89,4 +81,23 @@ func countLines(path string) int {
 		return -1
 	}
 	return count
+}
+
+// resolveInClone turns a citation into a real path inside the clone, together with the identity of
+// the file it found, so the caller can prove that what it opens is what was checked.
+func resolveInClone(root, cited string) (string, os.FileInfo, bool) {
+	joined := filepath.Join(root, filepath.FromSlash(cited))
+	resolved, err := filepath.EvalSymlinks(joined)
+	if err != nil {
+		return "", nil, false
+	}
+	inside := resolved == root || strings.HasPrefix(resolved, root+string(os.PathSeparator))
+	if !inside {
+		return "", nil, false
+	}
+	info, err := os.Stat(resolved)
+	if err != nil || !info.Mode().IsRegular() {
+		return "", nil, false
+	}
+	return resolved, info, true
 }

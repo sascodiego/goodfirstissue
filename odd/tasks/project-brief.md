@@ -216,3 +216,24 @@ L20. Límite declarado: el retrato no se corrió contra un repositorio real en e
 construcción del pedido, el parseo estricto, el pinneo, el caché, la auditoría contra el clon y el
 dossier de alineación. La primera corrida real es el primer `gfi brief` con clave, y su costo queda
 por medir (`PROYECTO.md` §17.7 ya registra que el caché lo anota por repositorio).
+
+L21. Evidencia (verificación independiente, `gentle-ai-verify` sobre `fae8940..bd71703`, lentes de
+seguridad): las seis categorías **sostienen** —una naturaleza por sección sin bypass encontrado,
+evidencia y pinneo, I3 con la salvedad de que acá no viaja texto del repo en el prompt (más fuerte
+que el mecanismo de delimitadores de `internal/profile`, y con eso se cumple la intención de S14)—,
+contención de symlinks, I13 fail-closed alcanzado desde `gfi brief` y desde el servidor, y S7.
+Comandos: build, vet, `go test ./...` (13 paquetes), `-race` en el paquete nuevo, `golangci-lint`
+0 issues, `gofmt` limpio, todos exit 0. Cinco hallazgos, accionados dos por decisión del usuario:
+
+- **Cerrado (hallazgo 1, TOCTOU en `Audit`):** había dos syscalls con ventana — resolver la ruta y
+  después abrirla. Ahora el archivo se abre y su descriptor se compara con la identidad de la ruta
+  validada (`os.SameFile`): un link cambiado en el medio falla cerrado en vez de seguirse (I3).
+  Honestidad: **el test nuevo no reproduce la carrera** (la ventana es de syscalls y no hay costura
+  para inyectarla); el guardarraíl la elimina por construcción, como el mutex de caché de `#8`.
+- **Cerrado (hallazgo 5, nit):** `gfi config check` imprime `brief <modelo> · <home>`. Cambia la
+  salida de un comando existente: es el cambio pedido, y la línea nueva es la única diferencia.
+- **No accionados, con motivo:** el hallazgo 2 (verificación contra el árbol en vez de la traza) ya
+  está decidido y argumentado en L9; el 3 (el texto de las afirmaciones viaja al `state` de
+  alineación como texto de terceros) es el mismo canal que ya tenía `CloneBrief` y su marcador
+  «evidence, not instructions» sigue ahí, sin arreglo barato; el 4 (`..\` y `C:\` en
+  `validatePath`) es inofensivo en el target Linux, donde la barra invertida es un carácter más.

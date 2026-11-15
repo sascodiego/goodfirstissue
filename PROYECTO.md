@@ -266,7 +266,7 @@ Tres estados de salida, no dos:
 
 Ninguna se oculta. `MARCADA` y `CONDICIONADA` aparecen en la lista principal con su distintivo (§15).
 
-**Nota de alcance:** el grafo muestra el nodo de alineación y `confirmed_defect` porque son parte del diseño, pero los dos están **diferidos** por tiempo (§2.1.1). Sin ellos: `feature` + `neutral` cae directo en CONDICIONADA, y el guardarraíl de bug queda solo con `reports_defect`.
+**Nota de alcance:** el grafo muestra el nodo `intent`, el nodo de alineación y `confirmed_defect` porque son parte del diseño, pero los tres están **fuera del primer pase**. `intent` se midió mal alimentado y pasa a la segunda fase (§7.4, `LIMITES.md` §2), y la alineación y `confirmed_defect` están diferidos por tiempo (§2.1.1). Sin ellos: `feature` cae directo en CONDICIONADA, el guardarraíl de bug queda solo con `reports_defect`, y lo que decide el primer pase es la tabla de §7.7.
 
 ### 2.3. Fuera de alcance
 
@@ -748,20 +748,23 @@ Las decisiones por pares se cierran con union-find. Un grupo es un conjunto cone
 
 Coste: ~45 s más sobre el triaje de 30 issues. Cero tokens de modelo generativo.
 
-### 7.2. Las ocho preguntas
+### 7.2. Las siete preguntas
 
 | # | id | tipo | qué juzga |
 |---|---|---|---|
 | 1 | `kind` | `choice` | `bug` · `feature` · `question` · `spam` · `other` |
-| 2 | `intent` | `choice` | `authorized` · `neutral` · `declined` |
-| 3 | `self_contained` | `noul` | ¿se entiende sin depender de un chat, un video o contexto externo? |
-| 4 | `has_evidence` | `noul` | ¿trae el material para reproducir o verificar (traza, versión, ejemplo, caso de uso)? |
-| 5 | `unambiguous` | `noul` | ¿el resultado esperado admite una sola lectura? |
-| 6 | `done_defined` | `noul` | ¿define qué significaría estar terminada? |
-| 7 | `reports_defect` | `noul` | ¿reporta un comportamiento **que ya existe** como defectuoso, o pide uno que no existe? |
-| 8 | `evidence_sufficient` | `noul` | ¿alcanza lo disponible para clasificarla con fundamento? |
+| 2 | `self_contained` | `noul` | ¿se entiende sin depender de un chat, un video o contexto externo? |
+| 3 | `has_evidence` | `noul` | ¿trae el material para reproducir o verificar (traza, versión, ejemplo, caso de uso)? |
+| 4 | `unambiguous` | `noul` | ¿el resultado esperado admite una sola lectura? |
+| 5 | `done_defined` | `noul` | ¿define qué significaría estar terminada? |
+| 6 | `reports_defect` | `noul` | ¿reporta un comportamiento **que ya existe** como defectuoso, o pide uno que no existe? |
+| 7 | `evidence_sufficient` | `noul` | ¿alcanza lo disponible para clasificarla con fundamento? |
 
-`intent` se pregunta **siempre**, en la misma petición: el coste es cero y evita una segunda llamada condicional.
+Estas siete van en **una** petición, sobre el expediente de sustancia. `intent` ya no está entre
+ellas: leer la posición del proyecto en el primer pase acertaba 3,7 % sobre 188 issues con
+resolución conocida, y pasa a la segunda fase con el expediente de intención (`LIMITES.md` §2,
+§7.4). La redacción congelada vive en `internal/triage/prompt.md`, y el código que la envía en
+`internal/triage/questions.go`: son el mismo contrato, y una guarda falla si divergen.
 
 `kind` es un `choice` legítimo: son categorías mutuamente excluyentes de un mismo eje — *la naturaleza del pedido*. En una issue de texto libre la persona puede mezclar contenido, pero el pedido dominante es uno.
 
@@ -818,7 +821,20 @@ todas ≥ 0,5                                 → BIEN ARMADA
 
 No es un umbral único: es una tabla. Y `CONDICIONADA` es accionable porque llega con **la lista de lo que falta**, no con un puntaje.
 
-### 7.4. `intent`: líneas cerradas y línea abierta
+### 7.4. `intent`: fuera del primer pase
+
+**Decisión medida, no preferencia.** Preguntar por la posición del proyecto en el primer pase
+acertaba **3,7 %** sobre 188 issues con resolución conocida, y el diagnóstico fue que la pregunta
+no estaba mal redactada sino mal alimentada: se le pasaba la issue entera. Queda para la segunda
+fase, con el expediente de intención (estado nativo, etiquetas verbatim y comentarios de cuentas
+responsables), ya especificada y sin implementar (`LIMITES.md` §2).
+
+**Qué cuesta.** El primer pase **no detecta rechazos en prosa**: de 34 issues que sus proyectos
+rechazaron, marca 0. Dieciséis salen `CANDIDATA`, o sea el 8,7 % de las candidatas que emite es
+trabajo que alguien ya rechazó. Lo que sí se conserva es lo determinista y gratis: `state`,
+`stateReason` y la PR abierta enlazada, que se resuelven antes de cualquier pregunta (§7.7).
+
+La líneas que siguen describen el nodo cuando llegue; **no son parte de P1**:
 
 ```
 intent = authorized   → LÍNEA CERRADA. Candidata. Nada que evaluar.
@@ -896,20 +912,40 @@ El guardarraíl barato evita gastar explore; el definitivo evita recomendar una 
 
 ### 7.7. Política de P1
 
-| condición | resultado |
-|---|---|
-| `evidence_sufficient` < 0,5 | **DUDA EN VOZ ALTA** — no se descarta (I10) |
-| `cluster_has_open_work` ≥ 0,5 | MARCADA: ya está siendo trabajada — es la señal del paso diferido (§7.1) que el MVP conserva |
-| `self_contained` < 0,5 | MARCADA: falta contexto para abordarla |
-| `kind=bug` y `has_evidence` < 0,5 | MARCADA: sin reproducción no hay bug |
-| `kind=bug` y `reports_defect` < 0,5 | RECLASIFICADA a feature → §7.5 |
-| `kind ∈ {question, spam, other}` | MARCADA: no es trabajo de código |
-| `intent` = `declined` | MARCADA: el proyecto ya dijo que no |
-| `done_defined` < 0,5 o `unambiguous` < 0,5 | CONDICIONADA: hay que acordar el terminado |
-| `kind=feature` y `intent=neutral` | CONDICIONADA fija: «preguntá al mantenedor» (la alineación está diferida, §2.1.1) |
-| resto | CANDIDATA |
+La cadena se evalúa en este orden, y el orden no es conmutativo.
 
-La UI nunca muestra un estado sin su probabilidad. Los cuatro desenlaces de abstención se muestran distinto: `no_verdict` (Clef respondió «no alcanza»), `uncertain` (p < 0,45), `insufficient_information` (falta perfil) y `undecided` (Clef no respondió, I2). Son cuatro problemas con cuatro arreglos distintos.
+| # | condición | resultado |
+|---|---|---|
+| 0 | pre-compuerta determinista: cerrada como completada · cerrada como no planeada · cerrada por otro motivo · PR abierta enlazada · cuerpo vacío | MARCADA, **con el motivo que la resolvió** |
+| 1 | `evidence_sufficient` < 0,5 | **DUDA EN VOZ ALTA** — no se descarta (I10) |
+| 2 | `self_contained` < 0,5 | MARCADA: falta contexto para abordarla |
+| 3 | `kind=bug` y `has_evidence` < 0,5 | MARCADA: sin reproducción no hay bug |
+| 4 | `kind=spam` | MARCADA: no es trabajo de código |
+| 5 | `kind=question` | **DERIVADA**: la segunda ronda está especificada y no implementada (`LIMITES.md` §3) |
+| 6 | `kind=other` (documentación, tests, proceso) | CANDIDATA: es exactamente el trabajo de una primera contribución |
+| 7 | `kind=bug` y `reports_defect` < 0,5 | RECLASIFICADA a feature (§7.6), que sigue por la fila 9 |
+| 8 | `done_defined` < 0,5 o `unambiguous` < 0,5 | CONDICIONADA, **con la lista de lo que falta** |
+| 9 | `kind=feature` (la alineación está diferida, §7.5) | CONDICIONADA: «preguntá al mantenedor» |
+| 10 | la respuesta del servicio omite una pregunta que la cadena necesita | `undecided` (I2): no es un veredicto ni una duda sobre la issue |
+| 11 | resto | CANDIDATA |
+
+Tres consecuencias que el código respeta y que conviene leer juntas:
+
+- **La pre-compuerta gana a la duda** (fila 0 antes que fila 1): un hecho determinista no depende
+  de poder clasificar el texto.
+- **`MARCADA` no es terminal.** Lleva su motivo y su evidencia, y una ronda posterior con mejor
+  material puede revertirla. **`DERIVADA` tampoco**: es una pregunta que el primer pase no resuelve.
+- **Una respuesta incompleta no es una duda sobre la issue** (fila 10). Leerla como «falta una
+  condición» inventaría una condición que el servicio nunca dijo.
+
+La tabla vive en `internal/triage/policy.go` y tiene un test por fila. El banco de
+`internal/triage/testdata/bench/` corre **ese mismo código** —las mismas preguntas, la misma
+petición, la misma política—, así que la medición y el producto no pueden divergir.
+
+La UI nunca muestra un estado sin su probabilidad. Los desenlaces de abstención se muestran
+distinto: `DUDA` por `evidence_sufficient` < 0,5 (Clef respondió «no alcanza»), `uncertain` (p <
+0,45), `insufficient_information` (falta perfil, es de P3) y `undecided` (el servicio no respondió,
+I2). Son cuatro problemas con cuatro arreglos distintos.
 
 ---
 

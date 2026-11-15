@@ -41,6 +41,8 @@ no documentado es una tarea).
 
 - **Qué se pierde**: 12 de las 188 issues que el proyecto terminó con una PR mergeada eran
   preguntas, y quedan derivadas en vez de candidatas.
+- **Cómo se ve en el producto**: la issue sale `DERIVADA`, un desenlace propio del primer pase:
+  ni candidata ni descartada. Es lo que muestra la tabla de `PROYECTO.md` §7.7.
 - **El arreglo**: la ronda dos, que es una petición más por issue.
 
 ### 4. Autoría de las etiquetas: verificada en la API, no incorporada

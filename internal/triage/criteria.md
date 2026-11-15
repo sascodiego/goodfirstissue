@@ -30,6 +30,10 @@ Lo que se congela acá son decisiones, no mediciones:
    más preguntas por petición, no más peticiones.
 7. Borde de P1: P1 no responde "qué te falta". Eso es P2 (requisitos en tres baldes,
    lagunas) y P3 (fit como veredicto cerrado sobre esa evidencia).
+8. La redacción y la cadena viven en código, no en este documento: `questions.go` envía las
+   preguntas y `policy.go` camina la tabla, y el banco de pruebas corre ese mismo código. Este
+   `.md` declara el mecanismo y el porqué; si declarara además la tabla, sería la tercera copia
+   y la única que nadie ejecuta.
 -->
 
 # P1 triage policy

@@ -50,6 +50,11 @@ var AllowedModels = []string{
 	"clef", "deepseek-v4-flash", "glm5.3-flash", "mimo-v2.6-flash", "gemma4", "qwen3.6",
 }
 
+// DecisionModel is the one model the decision passes ask: triage, alignment and fit. It is
+// a constant and not a configuration field because the constitution fixes it (I13);
+// config.json chooses the agent's model per action, never this one.
+const DecisionModel = "clef"
+
 // forbiddenTools can write or execute. An exploration agent must not have them, so a
 // configuration that grants one is invalid rather than merely unusual.
 var forbiddenTools = []string{"bash", "shell", "edit", "write", "multiedit", "*"}

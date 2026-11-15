@@ -36,6 +36,7 @@ const usage = `gfi — GoodFirstIssue
   gfi fetch [-config FILE] OWNER/REPO    fetch the open issues into the store
   gfi index [-config FILE] OWNER/REPO    clone if needed and build the code graph
   gfi explore [-config FILE] OWNER/REPO ISSUE   run the read-only agent on one issue
+  gfi triage [-config FILE] [-limit N] OWNER/REPO   run the first pass over the stored corpus
   gfi repos [-config FILE]                       list the known repositories
   gfi version                      print the build identity
 `
@@ -59,6 +60,8 @@ func run(args []string) error {
 			return runIndex(args[1:])
 		case "explore":
 			return runExplore(args[1:])
+		case "triage":
+			return runTriage(args[1:])
 		case "repos":
 			return runRepos(args[1:])
 		case "version":

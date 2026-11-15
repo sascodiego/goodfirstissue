@@ -39,6 +39,19 @@
     "idle_kill": "2m0s",
     "budget": "3m0s"
   },
+  "project_brief": {
+    "binary": "pig",
+    "home": "var/pig-brief",
+    "tools": [
+      "read",
+      "ls",
+      "grep",
+      "mcp__codegraph__codegraph_explore"
+    ],
+    "idle_warn": "20s",
+    "idle_kill": "1m30s",
+    "budget": "3m0s"
+  },
   "clef": {
     "url": "https://api.nan.builders/v1/systemone",
     "timeout": "1m0s",
@@ -46,6 +59,7 @@
   },
   "models": {
     "explore": "deepseek-v4-flash",
-    "profile_extract": "glm5.3-flash"
+    "profile_extract": "glm5.3-flash",
+    "project_brief": "deepseek-v4-flash"
   }
 }

@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"sort"
 	"strings"
@@ -13,6 +14,8 @@ import (
 	"github.com/sascodiego/nan-hackathon-clef/internal/config"
 	"github.com/sascodiego/nan-hackathon-clef/internal/ghdata"
 	"github.com/sascodiego/nan-hackathon-clef/internal/nan"
+	"github.com/sascodiego/nan-hackathon-clef/internal/pig"
+	"github.com/sascodiego/nan-hackathon-clef/internal/projectbrief"
 	"github.com/sascodiego/nan-hackathon-clef/internal/store"
 	"github.com/sascodiego/nan-hackathon-clef/internal/triage"
 )
@@ -100,9 +103,9 @@ func runTriage(args []string) error {
 		snapshot: snap,
 		journal:  journal,
 		judge:    triage.ClientJudge{Client: client, Model: config.DecisionModel},
-		// The node reads the clone on disk: the README and the recent history cost no request.
-		// A clone that is not there is a condition the run reports, never a crash.
-		brief:     triage.CloneBrief{Root: cfg.Repos.CloneDir},
+		// The node reads the project's portrait, and the README brief when the portrait cannot be
+		// produced. A clone that is not there is a condition the run reports, never a crash.
+		brief:     alignmentBrief(cfg, st, repoKey),
 		model:     config.DecisionModel,
 		commitSHA: snap.Repository.CommitSHA,
 		limit:     *limit,
@@ -111,6 +114,44 @@ func runTriage(args []string) error {
 	}
 	_, err = run.run(context.Background())
 	return err
+}
+
+// alignmentBrief is what the alignment node reads: the project portrait, and the free README brief
+// as the fallback when the portrait cannot be produced.
+//
+// The portrait costs one agent run per repository and commit, spent the first time a feature
+// reaches the node and reused for the rest of the batch; the fallback costs no request at all. A
+// pass over a hundred issues is never aborted over the richer input: the degradation is reported
+// and the node reads the cheaper one.
+func alignmentBrief(cfg *config.Config, st *store.Store, repoKey string) triage.BriefSource {
+	brief := triage.FallbackBrief{
+		Fallback: triage.CloneBrief{Root: cfg.Repos.CloneDir},
+		OnFailure: func(err error) {
+			slog.Warn("the alignment node reads the README brief: the portrait was not produced",
+				"repo", repoKey, "err", err)
+		},
+	}
+	extractor, err := projectbrief.New(projectbrief.Options{
+		Run:      pig.Run,
+		Model:    cfg.Models.ProjectBrief,
+		Binary:   cfg.ProjectBrief.Binary,
+		Home:     cfg.ProjectBrief.Home,
+		Tools:    cfg.ProjectBrief.Tools,
+		IdleWarn: cfg.ProjectBrief.IdleWarn.Get(),
+		IdleKill: cfg.ProjectBrief.IdleKill.Get(),
+		Budget:   cfg.ProjectBrief.Budget.Get(),
+		Store:    st,
+	})
+	if err != nil {
+		slog.Warn("the portrait is not configured: the alignment node reads the README brief", "err", err)
+		return brief
+	}
+	if err := prepareBriefHome(cfg); err != nil {
+		slog.Warn("the portrait cannot run: the alignment node reads the README brief", "err", err)
+		return brief
+	}
+	brief.Primary = projectbrief.Source{Extractor: extractor, Root: cfg.Repos.CloneDir}
+	return brief
 }
 
 // triageRun is one pass over one snapshot. Everything it needs is a field so a test can run

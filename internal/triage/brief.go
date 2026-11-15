@@ -104,3 +104,42 @@ func readReadme(dir string) string {
 	}
 	return noneMarker
 }
+
+// FallbackBrief asks the primary source and answers from a cheaper one when the primary cannot.
+//
+// The portrait is one agent run per repository and commit, and the README brief is free; a triage
+// pass over a hundred issues must not be lost because an agent stalled or a clone is half updated.
+// The node gets the project's declared direction either way — and OnFailure says which source it
+// read and why, so a weaker input is never silent.
+type FallbackBrief struct {
+	// Primary is the richer source. Empty is allowed: the fallback then answers alone, which is
+	// what a caller that could not build the primary wants.
+	Primary BriefSource
+	// Fallback answers whenever the primary cannot. Required.
+	Fallback BriefSource
+	// OnFailure is told why the primary did not answer, once per fallback. Nil is allowed.
+	OnFailure func(error)
+}
+
+// Brief asks the primary and falls back, reporting the reason it had to.
+func (b FallbackBrief) Brief(ctx context.Context, repository string) (string, error) {
+	if b.Fallback == nil {
+		return "", errors.New("triage: a fallback brief needs a fallback")
+	}
+	if b.Primary != nil {
+		brief, err := b.Primary.Brief(ctx, repository)
+		// An empty answer is a failure even without an error: a node fed a blank section would
+		// judge on nothing and report nothing.
+		if err == nil && strings.TrimSpace(brief) != "" {
+			return brief, nil
+		}
+		if b.OnFailure != nil {
+			if err != nil {
+				b.OnFailure(err)
+			} else {
+				b.OnFailure(errors.New("the primary brief answered nothing"))
+			}
+		}
+	}
+	return b.Fallback.Brief(ctx, repository)
+}

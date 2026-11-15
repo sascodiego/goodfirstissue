@@ -57,6 +57,7 @@ Esqueleto funcionando, producto en construcción. Sin decoración:
 | ✅ Perfil del desarrollador | el CV se extrae con PiG, se auditan las citas contra el texto pegado y el documento se edita antes de juzgar |
 | ✅ Triaje preliminar | `gfi triage` corre las siete preguntas sobre el corpus: 150 issues en 53 s y 100 peticiones, y en la corrida de 20 sobre el corpus actual 13 las resolvieron las pre-compuertas sin consultar al modelo |
 | ✅ Informe de triaje en la pantalla de issue | el veredicto con su probabilidad, las preguntas que se hicieron con su respuesta, y el motivo cuando no hay recomendación |
+| ✅ Retrato del proyecto | `gfi brief` describe un repositorio clonado en seis secciones, cada afirmación con su `archivo:línea`, y alimenta el dossier de alineación sin cambiarle la firma |
 | ⏳ Encaje y embudo en pantalla | ver la ruta en `PROYECTO.md` §2.1.2 |
 
 ## Correr
@@ -75,6 +76,34 @@ make verify                    # build + test + lint + design-check
 
 El servidor lee `config.json` si está, y arranca con los defaults si no: escucha en
 `0.0.0.0:7117`, con `-addr` y `server.addr` para cambiarlo.
+
+### Describir un repositorio
+
+El nodo de alineación necesita saber qué es el proyecto y hacia dónde va, y esa ficha no salía de
+ningún lado. `gfi brief` la produce a partir del clon, una vez por repositorio:
+
+```bash
+gfi brief spf13/cobra > brief.md     # seis secciones, cada afirmación con archivo:línea
+```
+
+- **Pineado al commit.** Si el clon se mueve, el retrato se recalcula; nunca se sirve uno viejo
+  como fresco. `-force` lo pide de nuevo sin esperar a que el commit cambie.
+- **Una corrida por repositorio, no por issue.** La clave del caché es el repositorio, el commit,
+  el modelo y la versión del prompt.
+- **Cada sección declara su naturaleza.** `Stack técnico` es lo único que se cruza con el CV;
+  el resto es conocimiento del proyecto, y como tal informa el costo de onboarding y nunca es un
+  portón de encaje (`PROYECTO.md` §1.2, §13).
+- **Cada cita se audita contra el clon**: si el archivo no está, o no llega a esa línea, la
+  afirmación se reporta como no sostenida en vez de borrarse del documento.
+- **Sin inventar.** Una sección que el repositorio no sostiene dice `insufficient_information`
+  (I10). El modelo se elige en `models.project_brief`, dentro del allowlist de I13.
+- **Es lo que lee el nodo de alineación.** `gfi triage` usa el retrato como dirección del proyecto
+  para las features; si no se puede producir, lee el brief de respaldo (README + últimos 20
+  commits, coste cero) y lo avisa en stderr. Una corrida de agente por repositorio y commit, la
+  paga la primera feature y el resto del lote la reusa.
+- **Necesita `NAN_KEY`** en el entorno, como cualquier otra corrida del agente, y el repositorio
+  tiene que estar clonado (`gfi index owner/repo` lo clona e indexa). El documento va a stdout y
+  los hechos a stderr, así que `gfi brief owner/repo > brief.md` escribe solo el retrato.
 
 ### Analizar desde la pantalla
 

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/sascodiego/nan-hackathon-clef/internal/repo"
+	"github.com/sascodiego/nan-hackathon-clef/internal/store"
 )
 
 // BriefSource supplies the project's own direction for the alignment node (§7.5). It is an
@@ -39,7 +40,7 @@ var readmeNames = []string{"README.md", "README.rst", "README.markdown", "README
 // CloneBrief builds the brief from a local clone: the declared direction from its README and the
 // revealed one from its recent history. Both are already on disk, so it costs no request.
 type CloneBrief struct {
-	// Root is where the clones live: <Root>/<repository>.
+	// Root is where the clones live: <Root>/<owner>__<repo>.
 	Root string
 	// Git inspects the clone. Nil uses git from PATH.
 	Git *repo.Cloner
@@ -47,13 +48,18 @@ type CloneBrief struct {
 
 // Brief renders the project's direction for one repository.
 //
+// The repository may arrive in either shape — the canonical owner/repo GitHub hands out, or the
+// on-disk key store.RepoName produces — and both name the same clone. The key is computed once
+// here so the directory and the header cannot disagree.
+//
 // A missing README is not an error: the history still speaks, and a project whose history cannot
 // be read either is the only case that reports one.
 func (c CloneBrief) Brief(ctx context.Context, repository string) (string, error) {
 	if strings.TrimSpace(c.Root) == "" {
 		return "", errors.New("triage: the brief needs the directory the clones live in")
 	}
-	dir := filepath.Join(c.Root, filepath.FromSlash(strings.TrimSpace(repository)))
+	key := store.RepoKey(repository)
+	dir := filepath.Join(c.Root, key)
 
 	git := c.Git
 	if git == nil {
@@ -66,7 +72,7 @@ func (c CloneBrief) Brief(ctx context.Context, repository string) (string, error
 
 	var b strings.Builder
 	b.WriteString("# ")
-	b.WriteString(strings.ReplaceAll(strings.TrimSpace(repository), "/", "__"))
+	b.WriteString(key)
 	b.WriteString("\n\n## What the project says it is (README)\n")
 	b.WriteString(readReadme(dir))
 	b.WriteString("\n\n## What it has been building lately (last ")

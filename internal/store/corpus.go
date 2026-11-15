@@ -2,6 +2,7 @@ package store
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/sascodiego/nan-hackathon-clef/internal/ghdata"
 	"github.com/sascodiego/nan-hackathon-clef/internal/indexer"
@@ -62,3 +63,11 @@ func indexNameFor(repo string) string    { return repo + "/" + indexName }
 // RepoName is the on-disk directory name of one repository. It replaces the slash so the
 // store has a flat, predictable layout.
 func RepoName(owner, name string) string { return owner + "__" + name }
+
+// RepoKey is the same on-disk name, computed from the canonical repository name GitHub hands
+// out (owner/repo). It is the one place the conversion from the canonical name to the key
+// lives: whatever holds a nameWithOwner converts here instead of joining it into a path, which
+// would point at a directory no clone of ours has.
+func RepoKey(canonical string) string {
+	return strings.ReplaceAll(strings.TrimSpace(canonical), "/", "__")
+}

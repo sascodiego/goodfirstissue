@@ -409,6 +409,7 @@ fetch (1 consulta GraphQL) → caché en disco → triaje offline → se descart
 
 - Clave de caché: `(repo, número de issue, updated_at)`.
 - **El nombre canónico manda.** `httpie/httpie` es `httpie/cli` para GitHub; el `nameWithOwner` de la respuesta es la clave del store, y la traducción se guarda en `var/store/repos.json`. Sin eso, un renombrado parte un repositorio en dos.
+- **La clave en disco es `owner__repo`** (`spf13__cobra`), y el nombre canónico con barra es otra cosa: la primera es lo que nombra el store, el directorio del clon y `Issue.Repository`; la segunda sirve para hablar con GitHub y para mostrar. `store.RepoName` y `config.RepoDir` tienen que coincidir en esa forma, y convertir de una a la otra se hace en `store.RepoKey`, en un solo lugar. La confusión no falla ruidosamente: apunta a un directorio que no existe y el consumidor degrada en silencio, por eso hay un test que ata los dos productores.
 - Cada snapshot se guarda envuelto en `{schema, saved_at, data}`. Un archivo de otro esquema se rechaza en vez de decodificarse mal (I4).
 - El triaje **nunca** toca la red (I11).
 - La caché sobrevive al reinicio y hace la demo hermética: sin red, sin `429`, sin esperas.

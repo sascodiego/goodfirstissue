@@ -156,3 +156,40 @@ func TestTraceHelperMatchesPigToolCalls(t *testing.T) {
 		t.Fatalf("traces = %+v", traces)
 	}
 }
+
+// Un archivo sin relación declarada no invalida el paquete entero: el contrato tiene un
+// balde para lo que no se verificó, y ahí es donde cae. Rechazar la respuesta completa
+// pierde una corrida de dos minutos por un campo que el modelo omitió.
+func TestParseFallsBackToUnverifiedWhenTheRelationIsMissing(t *testing.T) {
+	answer := `{"intent":"the task","files":[{"path":"command.go","symbol":"AddCommand","line":12,"reason":"padding","relation":""},` +
+		`{"path":"args.go","reason":"parsing","relation":"probable"}],` +
+		`"call_paths":[],"tests":[],` +
+		`"requirements":{"knowledge":[],"project":[],"process":[]},` +
+		`"blast_radius":{"files":1,"symbols":1,"public_api":false},` +
+		`"unknowns":[],"missing_information":[]}`
+
+	evidence, err := Parse(answer)
+	if err != nil {
+		t.Fatalf("una relación vacía no puede tirar el paquete: %v", err)
+	}
+	if got := evidence.Files[0].Relation; got != RelationUnverified {
+		t.Fatalf("relation vacía = %q, want %q", got, RelationUnverified)
+	}
+	if got := evidence.Files[1].Relation; got != RelationProbable {
+		t.Fatalf("la relación declarada se perdió: %q", got)
+	}
+}
+
+// Y una relación inventada sigue siendo un error: el balde existe, pero no cualquier palabra
+// entra en él.
+func TestParseRejectsAnInventedRelation(t *testing.T) {
+	answer := `{"intent":"the task","files":[{"path":"command.go","reason":"padding","relation":"verified"}],` +
+		`"call_paths":[],"tests":[],` +
+		`"requirements":{"knowledge":[],"project":[],"process":[]},` +
+		`"blast_radius":{"files":1,"symbols":1,"public_api":false},` +
+		`"unknowns":[],"missing_information":[]}`
+
+	if _, err := Parse(answer); err == nil {
+		t.Fatal("una relación inventada tiene que fallar")
+	}
+}

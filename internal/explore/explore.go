@@ -140,6 +140,11 @@ func (e *Evidence) Validate() error {
 		}
 		switch f.Relation {
 		case RelationObserved, RelationProbable, RelationUnverified:
+		case "":
+			// Un archivo sin relación declarada cae en el balde más débil: no se verificó.
+			// Rechazar el paquete entero perdería una corrida de minutos por un campo que el
+			// modelo omitió, y `unverified` nunca exagera lo que se sabe.
+			e.Files[i].Relation = RelationUnverified
 		default:
 			return fmt.Errorf("explore: files[%d] relation %q is not one of observed/probable/unverified", i, f.Relation)
 		}

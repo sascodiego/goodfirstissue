@@ -43,7 +43,7 @@ Issue #12 · rama `feat/12-explore-web` · base `main` @ 4b8684e.
 | T2 | S5, S8 | sesión única de análisis en `internal/explore`, compartida con el CLI | `47e0240 refactor(explore): share one analysis session with the CLI` |
 | T3 | S2, S3, S7, S9, S10, S13, S14 | cola, rutas, wiring en `internal/web/explore.go` | `aa2b1a8 feat(config)` + `28594e9 feat(web): queue explore runs with cancel and drain` |
 | T4 | S1, S4, S6, S11, S12 | parcial de evidencia, escalera por fila, parcial de filas | `488e539 feat(web): show the evidence block and live stage state` |
-| T5 | S15 | docs y `make verify` | ver L9 |
+| T5 | S15 | docs y `make verify` | `d28dcff fix(config)` + `266fb63 fix(explore)` + `1f36005 docs(web)` |
 
 ## Log
 
@@ -63,3 +63,11 @@ Issue #12 · rama `feat/12-explore-web` · base `main` @ 4b8684e.
 **L8** T3 se delegó a un worker (`gentle-ai-worker`) por presupuesto de contexto del orquestador, con el handoff por referencia a este documento. Evidencia que devolvió: RED observado en `internal/config` (`Workers undefined`) y en `internal/web` (`undefined: StageRequest`), cuatro mutaciones temporales que rompen y luego se revierten, `go test -count=5` y `-race -count=2` verdes, `golangci-lint` en 0. El orquestador revisó el código, corrigió un `%w` sobre un error nil en el mensaje de `stalled`, y escribió T4.
 
 **L9** Worktree `/src/worktrees/goodfirstissue/feat-12-explore-web`, rama `feat/12-explore-web` desde `main`. Baseline en el worktree: `go build ./...` ok, `go test ./internal/...` 11 paquetes ok, `make design-check` ok. Corpus disponible sin red: `var/store/spf13__cobra` con el análisis de la #1272 cuya clave coincide con el `Version()` actual (`2c5927dda0f1`), y `var/store/*/index.json` para los dos repos. `NAN_KEY` está en `.env`, no en el entorno del servidor: la verificación en vivo lo exporta.
+
+**L10** Verificación en vivo (servidor en `127.0.0.1:7119`, cwd `/src/goodfirstissue`, corpus real, `NAN_KEY` del `.env`):
+- `POST /explore` de la #1272 (ya analizada) ⇒ `303` con `estado=analizando&n=1` y la fila dice «reutilizado · hace 24 h» en milisegundos; el bloque de evidencia muestra el pin (`guardado el 2026-11-14 · 1m49.386s · prompt 2c5927dda0f1 · commit adbc8813901b`) y sus `class="rel observed"`.
+- `POST /explore` de la #2568 ⇒ falló el arranque del agente en 67 ms con la nota «unparseable answer». Causa encontrada: `runServer` no llamaba a `cfg.Resolve(".")`, así que `PIG_HOME=var/pig` viajaba relativo y el hijo lo resolvía **desde el clon**: el agente arrancaba sin configuración ni clave. Arreglado en `d28dcff`; el mismo commit de la nota ahora incluye el `exit` y la primera línea del stderr, así un fallo de arranque no se lee como respuesta ilegible.
+- Corrida real por CLI de la #2568 (30,27 s, 9 tool calls, `complete=true`) ⇒ el camino completo funciona. Corrida real por HTTP de la #1995 ⇒ «en curso 1s», «en curso 2s» (silencio del pipe visible, S10) y «listo · 1m2.562s».
+- La #1995 salió primero en `error` porque el modelo omitió `relation` en un archivo y `Validate` tiraba todo el paquete. Arreglado en `266fb63`: una relación vacía cae en `unverified` (el balde más débil, nunca exagera) y una relación inventada sigue siendo error. Re-corrida por HTTP de la #1995 ⇒ «listo · 1m2.562s» y evidencia con archivos y relaciones.
+- Segundo `POST` de la #1995 ⇒ «reutilizado · hace un momento», sin gastar cuota.
+- Lo que la corrida en vivo **no** cubrió: cancelar y vaciar con un `pig` real, porque cada intento quema una análisis de ~1 min de cuota. Esas tres rutas están cubiertas por tests con runner inyectado (`TestExploreCancelDrainsQueuedAndKillsRunning`, `TestExploreCancelAllStopsEverything`) y por el verificador independiente.

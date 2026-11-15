@@ -36,6 +36,18 @@
       </div>
     </header>
 
+    {{/* Arriba va solo el veredicto, en una tira: la palabra, la probabilidad y una frase.
+         Los tres informes completos piden media pantalla y empujaban el cuerpo de la issue
+         fuera de la vista; quien abre la pantalla quiere saber qué decidimos y de qué se trata,
+         en ese orden y juntos. */}}
+    {{if .HasTriage}}
+    <div class="verdict-strip {{.Triage.Class}}">
+      <span class="vs-word {{.Triage.Class}}">{{.Triage.Outcome}}</span>
+      <span class="vs-p">{{.Triage.Probability}}</span>
+      <p class="vs-why">{{.Triage.Why}}</p>
+    </div>
+    {{end}}
+
     <div class="issue">
       <section class="issue-body" aria-label="Cuerpo de la issue">
         {{if .Issue.HasBody}}{{.Issue.Body}}{{else}}<p class="none">Sin cuerpo: la issue se explica solo en el título.</p>{{end}}
@@ -65,8 +77,8 @@
       </aside>
     </div>
 
-    {{/* Puntos de inclusión de la ola 2: hoy vacíos, y por eso las tres
-         issues siguientes enganchan su bloque sin editar este archivo. */}}
+    {{/* El cuerpo y el lado van arriba del todo; los tres informes completos, después: el
+         veredicto ya se leyó en la tira y acá se puede bajar a ver la evidencia y el encaje. */}}
     {{template "triage" .}}
     {{template "evidence" .}}
     {{template "fit" .}}

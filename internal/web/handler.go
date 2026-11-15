@@ -60,6 +60,12 @@ type Options struct {
 	// Explore is what the real stage needs to run the agent: the model, the allowlist and
 	// the paths. An empty Model means the queue is not configured.
 	Explore ExploreOptions
+	// Fit runs the third pass over the whole corpus, given the repository key. Nil means the
+	// binary cannot fit (no configuration, no key): the button is not drawn.
+	Fit func(string) error
+	// Index builds the code graph of a cloned repository. Nil means this binary has no indexer
+	// configuration: the button is not drawn.
+	Index func(context.Context, string) error
 	// Logger receives the queue's structured lines. Nil means slog.Default(). A test
 	// injects one to read what a person would read when debugging.
 	Logger *slog.Logger
@@ -78,8 +84,15 @@ type Handler struct {
 	// and coming back shows it as it is.
 	queue   *queue
 	explore ExploreOptions
-	getenv  func(string) string
-	log     *slog.Logger
+	// fit corre la tercera pasada de todo el corpus. Nil significa que este binario no puede
+	// encajar --sin configuracion o sin clave--: el boton no se dibuja y la pantalla lo dice
+	// en vez de ofrecer lo que no puede cumplir.
+	fit func(string) error
+	// index construye el grafo de codigo que explore necesita. Nil significa que este binario
+	// arranco sin configuracion del indexador: el boton no se dibuja.
+	index  func(context.Context, string) error
+	getenv func(string) string
+	log    *slog.Logger
 }
 
 // NewHandler parsea las plantillas y prepara el servidor de estáticos, además de la cola
@@ -119,6 +132,8 @@ func NewHandler(opts Options) (*Handler, error) {
 		timeout:   timeout,
 		extractor: opts.Extractor,
 		explore:   opts.Explore,
+		fit:       opts.Fit,
+		index:     opts.Index,
 		getenv:    getenv,
 		log:       logger,
 	}

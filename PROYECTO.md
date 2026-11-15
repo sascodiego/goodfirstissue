@@ -960,6 +960,9 @@ La tabla vive en `internal/triage/policy.go` y tiene un test por fila. El banco 
 `internal/triage/testdata/bench/` corre **ese mismo código** —las mismas preguntas, los mismos
 expedientes, la misma política—, así que la medición y el producto no pueden divergir.
 
+**Cómo se usa Clef, paso por paso** —qué se le manda en cada petición, cuántas cuesta una issue,
+qué decide cada respuesta y qué queda fuera—: `CLEF.md`.
+
 **Coste.** Una issue cuesta una petición; una feature, dos. Con ~0,55 s por petición medidos, el
 presupuesto de E3 (30 issues en menos de 120 s) se cumple con margen: el número de peticiones no es
 la restricción, el tiempo total sí.

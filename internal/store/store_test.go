@@ -132,6 +132,24 @@ func TestSavedAtIsRecorded(t *testing.T) {
 	}
 }
 
+// The key is the same one RepoName produces, whatever shape the name arrives in: the canonical
+// name comes from nameWithOwner and carries a slash, and nothing else in the app may have to
+// know that its on-disk form does not.
+func TestRepoKeyIsTheOnDiskFormOfTheName(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		want string
+	}{
+		{"spf13/cobra", RepoName("spf13", "cobra")},
+		{RepoName("spf13", "cobra"), RepoName("spf13", "cobra")},
+		{"  httpie/cli\n", RepoName("httpie", "cli")},
+	} {
+		if got := RepoKey(tc.name); got != tc.want {
+			t.Errorf("RepoKey(%q) = %q, want %q", tc.name, got, tc.want)
+		}
+	}
+}
+
 func TestSnapshotRoundTrips(t *testing.T) {
 	s := newStore(t)
 	repo := RepoName("spf13", "cobra")

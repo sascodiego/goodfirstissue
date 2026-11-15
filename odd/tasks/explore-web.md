@@ -43,7 +43,7 @@ Issue #12 · rama `feat/12-explore-web` · base `main` @ 4b8684e.
 | T2 | S5, S8 | sesión única de análisis en `internal/explore`, compartida con el CLI | `47e0240 refactor(explore): share one analysis session with the CLI` |
 | T3 | S2, S3, S7, S9, S10, S13, S14 | cola, rutas, wiring en `internal/web/explore.go` | `aa2b1a8 feat(config)` + `28594e9 feat(web): queue explore runs with cancel and drain` |
 | T4 | S1, S4, S6, S11, S12 | parcial de evidencia, escalera por fila, parcial de filas | `488e539 feat(web): show the evidence block and live stage state` |
-| T5 | S15 | docs y `make verify` | `d28dcff fix(config)` + `266fb63 fix(explore)` + `1f36005 docs(web)` |
+| T5 | S15 | docs y `make verify` | `d28dcff` + `266fb63` + `1f36005 docs(web)` + `e498b32 fix(web)` |
 
 ## Log
 
@@ -71,3 +71,11 @@ Issue #12 · rama `feat/12-explore-web` · base `main` @ 4b8684e.
 - La #1995 salió primero en `error` porque el modelo omitió `relation` en un archivo y `Validate` tiraba todo el paquete. Arreglado en `266fb63`: una relación vacía cae en `unverified` (el balde más débil, nunca exagera) y una relación inventada sigue siendo error. Re-corrida por HTTP de la #1995 ⇒ «listo · 1m2.562s» y evidencia con archivos y relaciones.
 - Segundo `POST` de la #1995 ⇒ «reutilizado · hace un momento», sin gastar cuota.
 - Lo que la corrida en vivo **no** cubrió: cancelar y vaciar con un `pig` real, porque cada intento quema una análisis de ~1 min de cuota. Esas tres rutas están cubiertas por tests con runner inyectado (`TestExploreCancelDrainsQueuedAndKillsRunning`, `TestExploreCancelAllStopsEverything`) y por el verificador independiente.
+
+**L11** Verificador independiente (`gentle-ai-verify`, read-only) sobre las seis afirmaciones de concurrencia: **PASS en las seis** — un job cancelado nunca se reporta listo ni reutilizado (`finish` guarda con `j.state == jobCanceled` antes de escribir, `explore.go:293`), el presupuesto de `running` no puede derivar (incremento solo en `next()`, decremento en el `defer` de `work()` por todos los caminos), no hay starvation ni espera de canal con el mutex tomado, no se puede duplicar un job en cola o en curso, los conteos del redirect dicen la verdad, y ningún test toca `pig` ni la red. Corrió `go test -count=3`, `go test -race -count=2`, `go vet` y `git status` limpio después.
+
+Una observación suya fuera del alcance verificado se convirtió en arreglo: un pánico dentro del runner dejaba la fila en «en curso» para siempre. `e498b32` lo recupera en el estado del job (`exit`/motivo en la fila), el lugar de la cola se libera igual, y un test lo pina (`TestExploreSurvivesAStageThatPanics`).
+
+**L12** Revisión de contrato (RDD encendido): `gentle_review assess` sobre `origin/main..HEAD` da `risk: high`, `nativeRisk: medium`, `reviewDue: false` (`under_budget`), `independentVerifier: true` por la escalada del ítem 4 (concurrencia). No se inicia revisión nativa porque `reviewDue` es falso y nadie la pidió; el plan de riesgo se cumplió por el otro camino (autoverificación del escritor + verificador independiente).
+
+**L13** Chequeo visual con el navegador sobre el corpus real: la pantalla del corpus muestra la columna «Análisis» con su chip por fila (`sin analizar` en gris discontinuo), el botón «Analizar 0 seleccionadas» apagado, y la pantalla de issue muestra el bloque de evidencia con el pin, la intención, y la tabla de archivos con `command.go:1942` y la insignia `observed`. La tabla de archivos se envuelve en un contenedor con scroll horizontal en pantallas angostas, para no recortar la razón de cada archivo.

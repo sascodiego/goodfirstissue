@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"time"
 
@@ -75,6 +76,10 @@ type Session struct {
 	// OnRun is called when a fresh run starts. A reused answer never calls it, so a caller
 	// can report what is actually about to happen.
 	OnRun func()
+
+	// Logger receives one line per stored or reused analysis. Nil means silent: a library
+	// does not pick the process's logger, and the CLI already prints what it needs.
+	Logger *slog.Logger
 }
 
 // Key is the question this analysis answers. A changed prompt, model or commit is another
@@ -121,6 +126,11 @@ func (s *Session) Analyze(ctx context.Context, in Input) (*Result, error) {
 	if cached, ok := decisions.Get(key); ok && !in.Force {
 		var previous Record
 		if err := json.Unmarshal(cached.Verdict, &previous); err == nil && previous.Evidence != nil {
+			s.logger().Info("explore: análisis reutilizado",
+				"repo", in.Repository, "issue", in.Issue.Number,
+				"prompt", key.PromptVersion, "model", key.Model,
+				"commit", shortSHA(key.CommitSHA),
+				"produced_at", cached.At.UTC().Format(time.RFC3339))
 			return &Result{Record: &previous, Reused: true, Previous: &cached}, nil
 		}
 		// A verdict that no longer decodes is not reused: the run below replaces it.
@@ -138,6 +148,10 @@ func (s *Session) Analyze(ctx context.Context, in Input) (*Result, error) {
 	}
 
 	if err := ctx.Err(); err != nil {
+		// Una corrida cancelada no se guarda: se dice, para que el silencio no pase por
+		// un resultado que nunca existió.
+		s.logger().Warn("explore: corrida cancelada, no se guardó nada",
+			"repo", in.Repository, "issue", in.Issue.Number, "reason", err.Error())
 		return nil, err
 	}
 
@@ -198,9 +212,20 @@ func (s *Session) Analyze(ctx context.Context, in Input) (*Result, error) {
 	if err := decisions.Put(store.Decision{Key: key, LatencyMs: r.Metrics.TotalMs, Verdict: verdict}); err != nil {
 		return nil, err
 	}
+	s.logger().Info("explore: análisis guardado",
+		"repo", in.Repository, "issue", in.Issue.Number,
+		"prompt", key.PromptVersion, "model", key.Model,
+		"commit", shortSHA(key.CommitSHA),
+		"ms", r.Metrics.TotalMs, "tool_calls", r.Metrics.ToolCalls,
+		"complete", r.Metrics.Complete, "stalled", r.Metrics.Stalled,
+		"timed_out", r.Metrics.TimedOut, "violations", len(r.Violations))
+
 	compacted, err := decisions.Compact()
 	if err != nil {
 		return nil, fmt.Errorf("explore: compact the journal: %w", err)
+	}
+	if compacted {
+		s.logger().Info("explore: journal compactado", "repo", in.Repository)
 	}
 
 	res := &Result{Record: &r, Outcome: out, Compacted: compacted, StaleCache: stale}
@@ -208,6 +233,15 @@ func (s *Session) Analyze(ctx context.Context, in Input) (*Result, error) {
 		return res, parseErr
 	}
 	return res, nil
+}
+
+// logger returns the session's logger, or a silent one: a library never picks the
+// process's, so a caller that does not ask for lines gets none.
+func (s *Session) logger() *slog.Logger {
+	if s.Logger == nil {
+		return slog.New(slog.DiscardHandler)
+	}
+	return s.Logger
 }
 
 // ErrNoIndex means the repository has no code graph, so the agent would explore nothing.

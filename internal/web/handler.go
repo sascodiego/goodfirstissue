@@ -55,6 +55,9 @@ type Options struct {
 	// Explore is what the real stage needs to run the agent: the model, the allowlist and
 	// the paths. An empty Model means the queue is not configured.
 	Explore ExploreOptions
+	// Logger receives the queue's structured lines. Nil means slog.Default(). A test
+	// injects one to read what a person would read when debugging.
+	Logger *slog.Logger
 }
 
 // Handler sirve las pantallas y los activos estáticos.
@@ -70,6 +73,7 @@ type Handler struct {
 	queue   *queue
 	explore ExploreOptions
 	getenv  func(string) string
+	log     *slog.Logger
 }
 
 // NewHandler parsea las plantillas y prepara el servidor de estáticos, además de la cola
@@ -95,6 +99,10 @@ func NewHandler(opts Options) (*Handler, error) {
 	if getenv == nil {
 		getenv = os.Getenv
 	}
+	logger := opts.Logger
+	if logger == nil {
+		logger = slog.Default()
+	}
 
 	h := &Handler{
 		screens: screens,
@@ -105,6 +113,7 @@ func NewHandler(opts Options) (*Handler, error) {
 		timeout: timeout,
 		explore: opts.Explore,
 		getenv:  getenv,
+		log:     logger,
 	}
 
 	// Un runner inyectado gana: así un test nunca corre pig. Sin runner inyectado se usa
@@ -113,7 +122,7 @@ func NewHandler(opts Options) (*Handler, error) {
 	if stage == nil {
 		stage = h.stageRunner
 	}
-	h.queue = newQueue(stage, opts.Workers)
+	h.queue = newQueue(stage, opts.Workers, logger)
 	h.queue.start()
 
 	return h, nil

@@ -1,8 +1,12 @@
 package explore
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"log/slog"
+	"strings"
+	"sync"
 	"testing"
 
 	"github.com/sascodiego/nan-hackathon-clef/internal/ghdata"
@@ -215,5 +219,68 @@ func TestIndexForRefusesAGraphFromAnotherCommit(t *testing.T) {
 	}
 	if rec.Path != in.Dir {
 		t.Fatalf("the index record lost the clone path: %q", rec.Path)
+	}
+}
+
+// syncWriter collects the session's lines from inside the test without racing it.
+type syncWriter struct {
+	mu sync.Mutex
+	b  bytes.Buffer
+}
+
+func (w *syncWriter) Write(p []byte) (int, error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.b.Write(p)
+}
+
+func (w *syncWriter) String() string {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.b.String()
+}
+
+// El journal es durable; el log es lo que se lee para entender qué pasó con una corrida
+// concreta, y por eso guardar y reutilizar dejan una línea con la pregunta completa.
+func TestSessionLogsTheJournalWriteAndTheReuse(t *testing.T) {
+	calls := 0
+	sess, _ := newSession(t, okRun(&calls))
+	out := &syncWriter{}
+	sess.Logger = slog.New(slog.NewJSONHandler(out, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	in := testInput()
+
+	if _, err := sess.Analyze(context.Background(), in); err != nil {
+		t.Fatalf("first analysis: %v", err)
+	}
+	saved := out.String()
+	for _, want := range []string{
+		`"msg":"explore: análisis guardado"`,
+		`"repo":"o__r"`,
+		`"issue":7`,
+		`"prompt":"` + Version() + `"`,
+		`"tool_calls":0`,
+	} {
+		if !strings.Contains(saved, want) {
+			t.Errorf("falta %q en la línea de guardado:\n%s", want, saved)
+		}
+	}
+
+	if _, err := sess.Analyze(context.Background(), in); err != nil {
+		t.Fatalf("second analysis: %v", err)
+	}
+	if reused := out.String(); !strings.Contains(reused, `"msg":"explore: análisis reutilizado"`) {
+		t.Errorf("la reutilización no dejó línea:\n%s", reused)
+	}
+}
+
+// Y una sesión sin logger no imprime nada: la librería no elige el logger del proceso.
+func TestSessionIsSilentWithoutALogger(t *testing.T) {
+	calls := 0
+	sess, _ := newSession(t, okRun(&calls))
+	if sess.Logger != nil {
+		t.Fatal("la sesión arrancó con logger propio")
+	}
+	if _, err := sess.Analyze(context.Background(), testInput()); err != nil {
+		t.Fatalf("analysis: %v", err)
 	}
 }

@@ -1,8 +1,11 @@
 package web
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -717,4 +720,122 @@ func TestExploreSurvivesAStageThatPanics(t *testing.T) {
 	if note := exploreStage(t, rowsOf(t, h, key)[1]).Note; !strings.Contains(note, "el doble se cayó a propósito") {
 		t.Errorf("la fila no dice por qué se cayó: %q", note)
 	}
+}
+
+// syncBuffer collects log lines from the queue's goroutines without racing the test that
+// reads them.
+type syncBuffer struct {
+	mu sync.Mutex
+	b  bytes.Buffer
+}
+
+func (s *syncBuffer) Write(p []byte) (int, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.b.Write(p)
+}
+
+func (s *syncBuffer) String() string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.b.String()
+}
+
+// captureLog returns a logger whose JSON lines can be asserted on: the point of the log is
+// that a failure survives the browser tab, so the test reads what a person would.
+func captureLog() (*slog.Logger, *syncBuffer) {
+	buf := &syncBuffer{}
+	return slog.New(slog.NewJSONHandler(buf, &slog.HandlerOptions{Level: slog.LevelDebug})), buf
+}
+
+// Una corrida que falla tiene que dejar el motivo en el log, con la fila a la que pertenece:
+// el `note` de la pantalla vive en memoria y lo reemplaza el próximo análisis de esa issue.
+func TestTheLogSaysWhyARunFailed(t *testing.T) {
+	st, key := indexedCorpus(t, 1)
+	failing := func(context.Context, StageRequest, func(time.Duration)) (StageOutcome, error) {
+		return StageOutcome{}, errors.New("el agente arrancó sin clave")
+	}
+	log, buf := captureLog()
+	h := exploreHandler(t, st, failing, func(o *Options) { o.Logger = log })
+
+	post(t, h, "/explore", url.Values{"repo": {key}, "issue": {"1"}})
+	waitFor(t, "la línea de error en el log", func() bool {
+		return strings.Contains(buf.String(), "el agente arrancó sin clave")
+	})
+
+	lines := buf.String()
+	for _, want := range []string{`"level":"ERROR"`, `"repo":"` + key + `"`, `"issue":1`, "el agente arrancó sin clave"} {
+		if !strings.Contains(lines, want) {
+			t.Errorf("falta %q en el log:\n%s", want, lines)
+		}
+	}
+}
+
+// Y una corrida que termina bien se registra con lo que costó, para poder comparar después
+// contra lo que la pantalla dijo.
+func TestTheLogRegistersAFinishedRun(t *testing.T) {
+	st, key := indexedCorpus(t, 1)
+	done := func(context.Context, StageRequest, func(time.Duration)) (StageOutcome, error) {
+		return StageOutcome{Latency: 2 * time.Second, ToolCalls: 7}, nil
+	}
+	log, buf := captureLog()
+	h := exploreHandler(t, st, done, func(o *Options) { o.Logger = log })
+
+	post(t, h, "/explore", url.Values{"repo": {key}, "issue": {"1"}})
+	waitFor(t, "la línea de la corrida terminada", func() bool {
+		return strings.Contains(buf.String(), `"tool_calls":7`)
+	})
+
+	if lines := buf.String(); !strings.Contains(lines, `"ms":2000`) {
+		t.Errorf("la línea no dice cuánto tardó:\n%s", lines)
+	}
+}
+
+// Un rechazo no gasta una corrida, y por eso mismo tiene que quedar escrito: es lo que uno
+// busca cuando alguien dice «no me anda el botón».
+func TestTheLogSaysWhyAnEnqueueWasRefused(t *testing.T) {
+	st, key := indexedCorpus(t, 1)
+	log, buf := captureLog()
+	h := exploreHandler(t, st, newFakeStage().stage, func(o *Options) {
+		o.Logger = log
+		o.Getenv = func(string) string { return "" }
+	})
+
+	post(t, h, "/explore", url.Values{"repo": {key}, "issue": {"1"}})
+
+	lines := buf.String()
+	for _, want := range []string{`"level":"WARN"`, `"repo":"` + key + `"`, "NAN_KEY"} {
+		if !strings.Contains(lines, want) {
+			t.Errorf("falta %q en el log:\n%s", want, lines)
+		}
+	}
+}
+
+// Cancelar y vaciar cambian lo que la cola va a hacer: se registran con el conteo.
+func TestTheLogRegistersCancellingAndDraining(t *testing.T) {
+	st, key := indexedCorpus(t, 3)
+	fake := newFakeStage().held()
+	defer fake.release()
+	log, buf := captureLog()
+	// Un solo worker: con tres, las tres corridas arrancan y no queda nada que vaciar.
+	h := exploreHandler(t, st, fake.stage, func(o *Options) {
+		o.Logger = log
+		o.Workers = 1
+	})
+
+	post(t, h, "/explore", url.Values{"repo": {key}, "issue": {"1", "2", "3"}})
+	waitFor(t, "que la corrida entre", func() bool { return fakeStageRunning(h, key, 1) })
+
+	post(t, h, "/explore/cancel", url.Values{"repo": {key}, "issue": {"1"}})
+	post(t, h, "/explore/clear", url.Values{"repo": {key}})
+
+	// El conteo de lo descartado depende de si el worker alcanzó a tomar el siguiente job
+	// entre cancelar y vaciar, así que se afirma que la línea existe con un número, no cuál.
+	waitFor(t, "las líneas de cancelar y vaciar", func() bool {
+		lines := buf.String()
+		return strings.Contains(lines, `"msg":"análisis cancelado"`) &&
+			strings.Contains(lines, `"cancelados":1`) &&
+			strings.Contains(lines, `"msg":"cola vaciada"`) &&
+			strings.Contains(lines, `"descartados":`)
+	})
 }

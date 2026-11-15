@@ -870,10 +870,19 @@ pasa por acá (§7.6), ni un pedido de documentación: ninguno de los dos tiene 
 la dirección del proyecto.
 
 **Estado: implementado.** Es la segunda petición de P1, y solo la pagan las features. El expediente
-es el C, y el brief del proyecto se arma desde el clon —lo que el proyecto dice que es, en su
-README, y lo que viene construyendo, en sus últimos 20 commits—, así que no cuesta ninguna petición
-extra fuera de la del juicio. Cuando el clon no se puede leer, el desenlace lo dice
-(`alignment_unavailable`) en vez de fingir que el proyecto no fija posición.
+es el C, y su insumo es el **retrato del proyecto** (`gfi brief`, `internal/projectbrief`): seis
+secciones con evidencia `archivo:línea`, pineadas al commit del clon, con la distinción entre
+conocimiento técnico y conocimiento de proyecto declarada en el propio documento.
+
+**Cuesta una corrida de agente por repositorio y commit, no por issue.** La paga la primera feature
+que llega al nodo y el resto del lote la reusa desde el caché. Medido sobre `spf13/cobra` en
+`adbc8813901b`: **2m12,6 s**, 21 afirmaciones y ninguna cita sin respaldo en el clon; el reuso
+cuesta 8 ms y conserva en el reporte el costo de la corrida original. Cuando el retrato no se puede
+producir —el agente se cayó, el clon no está, el árbol cambió a mitad de camino— el nodo lee el
+**brief de respaldo**, que se arma desde el clon con lo que el proyecto dice que es en su README y
+lo que viene construyendo en sus últimos 20 commits, a coste cero, y la corrida lo avisa en stderr:
+un insumo más débil nunca es silencioso. Cuando ninguno de los dos se puede leer, el desenlace lo
+dice (`alignment_unavailable`) en vez de fingir que el proyecto no fija posición.
 
 La pauta no es una opinión: sale de dos fuentes.
 
@@ -1349,7 +1358,7 @@ Chequeos por etapa, ejecutables:
 | Umbrales de §7.7 y §9.3 | E3/E5 | ajustar solo contra el benchmark de §12 |
 | El criterio 4 («no exige conocimiento profundo») | cierre del producto | experimento de §12 |
 | Formas de entrada del CV (PDF, URL) | post-demo | **diferidas por tiempo**: el MVP usa texto pegado (§17.8.1) |
-| Nodo de alineación, tercera pantalla, `confirmed_defect`, `learning_value` | post-demo | cortados para entrar en el presupuesto; orden de retorno en §2.1.1 |
+| Tercera pantalla, `confirmed_defect`, `learning_value` | post-demo | cortados para entrar en el presupuesto; orden de retorno en §2.1.1. El nodo de alineación **no** está en esta fila: §2.1.1 lo sacó de los cortes y está en el MVP |
 
 ---
 
@@ -1566,6 +1575,7 @@ Para P2 se elige una de las cinco flash con salida JSON estricta. **Pendiente: c
 | `fit` | P3: encaje (§9.2) | `clef` — fijo |
 | `profile_extract` | CV en texto → capacidades | **configurable** |
 | `explore` | P2: evidencia a partir del código (§8) | **configurable** |
+| `project_brief` | retrato del repositorio para el nodo de alineación (§7.5) | **configurable** |
 
 **Formato: JSON, no YAML.** YAML costaría un `require` en `go.mod`, que es lo que §17.1 prohíbe, y escribir un parser propio sería el Tesla para llevar el supermercado. JSON además permite `DisallowUnknownFields`: un typo en la configuración **falla fuerte** en vez de caer en un default silencioso.
 
@@ -1582,15 +1592,16 @@ Un archivo parcial solo nombra lo que cambia; el resto toma su default. Las secc
 | `indexer` | binario, `timeout` |
 | `explore` | binario, modelo, `PIG_HOME`, allowlist de herramientas, `idle_warn`, `idle_kill`, `budget`, `workers` (1–3, la cola de la pantalla) |
 | `profile` | la extracción del CV: binario, `PIG_HOME` propio, `idle_warn`, `idle_kill`, `budget`. Sin herramientas y sin MCP: el trabajo es texto entra, texto sale |
+| `project_brief` | el retrato del repositorio: binario, `PIG_HOME` propio, allowlist de herramientas de lectura, `idle_warn`, `idle_kill`, `budget`. Lee el clon, así que necesita herramientas: es el mismo watchdog de `explore` |
 | `clef` | URL, `timeout`, `max_retries` |
-| `models` | `explore` y `profile_extract`; las acciones de decisión son constantes de código |
+| `models` | `explore`, `profile_extract` y `project_brief`; las acciones de decisión son constantes de código |
 
 Las duraciones se escriben como `"20s"` o `"1m30s"`, o como número de segundos.
 
 **La validación no es cosmética.** Rechaza, entre otras cosas:
 
 - un modelo fuera del allowlist constitucional (I13), y **`clef` como modelo de exploración**: decide en otro endpoint y no puede conducir al agente;
-- cualquier herramienta de `explore.tools` que pueda escribir (`bash`, `edit`, `write`, `multiedit`, `shell`) o un comodín `*`: la exploración es read-only y la configuración no puede cambiar eso;
+- cualquier herramienta de `explore.tools` o de `project_brief.tools` que pueda escribir (`bash`, `edit`, `write`, `multiedit`, `shell`) o un comodín `*`: los dos trabajos leen un repositorio y ninguno escribe, y la configuración no puede cambiar eso;
 - `idle_kill` menor o igual a `idle_warn`, o un `budget` menor que `idle_kill`;
 - una clave desconocida, o contenido después del objeto.
 

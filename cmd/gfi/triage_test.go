@@ -334,6 +334,70 @@ func TestToTriageIssueKeepsTheThread(t *testing.T) {
 	}
 }
 
+// The node reads the portrait when it can be produced, and the free README brief when it cannot:
+// a pass over a hundred issues is never aborted over the richer input.
+//
+// What is asserted here is the decision, not the fallback's text: triage.TestFallbackBrief* owns
+// that contract, and CloneBrief has its own test. This one fails if a portrait that cannot run is
+// still offered as the primary source.
+func TestAlignmentBriefDegradesToTheReadmeBriefWithoutAKey(t *testing.T) {
+	// Without the key no portrait can run, and nothing may be written on its behalf.
+	t.Setenv("NAN_KEY", "")
+	cfg := config.Default()
+	cfg.Repos.CloneDir = t.TempDir()
+	cfg.Store.Dir = t.TempDir()
+	cfg.ProjectBrief.Home = t.TempDir()
+	st, err := store.New(cfg.Store.Dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	brief := alignmentBrief(cfg, st, testKey)
+	fallback, ok := brief.(triage.FallbackBrief)
+	if !ok {
+		t.Fatalf("override = %T, want triage.FallbackBrief", brief)
+	}
+	if fallback.Primary != nil {
+		t.Error("a portrait that cannot run must not be the primary source")
+	}
+	clone, ok := fallback.Fallback.(triage.CloneBrief)
+	if !ok {
+		t.Fatalf("fallback = %T, want triage.CloneBrief", fallback.Fallback)
+	}
+	if clone.Root != cfg.Repos.CloneDir {
+		t.Errorf("the fallback reads %q, want the clone directory", clone.Root)
+	}
+	if _, err := os.Stat(filepath.Join(cfg.ProjectBrief.Home, "agent")); err == nil {
+		t.Error("no agent home may be written for a portrait that cannot run")
+	}
+}
+
+// With a key the portrait is the primary source, so the node reads evidence with citations instead
+// of a README dump.
+func TestAlignmentBriefPrefersThePortraitWhenItCanRun(t *testing.T) {
+	t.Setenv("NAN_KEY", "test-key")
+	cfg := config.Default()
+	cfg.Repos.CloneDir = t.TempDir()
+	cfg.Store.Dir = t.TempDir()
+	cfg.ProjectBrief.Home = t.TempDir()
+	st, err := store.New(cfg.Store.Dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	brief := alignmentBrief(cfg, st, testKey)
+	fallback, ok := brief.(triage.FallbackBrief)
+	if !ok {
+		t.Fatalf("override = %T, want triage.FallbackBrief", brief)
+	}
+	if fallback.Primary == nil {
+		t.Fatal("with a key the portrait is the primary source")
+	}
+	if _, err := os.Stat(filepath.Join(cfg.ProjectBrief.Home, "agent", "models.json")); err != nil {
+		t.Errorf("the portrait's agent home was not configured: %v", err)
+	}
+}
+
 // A pre-gate verdict is a verdict: the second run over a corpus of closed issues reports that
 // the journal answered them, instead of printing zero requests for a corpus it did work on.
 // Without this, the breakdown the report reads disagrees with what the verb did (issue #41).

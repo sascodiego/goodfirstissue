@@ -31,6 +31,7 @@ const shutdownTimeout = 5 * time.Second
 const usage = `gfi — GoodFirstIssue
 
   gfi [-addr ADDR] [-config FILE]   start the server
+  gfi brief [-config FILE] [-force] OWNER/REPO   describe a cloned repository as a project portrait
   gfi config example               print the default configuration
   gfi config check [FILE]          validate a configuration file
   gfi fetch [-config FILE] OWNER/REPO    fetch the open issues into the store
@@ -52,6 +53,8 @@ func main() {
 func run(args []string) error {
 	if len(args) > 0 {
 		switch args[0] {
+		case "brief":
+			return runBrief(args[1:])
 		case "config":
 			return runConfig(args[1:])
 		case "fetch":
@@ -106,6 +109,9 @@ func runConfig(args []string) error {
 	fmt.Printf("  pig home    %s\n", cfg.Explore.Home)
 	fmt.Printf("  explore     %s · %s\n", cfg.Explore.Model, cfg.Explore.Binary)
 	fmt.Printf("  tools       %v\n", cfg.Explore.Tools)
+	// The portrait job is the one that writes an agent home and runs a model of its own: a
+	// configuration that names it wrong is worth seeing before the first run.
+	fmt.Printf("  brief       %s · %s\n", cfg.Models.ProjectBrief, cfg.ProjectBrief.Home)
 	return nil
 }
 

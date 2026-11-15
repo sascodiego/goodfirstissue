@@ -152,7 +152,7 @@ declara en vez de esconderse.
                         ┌───────────────────────┼─────────────────────┐
                         ▼                       ▼                     ▼
                    CANDIDATA /             kind = feature       evidence_sufficient
-                   CONDICIONADA /               │                    < 0,45
+                   CONDICIONADA /               │                    < 0,5
                    DERIVADA / MARCADA           ▼                     │
                         │              ┌──────────────────────┐        ▼
                         │              │ ALINEACIÓN    ★ CLEF │      DUDA
@@ -183,7 +183,9 @@ modelo, y se puede auditar**.
 
 ### P1 · el expediente que se manda
 
-Una petición por issue. Esto es literalmente lo que viaja (recortado):
+Una petición por issue. El expediente viaja **en inglés, literal**: es el texto congelado
+contra el que se midió, y traducirlo en el camino haría que la pantalla y el banco de pruebas
+pregunten cosas distintas. Esto es lo que viaja (recortado):
 
 ```
 --- TITLE (the kind the author declared is removed: a claim, not a fact) ---
@@ -206,6 +208,10 @@ state: open · locked: no · comments: 15
 
 Tres cosas que se ven en ese bloque y son decisiones, no detalles:
 
+Los cuatro rótulos, en castellano: `TITLE` es el título **sin la palabra que declara el tipo**;
+`BODY` es el cuerpo escrito por quien pide; `COMMENTS FROM THE PROJECT` son los comentarios del
+proyecto; `NATIVE STATE` es el estado que lee el tracker, sin juicio.
+
 1. **El título entra sin la palabra que declara qué es.** Si el autor escribió «bug:» o
    «feat:», se quita antes de mandarlo: es una afirmación suya, no un hecho. Quien decide el
    tipo es el modelo, no el prefijo.
@@ -217,20 +223,21 @@ Tres cosas que se ven en ese bloque y son decisiones, no detalles:
    `third-party text`, porque el cuerpo de una issue es contenido no confiable y el producto no
    obedece lo que encuentra adentro.
 
-### P1 · las 7 preguntas, textuales
+### P1 · las 7 preguntas
 
 Una sola petición lleva las siete. `kind` elige entre categorías; las otras seis son
-probabilidad de sí (0–1) con su propia confianza.
+probabilidad de sí (0–1) con su propia confianza. Van **traducidas para leer**: el texto que
+viaja está en inglés y aparece al final de la sección.
 
 | id | pregunta | opciones | cómo se usa |
 |---|---|---|---|
-| `kind` | What is this issue asking for? | `bug` · `feature` · `question` · `spam` · `other` | **decide**: ramifica toda la cadena |
-| `evidence_sufficient` | Is the text enough to decide what kind of request this is, regardless of how much work it would be or how thin it looks? | p(sí) | **decide**: < 0,5 → `DUDA`, no se descarta |
-| `self_contained` | Does this text state what is being asked clearly enough that someone who has not spoken to the author could start, without material that is not here: a recording, a screenshot, or a private conversation? | p(sí) | se mide y se informa |
-| `has_evidence` | Does the issue contain the material someone would need to reproduce or verify the claim: steps, a code sample, a log, a version, an environment, or a concrete use case? | p(sí) | se mide y se informa |
-| `unambiguous` | Does the expected result admit exactly one reading, so that two people would agree on what a correct outcome looks like? | p(sí) | se mide y se informa |
-| `done_defined` | Does the issue define what would make it finished, so that a maintainer could accept or reject the result without another conversation? | p(sí) | se mide y se informa |
-| `reports_defect` | Does the text report behaviour that already exists as defective, rather than asking for behaviour that does not exist yet? | p(sí) | se mide y se informa |
+| `kind` | ¿Qué está pidiendo esta issue? | `bug` · `feature` · `question` · `spam` · `other` | **decide**: ramifica toda la cadena |
+| `evidence_sufficient` | ¿Alcanza el texto para decidir qué tipo de pedido es, sin importar cuánto trabajo dé ni lo flojo o fuera de lugar que parezca? | p(sí) | **decide**: < 0,5 → `DUDA`, no se descarta |
+| `self_contained` | ¿El texto dice lo que se pide con claridad suficiente como para que alguien que no habló con el autor pueda empezar, sin material que no está acá —un video, una captura, una conversación privada—? | p(sí) | se mide y se informa |
+| `has_evidence` | ¿La issue trae el material que haría falta para reproducir o verificar lo que afirma: pasos, código, un log, una versión, un entorno o un caso de uso concreto? | p(sí) | se mide y se informa |
+| `unambiguous` | ¿El resultado esperado admite una sola lectura, de modo que dos personas coincidirían en qué es un desenlace correcto? | p(sí) | se mide y se informa |
+| `done_defined` | ¿La issue define qué la daría por terminada, de modo que un mantenedor pueda aceptar o rechazar el resultado sin otra conversación? | p(sí) | se mide y se informa |
+| `reports_defect` | ¿El texto reporta como defectuoso un comportamiento que ya existe, en vez de pedir uno que todavía no existe? | p(sí) | se mide y se informa |
 
 **Por qué esas y no otras.** Cada una corresponde a una forma concreta en que una issue
 fracasa como primer aporte: no se entiende sin hablar con el autor (`self_contained`), no se
@@ -240,6 +247,28 @@ alcanzaron para decidir**: se siguen preguntando y se informan, porque el report
 humano, pero la cadena no las usa. Decir eso es parte del producto: **7 preguntas medidas, 3
 deciden** (`kind`, `evidence_sufficient` y, solo para features, la alineación).
 
+<details><summary>El texto original que viaja (inglés)</summary>
+
+```
+kind                  What is this issue asking for?
+self_contained        Does this text state what is being asked clearly enough that someone who
+                      has not spoken to the author could start, without material that is not
+                      here: a recording, a screenshot, or a private conversation?
+has_evidence          Does the issue contain the material someone would need to reproduce or
+                      verify the claim: steps, a code sample, a log, a version, an environment,
+                      or a concrete use case?
+unambiguous           Does the expected result admit exactly one reading, so that two people
+                      would agree on what a correct outcome looks like?
+done_defined          Does the issue define what would make it finished, so that a maintainer
+                      could accept or reject the result without another conversation?
+reports_defect        Does the text report behaviour that already exists as defective, rather
+                      than asking for behaviour that does not exist yet?
+evidence_sufficient   Is the text enough to decide what kind of request this is, regardless of
+                      how much work the request would be or how thin or unwelcome it looks?
+```
+
+</details>
+
 ### P1 · el nodo de alineación (solo features)
 
 Si `kind = feature`, una segunda petición lleva dos preguntas más y un **brief del proyecto**
@@ -247,8 +276,18 @@ Si `kind = feature`, una segunda petición lleva dos preguntas más y un **brief
 
 | id | pregunta | cómo se usa |
 |---|---|---|
-| `only_for_requester` | Is this request driven by a situation specific to the person asking, such that the project's other users would not get anything out of it? | **decide**: ≥ 0,60 → `MARCADA` |
-| `fits_direction` | Judged against what the project's documentation and recent history show it is trying to be, would this request move it further in that direction, or away from it? | **decide**: ≥ 0,60 → `CANDIDATA` |
+| `only_for_requester` | ¿El pedido responde a una situación específica de quien lo hace, de manera que al resto de los usuarios del proyecto no le aporte nada? | **decide**: ≥ 0,60 → `MARCADA` |
+| `fits_direction` | Juzgado contra lo que la documentación y la historia reciente muestran que el proyecto quiere ser, ¿este pedido lo mueve en esa dirección o lo aleja? | **decide**: ≥ 0,60 → `CANDIDATA` |
+
+Original que viaja (inglés):
+
+```
+only_for_requester   Is this request driven by a situation specific to the person asking, such
+                     that the project's other users would not get anything out of it?
+fits_direction       Judged against what the project's documentation and recent history show it
+                     is trying to be, would this request move it further in that direction, or
+                     away from it?
+```
 
 Es la diferencia entre «es una buena idea» y «es una buena idea *para este proyecto*». El umbral
 0,60 no es una corazonada: con 0,50 acertaba 6 de 10; con 0,60, **10 de 11**.
@@ -277,8 +316,11 @@ El encaje recibe un documento en cinco secciones: `## ISSUE`, `## REPOSITORIO`,
 
 Una sola pregunta, con cinco opciones:
 
-> **Where does this developer's approved profile stand against the technical requirements this
-> issue demands?**
+> **¿Dónde queda el perfil aprobado de este desarrollador frente a los requisitos técnicos que
+> exige esta issue?**
+>
+> *Original: «Where does this developer's approved profile stand against the technical
+> requirements this issue demands?»*
 
 | opción | significado | umbral |
 |---|---|---|

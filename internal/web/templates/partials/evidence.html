@@ -33,6 +33,7 @@
   <p class="evid-intent">{{.Evidence.Intent}}</p>
 
   {{if .Evidence.HasFiles}}
+  <div class="evid-files-wrap">
   <table class="evid-files">
     <caption>Archivos · <b>{{.Evidence.Observed}}</b> observados de {{len .Evidence.Files}}</caption>
     <thead>
@@ -55,6 +56,7 @@
       {{end}}
     </tbody>
   </table>
+  </div>
   {{else}}
   <p class="none">El análisis no produjo archivos: la evidencia no alcanzó para ubicar el cambio.</p>
   {{end}}

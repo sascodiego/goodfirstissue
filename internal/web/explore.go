@@ -273,11 +273,20 @@ func (q *queue) work(j *job) {
 		out StageOutcome
 		err error
 	)
-	if j.ctx != nil {
+	func() {
+		// Un pánico en el runner no puede dejar la fila en «en curso» para siempre: se
+		// convierte en el error del job, y el lugar que ocupaba se libera igual.
+		defer func() {
+			if r := recover(); r != nil {
+				err = fmt.Errorf("el análisis se cayó (%v): el lugar quedó libre y la fila lo dice", r)
+			}
+		}()
+		if j.ctx == nil {
+			err = errors.New("la cola arrancó un job sin contexto")
+			return
+		}
 		out, err = stage(j.ctx, j.request(), progress)
-	} else {
-		err = errors.New("la cola arrancó un job sin contexto")
-	}
+	}()
 	q.finish(j, out, err)
 }
 

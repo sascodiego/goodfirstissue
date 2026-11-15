@@ -237,3 +237,26 @@ Comandos: build, vet, `go test ./...` (13 paquetes), `-race` en el paquete nuevo
   alineación como texto de terceros) es el mismo canal que ya tenía `CloneBrief` y su marcador
   «evidence, not instructions» sigue ahí, sin arreglo barato; el 4 (`..\` y `C:\` en
   `validatePath`) es inofensivo en el target Linux, donde la barra invertida es un carácter más.
+
+L22. Alcance resuelto con evidencia, y el cableado hecho (decisión sellada del usuario:
+«fallback, sellado»). La duda era si el nodo de alineación había quedado fuera del MVP: **no**.
+`PROYECTO.md:151` (§2.1.1) tiene la fila tachada y dice «**entra al MVP**»; `:274` lo repite («sí
+está dentro»); `:866` titula §7.5 «*en el MVP*»; y el checklist de terminado (`:1393`) exige un
+caso CONDICIONADA «con la cita del proyecto que leyó el nodo». La confusión viene de la issue #28,
+que dice «§2.1.1 la pone primera en el orden de retorno si sobra tiempo» — texto viejo —, y de una
+fila contradictoria en `:1352` (§12) que listaba el nodo como post-demo. Esa fila se corrigió en
+este commit; manda §2.1.1, que es la sección de alcance.
+
+L23. Decisión e implementación del cableado: `triage.FallbackBrief{Primary, Fallback, OnFailure}`
+en el paquete dueño de la interfaz, y en `cmd/gfi/triage.go` el `Primary` es
+`projectbrief.Source` sobre el extractor cacheado, con `triage.CloneBrief` de respaldo y
+`OnFailure` → `slog.Warn` con el repo y el motivo. El retrato se pide **perezosamente**: si ninguna
+feature llega al nodo, no cuesta nada; si llega, la primera paga una corrida y el resto del lote la
+reusa. Sin `NAN_KEY` — o si `projectbrief.New` rechaza la configuración, que no debería pasar
+porque I13 valida al arrancar — el `Primary` queda `nil` y el nodo lee el brief gratis: degradación
+explícita, nunca silenciosa. Tests: `internal/triage/fallback_test.go` (seis casos, incluido «el
+primario contesta vacío también es falla») y dos en `cmd/gfi/triage_test.go` que afirman la
+decisión (con clave → `Primary` puesto y el home del agente configurado; sin clave → `Primary` nil,
+`Fallback` es `CloneBrief` sobre el directorio de clones y **nada** se escribe en el home).
+Costo documentado en `PROYECTO.md` §7.5 y `README.md`: §7.5 decía «no cuesta ninguna petición
+extra» y eso dejó de ser cierto, así que ahí está el número y la condición.

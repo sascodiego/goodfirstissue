@@ -96,6 +96,10 @@ gfi brief spf13/cobra > brief.md     # seis secciones, cada afirmación con arch
   afirmación se reporta como no sostenida en vez de borrarse del documento.
 - **Sin inventar.** Una sección que el repositorio no sostiene dice `insufficient_information`
   (I10). El modelo se elige en `models.project_brief`, dentro del allowlist de I13.
+- **Es lo que lee el nodo de alineación.** `gfi triage` usa el retrato como dirección del proyecto
+  para las features; si no se puede producir, lee el brief de respaldo (README + últimos 20
+  commits, coste cero) y lo avisa en stderr. Una corrida de agente por repositorio y commit, la
+  paga la primera feature y el resto del lote la reusa.
 - **Necesita `NAN_KEY`** en el entorno, como cualquier otra corrida del agente, y el repositorio
   tiene que estar clonado (`gfi index owner/repo` lo clona e indexa). El documento va a stdout y
   los hechos a stderr, así que `gfi brief owner/repo > brief.md` escribe solo el retrato.

@@ -732,3 +732,45 @@ func journalLines(t *testing.T, path string) int {
 	}
 	return strings.Count(string(body), "\n")
 }
+
+// A screen reads a verdict without running the pass, so the reading has to be one function that
+// builds the same key the writer built (I4, I14). If it were two, a reader would eventually ask a
+// different question than the one the journal answered.
+func TestRecallReturnsTheVerdictTheJournalHoldsForTheFullQuestion(t *testing.T) {
+	st := newTestStore(t)
+	journal, err := st.Decisions("spf13/cobra")
+	if err != nil {
+		t.Fatalf("Decisions: %v", err)
+	}
+
+	judge := &fakeJudge{answers: wellFormed()}
+	if _, err := newP1(t, judge, journal).Run(context.Background(), aBug()); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+
+	recalled, decision, ok := Recall(journal, aBug().Number, testModel, testCommit)
+	if !ok {
+		t.Fatal("Recall missed a verdict the journal holds for this exact question")
+	}
+	if !recalled.Cached {
+		t.Fatal("a recalled verdict must say it was reused (I14)")
+	}
+	if recalled.Outcome != Candidate {
+		t.Fatalf("outcome = %q (%s), want %q", recalled.Outcome, recalled.Reason, Candidate)
+	}
+	if len(recalled.Answers) != len(Questions()) {
+		t.Fatalf("recalled %d answers, want %d: the screen shows what was asked",
+			len(recalled.Answers), len(Questions()))
+	}
+	if !recalled.At.Equal(decision.At) {
+		t.Fatalf("recalled at %v, stored at %v", recalled.At, decision.At)
+	}
+
+	// The pin is part of the question: another model answers something else.
+	if _, _, ok := Recall(journal, aBug().Number, "another-model", testCommit); ok {
+		t.Fatal("Recall answered for a model that never produced this verdict")
+	}
+	if _, _, ok := Recall(nil, aBug().Number, testModel, testCommit); ok {
+		t.Fatal("Recall answered without a journal")
+	}
+}

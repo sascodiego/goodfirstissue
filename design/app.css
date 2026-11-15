@@ -1527,3 +1527,155 @@ tbody tr:last-child td {
     gap: 0.25rem;
   }
 }
+
+/* El informe de triaje de una issue: qué decidió P1, con qué preguntas y sobre qué commit. */
+.tr {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+.tr-verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0;
+}
+.tr-outcome {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  font: 600 11px var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--fg-2);
+}
+.tr-outcome.candidate {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.tr-outcome.conditional {
+  color: var(--state-blocked);
+  border-color: color-mix(in oklab, var(--state-blocked) 55%, var(--line-2));
+}
+/* Las cuatro abstenciones no comparten forma: el color y el borde las distinguen antes de que
+   alguien lea la frase. */
+.tr-outcome.marked {
+  color: var(--fg-3);
+  border-style: dashed;
+}
+.tr-outcome.doubt {
+  color: var(--state-noise);
+  border-color: color-mix(in oklab, var(--state-noise) 55%, var(--line-2));
+}
+.tr-outcome.derived {
+  color: var(--state-pending);
+}
+.tr-outcome.undecided {
+  color: var(--state-taken);
+  border-style: dotted;
+}
+.tr-reason {
+  font: 500 11px var(--mono);
+  color: var(--fg-3);
+}
+.tr-prob {
+  font: 600 13px var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.tr-why {
+  margin: 0.5rem 0 0;
+  max-width: 62ch;
+  font-size: 0.95rem;
+  color: var(--fg-2);
+}
+.tr-missing {
+  margin: 0;
+  padding-left: 1.05rem;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+/* A 360 px la tabla se corre en horizontal dentro de .evid-files-wrap: recortar la pregunta
+   sería recortar justo lo que se está leyendo. */
+.tr-questions {
+  width: 100%;
+  /* 21rem entra en 360 px sin correr la tabla: la pregunta se parte en dos líneas antes que
+     esconderse detrás de un scroll. Por debajo de eso el envoltorio sigue corriendo. */
+  min-width: 21rem;
+  margin-top: 1.1rem;
+  border-collapse: collapse;
+}
+.tr-questions caption {
+  margin-bottom: 0.5rem;
+  text-align: left;
+  font-size: 11.5px;
+  color: var(--fg-3);
+}
+.tr-questions th {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  font: 600 10.5px var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.tr-questions td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  font-size: 12.5px;
+}
+/* La fila que decidió se separa de las que sólo se midieron: una medición no es una compuerta. */
+.tr-q.decided td {
+  background: color-mix(in oklab, var(--accent) 5%, transparent);
+}
+.tr-q.decided td:first-child {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.tr-q-name {
+  color: var(--fg-2);
+}
+.tr-q-mark {
+  display: block;
+  margin-top: 0.15rem;
+  font: 600 9.5px var(--mono);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.tr-q-answer {
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+.tr-choice {
+  font: 500 12px var(--mono);
+  color: var(--fg);
+}
+.tr-q-value {
+  width: 5rem;
+  font: 600 12px var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+  white-space: nowrap;
+}
+.tr-kind {
+  margin: 1.1rem 0 0;
+  font-size: 12.5px;
+  color: var(--fg-2);
+}
+.tr-kind b {
+  color: var(--fg);
+  font-weight: 600;
+}
+.tr-labels {
+  margin: 0;
+}
+.tr-note {
+  margin: 0.5rem 0 0;
+  max-width: 62ch;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--fg-3);
+}

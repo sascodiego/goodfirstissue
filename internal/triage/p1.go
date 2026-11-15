@@ -110,15 +110,10 @@ type Analysis struct {
 	At time.Time
 }
 
-// key is the journal identity of this exact question.
+// key is the journal identity of this exact question. The assembly lives in keyFor, beside the
+// reader, so the pass and the screens cannot answer different questions from the same file.
 func (p *P1) key(issue Issue) store.Key {
-	return store.Key{
-		Issue:         issue.Number,
-		Pass:          store.PassTriage,
-		Model:         p.model,
-		PromptVersion: Version(),
-		CommitSHA:     p.commitSHA,
-	}
+	return keyFor(issue.Number, p.model, p.commitSHA)
 }
 
 // stored is what the journal keeps: the verdict and the evidence behind it, so a reuse shows what
@@ -225,31 +220,11 @@ func (p *P1) align(ctx context.Context, issue Issue, answers map[string]nan.Answ
 }
 
 // lookup returns a stored verdict for this exact question, if there is one. A damaged entry is a
-// miss, not a failed analysis: the pipeline asks again instead of reporting a broken journal.
+// miss, not a failed analysis: the pipeline asks again instead of reporting a broken journal. The
+// reading itself lives in Recall, which the screens call too.
 func (p *P1) lookup(issue Issue) (Analysis, bool) {
-	if p.journal == nil {
-		return Analysis{}, false
-	}
-	decision, ok := p.journal.Get(p.key(issue))
-	if !ok {
-		return Analysis{}, false
-	}
-	var entry stored
-	if err := json.Unmarshal(decision.Verdict, &entry); err != nil {
-		return Analysis{}, false
-	}
-	if entry.Result.Outcome == "" {
-		// A stored envelope without a verdict is damage, not an answer: showing it would mean
-		// presenting an empty outcome as a decision.
-		return Analysis{}, false
-	}
-	return Analysis{
-		Result:    entry.Result,
-		Answers:   entry.Answers,
-		Alignment: entry.Alignment,
-		Cached:    true,
-		At:        decision.At,
-	}, true
+	analysis, _, ok := Recall(p.journal, issue.Number, p.model, p.commitSHA)
+	return analysis, ok
 }
 
 func (p *P1) remember(issue Issue, analysis Analysis, latency time.Duration) error {

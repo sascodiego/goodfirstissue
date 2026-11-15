@@ -2,9 +2,13 @@ package triage
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/sascodiego/nan-hackathon-clef/internal/nan"
 	"github.com/sascodiego/nan-hackathon-clef/internal/store"
@@ -550,4 +554,181 @@ func TestTheCachedVerdictKeepsTheNodeEvidence(t *testing.T) {
 	if _, ok := got.Alignment[QFitsDirection]; !ok {
 		t.Fatal("the cached verdict lost the node's answers")
 	}
+}
+
+// A pre-gate resolves without a request, and it still resolves: the verdict is journaled like
+// any other one. A report that reads the journal would otherwise count an issue the pipeline
+// already answered as one nobody has looked at (issue #41).
+func TestAPreResolvedIssueIsStoredSoTheJournalCanCountIt(t *testing.T) {
+	st := newTestStore(t)
+	journal, err := st.Decisions("spf13/cobra")
+	if err != nil {
+		t.Fatalf("Decisions: %v", err)
+	}
+
+	judge := &fakeJudge{err: errors.New("the judge must not be called")}
+	p1 := newP1(t, judge, journal)
+
+	issue := aBug()
+	issue.GitHubState = "CLOSED"
+	issue.GitHubStateReason = "COMPLETED"
+
+	got, err := p1.Run(context.Background(), issue)
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if judge.calls != 0 {
+		t.Fatalf("the judge was called %d times for an issue a pre-gate resolves", judge.calls)
+	}
+	if got.Cached {
+		t.Fatal("a pre-gate computed on the spot reported itself as reused")
+	}
+
+	// The key is assembled by hand rather than with p1.key: a test that asks the code under
+	// test what the key is cannot show that the key is the whole question (I4, I14).
+	key := store.Key{
+		Issue:         issue.Number,
+		Pass:          store.PassTriage,
+		Model:         testModel,
+		PromptVersion: Version(),
+		CommitSHA:     testCommit,
+	}
+	decision, ok := journal.Get(key)
+	if !ok {
+		t.Fatalf("the pre-gate verdict was not journaled under %s", key.ID())
+	}
+	if decision.LatencyMs != 0 {
+		t.Fatalf("latency = %dms, want 0: the verdict cost no request", decision.LatencyMs)
+	}
+
+	var entry stored
+	if err := json.Unmarshal(decision.Verdict, &entry); err != nil {
+		t.Fatalf("verdict: %v", err)
+	}
+	if entry.Result.Outcome != Marked || entry.Result.Reason != ReasonAlreadyDone || entry.Result.Probability != 1 {
+		t.Fatalf("stored %q (%s) at %v, want %q (%s) at 1",
+			entry.Result.Outcome, entry.Result.Reason, entry.Result.Probability, Marked, ReasonAlreadyDone)
+	}
+	if len(entry.Answers) != 0 {
+		t.Fatalf("the pre-gate stored %d answers, want none", len(entry.Answers))
+	}
+}
+
+// The second run of a pre-resolved issue is answered from the journal: same verdict, the time
+// it was first produced, and one line in the journal instead of two. Presenting a stored answer
+// as fresh is what I14 forbids, and `Put` appends without deduplicating, so a second `remember`
+// would grow the journal.
+func TestAPreResolvedIssueIsAnsweredFromTheJournalOnTheNextRun(t *testing.T) {
+	st := newTestStore(t)
+	journal, err := st.Decisions("spf13/cobra")
+	if err != nil {
+		t.Fatalf("Decisions: %v", err)
+	}
+
+	issue := aBug()
+	issue.GitHubState = "CLOSED"
+	issue.GitHubStateReason = "COMPLETED"
+
+	at := time.Date(2026, 11, 15, 3, 0, 0, 0, time.UTC)
+	first := newP1With(t, Options{
+		Judge:   &fakeJudge{err: errors.New("the judge must not be called")},
+		Journal: journal,
+		Now:     func() time.Time { return at },
+	})
+	if _, err := first.Run(context.Background(), issue); err != nil {
+		t.Fatalf("first run: %v", err)
+	}
+
+	path := st.Path(filepath.Join("spf13", "cobra", "decisions.jsonl"))
+	if n := journalLines(t, path); n != 1 {
+		t.Fatalf("the journal holds %d lines after one run, want 1", n)
+	}
+
+	second := newP1With(t, Options{
+		Judge:   &fakeJudge{err: errors.New("the judge must not be called again")},
+		Journal: journal,
+		Now:     func() time.Time { return at.Add(time.Hour) },
+	})
+	again, err := second.Run(context.Background(), issue)
+	if err != nil {
+		t.Fatalf("second run: %v", err)
+	}
+	if again.Cached != true {
+		t.Fatal("a pre-gate answered from the journal must say so")
+	}
+	if !again.At.Equal(at) {
+		t.Fatalf("cached at %v, first produced at %v: a stored answer keeps its own time", again.At, at)
+	}
+	if again.Outcome != Marked || again.Reason != ReasonAlreadyDone {
+		t.Fatalf("cached %q (%s), want %q (%s)", again.Outcome, again.Reason, Marked, ReasonAlreadyDone)
+	}
+	if n := journalLines(t, path); n != 1 {
+		t.Fatalf("the journal holds %d lines after two runs, want 1", n)
+	}
+}
+
+// The journal is pinned to the commit and the prompt, not to the issue's own facts: a corpus
+// refreshed at the same commit can bring a pull request that another person opened. The
+// deterministic fact wins over the stored verdict, because recommending taken work is the one
+// mistake the pre-gate exists to prevent (§7.7, row 0 before row 1).
+func TestAPreResolvedIssueWhoseNativeFactMovedIsWrittenAgain(t *testing.T) {
+	st := newTestStore(t)
+	journal, err := st.Decisions("spf13/cobra")
+	if err != nil {
+		t.Fatalf("Decisions: %v", err)
+	}
+
+	judge := &fakeJudge{err: errors.New("the judge must not be called")}
+	p1 := newP1(t, judge, journal)
+
+	empty := aBug()
+	empty.Body = ""
+	if _, err := p1.Run(context.Background(), empty); err != nil {
+		t.Fatalf("first run: %v", err)
+	}
+
+	working := aBug()
+	working.LinkedPRs = []LinkedPR{{Number: 7, State: "OPEN"}}
+
+	again, err := p1.Run(context.Background(), working)
+	if err != nil {
+		t.Fatalf("second run: %v", err)
+	}
+	if again.Reason != ReasonAlreadyWorking {
+		t.Fatalf("reason = %q, want %q: the native fact moved and wins over the stored reason",
+			again.Reason, ReasonAlreadyWorking)
+	}
+	if again.Cached {
+		t.Fatal("a verdict recomputed from a fact that moved is not reused")
+	}
+
+	key := store.Key{
+		Issue:         working.Number,
+		Pass:          store.PassTriage,
+		Model:         testModel,
+		PromptVersion: Version(),
+		CommitSHA:     testCommit,
+	}
+	decision, ok := journal.Get(key)
+	if !ok {
+		t.Fatalf("the moved verdict was not journaled under %s", key.ID())
+	}
+	var entry stored
+	if err := json.Unmarshal(decision.Verdict, &entry); err != nil {
+		t.Fatalf("verdict: %v", err)
+	}
+	if entry.Result.Reason != ReasonAlreadyWorking {
+		t.Fatalf("the journal still answers %q, want %q", entry.Result.Reason, ReasonAlreadyWorking)
+	}
+}
+
+// journalLines counts the rows a run actually wrote. Len() counts distinct keys, and Put
+// appends without deduplicating, so only the file shows whether a run wrote once or twice.
+func journalLines(t *testing.T, path string) int {
+	t.Helper()
+	body, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read journal: %v", err)
+	}
+	return strings.Count(string(body), "\n")
 }

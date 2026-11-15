@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/sascodiego/nan-hackathon-clef/internal/ghdata"
+	"github.com/sascodiego/nan-hackathon-clef/internal/profile"
 	"github.com/sascodiego/nan-hackathon-clef/internal/store"
 )
 
@@ -42,16 +43,21 @@ type Options struct {
 	Fetcher Fetcher
 	GitHub  ghdata.Options
 	Timeout time.Duration
+	// Extractor es el trabajo de extracción del CV. Nil significa que este binario arrancó
+	// sin agente usable —sin NAN_KEY, sin pig—: la pantalla se sirve igual y solo los POST
+	// del perfil lo dicen.
+	Extractor *profile.Extractor
 }
 
 // Handler sirve las pantallas y los activos estáticos.
 type Handler struct {
-	screens map[string]*template.Template
-	static  http.Handler
-	store   *store.Store
-	fetcher Fetcher
-	github  ghdata.Options
-	timeout time.Duration
+	screens   map[string]*template.Template
+	static    http.Handler
+	store     *store.Store
+	fetcher   Fetcher
+	github    ghdata.Options
+	timeout   time.Duration
+	extractor *profile.Extractor
 }
 
 // NewHandler parsea las plantillas y prepara el servidor de estáticos.
@@ -73,12 +79,13 @@ func NewHandler(opts Options) (*Handler, error) {
 		timeout = defaultFetchTimeout
 	}
 	return &Handler{
-		screens: screens,
-		static:  http.FileServerFS(assets),
-		store:   opts.Store,
-		fetcher: opts.Fetcher,
-		github:  opts.GitHub,
-		timeout: timeout,
+		screens:   screens,
+		static:    http.FileServerFS(assets),
+		store:     opts.Store,
+		fetcher:   opts.Fetcher,
+		github:    opts.GitHub,
+		timeout:   timeout,
+		extractor: opts.Extractor,
 	}, nil
 }
 

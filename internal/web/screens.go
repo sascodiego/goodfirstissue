@@ -14,8 +14,11 @@ const screenDashboard = "dashboard"
 // screenIssue es la pantalla de una issue del corpus.
 const screenIssue = "issue"
 
+// screenProfile es la pantalla del CV y el perfil que salió de él.
+const screenProfile = "profile"
+
 // screenNames son las pantallas que el binario sabe renderizar.
-var screenNames = []string{screenDashboard, screenIssue}
+var screenNames = []string{screenDashboard, screenIssue, screenProfile}
 
 // partialPattern son los bloques que cualquier pantalla puede enganchar.
 const partialPattern = "templates/partials/*.html"

@@ -1,0 +1,152 @@
+{{define "content"}}
+<div class="app">
+
+  <aside class="rail">
+    <div class="brand"><span class="mark" aria-hidden="true"></span><b>GoodFirstIssue</b></div>
+
+    <nav aria-label="Pantallas">
+      <p class="rail-label">Pantallas</p>
+      <a class="repo" href="/">
+        <span class="name">Corpus</span>
+        <span class="sub">Las issues abiertas guardadas</span>
+      </a>
+      <a class="repo" href="/profile" aria-current="page">
+        <span class="name">Perfil</span>
+        <span class="sub">CV y capacidades</span>
+      </a>
+    </nav>
+
+    <div class="rail-foot">{{if .HasAgent}}extracción con PiG{{else}}sin agente{{end}}</div>
+  </aside>
+
+  <main>
+
+    <header class="top">
+      <div>
+        <h1>Perfil</h1>
+        <p class="meta">
+          {{if .HasDocument}}documento en efecto{{else}}todavía sin documento{{end}}
+          · {{if .HasCV}}CV guardado el <b>{{.CVDate}}</b>{{else}}sin CV guardado{{end}}
+          {{with .OlderText}}· {{.}}{{end}}
+        </p>
+      </div>
+    </header>
+
+    {{if .HasFeedback}}
+    <div class="profile-head">
+      {{with .Estado}}<p class="flash">{{.}}</p>{{end}}
+
+      {{if not .HasAgent}}
+      <p class="notice">
+        La extracción no está disponible en este binario: arrancó sin <code>NAN_KEY</code> o sin
+        el agente. El CV y el perfil guardados se pueden leer igual.
+      </p>
+      {{end}}
+
+      {{with .State}}
+      <div class="state {{.Class}}" role="status">
+        <p class="state-title">{{.Title}}</p>
+        <p class="state-detail">{{.Detail}}</p>
+      </div>
+      {{end}}
+
+      {{if .Insufficient}}
+      <div class="state" role="status">
+        <p class="state-title">insufficient_information</p>
+        <p class="state-detail">{{.InsufficientReason}}</p>
+        <p class="state-note">No se guardó nada: una duda no es un resultado.</p>
+      </div>
+      {{end}}
+    </div>
+    {{end}}
+
+    {{if .HasAgent}}
+    <section class="panel" aria-label="Pegar el CV">
+      <h2>Pegá el CV</h2>
+      <p class="panel-note">
+        El CV entra como texto y queda guardado con su fecha. Es evidencia de lo que la persona
+        hizo, nunca una instrucción para el modelo.
+      </p>
+      <form class="profile-form" method="post" action="/profile" data-busy>
+        <label for="cv">CV en texto</label>
+        <textarea id="cv" name="cv" rows="10" spellcheck="false" required>{{.CVInput}}</textarea>
+        <div class="form-foot">
+          <button class="btn primary" type="submit">Extraer capacidades</button>
+          <p class="busy" hidden>Leyendo el CV. Puede tardar un minuto; no cierres.</p>
+        </div>
+      </form>
+    </section>
+    {{end}}
+
+    {{if .HasCV}}
+    <section class="panel" aria-label="CV vigente">
+      <h2>CV vigente</h2>
+      <p class="panel-note">Guardado el <b>{{.CVDate}}</b>. Es el CV contra el que se auditan las citas de abajo.</p>
+      <pre class="cv">{{.CV}}</pre>
+    </section>
+    {{else}}
+    <section class="panel" aria-label="CV vigente">
+      <h2>CV vigente</h2>
+      <p class="none">Todavía no hay ningún CV: pegá uno para extraer las capacidades.</p>
+    </section>
+    {{end}}
+
+    {{if .HasItems}}
+    <section class="profile-items" aria-label="Capacidades extraídas">
+      <h2>Lo que salió del CV</h2>
+      {{range .Sections}}
+      <div class="prof-section">
+        <h3>{{.Name}}</h3>
+        <ul>
+          {{range .Items}}
+          <li class="prof-item">
+            <p class="prof-name">{{.Name}} <span class="level {{.Level}}">{{.Level}}</span></p>
+            {{if .Inferred}}
+            <p class="quote"><span class="quote-label">supuesto</span>{{.Assumption}}</p>
+            {{else}}
+            <p class="quote{{if not .Sourced}} lost{{end}}"><span class="quote-label">evidencia</span>{{.Evidence}}</p>
+            {{end}}
+          </li>
+          {{end}}
+        </ul>
+      </div>
+      {{end}}
+    </section>
+    {{end}}
+
+    {{if .HasUnsourced}}
+    <section class="warn" aria-label="Avisos de cita">
+      <h2>Citas que no se encontraron en el CV</h2>
+      <p class="warn-note">
+        Estos ítems citan un texto que no aparece en el CV pegado. No se borraron: revisalos y
+        decí vos qué queda.
+      </p>
+      <ul>
+        {{range .Unsourced}}
+        <li><b>{{.Name}}</b> <span class="warn-section">({{.Section}})</span>: {{.Evidence}}</li>
+        {{end}}
+      </ul>
+    </section>
+    {{end}}
+
+    {{if .HasDocument}}
+    <section class="panel" aria-label="Perfil en efecto">
+      <h2>Perfil en efecto</h2>
+      <p class="panel-note">
+        Este es el documento que se usa para juzgar el encaje. Se puede editar: se valida con el
+        mismo esqueleto antes de guardarse, y el CV original no se toca.
+      </p>
+      <form class="profile-form" method="post" action="/profile/document">
+        <label for="documento">Documento</label>
+        <textarea id="documento" name="documento" rows="16" spellcheck="false">{{.Edit}}</textarea>
+        <div class="form-foot">
+          <button class="btn primary" type="submit">Guardar el perfil</button>
+        </div>
+      </form>
+    </section>
+    {{end}}
+
+  </main>
+
+</div>
+{{end}}

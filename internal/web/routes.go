@@ -15,6 +15,9 @@ func (h *Handler) Routes() http.Handler {
 	mux.HandleFunc("GET /issue/{repo}/{number}", h.issue)
 	mux.HandleFunc("POST /repos", h.addRepo)
 	mux.HandleFunc("POST /repos/{repo}/refresh", h.refreshRepo)
+	mux.HandleFunc("GET /profile", h.profile)
+	mux.HandleFunc("POST /profile", h.extractProfile)
+	mux.HandleFunc("POST /profile/document", h.saveProfileDocument)
 	mux.Handle("GET /static/", http.StripPrefix("/static/", h.static))
 	return mux
 }

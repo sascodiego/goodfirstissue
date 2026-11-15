@@ -38,9 +38,9 @@ type filter struct {
 }
 
 const (
-	filterAll       = ""
-	filterTaken     = "taken"
-	filterFree      = "free"
+	filterAll   = ""
+	filterTaken = "taken"
+	filterFree  = "free"
 	// filterCandidate no es un hecho del corpus: es lo que decidio el triaje. Se resuelve
 	// contra el journal, no contra la issue, asi que buildPageWith la aplica despues de leer
 	// el veredicto.

@@ -84,9 +84,9 @@ type Handler struct {
 	// fit corre la tercera pasada de todo el corpus. Nil significa que este binario no puede
 	// encajar --sin configuracion o sin clave--: el boton no se dibuja y la pantalla lo dice
 	// en vez de ofrecer lo que no puede cumplir.
-	fit     func(string) error
-	getenv  func(string) string
-	log     *slog.Logger
+	fit    func(string) error
+	getenv func(string) string
+	log    *slog.Logger
 }
 
 // NewHandler parsea las plantillas y prepara el servidor de estáticos, además de la cola

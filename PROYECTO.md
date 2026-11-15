@@ -1,11 +1,12 @@
 # PROYECTO.md — GoodFirstIssue
 
-**Versión:** 2.22
+**Versión:** 2.23
 **Fecha:** 2026-11-13
 **Estado:** Documento rector del MVP para el #2 Hackathon NaN (Reto 4 — tema libre)
 **Reemplaza:** el documento de definición de producto y arquitectura v1.0, en todo lo relativo al **alcance del MVP** (sus secciones 13 y 18). La visión de producto, el análisis del problema y los principios de diseño del original siguen vigentes.
 
 **Historial**
+- **2.23** — el guion de la demo y la definición de terminado se corrigen contra lo medido. El embudo de §15 deja los números de diseño y usa los reales de `cobra`: 150 abiertas → 69 marcadas con su motivo (66 por tener una PR abierta) → 31 derivadas → 8 condicionadas → 42 candidatas, en 53 s y 100 peticiones. §16 se parte en tres bloques —bloqueante de demo, pendiente con su bloqueador nombrado, fuera del MVP por decisión registrada— porque la lista anterior pedía cosas que el producto ya decidió no hacer: una feature reclasificada por `reports_defect` (que se pregunta y no decide desde 2.19), un `alignment` con etiquetas que no existen, y `label_honest`, retirado en 2.22.
 - **2.22** — **la etiqueta de dificultad se ignora; no se audita** (§1). Sale `label_honest` de P2 (§8.3), y la etiqueta sale de todo expediente y de todo prompt: se guarda verbatim en el corpus y no se juzga (I6, §4.2). El pitch pasa de «validamos una label» a «buscamos una good first issue». La valoración propia entra como bloque determinista de coherencia P1↔P2 dentro del `state` de P3 (§9.1.1): emite hallazgos, no veredicto. `triage.PolicyVersion` sube a `p1-2` y `explore.Version()` pasa a cubrir el constructor de la tarea (I14).
 - **2.21** — el paso de «¿ya fue atendida antes?» más la agrupación de duplicadas se ubica **después** del triaje y **antes** del explore: el triaje juzga la issue sola y deja candidatas. Del paso, el MVP solo conserva la señal determinista de trabajo abierto por issue (§7.1).
 - **2.20** — la agrupación de duplicados **sale del MVP por tiempo** (`LIMITES.md` §1). **I12 se reformula**:
@@ -1356,7 +1357,7 @@ Chequeos por etapa, ejecutables:
 
 | | Qué se ve | El momento de la demo |
 |---|---|---|
-| **S1 · Repo** | El embudo: 47 abiertas → 5 no son trabajo → 12 features sin el sí del mantenedor → 30 candidatas → 1 condicionada. Cada una con su distintivo; ninguna oculta. | «mirá lo que filtra sola, sin modelo de lenguaje» |
+| **S1 · Repo** | El embudo, medido sobre `cobra`: 150 abiertas → 69 marcadas con su motivo (66 ya tienen una PR abierta) → 31 derivadas → 8 condicionadas → **42 candidatas**. Cada una con su distintivo; ninguna oculta. | «mirá lo que filtra sola: dos de cada cinco ni siquiera llegan al modelo» |
 | **S2 · Issue** | Evidencia clickeable, requisitos en tres baldes, lagunas, partes, y nuestra valoración de la issue | «requiere conocer el sistema de migraciones, y la issue no lo dice» |
 | **S3 · Veredicto** | Requisitos vs perfil, con probabilidades, y las áreas de la issue como evidencia | «con este CV, entra; con el otro CV, no» |
 
@@ -1365,7 +1366,7 @@ S2 y S3 pueden colapsar en una sola pantalla si el reloj aprieta (§2.1.1): el c
 Guion:
 
 ```
-PRE-COMPUTADO  3 repos, 30 issues triajeadas, candidatas exploradas.
+PRE-COMPUTADO  2 repos en SHA fijo, 300 issues en el corpus. `cobra` triajeado completo: 150 issues en 53 s y 100 peticiones.
 EN VIVO (~2 s por paso)
   1. El embudo de S1 completo, con los números.
   2. Una issue con PR abierta, marcada como ya tomada.
@@ -1382,20 +1383,34 @@ La pantalla que gana el jurado no es la del veredicto: es **S1**. El embudo se e
 
 ## 16. Definición de terminado
 
-- [ ] 3 repositorios en SHA fijo, indexados, 30 issues con su etiqueta original preservada por separado.
-- [ ] Las 30 issues tienen `IssueTriage` válido; triaje completo en menos de 120 s sin modelo de chat.
-- [ ] Al menos un caso demostrable de issue MARCADA por `cluster_has_open_work`.
-- [ ] Al menos un caso demostrable de feature reclasificada por `reports_defect`.
-- [ ] Al menos un caso demostrable de `alignment` = `out_of_scope` o `divergent`, con la cita del proyecto.
-- [ ] Al menos un caso demostrable de una issue que no recomendamos para arrancar, con la evidencia clickeable y los hallazgos de coherencia a la vista.
-- [ ] Las candidatas tienen `EvidencePackage` válido, con partes que particionan la evidencia.
+Una lista donde todo es «sí» no informa nada. Estos tres bloques separan lo que la demo necesita de lo que está esperando a algo y de lo que se decidió no hacer.
+
+### Bloqueante de demo
+
+- [ ] Dos repositorios en SHA fijo e indexados. El tercero se cortó por tiempo (`LIMITES.md` §8).
+- [ ] Las 150 issues de `cobra` triajeadas — **medido**: 53 s, 100 peticiones, y las 66 con PR abierta resueltas sin consultar al modelo.
+- [ ] Un caso demostrable de MARCADA por `already_working`, con el número de la PR abierta a la vista.
+- [ ] Un caso demostrable de CONDICIONADA por `ask_maintainer`, con la cita del proyecto que leyó el nodo de alineación.
+- [ ] Una issue que no recomendamos para arrancar, con la evidencia clickeable y los hallazgos de coherencia a la vista.
 - [ ] Al menos 5 decisiones de encaje con perfiles distintos.
-- [ ] Los chequeos de §12 pasan.
-- [ ] La ruta `undecided` (I2) y la ruta `DUDA EN VOZ ALTA` (I10) son demostrables.
-- [ ] El modo replay ejecuta el mismo camino de código que el live (I7).
-- [ ] Tabla de benchmark de 10 casos en el README.
+- [ ] La ruta `undecided` (I2) y la duda en voz alta (I10) demostrables en pantalla.
 - [ ] Video de respaldo de 90 s, grabado antes de la última hora.
-- [ ] README con: qué hace, cómo correrlo, qué decisiones tomó y por qué.
+
+### Pendiente, con su bloqueador nombrado
+
+- [ ] **El embudo en pantalla lee el triaje.** Hoy el dashboard conoce dos estados, «tomada» y «sin triajar» (`#11`): con 150 triajeadas seguiría diciendo «sin triajar» ×150.
+- [ ] **El bloque de coherencia de §9.1.1** está especificado y sin código; su consumidor es el constructor del `state` de P3 (`#13`).
+- [ ] **La calidad de explore no se re-midió** desde que la etiqueta salió de la tarea, y `NAN_KEY` no estaba disponible (`#40`). Si la calidad baja, es el primer sospechoso.
+- [ ] **Tabla de benchmark en el README.** Seis casos, no diez: el recorte está en `LIMITES.md` §8. Hoy no existe.
+- [ ] **Los chequeos de §12 pasan**: E1, E2, E4, E5, I1 medidos; E3 medido en 53 s contra un techo de 120 s.
+
+### Fuera del MVP, por decisión registrada
+
+- Agrupación de duplicados (§2.1.1, `LIMITES.md` §1).
+- Veredicto por parte (§2.1.1, `LIMITES.md` §7).
+- `label_honest`: la etiqueta **se ignora, no se audita** (`#40`, I6).
+- `confirmed_defect` y `learning_value` (§2.1.1).
+- Tercer repositorio (§2.1.1).
 
 ---
 

@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>S1 · Tablero — cada issue en su columna, ninguna oculta</title>
+<link rel="stylesheet" href="../app.css">
+<style>
+  :root {
+    --state-taken: #6e7681;
+    --state-noise: #8957e5;
+    --state-blocked: #d29922;
+    --state-live: var(--accent);
+    --step-2: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+    --step-3: clamp(1.9rem, 1.5rem + 2vw, 2.8rem);
+  }
+
+  body { display: block; padding: 2.5rem 0 4rem; }
+  .page { width: min(80rem, 100%); margin: 0 auto; padding: 0 var(--gap); }
+
+  /* La cascada como una sola línea: el resumen cabe en el encabezado. */
+  .cascade {
+    display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap;
+    margin-top: 1.5rem; padding: 0.9rem 1.1rem;
+    border: 1px solid var(--line); border-radius: 0.7rem;
+    background: color-mix(in oklab, var(--bg-raised) 70%, transparent);
+    font-size: 0.85rem; color: var(--fg-dim);
+  }
+  .cascade b { color: var(--fg); font-variant-numeric: tabular-nums; font-size: 1rem; }
+  .cascade em { font-style: normal; color: var(--line); }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+    align-items: start;
+  }
+
+  .col {
+    border: 1px solid var(--line);
+    border-radius: 0.8rem;
+    background: color-mix(in oklab, var(--bg-raised) 55%, transparent);
+    border-top: 3px solid var(--state);
+    overflow: hidden;
+  }
+  .col > header {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem;
+    padding: 0.85rem 1rem 0.6rem;
+  }
+  .col h2 { margin: 0; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-dim); font-weight: 600; }
+  .col .count { font-size: var(--step-2); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; color: var(--state); line-height: 1; }
+  .col .why { padding: 0 1rem 0.85rem; font-size: 0.78rem; color: var(--fg-dim); border-bottom: 1px solid var(--line); }
+
+  .cards { padding: 0.6rem; display: grid; gap: 0.5rem; }
+
+  .card {
+    display: block;
+    padding: 0.7rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 0.55rem;
+    background: var(--bg);
+    text-decoration: none;
+    color: inherit;
+  }
+  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .card .num { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.72rem; color: var(--fg-dim); }
+  .card .ttl { display: block; margin-top: 0.3rem; font-size: 0.85rem; line-height: 1.4; }
+  .card .labels { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.5rem; }
+  .lbl {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.65rem; padding: 0.1rem 0.4rem;
+    border: 1px solid var(--line); border-radius: 0.3rem; color: var(--fg-dim);
+  }
+  .lbl.hit { border-color: color-mix(in oklab, var(--state-blocked) 60%, var(--line)); color: var(--state-blocked); }
+  .card .hint { display: block; margin-top: 0.5rem; font-size: 0.72rem; color: var(--state); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .card { transition: border-color 150ms ease, transform 150ms ease; }
+    .card:hover { border-color: var(--state); transform: translateY(-1px); }
+  }
+  @media (max-width: 1100px) { .board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .board { grid-template-columns: 1fr; } }
+
+  footer { margin-top: 2.5rem; color: var(--fg-dim); font-size: 0.78rem; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header>
+    <p class="eyebrow">S1 · el embudo</p>
+    <h1 style="font-size:var(--step-2);margin:.4rem 0 0">spf13/cobra: 262 abiertas, ninguna escondida</h1>
+    <div class="cascade">
+      <span><b>262</b> abiertas</span><em>→</em>
+      <span><b>150</b> traídas</span><em>→</em>
+      <span><b>66</b> ya tomadas</span><em>→</em>
+      <span><b>84</b> libres</span><em>→</em>
+      <span><b>51</b> candidatas</span>
+      <span style="margin-left:auto">cada tarjeta es una issue real · haz clic para ver la evidencia</span>
+    </div>
+  </header>
+
+  <div class="board">
+
+    <section class="col" style="--state: var(--state-taken)">
+      <header><h2>Ya tomadas</h2><span class="count">66</span></header>
+      <p class="why">Tienen una PR abierta vinculada. Cero tokens de modelo.</p>
+      <div class="cards">
+        <a class="card" href="#">
+          <span class="num">#2393</span>
+          <span class="ttl">Clink completion (feature request)</span>
+          <span class="hint">PR #222 abierta</span>
+        </a>
+        <a class="card" href="#">
+          <span class="num">#2547</span>
+          <span class="ttl">Docs: contributor architecture overview for the <code>cobra</code> package</span>
+          <span class="hint">PR #2563 abierta</span>
+        </a>
+        <a class="card" href="#">
+          <span class="num">#2544</span>
+          <span class="ttl">Mousetrap ignores the arguments</span>
+          <span class="hint">PR #2545 abierta</span>
+        </a>
+        <a class="card" href="#">
+          <span class="num">#1272</span>
+          <span class="ttl">Hidden Commands Should be Ignored When Calculating Use Indentation</span>
+          <span class="labels">
+            <span class="lbl hit">good-first-issue</span>
+            <span class="lbl">kind/bug</span>
+          </span>
+          <span class="hint">PR #1685 abierta</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="col" style="--state: var(--state-noise)">
+      <header><h2>No es trabajo</h2><span class="count">9</span></header>
+      <p class="why">Preguntas de soporte y discusiones. Lo decide el triaje, no la etiqueta.</p>
+      <div class="cards">
+        <a class="card" href="#">
+          <span class="num">#1995</span>
+          <span class="ttl">Question：How to write custom template?</span>
+          <span class="labels"><span class="lbl">kind/support</span></span>
+        </a>
+        <a class="card" href="#">
+          <span class="num">#1807</span>
+          <span class="ttl">Refactor <code>CONDUCT.md</code></span>
+          <span class="labels">
+            <span class="lbl">lifecycle/frozen</span>
+            <span class="lbl hit">help-wanted</span>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <section class="col" style="--state: var(--state-blocked)">
+      <header><h2>Sin el sí del mantenedor</h2><span class="count">20</span></header>
+      <p class="why">Features que nadie aprobó. Trabajo que nadie pidió, por más bueno que sea.</p>
+      <div class="cards">
+        <a class="card" href="#">
+          <span class="num">#378</span>
+          <span class="ttl">Ability to define arguments as well (like flags)</span>
+          <span class="labels">
+            <span class="lbl">kind/feature</span>
+            <span class="lbl">lifecycle/needs-proposal</span>
+          </span>
+        </a>
+        <a class="card" href="#">
+          <span class="num">#2491</span>
+          <span class="ttl">Feature Request: Allow optional values in map flags</span>
+          <span class="labels"><span class="lbl">kind/feature</span></span>
+        </a>
+      </div>
+    </section>
+
+    <section class="col" style="--state: var(--state-live)">
+      <header><h2>Candidatas</h2><span class="count">51</span></header>
+      <p class="why">Libres, con alcance acotado y sin propuesta pendiente. Acá empieza el encaje.</p>
+      <div class="cards">
+        <a class="card" href="#">
+          <span class="num">#2568</span>
+          <span class="ttl">YAML docs ignore linkHandler for <code>see_also</code> entries</span>
+          <span class="hint">sin etiqueta · sin comentarios</span>
+        </a>
+        <a class="card" href="#">
+          <span class="num">#2505</span>
+          <span class="ttl">docs: cobra.dev broken Go snippets in "12-Factor App with Viper" tutorial</span>
+          <span class="hint">sin etiqueta</span>
+        </a>
+        <a class="card" href="#">
+          <span class="num">#2525</span>
+          <span class="ttl">"passthrough" arguments and flags?</span>
+          <span class="hint">sin etiqueta · 1 comentario</span>
+        </a>
+        <a class="card" href="#">
+          <span class="num">#1373</span>
+          <span class="ttl">Alias not shown in root help</span>
+          <span class="labels"><span class="lbl">kind/feature</span><span class="lbl">area/lib</span></span>
+        </a>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>cobra @adbc8813901b · 150 de 262 traídas por el límite de fetch · conteos de triaje pendientes de P1</footer>
+
+</main>
+</body>
+</html>

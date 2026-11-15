@@ -1,0 +1,27 @@
+{
+  "title": "S1 · Repo — el embudo",
+  "brief": "Primera pantalla del producto (§15): el embudo que muestra cuántas issues abiertas caen en cada etapa antes de que un modelo de lenguaje toque nada, con el fact-check de la etiqueta good first issue. Datos reales de spf13/cobra al commit adbc8813901b.",
+  "artboards": [
+    {
+      "file": "01-cascada.html",
+      "title": "Cascada",
+      "tradeoff": "La lectura más directa del número que baja: cada banda se angosta y el embudo se entiende antes de leerlo. Cuesta espacio vertical y deja poco lugar para la issue individual.",
+      "width": 1440,
+      "height": 1500
+    },
+    {
+      "file": "02-tablero.html",
+      "title": "Tablero",
+      "tradeoff": "Toma literal el «ninguna oculta» de §15: cada issue es una tarjeta real en su columna, con su etiqueta verbatim. La cascada queda como una línea en el encabezado y se pierde la sensación de embudo.",
+      "width": 1440,
+      "height": 1100
+    },
+    {
+      "file": "03-libro-mayor.html",
+      "title": "Libro mayor",
+      "tradeoff": "El embudo como registro navegable: barra de composición, etapas a la izquierda y detalle de la elegida a la derecha. Gana profundidad y es el puente natural a S2, pero introduce interacción antes de tiempo y exige un clic para ver la cascada completa.",
+      "width": 1440,
+      "height": 1180
+    }
+  ]
+}

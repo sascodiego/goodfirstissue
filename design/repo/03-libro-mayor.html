@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>S1 · Libro mayor — el embudo navegable</title>
+<link rel="stylesheet" href="../app.css">
+<style>
+  :root {
+    --state-taken: #6e7681;
+    --state-noise: #8957e5;
+    --state-blocked: #d29922;
+    --state-live: var(--accent);
+    --step-2: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+    --step-3: clamp(1.9rem, 1.5rem + 2vw, 2.8rem);
+  }
+
+  body { display: block; padding: 2.5rem 0; }
+  .page { width: min(76rem, 100%); margin: 0 auto; padding: 0 var(--gap); }
+
+  /* Composición del corpus en una sola barra: la proporción antes que el número. */
+  .composition { margin-top: 1.75rem; }
+  .bar { display: flex; height: 0.6rem; border-radius: 999px; overflow: hidden; background: var(--line); }
+  .bar i { display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 0.75rem; font-size: 0.78rem; color: var(--fg-dim); }
+  .legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .legend i { width: 0.5rem; height: 0.5rem; border-radius: 2px; }
+  .legend b { color: var(--fg); font-variant-numeric: tabular-nums; }
+
+  .layout { display: grid; grid-template-columns: 22rem minmax(0, 1fr); gap: 1.25rem; margin-top: 2rem; align-items: start; }
+
+  /* Izquierda: el libro. Cada línea es una etapa con su cuenta. */
+  .ledger { border: 1px solid var(--line); border-radius: 0.8rem; overflow: hidden; background: color-mix(in oklab, var(--bg-raised) 62%, transparent); }
+  .ledger button {
+    all: unset;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.35rem 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--line);
+    border-left: 3px solid transparent;
+    cursor: pointer;
+  }
+  .ledger button:last-child { border-bottom: 0; }
+  .ledger button[aria-current="true"] { border-left-color: var(--state); background: var(--bg); }
+  .ledger button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .ledger .name { font-size: 0.9rem; }
+  .ledger .sub { grid-column: 1; font-size: 0.74rem; color: var(--fg-dim); }
+  .ledger .n { font-size: var(--step-1); font-variant-numeric: tabular-nums; line-height: 1; color: var(--state); }
+
+  /* Derecha: el detalle de la etapa elegida. */
+  .detail { border: 1px solid var(--line); border-radius: 0.8rem; background: color-mix(in oklab, var(--bg-raised) 62%, transparent); overflow: hidden; }
+  .detail > header { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+  .detail h2 { margin: 0; font-size: var(--step-1); }
+  .detail .rule { font-size: 0.8rem; color: var(--fg-dim); margin: 0.35rem 0 0; max-width: 54ch; }
+  .detail .verdict { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-dim); }
+
+  ol.rows { list-style: none; margin: 0; padding: 0; }
+  ol.rows li {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+  ol.rows li:last-child { border-bottom: 0; }
+  .rows .num { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.78rem; color: var(--fg-dim); }
+  .rows .body { min-width: 0; }
+  .rows .ttl { display: block; font-size: 0.88rem; line-height: 1.45; }
+  .rows .why { display: block; margin-top: 0.25rem; font-size: 0.76rem; color: var(--fg-dim); }
+  .rows .flag {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.66rem; padding: 0.15rem 0.45rem;
+    border: 1px solid color-mix(in oklab, var(--state-blocked) 55%, var(--line));
+    border-radius: 0.3rem; color: var(--state-blocked); white-space: nowrap;
+  }
+  .rows .open { color: var(--fg-dim); font-size: 0.75rem; text-decoration: none; border-bottom: 1px dotted var(--line); }
+
+  .note { margin-top: 1.25rem; display: flex; gap: 1rem; align-items: flex-start; padding: 0.9rem 1.1rem; border: 1px solid var(--line); border-radius: 0.7rem; background: var(--bg-raised); }
+  .note p { margin: 0; font-size: 0.82rem; color: var(--fg-dim); max-width: 70ch; }
+  .note b { color: var(--fg); }
+
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: no-preference) { .ledger button { transition: background 140ms ease, border-color 140ms ease; } .ledger button:hover { background: var(--bg); } }
+
+  footer { margin-top: 2rem; color: var(--fg-dim); font-size: 0.76rem; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header>
+    <p class="eyebrow">S1 · el embudo</p>
+    <h1 style="font-size:var(--step-2);margin:.4rem 0 0">spf13/cobra · qué queda después de filtrar</h1>
+  </header>
+
+  <section class="composition" aria-label="Composición del corpus">
+    <div class="bar" role="img" aria-label="66 ya tomadas, 9 no son trabajo, 20 sin aprobación, 51 candidatas, 4 duplicadas">
+      <i style="background:var(--state-taken);flex:66"></i>
+      <i style="background:var(--state-noise);flex:9"></i>
+      <i style="background:var(--state-blocked);flex:20"></i>
+      <i style="background:var(--state-live);flex:51"></i>
+      <i style="background:var(--line);flex:4"></i>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--state-taken)"></i>ya tomadas <b>66</b></span>
+      <span><i style="background:var(--state-noise)"></i>no es trabajo <b>9</b></span>
+      <span><i style="background:var(--state-blocked)"></i>sin aprobación <b>20</b></span>
+      <span><i style="background:var(--state-live)"></i>candidatas <b>51</b></span>
+      <span><i style="background:var(--line)"></i>duplicadas, absorbidas <b>4</b></span>
+    </div>
+  </section>
+
+  <div class="layout">
+
+    <nav class="ledger" aria-label="Etapas del embudo">
+      <button type="button" style="--state: var(--fg-dim)">
+        <span class="name">Abiertas en GitHub</span><span class="n">262</span>
+        <span class="sub">solo <code>state: OPEN</code>, sin filtro de etiqueta</span>
+      </button>
+      <button type="button" style="--state: var(--state-taken)" aria-current="true">
+        <span class="name">Ya tomadas</span><span class="n">66</span>
+        <span class="sub">PR abierta vinculada · 0 tokens</span>
+      </button>
+      <button type="button" style="--state: var(--state-noise)">
+        <span class="name">No describen trabajo</span><span class="n">9</span>
+        <span class="sub">soporte, preguntas, discusión · P1</span>
+      </button>
+      <button type="button" style="--state: var(--state-blocked)">
+        <span class="name">Sin el sí del mantenedor</span><span class="n">20</span>
+        <span class="sub">features con propuesta pendiente · P1</span>
+      </button>
+      <button type="button" style="--state: var(--state-live)">
+        <span class="name">Candidatas</span><span class="n">51</span>
+        <span class="sub">libres, acotadas, sin propuesta pendiente</span>
+      </button>
+    </nav>
+
+    <section class="detail" style="--state: var(--state-taken)" aria-live="polite">
+      <header>
+        <div>
+          <h2>Ya tomadas · 66</h2>
+          <p class="rule">Tienen al menos una PR abierta vinculada. Se descubre en la consulta de datos, sin gastar un token de modelo.</p>
+        </div>
+        <span class="verdict">0 tokens</span>
+      </header>
+      <ol class="rows">
+        <li>
+          <span class="num">#2393</span>
+          <span class="body"><span class="ttl">Clink completion (feature request)</span><span class="why">PR #222 abierta desde la misma comunidad</span></span>
+          <a class="open" href="#">ver issue</a>
+        </li>
+        <li>
+          <span class="num">#2547</span>
+          <span class="body"><span class="ttl">Docs: contributor architecture overview for the <code>cobra</code> package</span><span class="why">PR #2563 abierta</span></span>
+          <a class="open" href="#">ver issue</a>
+        </li>
+        <li>
+          <span class="num">#225</span>
+          <span class="body"><span class="ttl">Document SilenceUsage, Hidden</span><span class="why">PR #244 abierta</span></span>
+          <span class="flag">good-first-issue</span>
+        </li>
+        <li>
+          <span class="num">#1272</span>
+          <span class="body"><span class="ttl">Hidden Commands Should be Ignored When Calculating Use Indentation</span><span class="why">PR #1685 abierta · etiquetada como principiante y aun así requiere conocer el sistema de padding</span></span>
+          <span class="flag">good-first-issue</span>
+        </li>
+        <li>
+          <span class="num">#1391</span>
+          <span class="body"><span class="ttl">404 links on https://cobra.dev/</span><span class="why">PR #1984 abierta</span></span>
+          <span class="flag">good-first-issue</span>
+        </li>
+        <li>
+          <span class="num">#1140</span>
+          <span class="body"><span class="ttl">GenMarkdownTreeCustom doesn't have a way to append a footer</span><span class="why">PR #1270 abierta</span></span>
+          <span class="flag">good-first-issue</span>
+        </li>
+      </ol>
+    </section>
+
+  </div>
+
+  <div class="note" role="note">
+    <p><b>Las cuatro issues con <code>good-first-issue</code> de este repositorio ya tienen PR abierta.</b> La etiqueta no está mintiendo: está agotada. Disponibles para alguien que empieza, hoy: ninguna.</p>
+  </div>
+
+  <footer>cobra @adbc8813901b · corpus 2026-11-14 · conteos de P1 marcados como pendientes hasta correr el triaje</footer>
+
+</main>
+</body>
+</html>

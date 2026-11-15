@@ -1,0 +1,48 @@
+{
+  "_note": "Procedencia de cada número de las maquetas de S1. measured = contado del snapshot guardado; demo = valor de maqueta hasta que corra P1 (triaje). Ningún número de esta carpeta se presenta como medido si no lo es.",
+  "source": {
+    "snapshot": "var/store/spf13__cobra/snapshot.json",
+    "repository": "spf13/cobra",
+    "commit": "adbc8813901bba65827259daa8e22ff94ec1f30e",
+    "fetched_at": "2026-11-14",
+    "filter": "state: OPEN, labels copiadas verbatim, sin filtro por etiqueta"
+  },
+  "measured": {
+    "open_on_github": 262,
+    "stored_in_corpus": 150,
+    "stored_note": "el límite es github.max_issues del config, no un juicio de valor",
+    "taken_with_open_pr": 66,
+    "free": 84,
+    "free_without_any_label": 73,
+    "free_without_comments": 14,
+    "labeled_good_first_issue": 4,
+    "labeled_good_first_issue_taken": 4,
+    "labeled_help_wanted_frozen": 1,
+    "available_for_beginners": 0
+  },
+  "demo": {
+    "_note": "dependen de P1 (triaje con Clef) y todavía no se corrieron. Suman: 84 libres = 9 + 20 + 51 + 4 duplicadas.",
+    "do_not_describe_work": 9,
+    "duplicates_absorbed": 4,
+    "features_without_maintainer_yes": 20,
+    "candidates": 51,
+    "conditional": 1
+  },
+  "issues_used": [
+    { "number": 2393, "placement": "taken", "evidence": "PR #222 OPEN" },
+    { "number": 2547, "placement": "taken", "evidence": "PR #2563 OPEN" },
+    { "number": 2544, "placement": "taken", "evidence": "PR #2545 OPEN" },
+    { "number": 1272, "placement": "taken", "evidence": "PR #1685 OPEN, label good-first-issue" },
+    { "number": 225, "placement": "taken", "evidence": "PR #244 OPEN, label good-first-issue" },
+    { "number": 1391, "placement": "taken", "evidence": "PR #1984 OPEN, label good-first-issue" },
+    { "number": 1140, "placement": "taken", "evidence": "PR #1270 OPEN, label good-first-issue" },
+    { "number": 1995, "placement": "noise", "evidence": "label kind/support, demo" },
+    { "number": 1807, "placement": "noise", "evidence": "labels lifecycle/frozen + help-wanted, demo" },
+    { "number": 378, "placement": "blocked", "evidence": "label lifecycle/needs-proposal, demo" },
+    { "number": 2491, "placement": "blocked", "evidence": "label kind/feature, demo" },
+    { "number": 2568, "placement": "candidate", "evidence": "libre, sin etiqueta, sin comentarios" },
+    { "number": 2505, "placement": "candidate", "evidence": "libre, sin etiqueta" },
+    { "number": 2525, "placement": "candidate", "evidence": "libre, sin etiqueta, 1 comentario" },
+    { "number": 1373, "placement": "candidate", "evidence": "libre, labels kind/feature + area/lib" }
+  ]
+}

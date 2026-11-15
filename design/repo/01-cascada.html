@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>S1 · Cascada — el embudo como la página</title>
+<link rel="stylesheet" href="../app.css">
+<style>
+  /* Propuesta de tokens para el embudo (ver design/system.md).
+     Se mueven a app.css recién cuando esta dirección se acepta. */
+  :root {
+    --state-taken: #6e7681;
+    --state-noise: #8957e5;
+    --state-blocked: #d29922;
+    --state-live: var(--accent);
+    --step-2: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+    --step-3: clamp(1.9rem, 1.5rem + 2vw, 2.8rem);
+  }
+
+  body { display: block; padding: 3.5rem 0 5rem; }
+  .page { width: min(64rem, 100%); margin: 0 auto; padding: 0 var(--gap); }
+
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 2rem; flex-wrap: wrap; }
+  .repo { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.85rem; color: var(--fg-dim); }
+
+  /* La cascada: cada banda se angosta, el embudo se ve antes de leerse. */
+  .funnel { margin-top: 3rem; display: grid; gap: 0.5rem; }
+  .band {
+    position: relative;
+    display: grid;
+    grid-template-columns: 7.5rem 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.1rem 1.4rem;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--state, var(--line));
+    border-radius: 0.7rem;
+    background: color-mix(in oklab, var(--bg-raised) 70%, transparent);
+    text-decoration: none;
+    color: inherit;
+  }
+  .band:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .band .n {
+    font-size: var(--step-3);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .band .what strong { display: block; font-weight: 600; }
+  .band .what span { display: block; color: var(--fg-dim); font-size: 0.85rem; margin-top: 0.15rem; }
+  .band .tag {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    white-space: nowrap;
+  }
+  .band .tag b { color: var(--state); font-weight: 600; }
+
+  /* El angostamiento: sangría creciente por etapa. */
+  .band.l1 { margin-inline: 0; --state: var(--fg-dim); }
+  .band.l2 { margin-inline: 2.5%; --state: var(--state-taken); }
+  .band.l3 { margin-inline: 5%; --state: var(--state-noise); }
+  .band.l4 { margin-inline: 7.5%; --state: var(--state-blocked); }
+  .band.l5 { margin-inline: 10%; --state: var(--state-live); }
+
+  .arrow { justify-self: center; color: var(--line); font-size: 0.9rem; line-height: 0; }
+
+  /* Hallazgo: la etiqueta, medida. */
+  .finding {
+    margin-top: 3rem;
+    border: 1px solid var(--line);
+    border-radius: 0.8rem;
+    padding: 1.6rem;
+    background: color-mix(in oklab, var(--bg-raised) 82%, transparent);
+  }
+  .finding h2 { margin: 0 0 0.6rem; font-size: var(--step-1); }
+  .finding p { margin: 0; color: var(--fg-dim); max-width: 62ch; }
+  .finding b { color: var(--fg); }
+  .ledger { margin: 1.4rem 0 0; border-top: 1px solid var(--line); }
+  .ledger div {
+    display: grid; grid-template-columns: 4rem 1fr auto; gap: 1rem;
+    padding: 0.65rem 0; border-bottom: 1px solid var(--line); align-items: baseline;
+  }
+  .ledger div:last-child { border-bottom: 0; }
+  .ledger .num { font-family: ui-monospace, "SF Mono", Menlo, monospace; color: var(--fg-dim); font-size: 0.85rem; }
+  .ledger .ttl { color: var(--fg); }
+  .ledger .st { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.07em; }
+  .st.taken { color: var(--state-taken); }
+  .st.frozen { color: var(--state-noise); }
+
+  footer { margin-top: 3rem; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; color: var(--fg-dim); font-size: 0.78rem; }
+  footer span { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .band { transition: border-color 160ms ease, background 160ms ease; }
+    .band:hover { background: color-mix(in oklab, var(--bg-raised) 100%, transparent); border-color: var(--state); }
+  }
+  @media (max-width: 720px) {
+    .band { grid-template-columns: 1fr; gap: 0.5rem; }
+    .band.l2, .band.l3, .band.l4, .band.l5 { margin-inline: 0; }
+    .band .tag { justify-self: start; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header class="top">
+    <div>
+      <p class="eyebrow">S1 · el embudo</p>
+      <h1 style="font-size:var(--step-2);margin:.4rem 0 0">Qué se cae antes de que un modelo lo mire</h1>
+    </div>
+    <p class="repo">spf13/cobra · Go · @adbc881</p>
+  </header>
+
+  <section class="funnel" aria-label="Embudo de triaje de spf13/cobra">
+
+    <div class="band l1">
+      <span class="n">262</span>
+      <span class="what">
+        <strong>abiertas en GitHub</strong>
+        <span>solo se filtra <code>state: OPEN</code>. La etiqueta no selecciona nada.</span>
+      </span>
+      <span class="tag"><b>medido</b></span>
+    </div>
+
+    <div class="arrow" aria-hidden="true">↓</div>
+
+    <div class="band l2">
+      <span class="n">66</span>
+      <span class="what">
+        <strong>ya tienen una PR abierta</strong>
+        <span>alguien llegó antes. Cero tokens de modelo para descubrirlo.</span>
+      </span>
+      <span class="tag"><b>medido</b> · 0 tokens</span>
+    </div>
+
+    <div class="arrow" aria-hidden="true">↓</div>
+
+    <div class="band l3">
+      <span class="n">9</span>
+      <span class="what">
+        <strong>no describen trabajo</strong>
+        <span>preguntas de soporte, discusiones, pedidos de ayuda. Lo decide el triaje.</span>
+      </span>
+      <span class="tag"><b>Clef</b> · P1</span>
+    </div>
+
+    <div class="arrow" aria-hidden="true">↓</div>
+
+    <div class="band l4">
+      <span class="n">20</span>
+      <span class="what">
+        <strong>features sin el sí del mantenedor</strong>
+        <span>proponer algo que nadie aprobó es trabajo que nadie pidió.</span>
+      </span>
+      <span class="tag"><b>Clef</b> · P1</span>
+    </div>
+
+    <div class="arrow" aria-hidden="true">↓</div>
+
+    <div class="band l5">
+      <span class="n">51</span>
+      <span class="what">
+        <strong>candidatas reales</strong>
+        <span>50 vivas y 1 condicionada. De acá sale el encaje con un perfil.</span>
+      </span>
+      <span class="tag"><b>50</b> vivas</span>
+    </div>
+
+  </section>
+
+  <section class="finding">
+    <h2>La etiqueta <code>good first issue</code>, medida contra el código</h2>
+    <p>
+      De las 150 issues traídas de este repositorio, <b>cuatro</b> llevan esa etiqueta.
+      Las <b>cuatro</b> ya tienen una PR abierta. Una quinta declara
+      <code>help-wanted</code> y está congelada por el mantenedor.
+      Disponibles para alguien que empieza: <b>ninguna</b>.
+    </p>
+    <div class="ledger">
+      <div><span class="num">#1272</span><span class="ttl">Hidden Commands Should be Ignored When Calculating Use Indentation</span><span class="st taken">tomada</span></div>
+      <div><span class="num">#1391</span><span class="ttl">404 links on https://cobra.dev/</span><span class="st taken">tomada</span></div>
+      <div><span class="num">#1140</span><span class="ttl">GenMarkdownTreeCustom doesn't have a way to append a footer</span><span class="st taken">tomada</span></div>
+      <div><span class="num">#225</span><span class="ttl">Document SilenceUsage, Hidden</span><span class="st taken">tomada</span></div>
+      <div><span class="num">#1807</span><span class="ttl">Refactor <code>CONDUCT.md</code></span><span class="st frozen">congelada</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>cobra @adbc8813901b · corpus 2026-11-14 · prompt 2c5927dda0f1</span>
+    <span>números de P1 en gris: demo hasta correr el triaje</span>
+  </footer>
+
+</main>
+</body>
+</html>

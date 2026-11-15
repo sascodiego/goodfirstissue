@@ -119,7 +119,11 @@ type rowView struct {
 	FitClass string
 	// FitNote dice en el title lo que la palabra no puede: si no hay encaje guardado o si el
 	// juicio se retuvo. Tres chips son legibles; cuatro no.
-	FitNote    string
+	FitNote string
+	// FitP y HasFit permiten ordenar por compatibilidad: primero lo encajado, de mayor a menor.
+	// Sin esto la tabla queda en el orden del snapshot y lo que más se acerca queda enterrado.
+	FitP       float64
+	HasFit     bool
 	PR         int
 	HasPR      bool
 	Updated    string
@@ -157,6 +161,7 @@ func (h *Handler) dashboard(w http.ResponseWriter, r *http.Request) {
 	data.CanFit = h.fit != nil
 	data.CanIndex = h.index != nil
 	h.attachFitStates(&data)
+	data.Rows = sortByFit(data.Rows)
 	h.render(w, screenDashboard, data)
 }
 

@@ -360,6 +360,27 @@ main {
   color: var(--state-taken);
 }
 
+/* Leyenda del encaje: los cuatro estados y el orden de la tabla. Sin esto el chip es una
+   palabra más; con esto se lee qué significa cada color y por qué la primera fila es la primera. */
+.fit-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0.85rem 0 0.4rem;
+  font: 11.5px/1.5 var(--sans);
+  color: var(--fg-3);
+}
+
+.legend-note {
+  margin-left: auto;
+  font: 11px var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
 /* ---------- embudo del triaje ---------- */
 
 /* El embudo es la cifra de la pantalla: no cuánto tiene el corpus, sino qué decidió el triaje

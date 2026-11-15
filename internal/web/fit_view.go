@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -367,6 +368,8 @@ func (h *Handler) attachFitStates(page *pageData) {
 			page.Rows[i].FitNote = "no hay encaje guardado de esta issue con este perfil y este commit"
 			continue
 		}
+		page.Rows[i].HasFit = true
+		page.Rows[i].FitP = analysis.Probability
 		switch analysis.Level {
 		case fit.LevelRecommended, fit.LevelRecommendedWithSupport:
 			page.Rows[i].FitText = "Encaja"
@@ -408,4 +411,20 @@ func whyFitHeld(result fit.Result) string {
 // of the interface speaks Spanish.
 func fitChipP(p float64) string {
 	return strings.Replace(strconv.FormatFloat(p, 'f', 2, 64), ".", ",", 1)
+}
+
+// sortByFit ordena el corpus por cercanía al sí: primero lo que tiene encaje, de mayor a menor
+// probabilidad; después lo que todavía no se encajó. El orden del snapshot dice qué es nuevo,
+// que no es la pregunta de esta pantalla — la pregunta es por dónde empezar.
+func sortByFit(rows []rowView) []rowView {
+	sort.SliceStable(rows, func(i, j int) bool {
+		if rows[i].HasFit != rows[j].HasFit {
+			return rows[i].HasFit
+		}
+		if rows[i].FitP != rows[j].FitP {
+			return rows[i].FitP > rows[j].FitP
+		}
+		return rows[i].Number > rows[j].Number
+	})
+	return rows
 }

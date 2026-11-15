@@ -1,7 +1,7 @@
 {{/* El bloque de encaje de la pantalla de issue ([encaje], issue #13).
      Muestra el nivel que P3 decidió contra el perfil aprobado, el desglose de lo que pesó y el
      pin de la respuesta. Sin perfil aprobado manda a /profile; con perfil y sin veredicto nombra
-     el comando. Nunca ofrece un botón: no hay POST /fit. */}}
+     el comando. No trae botón propio: el encaje es del corpus entero, no de una issue. */}}
 {{define "fit"}}
 <section class="fit" aria-label="Encaje">
 
@@ -119,7 +119,8 @@
 
   <p class="none">
     Todavía no hay encaje guardado de esta issue con este perfil, este prompt y este commit.
-    Se corre desde la terminal: <code>{{.Fit.Command}}</code>
+    Se corre con el botón <b>Encajar candidatas</b> del corpus —el encaje es de todas las
+    candidatas a la vez, no de una issue— o desde la terminal: <code>{{.Fit.Command}}</code>
   </p>
 
   {{else}}

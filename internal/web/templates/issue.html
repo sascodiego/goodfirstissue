@@ -36,6 +36,13 @@
       </div>
     </header>
 
+    {{/* Nuestro trabajo va primero: quien abre esta pantalla viene a ver qué decidimos, y el
+         cuerpo de la issue es el insumo, no la conclusión. Antes los tres bloques quedaban
+         después del cuerpo y había que bajar media página para encontrar el veredicto. */}}
+    {{template "triage" .}}
+    {{template "evidence" .}}
+    {{template "fit" .}}
+
     <div class="issue">
       <section class="issue-body" aria-label="Cuerpo de la issue">
         {{if .Issue.HasBody}}{{.Issue.Body}}{{else}}<p class="none">Sin cuerpo: la issue se explica solo en el título.</p>{{end}}
@@ -65,11 +72,7 @@
       </aside>
     </div>
 
-    {{/* Puntos de inclusión de la ola 2: hoy vacíos, y por eso las tres
-         issues siguientes enganchan su bloque sin editar este archivo. */}}
-    {{template "triage" .}}
-    {{template "evidence" .}}
-    {{template "fit" .}}
+    {{/* El cuerpo y el lado se pintaron arriba, después de nuestros tres informes. */}}
 
     <section class="thread" aria-label="Comentarios">
       <h2>{{.Issue.CommentCount}} comentarios</h2>

@@ -13,6 +13,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/sascodiego/nan-hackathon-clef/internal/nan"
 )
 
 // This file is the experiment, not the product: the question bank below is a candidate,
@@ -41,15 +43,6 @@ const (
 	consistencyRuns = 3
 )
 
-// question is one typed entry of the request. The wording here is the independent
-// variable of the experiment; the frozen copy lands in prompt.md once a winner exists.
-type question struct {
-	ID           string
-	Type         string
-	Instructions string
-	Criteria     map[string]string
-}
-
 // answer is what comes back: a probability for a yes/no, a label plus probabilities for
 // a choice.
 type answer struct {
@@ -59,126 +52,6 @@ type answer struct {
 	Confidence    float64
 	Probability   float64
 	Probabilities map[string]float64
-}
-
-var kindCriteria = map[string]string{
-	"bug":      "It reports behaviour that already exists and says that behaviour is wrong or broken.",
-	"feature":  "It asks for behaviour that does not exist yet.",
-	"question": "It asks for information, an explanation, or how to do something, and does not ask for a change.",
-	"spam":     "It contains no real request and no usable information.",
-	"other":    "It describes work that fits none of the above, such as documentation, tests, or project process.",
-}
-
-// substanceQuestions is the experiment. The first seven are the analytic questions the
-// design already had; the four after them are grounded nodes of the candidate tree, and
-// they exist to test whether a category derived from concrete facts beats a category the
-// model is asked to name in one step.
-var substanceQuestions = []question{
-	{ID: "kind", Type: "choice", Instructions: "What is this issue asking for?", Criteria: kindCriteria},
-	{
-		ID:   "self_contained",
-		Type: "noul",
-		Instructions: "Does this text state what is being asked clearly enough that someone who has not " +
-			"spoken to the author could start, without material that is not here: a recording, a " +
-			"screenshot, or a private conversation?",
-	},
-	{
-		ID:   "has_evidence",
-		Type: "noul",
-		Instructions: "Does the issue contain the material someone would need to reproduce or verify the claim: " +
-			"steps, a code sample, a log, a version, an environment, or a concrete use case?",
-	},
-	{
-		ID:   "unambiguous",
-		Type: "noul",
-		Instructions: "Does the expected result admit exactly one reading, so that two people would agree on " +
-			"what a correct outcome looks like?",
-	},
-	{
-		ID:   "done_defined",
-		Type: "noul",
-		Instructions: "Does the issue define what would make it finished, so that a maintainer could accept or " +
-			"reject the result without another conversation?",
-	},
-	{
-		ID:   "reports_defect",
-		Type: "noul",
-		Instructions: "Does the text report behaviour that already exists as defective, rather than asking for " +
-			"behaviour that does not exist yet?",
-	},
-	{
-		ID:   "evidence_sufficient",
-		Type: "noul",
-		Instructions: "Is the text enough to decide what kind of request this is, regardless of how much work " +
-			"the request would be or how thin or unwelcome it looks?",
-	},
-	{
-		ID:   "asks_for_information",
-		Type: "noul",
-		Instructions: "Is the main purpose of the text to get an answer or an explanation, rather than to get " +
-			"something changed?",
-	},
-	{
-		ID:   "asks_for_new_behaviour",
-		Type: "noul",
-		Instructions: "Does the text ask the software to do something it does not do, where the thing asked " +
-			"for is a capability the software was never meant to have, rather than a correction of the " +
-			"behaviour that is failing?",
-	},
-	{
-		ID:   "describes_existing_behaviour",
-		Type: "noul",
-		Instructions: "Does the text describe behaviour that already exists, whether or not it calls that " +
-			"behaviour a defect?",
-	},
-	{
-		ID:   "maintainer_spoke",
-		Type: "noul",
-		Instructions: "Does the material contain at least one statement written by someone responsible for " +
-			"the project, as opposed to statements written only by people asking for it?",
-	},
-	{
-		ID:   "has_reproduction",
-		Type: "noul",
-		Instructions: "Does the text give concrete steps, code, or output that someone else could follow to see " +
-			"the reported behaviour for themselves?",
-	},
-}
-
-// alignmentQuestions are dossier C. A feature can be clear, approved as a topic, and
-// still be worth nothing to anyone but the person asking.
-var alignmentQuestions = []question{
-	{
-		ID:   "only_for_requester",
-		Type: "noul",
-		Instructions: "Is this request driven by a situation specific to the person asking, such that the " +
-			"project's other users would not get anything out of it?",
-	},
-	{
-		ID:   "fits_direction",
-		Type: "noul",
-		Instructions: "Judged against what the project's documentation and recent history show it is trying to " +
-			"be, would this request move it further in that direction, or away from it?",
-	},
-}
-
-// DerivedKind is the candidate tree: the model extracts grounded facts, our code walks
-// the branches. Whether it beats asking for the category directly is the measurement.
-func DerivedKind(noul map[string]float64) string {
-	const half = 0.5
-	if noul["asks_for_information"] >= half && noul["asks_for_new_behaviour"] < half {
-		return "question"
-	}
-	if noul["asks_for_new_behaviour"] >= half {
-		return "feature"
-	}
-	if noul["describes_existing_behaviour"] >= half {
-		if noul["reports_defect"] >= half {
-			return "bug"
-		}
-		return "feature"
-	}
-	return "other"
 }
 
 type clefClient struct {
@@ -195,17 +68,14 @@ func newClefClient() clefClient {
 	return clefClient{url: url, key: os.Getenv("NAN_KEY"), http: &http.Client{Timeout: clefTimeout}}
 }
 
-func (c clefClient) ask(ctx context.Context, dossier string, questions []question) (map[string]answer, error) {
-	body := map[string]any{"model": clefModel, "state": dossier, "questions": map[string]any{}}
-	entries := body["questions"].(map[string]any)
-	for _, q := range questions {
-		entry := map[string]any{"type": q.Type, "instructions": q.Instructions}
-		if q.Criteria != nil {
-			entry["criteria"] = q.Criteria
-		}
-		entries[q.ID] = entry
-	}
-	payload, err := json.Marshal(body)
+// ask sends the questions the product sends, spelled by the production type. The request
+// body is not rebuilt here: a second shape of the wire format is a second contract.
+func (c clefClient) ask(ctx context.Context, dossier string, questions map[string]nan.Question) (map[string]answer, error) {
+	payload, err := json.Marshal(nan.SystemOneRequest{
+		Model:     clefModel,
+		State:     dossier,
+		Questions: questions,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("marshal request: %w", err)
 	}
@@ -253,27 +123,20 @@ func (c clefClient) post(ctx context.Context, payload []byte) ([]byte, bool, err
 }
 
 func decodeAnswers(raw []byte) (map[string]answer, error) {
-	var payload struct {
-		Answers map[string]struct {
-			Type          string             `json:"type"`
-			Noul          *float64           `json:"noul"`
-			Choice        string             `json:"choice"`
-			Confidence    float64            `json:"confidence"`
-			Probabilities map[string]float64 `json:"probabilities"`
-		} `json:"answers"`
-	}
+	var payload nan.SystemOneResponse
 	if err := json.Unmarshal(raw, &payload); err != nil {
 		return nil, fmt.Errorf("decode answers: %w", err)
 	}
 	out := make(map[string]answer, len(payload.Answers))
 	for id, a := range payload.Answers {
-		decoded := answer{Type: a.Type, Choice: a.Choice, Confidence: a.Confidence}
-		if a.Noul != nil {
-			decoded.Noul = *a.Noul
+		out[id] = answer{
+			Type:          string(a.Type),
+			Noul:          a.Noul,
+			Choice:        a.Choice,
+			Confidence:    a.Confidence,
+			Probability:   a.Probabilities[a.Choice],
+			Probabilities: a.Probabilities,
 		}
-		decoded.Probability = a.Probabilities[a.Choice]
-		decoded.Probabilities = a.Probabilities
-		out[id] = decoded
 	}
 	return out, nil
 }
@@ -332,7 +195,6 @@ func TestBenchMeasuresWording(t *testing.T) {
 		preGated     []string
 		runs         []benchRun
 		flatHits     int
-		derivedHits  int
 		intentHits   int
 		abstentions  int
 		scored       int
@@ -355,7 +217,7 @@ func TestBenchMeasuresWording(t *testing.T) {
 		}
 
 		started := time.Now()
-		substance, err := client.ask(ctx, SubstanceDossier(issue), substanceQuestions)
+		substance, err := client.ask(ctx, SubstanceDossier(issue), Questions())
 		if err != nil {
 			// One bad case must not cost the whole report: the benchmark is the evidence.
 			t.Errorf("%s: substance request: %v", c.ID, err)
@@ -376,7 +238,7 @@ func TestBenchMeasuresWording(t *testing.T) {
 			if !ok {
 				t.Fatalf("%s: no project brief for %q", c.ID, project)
 			}
-			got, err := client.ask(ctx, AlignmentDossier(issue, brief), alignmentQuestions)
+			got, err := client.ask(ctx, AlignmentDossier(issue, brief), AlignmentQuestions())
 			if err != nil {
 				t.Errorf("%s: alignment request: %v", c.ID, err)
 			}
@@ -384,7 +246,6 @@ func TestBenchMeasuresWording(t *testing.T) {
 		}
 
 		noul := noulMap(substance)
-		derived := DerivedKind(noul)
 		run := benchRun{
 			Case:       c.ID,
 			Trap:       c.Trap,
@@ -437,9 +298,6 @@ func TestBenchMeasuresWording(t *testing.T) {
 		if run.Kind == c.Expected.Kind {
 			flatHits++
 		}
-		if derived == c.Expected.Kind {
-			derivedHits++
-		}
 		if run.Intent == c.Expected.Intent {
 			intentHits++
 		}
@@ -460,9 +318,9 @@ func TestBenchMeasuresWording(t *testing.T) {
 			}
 		}
 
-		t.Logf("%-24s kind %-8s flat=%-8s(p=%.2f) derived=%-8s evsuf=%.2f latency=%s",
+		t.Logf("%-24s kind %-8s flat=%-8s(p=%.2f) evsuf=%.2f latency=%s",
 			c.ID, c.Expected.Kind, run.Kind, substance["kind"].Probability,
-			derived, noul["evidence_sufficient"], answersAt.Round(time.Millisecond))
+			noul["evidence_sufficient"], answersAt.Round(time.Millisecond))
 	}
 
 	treeHits, flatOutcomeHits, aligned, alignedHits := 0, 0, 0, 0
@@ -505,7 +363,6 @@ func TestBenchMeasuresWording(t *testing.T) {
 	t.Logf("resueltos sin preguntar: %d (%s)", len(preGated), strings.Join(preGated, ", "))
 	t.Logf("medidos:        %d", scored)
 	t.Logf("flat kind:      %d/%d", flatHits, scored)
-	t.Logf("derived kind:   %d/%d", derivedHits, scored)
 	t.Logf("intent:         %d/%d", intentHits, scored)
 	t.Logf("abstentions:    %d/%d", abstentions, scored)
 	for _, id := range []string{"self_contained", "has_evidence", "unambiguous", "done_defined", "reports_defect", "evidence_sufficient"} {
@@ -539,7 +396,7 @@ func reportConsistency(t *testing.T, ctx context.Context, client clefClient, cas
 			continue
 		}
 		for pass := 2; pass <= consistencyRuns; pass++ {
-			again, err := client.ask(ctx, SubstanceDossier(issue), substanceQuestions)
+			again, err := client.ask(ctx, SubstanceDossier(issue), Questions())
 			if err != nil {
 				t.Errorf("%s: consistency request: %v", id, err)
 				continue

@@ -328,3 +328,55 @@ func gapsOf(lists ...[]string) []string {
 	}
 	return out
 }
+
+// attachFitStates puts the fit state on every row of the corpus: no fit, does not fit, fits.
+//
+// Three words and not five because a table is read at a glance; the exact level, its
+// probability and the reason stay in the issue block, one click away. A withheld judgement —
+// the answer won or lost below its own cut — is not a "does not fit": it is shown as no fit
+// yet, and the title says which of the two it is, because collapsing them into "does not fit"
+// would invent a verdict the product refused to give.
+func (h *Handler) attachFitStates(page *pageData) {
+	if h.store == nil || page.Active.Key == "" || page.Active.CommitSHA == "" {
+		return
+	}
+
+	journal, err := h.store.Decisions(page.Active.Key)
+	if err != nil {
+		slog.Error("leer el journal para el estado del encaje", "key", page.Active.Key, "err", err)
+		return
+	}
+
+	document, ok, err := profile.Load(h.store)
+	if err != nil {
+		slog.Error("leer el perfil para el estado del encaje", "err", err)
+		return
+	}
+	if !ok {
+		// Sin perfil aprobado no hay comparación posible: todas quedan sin encajar, y el
+		// bloque de la issue dice cómo producir uno.
+		return
+	}
+
+	exploration := h.fitExploration()
+	for i := range page.Rows {
+		analysis, _, found := fit.Recall(journal, page.Rows[i].Number, config.DecisionModel,
+			page.Active.CommitSHA, document, exploration)
+		if !found {
+			page.Rows[i].FitNote = "no hay encaje guardado de esta issue con este perfil y este commit"
+			continue
+		}
+		switch analysis.Level {
+		case fit.LevelRecommended, fit.LevelRecommendedWithSupport:
+			page.Rows[i].FitText = "Encaja"
+			page.Rows[i].FitClass = "fit-yes"
+			page.Rows[i].FitNote = fitLevelText(analysis.Level)
+		case fit.LevelNeedsPreparation, fit.LevelNeedsExperience:
+			page.Rows[i].FitText = "No encaja"
+			page.Rows[i].FitClass = "fit-no"
+			page.Rows[i].FitNote = fitLevelText(analysis.Level)
+		default:
+			page.Rows[i].FitNote = fitLevelText(analysis.Level) + ": el juicio no llegó a su umbral"
+		}
+	}
+}

@@ -19,14 +19,17 @@ import (
 var errUnknownRepo = errors.New("repositorio desconocido")
 
 type repoView struct {
-	Name     string
-	Key      string
-	Open     int
-	Stored   int
-	Free     int
-	Analyses int
-	Active   bool
-	Href     string
+	Name string
+	Key  string
+	// CommitSHA es el pin completo del corpus. La pregunta que contesta el encaje lo lleva
+	// entero (I4); en pantalla se muestra el corto.
+	CommitSHA string
+	Open      int
+	Stored    int
+	Free      int
+	Analyses  int
+	Active    bool
+	Href      string
 }
 
 // filter es el estado de los controles, tal como viaja en la URL.

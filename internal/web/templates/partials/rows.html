@@ -14,6 +14,7 @@
               {{else}}<span class="none">ninguna</span>{{end}}
             </td>
             <td class="c-state"><span class="st {{$row.State}}">{{$row.StateText}}</span></td>
+            <td class="c-fit"><span class="fc {{$row.FitClass}}" title="{{$row.FitNote}}">{{$row.FitText}}</span></td>
             <td class="c-pr{{if not $row.HasPR}} dash{{end}}">{{if $row.HasPR}}#{{$row.PR}}{{else}}—{{end}}</td>
             <td class="c-date">{{$row.Updated}}</td>
             <td class="c-com{{if $row.NoComments}} dash{{end}}">{{$row.Comments}}</td>

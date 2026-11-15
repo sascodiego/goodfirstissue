@@ -38,6 +38,11 @@ type issuePage struct {
 	// Sin él el bloque lo dice y nombra el comando en vez de quedar vacío (S9).
 	Triage    triageView
 	HasTriage bool
+	// Fit es el bloque de encaje, y HasFit dice si hay un veredicto guardado que leer. Sin
+	// veredicto el bloque nombra el comando; sin perfil aprobado, la pantalla que lo produce
+	// (S7, S11).
+	Fit    fitView
+	HasFit bool
 	// CanAnalyze dice si esta pantalla puede ofrecer el botón de analizar: hay cola, hay
 	// modelo y hay clave. Ofrecerlo sin eso sería prometer otra cosa.
 	CanAnalyze bool
@@ -99,6 +104,7 @@ func (h *Handler) issue(w http.ResponseWriter, r *http.Request) {
 
 	h.attachTriage(&data)
 	h.attachEvidence(&data)
+	h.attachFit(&data)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	h.render(w, screenIssue, data)

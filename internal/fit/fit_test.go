@@ -15,12 +15,28 @@ import (
 // tests fix the answers and count the calls, so the network is never part of the proof.
 
 const (
-	testModel  = "clef"
-	testCommit = "0123456789abcdef0123456789abcdef01234567"
+	testModel        = "clef"
+	testExploreModel = "glm5.3-flash"
+	testCommit       = "0123456789abcdef0123456789abcdef01234567"
 	// otherProfile is a different person: the same issue asked against it is another question.
 	otherProfile = `## Conocimientos técnicos
 - Rust — nivel: declarado — evidencia: «un curso»`
+	// testExploreVersion is the exploration contract the evidence came from, and
+	// otherExploreVersion is the same corpus read under another prompt: the requirements the state
+	// carries are not the ones the first verdict was read against.
+	testExploreVersion  = "aaaabbbbcccc"
+	otherExploreVersion = "ddddeeeeffff"
 )
+
+// testExploration is the identity the fixture evidence was produced with.
+func testExploration() Exploration {
+	return Exploration{PromptVersion: testExploreVersion, Model: testExploreModel}
+}
+
+// otherExploration is another exploration of the same tree: another prompt version, another agent.
+func otherExploration() Exploration {
+	return Exploration{PromptVersion: otherExploreVersion, Model: "gemma4"}
+}
 
 // fakeJudge is the whole transport, replaced by a recorded answer.
 type fakeJudge struct {
@@ -66,6 +82,9 @@ func newP3(t *testing.T, opts Options) *P3 {
 	if opts.Profile == "" {
 		opts.Profile = testProfile
 	}
+	if !opts.Exploration.Known() {
+		opts.Exploration = testExploration()
+	}
 	p3, err := New(opts)
 	if err != nil {
 		t.Fatalf("New: %v", err)
@@ -77,11 +96,15 @@ func newP3(t *testing.T, opts Options) *P3 {
 // question: no transport, no model, and a journal the verdict cannot be pinned in.
 func TestNewFailsClosed(t *testing.T) {
 	cases := map[string]Options{
-		"no judge":                {Model: testModel, CommitSHA: testCommit, Profile: testProfile},
-		"no model":                {Judge: &fakeJudge{}, CommitSHA: testCommit, Profile: testProfile},
-		"a blank model":           {Judge: &fakeJudge{}, Model: "   ", CommitSHA: testCommit, Profile: testProfile},
-		"a journal with no pin":   {Judge: &fakeJudge{}, Model: testModel, Journal: newJournal(t), Profile: testProfile},
-		"a journal with no CV":    {Judge: &fakeJudge{}, Model: testModel, CommitSHA: testCommit, Journal: newJournal(t)},
+		"no judge":              {Model: testModel, CommitSHA: testCommit, Profile: testProfile},
+		"no model":              {Judge: &fakeJudge{}, CommitSHA: testCommit, Profile: testProfile},
+		"a blank model":         {Judge: &fakeJudge{}, Model: "   ", CommitSHA: testCommit, Profile: testProfile},
+		"a journal with no pin": {Judge: &fakeJudge{}, Model: testModel, Journal: newJournal(t), Profile: testProfile},
+		"a journal with no CV":  {Judge: &fakeJudge{}, Model: testModel, CommitSHA: testCommit, Journal: newJournal(t)},
+		"a journal with no exploration": {
+			Judge: &fakeJudge{}, Model: testModel, CommitSHA: testCommit,
+			Profile: testProfile, Journal: newJournal(t),
+		},
 		"a journal and no commit": {Judge: &fakeJudge{}, Model: testModel, Journal: newJournal(t), Profile: testProfile},
 	}
 	for name, opts := range cases {
@@ -92,7 +115,10 @@ func TestNewFailsClosed(t *testing.T) {
 		})
 	}
 
-	if _, err := New(Options{Judge: &fakeJudge{}, Model: testModel, CommitSHA: testCommit, Profile: testProfile}); err != nil {
+	if _, err := New(Options{
+		Judge: &fakeJudge{}, Model: testModel, CommitSHA: testCommit,
+		Profile: testProfile, Exploration: testExploration(),
+	}); err != nil {
 		t.Fatalf("New refused a complete set of settings: %v", err)
 	}
 }
@@ -100,7 +126,7 @@ func TestNewFailsClosed(t *testing.T) {
 // I4, I14: the key names the question. The pass is fit, the commit is the pin, and the prompt
 // version is the contract's fingerprint.
 func TestTheKeyCarriesTheFitPassAndThePin(t *testing.T) {
-	key := keyFor(13, testModel, promptVersion(testProfile), testCommit)
+	key := keyFor(13, testModel, promptVersion(testProfile, testExploration()), testCommit)
 
 	if key.Pass != store.PassFit {
 		t.Errorf("pass = %q, want %q", key.Pass, store.PassFit)
@@ -116,13 +142,13 @@ func TestTheKeyCarriesTheFitPassAndThePin(t *testing.T) {
 // S6: the same issue against another CV is another question. The profile's fingerprint goes inside
 // PromptVersion, because the contract of store.Key does not change.
 func TestAnotherProfileIsAnotherPromptVersion(t *testing.T) {
-	if promptVersion(testProfile) == promptVersion(otherProfile) {
+	if promptVersion(testProfile, testExploration()) == promptVersion(otherProfile, testExploration()) {
 		t.Fatal("two different profiles produced the same prompt version: a stored verdict would be reused as fresh (I14)")
 	}
-	if !strings.HasPrefix(promptVersion(otherProfile), Version()) {
+	if !strings.HasPrefix(promptVersion(otherProfile, testExploration()), Version()) {
 		t.Error("the profile's fingerprint replaced the contract's fingerprint instead of following it")
 	}
-	if promptVersion(testProfile) == Version() {
+	if promptVersion(testProfile, testExploration()) == Version() {
 		t.Error("the profile left no trace in the prompt version")
 	}
 }
@@ -186,6 +212,63 @@ func TestAnotherProfileMissesTheJournal(t *testing.T) {
 	}
 	if journal.Len() != 2 {
 		t.Errorf("the journal holds %d rows, want one per profile", journal.Len())
+	}
+}
+
+// I14: the evidence the state carries is the exploration's, so its identity is part of the
+// question too. Re-exploring the issue under another prompt version or another agent produces a
+// state the judge has never read, and the stored verdict must not answer for it.
+func TestAnotherExplorationIsAnotherPromptVersion(t *testing.T) {
+	if promptVersion(testProfile, testExploration()) == promptVersion(testProfile, otherExploration()) {
+		t.Fatal("two different explorations produced the same prompt version: a verdict read against one would be reused for the other (I14)")
+	}
+	if promptVersion(testProfile, otherExploration()) == promptVersion(otherProfile, testExploration()) {
+		t.Fatal("another exploration and another profile collide: the two inputs are not both in the key")
+	}
+	if !strings.HasPrefix(promptVersion(testProfile, otherExploration()), Version()) {
+		t.Error("the exploration's fingerprint replaced the contract's instead of following it")
+	}
+}
+
+// The same issue, the same profile, another exploration: the second run must ask again. This is
+// the defect the key exists to prevent — a verdict paired with evidence it was not read against.
+func TestAnotherExplorationMissesTheJournal(t *testing.T) {
+	journal := newJournal(t)
+	judge := &fakeJudge{answers: answered(FitReady, 0.9)}
+
+	first := newP3(t, Options{Judge: judge, Journal: journal, Exploration: testExploration()})
+	if _, err := first.Run(context.Background(), aRequest()); err != nil {
+		t.Fatalf("first run: %v", err)
+	}
+
+	second := newP3(t, Options{Judge: judge, Journal: journal, Exploration: otherExploration()})
+	got, err := second.Run(context.Background(), aRequest())
+	if err != nil {
+		t.Fatalf("second run: %v", err)
+	}
+	if judge.calls != 2 {
+		t.Fatalf("the judge was called %d times, want 2: another exploration is another question", judge.calls)
+	}
+	if got.Cached {
+		t.Fatal("a verdict read against another exploration was reused")
+	}
+	if journal.Len() != 2 {
+		t.Errorf("the journal holds %d rows, want one per exploration", journal.Len())
+	}
+}
+
+// And the read side agrees: the row of one exploration is not served for another.
+func TestRecallMissesOnAnotherExploration(t *testing.T) {
+	journal := newJournal(t)
+	if _, err := newP3(t, Options{Journal: journal, Exploration: testExploration()}).Run(context.Background(), aRequest()); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+
+	if _, _, ok := Recall(journal, aRequest().Issue.Number, testModel, testCommit, testProfile, otherExploration()); ok {
+		t.Fatal("a verdict stored for one exploration was returned for another")
+	}
+	if _, _, ok := Recall(journal, aRequest().Issue.Number, testModel, testCommit, testProfile, testExploration()); !ok {
+		t.Fatal("the verdict of this exploration was not found")
 	}
 }
 
@@ -278,7 +361,7 @@ func TestAFreshVerdictIsStoredWithItsPin(t *testing.T) {
 	if got.Model != testModel {
 		t.Errorf("model = %q, want %q", got.Model, testModel)
 	}
-	if got.PromptVersion != promptVersion(testProfile) {
+	if got.PromptVersion != promptVersion(testProfile, testExploration()) {
 		t.Errorf("prompt version = %q, want the contract plus the profile's fingerprint", got.PromptVersion)
 	}
 	if got.CommitSHA != testCommit {
@@ -316,7 +399,7 @@ func TestRecallServesTheStoredVerdictAndMissesOnAnotherProfile(t *testing.T) {
 		t.Fatalf("Run: %v", err)
 	}
 
-	got, decision, ok := Recall(journal, aRequest().Issue.Number, testModel, testCommit, testProfile)
+	got, decision, ok := Recall(journal, aRequest().Issue.Number, testModel, testCommit, testProfile, testExploration())
 	if !ok {
 		t.Fatal("the stored verdict was not found")
 	}
@@ -327,10 +410,10 @@ func TestRecallServesTheStoredVerdictAndMissesOnAnotherProfile(t *testing.T) {
 		t.Errorf("recalled %+v at %v, want the stored %+v at %v", got.Result, decision.At, first.Result, first.At)
 	}
 
-	if _, _, ok := Recall(journal, aRequest().Issue.Number, testModel, testCommit, otherProfile); ok {
+	if _, _, ok := Recall(journal, aRequest().Issue.Number, testModel, testCommit, otherProfile, testExploration()); ok {
 		t.Fatal("a verdict stored for one profile was returned for another")
 	}
-	if _, _, ok := Recall(nil, aRequest().Issue.Number, testModel, testCommit, testProfile); ok {
+	if _, _, ok := Recall(nil, aRequest().Issue.Number, testModel, testCommit, testProfile, testExploration()); ok {
 		t.Fatal("a journal that does not exist answered with a verdict")
 	}
 }

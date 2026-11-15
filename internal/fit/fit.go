@@ -21,6 +21,33 @@ type Judge interface {
 	Ask(ctx context.Context, state string, questions map[string]nan.Question) (map[string]nan.Answer, error)
 }
 
+// Exploration names the exploration whose evidence the state's requirements came from: the explore
+// package's prompt version and the agent model that produced it.
+//
+// It is part of the question, not metadata about it. The state P3 sends carries that exploration's
+// requirements, so the same issue explored under another prompt version or another agent is a state
+// the judge has never read: reusing a verdict produced from one exploration for another would
+// present an answer to one question as the answer to a different one (I14). The profile travels in
+// the key for exactly the same reason (S6).
+type Exploration struct {
+	// PromptVersion is the exploration contract's fingerprint, explore.Version().
+	PromptVersion string
+	// Model is the agent model that produced the exploration.
+	Model string
+}
+
+// Known reports whether the identity can be named at all. An empty half is not "any exploration":
+// a key that fingerprinted an absence would reuse one verdict against every tree and every agent.
+func (e Exploration) Known() bool {
+	return strings.TrimSpace(e.PromptVersion) != "" && strings.TrimSpace(e.Model) != ""
+}
+
+// fingerprint names the exploration inside the journal key without storing what it was.
+func (e Exploration) fingerprint() string {
+	sum := sha256.Sum256([]byte(strings.TrimSpace(e.PromptVersion) + "\x00" + strings.TrimSpace(e.Model)))
+	return hex.EncodeToString(sum[:])[:12]
+}
+
 // Options configures one fit pass.
 type Options struct {
 	// Judge answers the question. Required.
@@ -36,6 +63,11 @@ type Options struct {
 	// Profile is the saved profile's document, verbatim: the text the person approved. Empty means
 	// no profile was ever saved, which is a level and not an error (S7).
 	Profile string
+	// Exploration names the exploration the state's evidence came from. It is required when a
+	// journal is given, for the same reason the profile is: a stored verdict has to declare the
+	// whole question it answers, and which exploration it was read against is part of that question
+	// (I14).
+	Exploration Exploration
 	// Portrait is the project portrait. Empty means none was produced, and the state says so where
 	// the technical stack would have been.
 	Portrait string
@@ -45,18 +77,19 @@ type Options struct {
 
 // P3 is the third pass: one request per issue, one level, stored when there is a journal.
 type P3 struct {
-	judge     Judge
-	journal   *store.Decisions
-	model     string
-	commitSHA string
-	profile   string
-	portrait  string
-	now       func() time.Time
+	judge       Judge
+	journal     *store.Decisions
+	model       string
+	commitSHA   string
+	profile     string
+	exploration Exploration
+	portrait    string
+	now         func() time.Time
 }
 
-// New validates the settings. It fails closed on a missing model, and on a journal without the pin
-// or without the profile: all three would produce a stored verdict nobody can attribute to a
-// question (I4, S6).
+// New validates the settings. It fails closed on a missing model, and on a journal without the pin,
+// without the profile or without the exploration: every one of those would produce a stored verdict
+// nobody can attribute to a question (I4, S6, I14).
 func New(opts Options) (*P3, error) {
 	switch {
 	case opts.Judge == nil:
@@ -69,19 +102,25 @@ func New(opts Options) (*P3, error) {
 		// Without a profile there is no comparison, so there is no question to store: a cached row
 		// would present an absence of evidence as a decision about the issue (S7).
 		return nil, errors.New("fit: a cached verdict needs the profile it was asked against (S6)")
+	case opts.Journal != nil && !opts.Exploration.Known():
+		// The state carries the exploration's requirements, so which exploration it was is part of
+		// the question. A row stored without it would be reused against evidence the judge never
+		// read, which is the one thing I14 exists to prevent.
+		return nil, errors.New("fit: a cached verdict needs the exploration its evidence came from (I14)")
 	}
 	now := opts.Now
 	if now == nil {
 		now = time.Now
 	}
 	return &P3{
-		judge:     opts.Judge,
-		journal:   opts.Journal,
-		model:     strings.TrimSpace(opts.Model),
-		commitSHA: strings.TrimSpace(opts.CommitSHA),
-		profile:   strings.TrimSpace(opts.Profile),
-		portrait:  opts.Portrait,
-		now:       now,
+		judge:       opts.Judge,
+		journal:     opts.Journal,
+		model:       strings.TrimSpace(opts.Model),
+		commitSHA:   strings.TrimSpace(opts.CommitSHA),
+		profile:     strings.TrimSpace(opts.Profile),
+		exploration: opts.Exploration,
+		portrait:    opts.Portrait,
+		now:         now,
 	}, nil
 }
 
@@ -92,8 +131,9 @@ type Analysis struct {
 	// Answers is what the judge answered, keyed by question id. Empty when there was no request.
 	Answers map[string]nan.Answer
 	// Model, PromptVersion and CommitSHA name the question this verdict answers (I4, I14).
-	// PromptVersion carries the profile's fingerprint as well as the contract's, because the same
-	// issue against another CV is another question (S6).
+	// PromptVersion carries the exploration's fingerprint and the profile's as well as the
+	// contract's, because the same issue against another CV, or read against another exploration,
+	// is another question (S6, I14).
 	Model         string
 	PromptVersion string
 	CommitSHA     string
@@ -106,7 +146,7 @@ type Analysis struct {
 
 // key is the journal identity of this exact question.
 func (p *P3) key(number int) store.Key {
-	return keyFor(number, p.model, promptVersion(p.profile), p.commitSHA)
+	return keyFor(number, p.model, promptVersion(p.profile, p.exploration), p.commitSHA)
 }
 
 // stored is what the journal keeps: the level and the answer behind it, so a reuse shows what a
@@ -122,7 +162,7 @@ type stored struct {
 // the returned error is the cause, for the log. It is not stored either — a stored row would make a
 // non-answer look like a pinned decision, and the next run has to be able to read a real answer.
 func (p *P3) Run(ctx context.Context, req Request) (Analysis, error) {
-	analysis := Analysis{Model: p.model, PromptVersion: promptVersion(p.profile), CommitSHA: p.commitSHA}
+	analysis := Analysis{Model: p.model, PromptVersion: promptVersion(p.profile, p.exploration), CommitSHA: p.commitSHA}
 
 	// S7: no profile means no comparison. Asking anyway would invite the judge to invent one, and a
 	// verdict is the one thing this product never fabricates.
@@ -137,7 +177,7 @@ func (p *P3) Run(ctx context.Context, req Request) (Analysis, error) {
 	}
 
 	if cached, ok := p.lookup(req); ok {
-		cached.Model, cached.PromptVersion, cached.CommitSHA = p.model, promptVersion(p.profile), p.commitSHA
+		cached.Model, cached.PromptVersion, cached.CommitSHA = p.model, promptVersion(p.profile, p.exploration), p.commitSHA
 		return cached, nil
 	}
 
@@ -164,7 +204,7 @@ func (p *P3) Run(ctx context.Context, req Request) (Analysis, error) {
 // miss, not a failed analysis: the pass asks again instead of reporting a broken journal. The
 // reading itself lives in Recall, which the screen calls too.
 func (p *P3) lookup(req Request) (Analysis, bool) {
-	analysis, _, ok := Recall(p.journal, req.Issue.Number, p.model, p.commitSHA, p.profile)
+	analysis, _, ok := Recall(p.journal, req.Issue.Number, p.model, p.commitSHA, p.profile, p.exploration)
 	return analysis, ok
 }
 
@@ -200,10 +240,15 @@ func keyFor(number int, model, promptVersion, commitSHA string) store.Key {
 	}
 }
 
-// promptVersion is the contract's fingerprint followed by the profile's: reworded options and
-// another CV are both different questions, and both have to miss.
-func promptVersion(profile string) string {
-	return Version() + "+" + profileFingerprint(profile)
+// promptVersion names the question: the contract's fingerprint, the profile's and the
+// exploration's. The three travel inside store.Key.PromptVersion instead of new fields, because the
+// identity of a pass over one issue is what store.Key names and its contract does not change.
+//
+// The exploration belongs here and not in metadata: the state P3 sends carries that exploration's
+// requirements, so re-exploring the issue moves the input the verdict was read from. A row that
+// did not fingerprint it would answer for evidence nobody read (I14).
+func promptVersion(profile string, exploration Exploration) string {
+	return Version() + "+" + profileFingerprint(profile) + "+" + exploration.fingerprint()
 }
 
 // profileFingerprint names the profile without storing it. The journal lives beside the corpus and
@@ -217,14 +262,14 @@ func profileFingerprint(profile string) string {
 // decision that carries when it was produced and what it cost, because a verdict without its pin
 // reads as fresh.
 //
-// A miss is not a failure: another model, another profile, another prompt or another commit answers
-// a different question, and a damaged entry is damage rather than an answer. The caller shows that
-// there is nothing stored instead of presenting an empty level as a decision.
-func Recall(journal *store.Decisions, number int, model, commitSHA, profile string) (Analysis, store.Decision, bool) {
+// A miss is not a failure: another model, another profile, another exploration, another prompt or
+// another commit answers a different question, and a damaged entry is damage rather than an answer.
+// The caller shows that there is nothing stored instead of presenting an empty level as a decision.
+func Recall(journal *store.Decisions, number int, model, commitSHA, profile string, exploration Exploration) (Analysis, store.Decision, bool) {
 	if journal == nil {
 		return Analysis{}, store.Decision{}, false
 	}
-	decision, ok := journal.Get(keyFor(number, model, promptVersion(profile), commitSHA))
+	decision, ok := journal.Get(keyFor(number, model, promptVersion(profile, exploration), commitSHA))
 	if !ok {
 		return Analysis{}, store.Decision{}, false
 	}

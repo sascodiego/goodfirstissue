@@ -1,5 +1,136 @@
-{{/* Punto de inclusión fit: veredicto de encaje ([encaje]).
-     Vacío a propósito. Una definición vacía no reemplaza un cuerpo existente,
-     así que la issue que traiga ese bloque puede darle contenido sin pelear
-     con este archivo. */}}
-{{define "fit"}}{{end}}
+{{/* El bloque de encaje de la pantalla de issue ([encaje], issue #13).
+     Muestra el nivel que P3 decidió contra el perfil aprobado, el desglose de lo que pesó y el
+     pin de la respuesta. Sin perfil aprobado manda a /profile; con perfil y sin veredicto nombra
+     el comando. Nunca ofrece un botón: no hay POST /fit. */}}
+{{define "fit"}}
+<section class="fit" aria-label="Encaje">
+
+  <header class="evid-top">
+    <div>
+      <p class="evid-label">Informe · encaje</p>
+      <h2>Cuánto encaja este perfil</h2>
+    </div>
+  </header>
+
+  {{if .HasFit}}
+
+  <p class="evid-pin">
+    guardado el <b>{{.Fit.Analyzed}}</b>
+    · {{.Fit.Latency}} de trabajo
+    · modelo <b>{{.Fit.Model}}</b>
+    · prompt <b>{{.Fit.Prompt}}</b>
+    · commit <b>{{.Fit.Commit}}</b>
+  </p>
+
+  <p class="fit-verdict">
+    <span class="fit-level {{.Fit.Class}}">{{.Fit.Level}}</span>
+    {{if .Fit.HasProbability}}<span class="fit-prob">{{.Fit.Probability}}</span>{{end}}
+  </p>
+
+  <p class="fit-why">{{.Fit.Why}}</p>
+  {{with .Fit.Withheld}}<p class="fit-withheld">{{.}}</p>{{end}}
+
+  {{if .Fit.HasBreakdown}}
+
+  <div class="evid-reqs fit-breakdown">
+    <div>
+      <p class="evid-label">Lo que pesó · requisitos evaluables</p>
+      {{if .Fit.Requirements}}
+      <ul class="fit-reqs">{{range .Fit.Requirements}}<li>{{.}}</li>{{end}}</ul>
+      {{else}}
+      <p class="none">la exploración no anotó requisitos técnicos</p>
+      {{end}}
+    </div>
+    <div>
+      <p class="evid-label">Costo de onboarding · no pesó</p>
+      {{if or .Fit.Project .Fit.Process}}
+      <ul class="fit-onboarding">
+        {{range .Fit.Project}}<li><span class="fit-bucket">proyecto</span> {{.}}</li>{{end}}
+        {{range .Fit.Process}}<li><span class="fit-bucket">proceso</span> {{.}}</li>{{end}}
+      </ul>
+      {{else}}
+      <p class="none">nada específico</p>
+      {{end}}
+      <p class="fit-note">
+        Conocer el proyecto y su proceso es costo de onboarding: se muestra para entender el
+        trabajo, y nunca es un portón. La aptitud es técnica y solo técnica (§13, I6).
+      </p>
+    </div>
+  </div>
+
+  <p class="evid-label">Evidencia que respalda la lectura</p>
+  {{if .Fit.Evidence}}
+  <div class="evid-files-wrap">
+    <table class="evid-files">
+      <caption>Archivos del análisis de explore del que salieron los requisitos</caption>
+      <thead>
+        <tr>
+          <th scope="col">Archivo</th>
+          <th scope="col">Relación</th>
+          <th scope="col">Por qué</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Fit.Evidence}}
+        <tr>
+          <td class="evid-path">
+            <code>{{.Path}}{{if .Line}}:{{.Line}}{{end}}</code>
+            {{with .Symbol}}<span class="evid-sym">{{.}}</span>{{end}}
+          </td>
+          <td><span class="rel {{.Relation}}">{{.Relation}}</span></td>
+          <td class="evid-reason">{{.Reason}}</td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{else}}
+  <p class="none">La exploración no produjo archivos: el nivel se leyó sin un cambio ubicado.</p>
+  {{end}}
+
+  {{if .Fit.CallPaths}}
+  <p class="evid-label">Caminos de llamada</p>
+  <ul class="evid-paths">
+    {{range .Fit.CallPaths}}
+    <li>{{range $i, $step := .}}{{if $i}} <span class="arrow">→</span> {{end}}<code>{{$step}}</code>{{end}}</li>
+    {{end}}
+  </ul>
+  {{end}}
+
+  {{if .Fit.Tests}}
+  <p class="evid-label">Tests que cubren el área</p>
+  <ul class="evid-tests">
+    {{range .Fit.Tests}}<li><code>{{.}}</code></li>{{end}}
+  </ul>
+  {{end}}
+
+  {{if .Fit.Gaps}}
+  <p class="evid-label">Lagunas que se nombraron</p>
+  <ul class="fit-gaps">{{range .Fit.Gaps}}<li>{{.}}</li>{{end}}</ul>
+  {{end}}
+
+  {{else}}
+
+  <p class="none">{{.Fit.Breakdown}}</p>
+
+  {{end}}
+
+  {{else if .Fit.HasProfile}}
+
+  <p class="none">
+    Todavía no hay encaje guardado de esta issue con este perfil, este prompt y este commit.
+    Se corre desde la terminal: <code>{{.Fit.Command}}</code>
+  </p>
+
+  {{else}}
+
+  <p class="none">
+    Todavía no hay un perfil aprobado, así que no hay contra qué comparar. El CV se extrae, se
+    corrige y se aprueba en <a href="/profile">/profile</a>, y después se corre
+    <code>{{.Fit.Command}}</code>
+  </p>
+
+  {{end}}
+
+</section>
+{{end}}

@@ -3,6 +3,7 @@ package profile_test
 import (
 	"context"
 	"errors"
+	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -244,6 +245,12 @@ func TestExtractReportsARejectedKeyAsItsOwnFailure(t *testing.T) {
 		"agent answered with the error": {
 			Answer: "Error: 401 invalid_api_key: the key was rejected",
 		},
+		// La forma real: el turno termina bien, sin contenido, y el motivo viaja en el
+		// errorMessage del mensaje. Es lo que PiG emite con una clave mala.
+		"turn ended in error": {
+			ExitCode: 0,
+			Error:    `401: {"message":"Invalid API key.","type":"auth_error","param":"key","code":"401"}`,
+		},
 	} {
 		a := &agent{out: out}
 		extractor, err := profile.New(profile.Options{Run: a.run, Model: testModel, Home: t.TempDir()})
@@ -259,7 +266,8 @@ func TestExtractReportsARejectedKeyAsItsOwnFailure(t *testing.T) {
 		if failure.Kind != profile.KindInvalidKey {
 			t.Errorf("%s: kind = %q, want %q", name, failure.Kind, profile.KindInvalidKey)
 		}
-		if !strings.Contains(failure.Detail, "invalid_api_key") {
+		low := strings.ToLower(failure.Detail)
+		if !strings.Contains(low, "invalid api key") && !strings.Contains(low, "invalid_api_key") {
 			t.Errorf("%s: detail = %q, want the API's own words", name, failure.Detail)
 		}
 	}
@@ -272,6 +280,12 @@ func TestExtractReportsAnIncompleteRunAsAnAgentFailure(t *testing.T) {
 		"timed out": {TimedOut: true, ExitCode: -1},
 		"stalled":   {Stalled: true, ExitCode: -1},
 		"exit code": {ExitCode: 1, Stderr: "dial tcp 127.0.0.1:1: connect: connection refused"},
+		// Un turno que terminó en error sin ser de clave: el motivo es del agente y se muestra
+		// como evidencia, no como veredicto sobre el CV.
+		"turn error that is not auth": {
+			ExitCode: 0,
+			Error:    "500: the provider is unavailable",
+		},
 	} {
 		a := &agent{out: out}
 		extractor, err := profile.New(profile.Options{Run: a.run, Model: testModel, Home: t.TempDir()})
@@ -369,5 +383,30 @@ func TestExtractCannotBeEscapedByADelimiterInTheCV(t *testing.T) {
 	closing := strings.Index(task, "CV>>>")
 	if at := strings.Index(task, injected); at > closing {
 		t.Error("the CV's own text ended up after the closing marker, outside the data block")
+	}
+}
+
+// S11: PiG busca su configuración desde el directorio del proceso, y el nuestro corre con el
+// PIG_HOME como cwd. Un home relativo se resolvería dos veces —«var/pig-profile/var/pig-profile»—
+// y el agente no encontraría al proveedor: la corrida falla antes de hablar con el modelo.
+func TestNewResolvesTheJobHomeToAnAbsolutePath(t *testing.T) {
+	a := &agent{out: &pig.Outcome{Answer: validDocument}}
+	extractor, err := profile.New(profile.Options{Run: a.run, Model: testModel, Home: "var/pig-profile"})
+	if err != nil {
+		t.Fatalf("profile.New() error = %v", err)
+	}
+
+	if _, err := extractor.Extract(context.Background(), sampleCV); err != nil {
+		t.Fatalf("Extract() error = %v", err)
+	}
+	req := a.last()
+	if !filepath.IsAbs(req.Home) {
+		t.Errorf("home = %q, want an absolute path", req.Home)
+	}
+	if req.Dir != req.Home {
+		t.Errorf("dir = %q, want the job's home %q", req.Dir, req.Home)
+	}
+	if strings.Contains(req.Home, "var/pig-profile/var/pig-profile") {
+		t.Errorf("home = %q: resolved twice", req.Home)
 	}
 }

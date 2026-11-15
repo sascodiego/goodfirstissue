@@ -97,3 +97,11 @@ L14. Hallazgos de la verificación independiente (`gentle-ai-verify`), con su di
 - La clasificación del 401 se apoya en el texto del agente y sus tests usan un runner falso: el comportamiento real de PiG ante una clave mala no está verificado en esta máquina, porque `NAN_KEY` no está configurada. Es el mismo riesgo asumido de #8, ahora en la capa de la corrida.
 
 L13. Evidencia (checks): `make verify` exit 0 (build, `go test ./...`, `go vet`, `golangci-lint` 0 issues, `gofmt`, `make design-check` con los dos `app.css` idénticos byte a byte).
+
+L15. Evidencia (corrida real contra NaN, con la clave del `.env` del worktree principal). Tres defectos que ningún test con runner falso podía ver, y que la corrida real encontró en el primer intento:
+
+- **`PIG_HOME` relativo rompía la corrida.** `Unknown provider "nan"` en 0,2 s: PiG busca su configuración desde el directorio del proceso y este trabajo le da el `PIG_HOME` como `cwd`, así que un home relativo se resolvía dos veces. `profile.New` ahora lo hace absoluto con `filepath.Abs`. Test en rojo: «home = "var/pig-profile", want an absolute path».
+- **El error del turno se descartaba.** PiG termina con código 0, sin stderr y sin contenido cuando la API rechaza la clave: el motivo viaja en el `errorMessage` del mensaje del asistente, que el parser de eventos no leía. `pig.Result` y `pig.Outcome` ahora lo llevan, y `Complete()` es falso cuando el turno terminó en error. Test en rojo: «the error message was dropped: the run looks successful and empty».
+- **El texto real no era `invalid_api_key`.** La API responde `401: {"message":"Invalid API key.","type":"auth_error",...}`. La clasificación acepta `invalid_api_key`, `invalid api key`, `auth_error` y `unauthorized`; la pantalla sigue nombrando el estado con las palabras del producto y deja la línea de la API debajo como evidencia. Test en rojo: «kind = "agent", want "invalid_api_key"».
+
+Observado además, ya funcionando como está diseñado: reenviar el mismo CV no gasta una corrida (14 s la primera, 0,2 s la segunda, `Cached: true`) y deja una revisión idéntica por envío, que es lo que S13 pide; una extracción real tarda 14–33 s, así que el estado «en curso» no es decorativo.

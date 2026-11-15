@@ -157,3 +157,17 @@ func contains(list []string, want string) bool {
 	}
 	return false
 }
+
+// Una corrida cuyo turno terminó en error no completó: el código de salida es 0 porque el
+// proceso salió bien, y aun así no hay respuesta que usar.
+func TestOutcomeIsIncompleteWhenTheTurnEndedInError(t *testing.T) {
+	out := &Outcome{Answer: "", Error: "401: Invalid API key."}
+	if out.Complete() {
+		t.Error("Complete() = true for a turn that ended in error")
+	}
+	// Un resultado vacío sin error sigue siendo completo: "complete" dice si la corrida
+	// terminó en sus límites, no si trajo respuesta. Quien necesita la respuesta la pide.
+	if !(&Outcome{}).Complete() {
+		t.Error("Complete() = false for an outcome that simply carried nothing")
+	}
+}

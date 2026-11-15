@@ -22,6 +22,10 @@ type ToolCall struct {
 type Result struct {
 	Answer    string
 	ToolCalls []ToolCall
+	// Error is the agent's own reason when a turn ended in failure. It arrives on the same
+	// assistant message that would have carried the answer, so dropping it leaves a run that
+	// looks successful and empty.
+	Error string
 
 	byID map[string]int
 }
@@ -41,8 +45,10 @@ type rawEvent struct {
 	IsError    bool  `json:"isError"`
 	DurationMs int64 `json:"durationMs"`
 	Message    *struct {
-		Role    string          `json:"role"`
-		Content json.RawMessage `json:"content"`
+		Role         string          `json:"role"`
+		Content      json.RawMessage `json:"content"`
+		StopReason   string          `json:"stopReason"`
+		ErrorMessage string          `json:"errorMessage"`
 	} `json:"message"`
 }
 
@@ -67,6 +73,9 @@ func (r *Result) consume(line []byte) {
 	case "message_end":
 		if ev.Message == nil || ev.Message.Role != "assistant" {
 			return
+		}
+		if ev.Message.ErrorMessage != "" {
+			r.Error = ev.Message.ErrorMessage
 		}
 		if text := messageText(ev.Message.Content); text != "" {
 			r.Answer = text

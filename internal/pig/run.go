@@ -52,6 +52,8 @@ type Request struct {
 type Outcome struct {
 	Answer    string
 	ToolCalls []ToolCall
+	// Error is the agent's own reason when a turn ended in failure, empty otherwise.
+	Error string
 
 	FirstEvent time.Duration
 	LongestGap time.Duration
@@ -67,7 +69,7 @@ type Outcome struct {
 
 // Complete reports whether the agent finished on its own within its limits.
 func (o *Outcome) Complete() bool {
-	return !o.Stalled && !o.TimedOut && o.ExitCode == 0
+	return !o.Stalled && !o.TimedOut && o.ExitCode == 0 && o.Error == ""
 }
 
 // Error reports a failure to start or an unexpected process error. A stalled, timed-out
@@ -181,6 +183,7 @@ loop:
 
 	out := &Outcome{
 		Answer:     res.Answer,
+		Error:      res.Error,
 		ToolCalls:  res.ToolCalls,
 		FirstEvent: first,
 		LongestGap: longest,

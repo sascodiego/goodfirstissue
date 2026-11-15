@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -70,11 +71,18 @@ func New(opts Options) (*Extractor, error) {
 	case strings.TrimSpace(opts.Home) == "":
 		return nil, errors.New("profile: a home is required: the agent's configuration is generated there")
 	}
+	// PiG resolves its configuration from its own working directory, and this job makes that
+	// directory the home. A relative home would then be looked up twice — the agent would not
+	// find the provider it is configured with and would fail before reaching the model.
+	home, err := filepath.Abs(opts.Home)
+	if err != nil {
+		return nil, fmt.Errorf("profile: home %q: %w", opts.Home, err)
+	}
 	return &Extractor{
 		run:      opts.Run,
 		model:    opts.Model,
 		binary:   opts.Binary,
-		home:     opts.Home,
+		home:     home,
 		idleWarn: opts.IdleWarn,
 		idleKill: opts.IdleKill,
 		budget:   opts.Budget,
@@ -196,7 +204,7 @@ func (e *Extractor) ask(ctx context.Context, cv string) (string, error) {
 
 	// The API error may arrive as the agent's own output instead of a typed error: the agent
 	// collapses it. Classifying it first keeps a rejected key from being read as a bad answer.
-	if detail, ok := rejectedKey(out.Stderr + "\n" + out.Answer); ok {
+	if detail, ok := rejectedKey(out.Stderr + "\n" + out.Error + "\n" + out.Answer); ok {
 		return "", &Failure{Kind: KindInvalidKey, Detail: detail}
 	}
 	if !out.Complete() {
@@ -232,9 +240,18 @@ func (e *Extractor) request(cv string) pig.Request {
 
 // rejectedKey looks for the API's rejection in the agent's own words and returns the line that
 // carries it, so the screen can show evidence instead of a claim.
+//
+// The real message says "401: Invalid API key." with type auth_error, not the docs' literal
+// invalid_api_key, so both spellings are accepted: the screen names the state with the product's
+// words and puts this line underneath as evidence.
 func rejectedKey(detail string) (string, bool) {
 	for _, line := range strings.Split(detail, "\n") {
-		if strings.Contains(strings.ToLower(line), "invalid_api_key") {
+		low := strings.ToLower(line)
+		switch {
+		case strings.Contains(low, "invalid_api_key"),
+			strings.Contains(low, "invalid api key"),
+			strings.Contains(low, "auth_error"),
+			strings.Contains(low, "unauthorized"):
 			return truncateLine(line), true
 		}
 	}
@@ -243,6 +260,11 @@ func rejectedKey(detail string) (string, bool) {
 
 // runDetail says why the agent produced nothing, in the most concrete terms available.
 func runDetail(out *pig.Outcome) string {
+	// The agent reports a failed turn on the message itself, without writing to stderr and
+	// without a non-zero exit; that reason is the most concrete thing available.
+	if detail := truncateLine(out.Error); detail != "" {
+		return detail
+	}
 	if detail := truncateLine(out.Stderr); detail != "" {
 		return detail
 	}

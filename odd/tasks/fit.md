@@ -70,16 +70,18 @@ función pura: sin cliente, sin store, sin reloj.
 | ID | Specs | Qué | Ruta | Commit |
 |---|---|---|---|---|
 | T0 | — | Re-escopeo de #13: cuerpo nuevo con las cinco contradicciones resueltas y las tres decisiones | inline | pendiente |
-| T1 | S2, S12 | `internal/fit/policy.go`: `Decide` puro con las siete filas de §9.3, y sus tests | worker | pendiente |
-| T2 | S8, S2 | `internal/fit/questions.go`: el `choice` de cinco opciones y la versión del contrato | worker | pendiente |
-| T3 | S3, S4, S5 | `internal/fit/state.go`: constructor del `state` con marcadores, tres hechos + stack técnico, y el perfil aprobado | worker | pendiente |
-| T4 | S1, S6, S7 | `internal/fit/fit.go`: `Options`, `Judge` inyectable, journal con `PassFit` y la huella del perfil en la clave | worker | pendiente |
-| T5 | S11 | El bloque: `internal/web/fit_view.go`, `templates/partials/fit.html`, 3 líneas en `issue.go` | worker | pendiente |
+| T1 | S2, S12 | `internal/fit/policy.go`: `Decide` puro con las siete filas de §9.3, y sus tests | worker | `6684669` |
+| T2 | S8, S2 | `internal/fit/questions.go`: el `choice` de cinco opciones y la versión del contrato | worker | `6684669` |
+| T3 | S3, S4, S5 | `internal/fit/state.go`: constructor del `state` con marcadores, tres hechos + stack técnico, y el perfil aprobado | worker | `6684669` |
+| T4 | S1, S6, S7 | `internal/fit/fit.go`: `Options`, `Judge` inyectable, journal con `PassFit` y la huella del perfil en la clave | worker | `6684669` |
+| T5 | S11 | El bloque: `internal/web/fit_view.go`, `templates/partials/fit.html`, 3 líneas en `issue.go` | worker | `6684669` |
 | T6 | todas | e2e con el corpus real: el mismo CV contra dos issues da niveles distintos; sin CV, `insufficient_information` | inline | pendiente |
 | T7 | todas | `make verify`, RDD y PR | inline | pendiente |
 
 **Verificación**: RED por fila de §9.3 antes de implementar; `make verify` completo; y el e2e mirado
 en la app con el corpus de `var/store`.
+
+**Estrategia de entrega.** Tres slices: **A** `6684669`, el paquete `internal/fit` (1924 líneas con tests y el documento); **B** el verbo y el bloque, que dependen de A; **C** `PROYECTO` 2.25 y el e2e. A sola no cambia nada visible —es una política con sus tests— y B no compila sin A, así que van encadenados: PR de A contra `main`, y B contra la rama de A. A pasa el presupuesto de 400 líneas y se declara en el PR.
 
 **Ruta**: T1–T4 son un paquete y una conducta —la pasada— y van a un worker; T5 es otro worker
 porque depende del modelo anterior y toca la pantalla. T0, T6 y T7 quedan inline.

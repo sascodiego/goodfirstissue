@@ -24,6 +24,7 @@ func (h *Handler) Routes() http.Handler {
 	mux.HandleFunc("POST /explore/cancel-all", h.exploreCancelAll)
 	mux.HandleFunc("GET /explore/rows", h.exploreRows)
 	mux.HandleFunc("POST /fit", h.fitRun)
+	mux.HandleFunc("POST /index", h.indexRepo)
 	mux.Handle("GET /static/", http.StripPrefix("/static/", h.static))
 	return mux
 }

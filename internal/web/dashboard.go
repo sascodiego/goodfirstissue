@@ -73,6 +73,8 @@ type pageData struct {
 	// CanFit dice si este binario puede correr el encaje. Sin eso el boton no se dibuja: un
 	// boton que no puede cumplir es peor que su ausencia.
 	CanFit bool
+	// CanIndex dice si este binario puede construir el grafo de codigo del repositorio.
+	CanIndex bool
 }
 
 // statsView son las cifras del encabezado. Todas se cuentan sobre el corpus
@@ -145,6 +147,7 @@ func (h *Handler) dashboard(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	// El boton del encaje solo se dibuja si este binario puede correrlo.
 	data.CanFit = h.fit != nil
+	data.CanIndex = h.index != nil
 	h.render(w, screenDashboard, data)
 }
 
@@ -286,6 +289,12 @@ func estadoText(code string) string {
 		return "El encaje no pudo correr: el registro quedó como estaba"
 	case "encaje-sin-clave":
 		return "Este binario no puede encajar: arrancó sin configuración o sin NAN_KEY"
+	case "indexado":
+		return "Índice construido: el análisis ya puede leer el grafo de código"
+	case "index-error":
+		return "No se pudo construir el índice: el detalle quedó en el registro"
+	case "index-sin-config":
+		return "Este binario no puede indexar: arrancó sin configuración del indexador"
 	}
 	return ""
 }

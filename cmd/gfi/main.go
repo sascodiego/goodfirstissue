@@ -160,6 +160,9 @@ func runServer(args []string) error {
 		// `fit`, así que la pantalla y la consola no pueden discrepar sobre qué
 		// candidata se encaja ni con qué clave.
 		Fit: fitRunner(*configPath),
+		// El índice es lo que explore necesita para leer el grafo: se construye en este
+		// proceso con el clonador y el indexador que ya existen, sin abrir un binario hijo.
+		Index: indexRunner(cfg, st),
 		GitHub: ghdata.Options{
 			MaxIssues: cfg.GitHub.MaxIssues,
 			PageSize:  cfg.GitHub.PageSize,
@@ -255,8 +258,7 @@ func profileExtractor(cfg *config.Config, st *store.Store) *profile.Extractor {
 // It runs this same binary with the same verb instead of reimplementing the third pass inside
 // internal/web: selecting the candidates, finding the approved profile and assembling the
 // journal key already have one tested implementation, and a second one would be a second answer
-// to the same question. The encaje is pure Clef, so the extra process costs nothing next to the
-// request it makes.
+// to the same question.
 func fitRunner(configPath string) func(string) error {
 	if strings.TrimSpace(configPath) == "" {
 		return nil
@@ -277,6 +279,51 @@ func fitRunner(configPath string) func(string) error {
 			return fmt.Errorf("fit %s: %w: %s", target, err, strings.TrimSpace(string(out)))
 		}
 		return nil
+	}
+}
+
+// indexRunner builds the code graph the explore stage reads, in this process: the same cloner,
+// the same indexer and the same record the `gfi index` verb writes. A repository with a corpus
+// and no graph is a corpus nothing can be analysed in, and until now the only way out of that
+// state was a terminal.
+//
+// The commit it pins is the clone's, which is the same one the snapshot carries: the graph has
+// to describe the tree the evidence will quote (I4).
+func indexRunner(cfg *config.Config, st *store.Store) func(context.Context, string) error {
+	if cfg == nil || st == nil {
+		return nil
+	}
+	return func(ctx context.Context, repoKey string) error {
+		snap, err := st.LoadSnapshot(repoKey)
+		if err != nil {
+			return fmt.Errorf("no snapshot for %s: traelo primero con `gfi fetch`", repoKey)
+		}
+		owner, name, err := splitTarget(snap.Repository.NameWithOwner)
+		if err != nil {
+			return err
+		}
+
+		dir := cfg.RepoDir(owner, name)
+		url := "https://github.com/" + owner + "/" + name + ".git"
+
+		runCtx, cancel := context.WithTimeout(ctx, cfg.Indexer.Timeout.Get())
+		defer cancel()
+
+		sha, _, err := (&repo.Cloner{}).Ensure(runCtx, url, dir)
+		if err != nil {
+			return err
+		}
+		stats, err := (&indexer.Indexer{Binary: cfg.Indexer.Binary}).Prepare(runCtx, dir)
+		if err != nil {
+			return err
+		}
+
+		return st.SaveIndex(repoKey, store.IndexRecord{
+			Repository: repoKey,
+			CommitSHA:  sha,
+			Path:       dir,
+			Stats:      stats,
+		})
 	}
 }
 

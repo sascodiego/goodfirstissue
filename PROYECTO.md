@@ -1566,6 +1566,7 @@ Para P2 se elige una de las cinco flash con salida JSON estricta. **Pendiente: c
 | `fit` | P3: encaje (§9.2) | `clef` — fijo |
 | `profile_extract` | CV en texto → capacidades | **configurable** |
 | `explore` | P2: evidencia a partir del código (§8) | **configurable** |
+| `project_brief` | retrato del repositorio para el nodo de alineación (§7.5) | **configurable** |
 
 **Formato: JSON, no YAML.** YAML costaría un `require` en `go.mod`, que es lo que §17.1 prohíbe, y escribir un parser propio sería el Tesla para llevar el supermercado. JSON además permite `DisallowUnknownFields`: un typo en la configuración **falla fuerte** en vez de caer en un default silencioso.
 
@@ -1582,15 +1583,16 @@ Un archivo parcial solo nombra lo que cambia; el resto toma su default. Las secc
 | `indexer` | binario, `timeout` |
 | `explore` | binario, modelo, `PIG_HOME`, allowlist de herramientas, `idle_warn`, `idle_kill`, `budget`, `workers` (1–3, la cola de la pantalla) |
 | `profile` | la extracción del CV: binario, `PIG_HOME` propio, `idle_warn`, `idle_kill`, `budget`. Sin herramientas y sin MCP: el trabajo es texto entra, texto sale |
+| `project_brief` | el retrato del repositorio: binario, `PIG_HOME` propio, allowlist de herramientas de lectura, `idle_warn`, `idle_kill`, `budget`. Lee el clon, así que necesita herramientas: es el mismo watchdog de `explore` |
 | `clef` | URL, `timeout`, `max_retries` |
-| `models` | `explore` y `profile_extract`; las acciones de decisión son constantes de código |
+| `models` | `explore`, `profile_extract` y `project_brief`; las acciones de decisión son constantes de código |
 
 Las duraciones se escriben como `"20s"` o `"1m30s"`, o como número de segundos.
 
 **La validación no es cosmética.** Rechaza, entre otras cosas:
 
 - un modelo fuera del allowlist constitucional (I13), y **`clef` como modelo de exploración**: decide en otro endpoint y no puede conducir al agente;
-- cualquier herramienta de `explore.tools` que pueda escribir (`bash`, `edit`, `write`, `multiedit`, `shell`) o un comodín `*`: la exploración es read-only y la configuración no puede cambiar eso;
+- cualquier herramienta de `explore.tools` o de `project_brief.tools` que pueda escribir (`bash`, `edit`, `write`, `multiedit`, `shell`) o un comodín `*`: los dos trabajos leen un repositorio y ninguno escribe, y la configuración no puede cambiar eso;
 - `idle_kill` menor o igual a `idle_warn`, o un `budget` menor que `idle_kill`;
 - una clave desconocida, o contenido después del objeto.
 

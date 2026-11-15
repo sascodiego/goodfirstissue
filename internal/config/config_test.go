@@ -320,3 +320,59 @@ func TestExploreWorkersMustBeBetweenOneAndThree(t *testing.T) {
 		}
 	}
 }
+
+// S12: the portrait runs on a chat model from the constitutional allowlist, chosen per action like
+// every other generative job. The default is the one the user sealed.
+func TestProjectBriefDefaultsToTheAllowedChatModel(t *testing.T) {
+	cfg := Default()
+	if got, want := cfg.Models.ProjectBrief, "deepseek-v4-flash"; got != want {
+		t.Errorf("models.project_brief = %q, want %q", got, want)
+	}
+	if got := cfg.ProjectBrief.Home; got == cfg.Explore.Home || got == cfg.Profile.Home {
+		t.Errorf("project_brief.home = %q: the job rewrites its home, so it cannot share one", got)
+	}
+	if len(cfg.ProjectBrief.Tools) == 0 {
+		t.Error("project_brief.tools is empty: the agent could not read the clone")
+	}
+}
+
+// I13: a model outside the list does not start the process, instead of failing halfway through an
+// analysis.
+func TestLoadRejectsAProjectBriefModelOutsideTheAllowlist(t *testing.T) {
+	for _, body := range []string{
+		`{"models":{"project_brief":"qwen3.8-max"}}`,
+		`{"models":{"project_brief":"clef"}}`,
+		`{"models":{"project_brief":""}}`,
+	} {
+		_, err := Load(write(t, body))
+		if err == nil {
+			t.Errorf("%s was accepted", body)
+			continue
+		}
+		if !strings.Contains(err.Error(), "models.project_brief") {
+			t.Errorf("%s: err = %v, want it to name the field", body, err)
+		}
+	}
+}
+
+// The job reads a third-party repository with an agent, so its tool surface is a read-only
+// allowlist for the same reason exploration's is.
+func TestLoadRejectsAProjectBriefToolThatCanWrite(t *testing.T) {
+	_, err := Load(write(t, `{"project_brief":{"tools":["read","bash"]}}`))
+	if err == nil {
+		t.Fatal("a portable bash was accepted")
+	}
+	if !strings.Contains(err.Error(), "project_brief.tools") {
+		t.Errorf("err = %v, want it to name the field", err)
+	}
+}
+
+func TestProjectBriefDurationOrderIsValidated(t *testing.T) {
+	_, err := Load(write(t, `{"project_brief":{"idle_warn":"2m0s","idle_kill":"1m0s"}}`))
+	if err == nil {
+		t.Fatal("a kill threshold below the warning threshold was accepted")
+	}
+	if !strings.Contains(err.Error(), "project_brief.idle_kill") {
+		t.Errorf("err = %v", err)
+	}
+}

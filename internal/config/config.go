@@ -23,6 +23,10 @@ const (
 	// DefaultProfileHomeDir is PiG's home for the CV extraction job. It is a second home
 	// and not a subdirectory of the first: each job regenerates its own configuration.
 	DefaultProfileHomeDir = "var/pig-profile"
+	// DefaultProjectBriefHomeDir is PiG's home for the project portrait job. A third home for the
+	// same reason as the second: each job regenerates its own configuration, and two jobs sharing
+	// one would race on that write.
+	DefaultProjectBriefHomeDir = "var/pig-brief"
 	// 7117 y no 8080: 8080 es el default de media docena de servidores de desarrollo, y dos
 	// procesos peleando por el mismo puerto es la primera hora perdida de una demo. La
 	// interfaz sigue siendo 0.0.0.0 porque el binario corre en un VPS y se mira desde afuera.
@@ -61,15 +65,16 @@ var forbiddenTools = []string{"bash", "shell", "edit", "write", "multiedit", "*"
 
 // Config is the whole application configuration.
 type Config struct {
-	Server  Server  `json:"server"`
-	Repos   Repos   `json:"repos"`
-	Store   Store   `json:"store"`
-	GitHub  GitHub  `json:"github"`
-	Indexer Indexer `json:"indexer"`
-	Explore Explore `json:"explore"`
-	Profile Profile `json:"profile"`
-	Clef    Clef    `json:"clef"`
-	Models  Models  `json:"models"`
+	Server       Server       `json:"server"`
+	Repos        Repos        `json:"repos"`
+	Store        Store        `json:"store"`
+	GitHub       GitHub       `json:"github"`
+	Indexer      Indexer      `json:"indexer"`
+	Explore      Explore      `json:"explore"`
+	Profile      Profile      `json:"profile"`
+	ProjectBrief ProjectBrief `json:"project_brief"`
+	Clef         Clef         `json:"clef"`
+	Models       Models       `json:"models"`
 }
 
 // Server holds the HTTP listener.
@@ -136,6 +141,24 @@ type Profile struct {
 	Budget   Duration `json:"budget"`
 }
 
+// ProjectBrief configures the portrait extraction job.
+//
+// It reads a cloned repository with the headless agent, so it is the one generative job that gets
+// a read surface: languages, toolchain and build commands cannot be cited file by file without
+// reading the files. The list is the same shape as explore's and is validated the same way, which
+// is what keeps a job that reads third-party code from gaining a tool that writes.
+//
+// The model is not here either: it is models.project_brief (§17.7).
+type ProjectBrief struct {
+	Binary string   `json:"binary"`
+	Home   string   `json:"home"`
+	Tools  []string `json:"tools"`
+	// IdleWarn, IdleKill and Budget are the same watchdog exploration uses.
+	IdleWarn Duration `json:"idle_warn"`
+	IdleKill Duration `json:"idle_kill"`
+	Budget   Duration `json:"budget"`
+}
+
 // Clef configures the decision model endpoint.
 type Clef struct {
 	URL        string   `json:"url"`
@@ -148,6 +171,7 @@ type Clef struct {
 type Models struct {
 	Explore        string `json:"explore"`
 	ProfileExtract string `json:"profile_extract"`
+	ProjectBrief   string `json:"project_brief"`
 }
 
 // Default returns the configuration used when a file omits a field.
@@ -171,6 +195,14 @@ func Default() *Config {
 			Budget:   Duration(180_000_000_000),
 			Workers:  DefaultExploreWorkers,
 		},
+		ProjectBrief: ProjectBrief{
+			Binary:   "pig",
+			Home:     DefaultProjectBriefHomeDir,
+			Tools:    []string{"read", "ls", "grep", "mcp__codegraph__codegraph_explore"},
+			IdleWarn: Duration(20_000_000_000),
+			IdleKill: Duration(90_000_000_000),
+			Budget:   Duration(180_000_000_000),
+		},
 		Profile: Profile{
 			Binary:   "pig",
 			Home:     DefaultProfileHomeDir,
@@ -186,6 +218,7 @@ func Default() *Config {
 		Models: Models{
 			Explore:        "deepseek-v4-flash",
 			ProfileExtract: "glm5.3-flash",
+			ProjectBrief:   "deepseek-v4-flash",
 		},
 	}
 }
@@ -255,7 +288,10 @@ func (c *Config) Validate() error {
 	if err := requireChatModel("models.profile_extract", c.Models.ProfileExtract); err != nil {
 		return err
 	}
-	if err := validateTools(c.Explore.Tools); err != nil {
+	if err := requireChatModel("models.project_brief", c.Models.ProjectBrief); err != nil {
+		return err
+	}
+	if err := validateTools("explore.tools", c.Explore.Tools); err != nil {
 		return err
 	}
 	if c.Explore.IdleWarn.Get() <= 0 || c.Explore.IdleKill.Get() <= 0 || c.Explore.Budget.Get() <= 0 {
@@ -292,6 +328,27 @@ func (c *Config) Validate() error {
 			c.Profile.Budget.Get(), c.Profile.IdleKill.Get())
 	}
 
+	if strings.TrimSpace(c.ProjectBrief.Binary) == "" {
+		return fmt.Errorf("project_brief.binary is empty")
+	}
+	if strings.TrimSpace(c.ProjectBrief.Home) == "" {
+		return fmt.Errorf("project_brief.home is empty")
+	}
+	if err := validateTools("project_brief.tools", c.ProjectBrief.Tools); err != nil {
+		return err
+	}
+	if c.ProjectBrief.IdleWarn.Get() <= 0 || c.ProjectBrief.IdleKill.Get() <= 0 || c.ProjectBrief.Budget.Get() <= 0 {
+		return fmt.Errorf("project_brief idle and budget durations must be positive")
+	}
+	if c.ProjectBrief.IdleKill.Get() <= c.ProjectBrief.IdleWarn.Get() {
+		return fmt.Errorf("project_brief.idle_kill (%s) must be greater than project_brief.idle_warn (%s)",
+			c.ProjectBrief.IdleKill.Get(), c.ProjectBrief.IdleWarn.Get())
+	}
+	if c.ProjectBrief.Budget.Get() < c.ProjectBrief.IdleKill.Get() {
+		return fmt.Errorf("project_brief.budget (%s) must be at least project_brief.idle_kill (%s)",
+			c.ProjectBrief.Budget.Get(), c.ProjectBrief.IdleKill.Get())
+	}
+
 	if strings.TrimSpace(c.Clef.URL) == "" {
 		return fmt.Errorf("clef.url is empty")
 	}
@@ -316,15 +373,15 @@ func requireChatModel(field, model string) error {
 	return fmt.Errorf("%s = %q is not a chat model in the allowlist %v", field, model, AllowedChatModels)
 }
 
-func validateTools(tools []string) error {
+func validateTools(field string, tools []string) error {
 	if len(tools) == 0 {
-		return fmt.Errorf("explore.tools is empty: the agent would have no surface")
+		return fmt.Errorf("%s is empty: the agent would have no surface", field)
 	}
 	for _, tool := range tools {
 		name := strings.ToLower(strings.TrimSpace(tool))
 		for _, forbidden := range forbiddenTools {
 			if name == forbidden {
-				return fmt.Errorf("explore.tools grants %q, which can write: exploration is read-only", tool)
+				return fmt.Errorf("%s grants %q, which can write: the agent reads, it never writes", field, tool)
 			}
 		}
 	}

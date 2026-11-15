@@ -20,6 +20,14 @@
 
     {{template "add-repo" .}}
 
+    <nav aria-label="Perfil">
+      <p class="rail-label">Perfil</p>
+      <a class="repo" href="/profile">
+        <span class="name">Perfil</span>
+        <span class="sub">CV y capacidades</span>
+      </a>
+    </nav>
+
     <div class="rail-foot">
       {{if .HasRepo}}corpus {{.Fetched}} · pin {{.Commit}}{{else}}corpus vacío{{end}}
     </div>

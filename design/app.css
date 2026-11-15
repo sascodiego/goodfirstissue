@@ -985,3 +985,253 @@ tbody tr:last-child td {
   opacity: 0.45;
   cursor: progress;
 }
+
+/* ---------- pantalla del perfil ---------- */
+
+/* Los avisos de arriba de la pantalla: la confirmación de un POST, el estado de una
+   extracción y el aviso de que este binario no puede extraer. Comparten el padding del
+   bloque, así el mensaje cae en la misma retícula que las secciones. */
+.profile-head {
+  padding: 1.25rem 1.5rem 0;
+}
+
+.notice {
+  margin: 0;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--line-2);
+  border-left: 3px solid var(--state-blocked);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font: 500 12px var(--sans);
+  color: var(--fg-2);
+}
+
+.panel {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel h2,
+.profile-items h2,
+.warn h2 {
+  margin: 0 0 0.4rem;
+  font: 600 9.5px/1 var(--mono);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.panel-note,
+.warn-note {
+  margin: 0 0 0.9rem;
+  max-width: 72ch;
+  color: var(--fg-2);
+}
+
+/* Pegar un CV y editar el documento son el mismo gesto: un bloque de texto y un botón. */
+.profile-form {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 78ch;
+}
+
+.profile-form label {
+  font: 600 9.5px/1 var(--mono);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.profile-form textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  resize: vertical;
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  color: var(--fg);
+  font: 12px/1.5 var(--mono);
+}
+
+.profile-form textarea:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.form-foot .busy {
+  margin: 0;
+}
+
+/* El CV es texto largo y ajeno: se lee como se pegó, sin interpretar nada. */
+.cv {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  max-height: 24rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font: 12px/1.55 var(--mono);
+  color: var(--fg-2);
+}
+
+.profile-items {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.prof-section h3 {
+  margin: 1.1rem 0 0.45rem;
+  font: 560 13px/1.2 var(--sans);
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.prof-section ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.prof-item {
+  padding: 0.45rem 0 0.45rem 0.85rem;
+  border-left: 1px solid var(--line-2);
+}
+
+.prof-item + .prof-item {
+  margin-top: 0.15rem;
+}
+
+.prof-name {
+  margin: 0;
+  font: 500 12.5px var(--sans);
+  color: var(--fg);
+}
+
+/* El nivel dice cómo está sostenido el ítem, nunca cuánto vale: `inferido` es el único que
+   promete algo que no está citado, y por eso es el único que se tiñe. */
+.level {
+  margin-left: 0.35rem;
+  padding: 0.1rem 0.3rem;
+  border: 1px solid var(--line-2);
+  border-radius: 2px;
+  font: 600 9px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.level.demostrado {
+  color: var(--fg-2);
+}
+
+.level.inferido {
+  border-color: color-mix(in oklab, var(--state-noise) 55%, var(--line-2));
+  color: var(--state-noise);
+}
+
+.quote {
+  margin: 0.3rem 0 0;
+  font: 11.5px/1.5 var(--sans);
+  color: var(--fg-2);
+}
+
+.quote-label {
+  margin-right: 0.45rem;
+  font: 600 9px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+/* La cita que el CV no contiene se marca en el lugar donde está el ítem, además del aviso:
+   el aviso agrupa, la marca dice cuál. */
+.quote.lost {
+  color: var(--state-blocked);
+}
+
+.warn {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  border-left: 3px solid var(--state-blocked);
+  background: color-mix(in oklab, var(--state-blocked) 4%, transparent);
+}
+
+.warn ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.warn li {
+  margin: 0.3rem 0;
+  color: var(--fg-2);
+}
+
+.warn-section {
+  font: 11px var(--mono);
+  color: var(--fg-3);
+}
+
+/* Los estados del producto. Una clave rechazada y una corrida que no terminó son bloques
+   distintos y con clase propia: uno se arregla con otra clave, el otro se reintenta. */
+.state {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+}
+
+.state-title {
+  margin: 0;
+  font: 600 12.5px var(--sans);
+  color: var(--fg);
+}
+
+.state-detail {
+  margin: 0.35rem 0 0;
+  overflow-wrap: anywhere;
+  font: 11.5px/1.5 var(--mono);
+  color: var(--fg-2);
+}
+
+.state-note {
+  margin: 0.45rem 0 0;
+  font: 11.5px var(--sans);
+  color: var(--fg-3);
+}
+
+.state.auth {
+  border-left: 3px solid var(--state-blocked);
+  background: color-mix(in oklab, var(--state-blocked) 7%, var(--surface));
+}
+
+.state.err {
+  border-left: 3px solid var(--state-noise);
+}
+
+.profile-head > .flash + .notice,
+.profile-head > .flash + .state,
+.profile-head > .notice + .state,
+.profile-head > .state + .state {
+  margin-top: 0.6rem;
+}
+
+@media (max-width: 60rem) {
+  .profile-head,
+  .panel,
+  .profile-items,
+  .warn {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+}

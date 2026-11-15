@@ -1338,7 +1338,7 @@ internal/indexer/        ✅ wrapper de `codegraph init` + `.git/info/exclude`
 internal/pig/            ✅ wrapper del agente: PIG_HOME propio, JSONL, watchdog de silencio
 internal/explore/        ✅ contrato de salida embebido, parseo estricto, validación contra la traza
 internal/nan/            ✅ cliente HTTP: /v1/systemone con cola 1-en-vuelo, /v1/chat/completions en paralelo
-internal/profile/        ✅ CV pegado → documento con evidencia y supuestos explícitos, caché por pregunta
+internal/profile/        ✅ CV pegado → documento con evidencia y supuestos explícitos, delegado a PiG, caché por pregunta
 internal/triage/         P1: preguntas, política §7.7 — agrupación y estado histórico diferidos (§7.1)
 internal/fit/            P3: estado por parte, preguntas, política §9.3
 internal/store/          ✅ JSON atómico, envoltura de esquema, snapshots, registro de repos, journal de decisiones
@@ -1456,6 +1456,7 @@ Un archivo parcial solo nombra lo que cambia; el resto toma su default. Las secc
 | `github` | `max_issues`, `page_size`, `timeout` — **sin filtro por etiqueta** |
 | `indexer` | binario, `timeout` |
 | `explore` | binario, modelo, `PIG_HOME`, allowlist de herramientas, `idle_warn`, `idle_kill`, `budget` |
+| `profile` | la extracción del CV: binario, `PIG_HOME` propio, `idle_warn`, `idle_kill`, `budget`. Sin herramientas y sin MCP: el trabajo es texto entra, texto sale |
 | `clef` | URL, `timeout`, `max_retries` |
 | `models` | `explore` y `profile_extract`; las acciones de decisión son constantes de código |
 

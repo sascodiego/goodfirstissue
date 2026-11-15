@@ -20,6 +20,7 @@ import (
 
 	"github.com/sascodiego/nan-hackathon-clef/internal/explore"
 	"github.com/sascodiego/nan-hackathon-clef/internal/ghdata"
+	"github.com/sascodiego/nan-hackathon-clef/internal/pig"
 	"github.com/sascodiego/nan-hackathon-clef/internal/store"
 )
 
@@ -870,10 +871,13 @@ func (h *Handler) stageRunner(ctx context.Context, req StageRequest, progress fu
 	case record.Metrics.TimedOut:
 		return outcome, errors.New("el agente agotó el presupuesto de tiempo (timed out); el registro quedó guardado")
 	case record.Evidence == nil:
+		// El motivo de verdad suele estar en el stderr del agente: decirlo en la fila evita
+		// que un fallo de arranque se lea como «respuesta ilegible».
+		details := agentDetails(res.Outcome)
 		if err == nil {
-			return outcome, errors.New("la respuesta del agente no se pudo interpretar (unparseable answer); el registro quedó guardado")
+			return outcome, fmt.Errorf("la respuesta del agente no se pudo interpretar (unparseable answer); el registro quedó guardado%s", details)
 		}
-		return outcome, fmt.Errorf("la respuesta del agente no se pudo interpretar (unparseable answer); el registro quedó guardado: %w", err)
+		return outcome, fmt.Errorf("la respuesta del agente no se pudo interpretar (unparseable answer); el registro quedó guardado: %w%s", err, details)
 	case !record.Metrics.Complete:
 		code := 0
 		if res.Outcome != nil {
@@ -885,6 +889,29 @@ func (h *Handler) stageRunner(ctx context.Context, req StageRequest, progress fu
 		return StageOutcome{}, err
 	}
 	return outcome, nil
+}
+
+// agentDetails arma el sufijo con el código de salida y la primera línea del stderr del
+// agente: es lo único que distingue «se cortó» de «arrancó sin clave» o «el modelo se cayó».
+func agentDetails(out *pig.Outcome) string {
+	if out == nil {
+		return ""
+	}
+	if out.ExitCode == 0 && out.Stderr == "" {
+		return ""
+	}
+	line := out.Stderr
+	if i := strings.IndexByte(line, '\n'); i >= 0 {
+		line = line[:i]
+	}
+	line = strings.TrimSpace(line)
+	if len(line) > 160 {
+		line = line[:160] + "…"
+	}
+	if line == "" {
+		return fmt.Sprintf(" (exit %d)", out.ExitCode)
+	}
+	return fmt.Sprintf(" (exit %d: %s)", out.ExitCode, line)
 }
 
 // repoEntry resolves a store key the same way the screens do, so a POST cannot act on a

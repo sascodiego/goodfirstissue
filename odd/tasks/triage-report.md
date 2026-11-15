@@ -71,14 +71,20 @@ punto de inclusión ya existe en `issue.html:70`.
 |---|---|---|---|---|
 | T0 | — | Re-escopeo de #11: cuerpo nuevo y comentario con lo retirado y por qué | inline | issue #11, comentario 6889206172 |
 | T1 | S8, S2 | `triage.Recall`: lectura pública del journal; `P1.lookup` delega en él. Test con clave armada a mano | inline | `08ca593` |
-| T2 | S1, S2, S3, S4, S5, S6, S7 | `internal/web/triage_view.go`: `triageView`, `attachTriage`, `newTriageView` y las etiquetas de pregunta. Tests por regla | worker | `d16c06c` |
-| T3 | S10, S11 | `templates/partials/triage.html` y el CSS en `design/app.css` con su espejo | worker | `d16c06c` |
-| T4 | S9, S11 | Enganche: `Triage`/`HasTriage` en `issuePage` y la llamada en `h.issue`. Test de pantalla | worker | `d16c06c` |
-| T5 | todas | `make verify` y la lectura real a 360 px | inline | `d16c06c` |
+| T2 | S1, S2, S3, S4, S5, S6, S7 | `internal/web/triage_view.go`: `triageView`, `attachTriage`, `newTriageView` y las etiquetas de pregunta. Tests por regla | worker | `97df5f3` |
+| T3 | S10, S11 | `templates/partials/triage.html` y el CSS en `design/app.css` con su espejo | worker | `97df5f3` |
+| T4 | S9, S11 | Enganche: `Triage`/`HasTriage` en `issuePage` y la llamada en `h.issue`. Test de pantalla | worker | `97df5f3` |
+| T5 | todas | `make verify` y la lectura real a 360 px | inline | `97df5f3` |
 
 **Verificación**: RED por regla antes de implementar cada test, y `make verify` completo (build,
 tests, `go vet`, `golangci-lint`, gate de `gofmt`, design-check). El check de 360 px se mira, no se
 declara.
+
+**Estrategia de entrega.** Dos slices, que son los dos commits: **A** `08ca593`, la lectura del
+journal en `internal/triage` (~65 líneas de código); **B** `97df5f3`, el bloque en `internal/web`
+(~1100 entre modelo, tests, parcial y CSS). B pasa el presupuesto de 400 líneas y se entrega en un
+solo PR a propósito: un parcial sin modelo no renderiza y un modelo sin parcial no se ve, así que
+partirlo dejaría una mitad que no se puede mirar. El riesgo de revisión se declara en el PR.
 
 **Lo que encontró el check a 360 px**, y que ningún test cubría: la frase que explicaba la tabla
 vivía dentro del `<caption>`, así que heredaba el ancho de la tabla y quedaba cortada detrás del

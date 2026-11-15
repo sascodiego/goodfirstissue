@@ -29,7 +29,8 @@
     ],
     "idle_warn": "20s",
     "idle_kill": "1m30s",
-    "budget": "3m0s"
+    "budget": "3m0s",
+    "workers": 3
   },
   "clef": {
     "url": "https://api.nan.builders/v1/systemone",

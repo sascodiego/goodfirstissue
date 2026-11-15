@@ -26,6 +26,15 @@ const (
 	DefaultAddr = "0.0.0.0:7117"
 )
 
+// The explore queue's parallelism. Between 1 and 3: three pig processes in flight is the
+// most one subscription pays for comfortably, and the value is not a tuning knob.
+const (
+	MinExploreWorkers = 1
+	MaxExploreWorkers = 3
+	// DefaultExploreWorkers is the parallelism used when a file does not name it.
+	DefaultExploreWorkers = 3
+)
+
 // AllowedChatModels are the allowlist entries usable through /v1/chat/completions.
 // clef is a decision model on a different endpoint: it cannot drive the agent.
 var AllowedChatModels = []string{
@@ -95,6 +104,10 @@ type Explore struct {
 	IdleWarn Duration `json:"idle_warn"`
 	IdleKill Duration `json:"idle_kill"`
 	Budget   Duration `json:"budget"`
+	// Workers is how many analyses run at once. The ceiling is 3 because one analysis is
+	// one pig process against the same subscription; above it the queue would burn the
+	// budget faster instead of finishing sooner.
+	Workers int `json:"workers"`
 }
 
 // Clef configures the decision model endpoint.
@@ -130,6 +143,7 @@ func Default() *Config {
 			IdleWarn: Duration(20_000_000_000),
 			IdleKill: Duration(90_000_000_000),
 			Budget:   Duration(180_000_000_000),
+			Workers:  DefaultExploreWorkers,
 		},
 		Clef: Clef{
 			URL:        "https://api.nan.builders/v1/systemone",
@@ -221,6 +235,10 @@ func (c *Config) Validate() error {
 	if c.Explore.Budget.Get() < c.Explore.IdleKill.Get() {
 		return fmt.Errorf("explore.budget (%s) must be at least explore.idle_kill (%s)",
 			c.Explore.Budget.Get(), c.Explore.IdleKill.Get())
+	}
+	if c.Explore.Workers < MinExploreWorkers || c.Explore.Workers > MaxExploreWorkers {
+		return fmt.Errorf("explore.workers must be between %d and %d, got %d",
+			MinExploreWorkers, MaxExploreWorkers, c.Explore.Workers)
 	}
 
 	if strings.TrimSpace(c.Clef.URL) == "" {

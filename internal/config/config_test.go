@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"net"
 	"os"
 	"path/filepath"
@@ -226,5 +227,48 @@ func TestDefaultAddrListensOnAllInterfaces(t *testing.T) {
 	}
 	if got.Server.Addr != "127.0.0.1:9999" {
 		t.Errorf("addr = %q, want the configured 127.0.0.1:9999", got.Server.Addr)
+	}
+}
+
+// El tope de análisis en paralelo sale a tres por defecto: es la decisión sellada de la
+// #12 (S3), y un archivo parcial que no lo nombre tiene que seguir corriendo.
+func TestExploreWorkersDefaultsToThree(t *testing.T) {
+	if got := Default().Explore.Workers; got != 3 {
+		t.Errorf("explore.workers por defecto = %d, want 3", got)
+	}
+
+	cfg, err := Load(write(t, `{"explore":{"model":"gemma4"}}`))
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+	if cfg.Explore.Workers != 3 {
+		t.Errorf("explore.workers = %d, want el default 3", cfg.Explore.Workers)
+	}
+}
+
+// El paralelismo tiene techo y piso: fuera de 1..3 el proceso no arranca, en vez de
+// levantar decenas de procesos pig contra la suscripción.
+func TestExploreWorkersMustBeBetweenOneAndThree(t *testing.T) {
+	for _, workers := range []string{"0", "4", "-1", "10"} {
+		_, err := Load(write(t, `{"explore":{"workers":`+workers+`}}`))
+		if err == nil {
+			t.Errorf("workers=%s fue aceptado, want un rechazo", workers)
+			continue
+		}
+		msg := err.Error()
+		if !strings.Contains(msg, "explore.workers") || !strings.Contains(msg, "1") || !strings.Contains(msg, "3") {
+			t.Errorf("workers=%s: err = %v, want que nombre el campo y el rango 1..3", workers, msg)
+		}
+	}
+
+	for _, workers := range []string{"1", "2", "3"} {
+		cfg, err := Load(write(t, `{"explore":{"workers":`+workers+`}}`))
+		if err != nil {
+			t.Errorf("workers=%s fue rechazado: %v", workers, err)
+			continue
+		}
+		if got := fmt.Sprint(cfg.Explore.Workers); got != workers {
+			t.Errorf("workers = %s, want %s", got, workers)
+		}
 	}
 }

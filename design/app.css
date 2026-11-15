@@ -814,6 +814,80 @@ tbody tr:last-child td {
   border-bottom: 1px solid var(--line);
 }
 
+/* ---------- tira del veredicto ---------- */
+
+/* Una sola banda antes del cuerpo: la palabra, la probabilidad y la frase que la explica. Los
+   tres informes completos van después, porque piden media pantalla y su lugar es el detalle, no
+   la entrada. El borde izquierdo toma el color del desenlace, el mismo que usan la fila del
+   corpus y el bloque grande. */
+.verdict-strip {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.9rem 1.5rem;
+  border-left: 2px solid var(--fg-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.verdict-strip.candidate {
+  border-left-color: var(--accent);
+}
+
+.verdict-strip.marked,
+.verdict-strip.unknown {
+  border-left-color: var(--state-taken);
+}
+
+.verdict-strip.conditional {
+  border-left-color: var(--state-blocked);
+}
+
+.verdict-strip.derived {
+  border-left-color: var(--state-pending);
+}
+
+.verdict-strip.doubt {
+  border-left-color: var(--state-noise);
+}
+
+.verdict-strip.undecided {
+  border-left-color: var(--state-taken);
+}
+
+.verdict-strip .vs-word {
+  font: 600 11px/1 var(--mono);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.verdict-strip.candidate .vs-word {
+  color: var(--accent);
+}
+
+.verdict-strip .vs-p {
+  font: 11px/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-3);
+}
+
+.verdict-strip .vs-why {
+  margin: 0;
+  font: 13px/1.45 var(--sans);
+  color: var(--fg-2);
+}
+
+@media (max-width: 44rem) {
+  .verdict-strip {
+    grid-template-columns: auto auto;
+  }
+
+  .verdict-strip .vs-why {
+    grid-column: 1 / -1;
+  }
+}
+
 .issue-side {
   display: flex;
   flex-direction: column;

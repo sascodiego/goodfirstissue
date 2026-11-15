@@ -121,6 +121,12 @@ func runServer(args []string) error {
 			return err
 		}
 		cfg = loaded
+		// Las rutas del archivo son relativas al directorio desde el que se arranca, y el
+		// servidor las entrega a procesos hijos cuyo cwd es otro (el clon): sin resolverlas
+		// acá, PIG_HOME se lee desde el clon y el agente arranca sin configuración ni clave.
+		if err := cfg.Resolve("."); err != nil {
+			return err
+		}
 		if err := cfg.EnsureDirs(); err != nil {
 			return err
 		}

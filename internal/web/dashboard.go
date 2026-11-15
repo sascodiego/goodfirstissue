@@ -238,6 +238,15 @@ func buildPageWith(st *store.Store, q url.Values, jobs *queue) (pageData, error)
 		journal = nil
 	}
 	data.Stats = countStats(st, active.Key, active.CommitSHA, snap.Issues, journal)
+	// El corpus abre en lo que el triaje recomendo, pero solo si hay algo que mostrar: sobre un
+	// corpus sin triajear, una lista vacia no es un default, es una pantalla rota. Por eso la
+	// promocion depende del conteo y no de la URL.
+	if f.State == filterAll && f.Defaulted && data.Stats.Candidate > 0 {
+		f.State = filterCandidate
+		data.Filter = f
+		data.IsCandidate = true
+		data.CandidateHref = f.withState(filterAll).url(active.Key)
+	}
 	data.Labels = distinctLabels(snap.Issues)
 
 	for _, is := range snap.Issues {

@@ -35,15 +35,19 @@ type filter struct {
 	State   string
 	Label   string
 	NoLabel bool
+	// Defaulted dice que la URL no nombro un estado, asi que el ajuste lo elige la pantalla y
+	// no quien navega. Existe para que un corpus sin triaje muestre todo en vez de una lista
+	// vacia: filtrar por candidatas cuando no hay candidatas no es un default, es un error.
+	Defaulted bool
 }
 
 const (
-	filterAll   = ""
+	filterAll   = "all"
 	filterTaken = "taken"
 	filterFree  = "free"
 	// filterCandidate no es un hecho del corpus: es lo que decidio el triaje. Se resuelve
 	// contra el journal, no contra la issue, asi que buildPageWith la aplica despues de leer
-	// el veredicto.
+	// el veredicto. Es tambien el estado que la pantalla elige cuando la URL no elige ninguno.
 	filterCandidate = "candidate"
 )
 
@@ -54,9 +58,12 @@ func parseFilter(q url.Values) filter {
 		Label:   q.Get("label"),
 		NoLabel: q.Get("nolabel") == "1",
 	}
-	if f.State != filterTaken && f.State != filterFree && f.State != filterCandidate {
+	if f.State != filterTaken && f.State != filterFree && f.State != filterCandidate && f.State != filterAll {
 		f.State = filterAll
 	}
+	// Una URL sin `state` no pide «todo»: no pide nada. La pantalla decide, y decide
+	// candidatas en cuanto el corpus tenga alguna.
+	f.Defaulted = strings.TrimSpace(q.Get("state")) == ""
 	return f
 }
 
@@ -67,7 +74,11 @@ func (f filter) url(repoKey string) string {
 	if f.Query != "" {
 		v.Set("q", f.Query)
 	}
-	if f.State != filterAll {
+	// Ni el estado vacio ni candidatas se escriben: la URL corta es la que abre en lo que el
+	// triaje recomendo. Todo lo demas se nombra, incluido «todo».
+	switch f.State {
+	case "", filterCandidate:
+	default:
 		v.Set("state", f.State)
 	}
 	if f.Label != "" {

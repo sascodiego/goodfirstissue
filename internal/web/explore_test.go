@@ -693,3 +693,28 @@ func TestStageRunnerRefusesBeforeStartingTheAgent(t *testing.T) {
 		t.Errorf("sin índice: err = %v, want que indique gfi index demo/repo", err)
 	}
 }
+
+// Un runner que se cae no puede dejar la fila en «en curso» ni comer el lugar de la cola:
+// el fallo se convierte en el estado del job y el siguiente trabajo entra.
+func TestExploreSurvivesAStageThatPanics(t *testing.T) {
+	st, key := indexedCorpus(t, 2)
+	panicky := func(ctx context.Context, req StageRequest, progress func(time.Duration)) (StageOutcome, error) {
+		if req.Issue == 1 {
+			panic("el doble se cayó a propósito")
+		}
+		return StageOutcome{Latency: time.Second}, nil
+	}
+	h := exploreHandler(t, st, panicky, nil)
+
+	post(t, h, "/explore", url.Values{"repo": {key}, "issue": {"1", "2"}})
+
+	waitFor(t, "que la fila del pánico quede en error y la otra en listo", func() bool {
+		rows := rowsOf(t, h, key)
+		first := exploreStage(t, rows[1])
+		second := exploreStage(t, rows[2])
+		return first.State == jobError && second.State == jobReady
+	})
+	if note := exploreStage(t, rowsOf(t, h, key)[1]).Note; !strings.Contains(note, "el doble se cayó a propósito") {
+		t.Errorf("la fila no dice por qué se cayó: %q", note)
+	}
+}

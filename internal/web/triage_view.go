@@ -165,6 +165,34 @@ func newTriageView(analysis triage.Analysis, decision store.Decision, issue issu
 	return view
 }
 
+// outcomeLabel dice en una palabra qué es el veredicto. Es la versión corta de whyText y
+// vive acá, junto a él, para que la fila del embudo y el bloque de la issue no puedan decir
+// palabras distintas sobre el mismo resultado.
+//
+// Una toma conserva la palabra que la pantalla ya usaba: «tomada». Es el mismo hecho visto
+// desde el otro lado —hay una PR abierta, alguien está trabajando—, y cambiar el vocabulario
+// para el mismo hecho obliga a quien lee a aprender dos veces lo mismo.
+func outcomeLabel(result triage.Result) string {
+	switch result.Outcome {
+	case triage.Candidate:
+		return "candidata"
+	case triage.Conditional:
+		return "condicionada"
+	case triage.Derived:
+		return "derivada"
+	case triage.Doubt:
+		return "sin evidencia"
+	case triage.Marked:
+		if result.Reason == triage.ReasonAlreadyWorking {
+			return "tomada"
+		}
+		return "marcada"
+	case triage.Undecided:
+		return "sin veredicto"
+	}
+	return "sin veredicto"
+}
+
 // outcomeClass gives each verdict its own shape. The four ways of not recommending have to be
 // told apart before the sentence is read, so they never share a class.
 func outcomeClass(outcome triage.Outcome) string {

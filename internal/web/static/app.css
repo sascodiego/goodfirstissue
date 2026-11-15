@@ -360,6 +360,63 @@ main {
   color: var(--state-taken);
 }
 
+/* ---------- embudo del triaje ---------- */
+
+/* El embudo es la cifra de la pantalla: no cuánto tiene el corpus, sino qué decidió el triaje
+   sobre él. Se lee de izquierda a derecha como el descarte —cuántas llegan y cuántas sobreviven—
+   y comparte la retícula de las cifras de arriba para que las dos se lean como una sola tabla.
+   El número de candidatas va en acento porque es el único que no es un descarte. */
+.funnel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.funnel div {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0 1.5rem;
+  border-right: 1px solid var(--line);
+}
+
+.funnel div:last-child {
+  border-right: 0;
+}
+
+.funnel dt {
+  font: 600 9.5px/1.3 var(--mono);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.funnel dd {
+  margin: 0;
+  font: 22px/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  color: var(--fg-2);
+}
+
+.funnel .f-open dd {
+  color: var(--fg);
+}
+
+.funnel .f-marked dd {
+  color: var(--state-taken);
+}
+
+.funnel .f-candidate dd {
+  color: var(--accent);
+}
+
+.funnel .f-untriaged dd {
+  color: var(--state-pending);
+}
+
 /* ---------- filtros ---------- */
 
 .filters {
@@ -626,6 +683,34 @@ tbody tr:last-child td {
 
 .st.blocked {
   color: var(--state-blocked);
+}
+
+/* Las palabras del triaje en la fila. Cada desenlace conserva el color que ya tiene en el bloque
+   de la issue: dos pantallas que dicen el mismo veredicto no pueden decirlo de dos colores, o el
+   lector aprende dos códigos para el mismo hecho. La palabra es la que distingue; el color solo
+   acompaña. */
+.st.candidate {
+  color: var(--accent);
+}
+
+.st.conditional {
+  color: var(--state-blocked);
+}
+
+.st.marked {
+  color: var(--fg-3);
+}
+
+.st.doubt {
+  color: var(--state-noise);
+}
+
+.st.derived {
+  color: var(--state-pending);
+}
+
+.st.undecided {
+  color: var(--state-taken);
 }
 
 .c-pr,

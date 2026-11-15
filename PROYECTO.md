@@ -144,14 +144,14 @@ Registrado con su costo, para que volver a meterlo sea una decisión y no un olv
 
 | Corte | Ahorra | Qué cuesta |
 |---|---|---|
-| Nodo de alineación (§7.5) | 1 h | `feature` + `neutral` pasa a **CONDICIONADA fija**: «preguntá al mantenedor», sin citar el proyecto |
+| ~~Nodo de alineación (§7.5)~~ | — | **entra al MVP**: se implementó y se midió en la PR del benchmark, y es la rama que separa una feature que el proyecto quiere de una que no. Ver §7.5 |
 | Tercera pantalla de detalle | 1 h | la evidencia se muestra inline en el veredicto; el contenido es el mismo |
 | `confirmed_defect` (P2) | 0,5 h | el guardarraíl queda solo con `reports_defect`; medido, funciona con el título limpio (§7.2.1) |
 | `learning_value` (P3) | 0,5 h | se pierde el eje de crecimiento; no cambia ningún veredicto |
 | Tercer repositorio | 0,5 h | menos variedad en el embudo, no menos historia |
 | Benchmark de 10 → 6 casos | 0,5 h | dos disfraces adversariales en vez de tres |
 
-**Orden de retorno si sobra tiempo:** primero el nodo de alineación (es el que más diferencia); después la tercera pantalla; al final el tercer repositorio y los casos extra.
+**Orden de retorno si sobra tiempo:** primero la segunda ronda de `question` (la costura ya existe, ver §7.7); después la tercera pantalla; al final el tercer repositorio y los casos extra.
 
 **Nada de esta lista se implementa sin que el Tier 1 esté cerrado y verificado.**
 
@@ -266,7 +266,7 @@ Tres estados de salida, no dos:
 
 Ninguna se oculta. `MARCADA` y `CONDICIONADA` aparecen en la lista principal con su distintivo (§15).
 
-**Nota de alcance:** el grafo muestra el nodo `intent`, el nodo de alineación y `confirmed_defect` porque son parte del diseño, pero los tres están **fuera del primer pase**. `intent` se midió mal alimentado y pasa a la segunda fase (§7.4, `LIMITES.md` §2), y la alineación y `confirmed_defect` están diferidos por tiempo (§2.1.1). Sin ellos: `feature` cae directo en CONDICIONADA, el guardarraíl de bug queda solo con `reports_defect`, y lo que decide el primer pase es la tabla de §7.7.
+**Nota de alcance:** el nodo `intent` está **fuera del primer pase**: se midió mal alimentado y pasa a la segunda fase (§7.4, `LIMITES.md` §2). El nodo de alineación **sí está dentro** (§7.5): se midió y separa la feature que el proyecto quiere de la que no. `confirmed_defect` sigue diferido a P2. Lo que decide el primer pase es la tabla de §7.7.
 
 ### 2.3. Fuera de alcance
 
@@ -809,17 +809,23 @@ Siete sondas no son una calibración: son la razón por la que el benchmark de �
 | La issue está mal armada | **la issue** | se excluye, **diciendo qué le falta** |
 | Clef no puede clasificarla | **nosotros** | se mantiene, con la duda explícita (I10) |
 
-Política de calidad:
+**Las cuatro preguntas se preguntan y se miden; no deciden.** Esta es la corrección que salió de
+la corrida del benchmark: `self_contained`, `has_evidence`, `done_defined` y `unambiguous` se
+preguntan en la misma petición —cuestan cero— y se reportan pregunta por pregunta, pero **no mueven
+el desenlace**. Dos razones medidas:
 
-```
-self_contained < 0,5                        → fuera: no se puede abordar sin pedir contexto
-kind=bug y has_evidence < 0,5               → fuera: sin reproducción no hay bug
-done_defined < 0,5  o  unambiguous < 0,5    → CONDICIONADA: se puede empezar,
-                                              hay que acordar el terminado o la lectura
-todas ≥ 0,5                                 → BIEN ARMADA
-```
+- El informe de la corrida concluye que no están validadas, y que una de ellas rinde **peor que
+  contestar siempre lo mismo**. Aplicarlas era prometer una precisión que no se midió.
+- Aplicarlas mueve 29 issues de `CANDIDATA` a `CONDICIONADA` sin que ninguna medición lo respalde.
+  Una compuerta así no protege al usuario: lo aleja de issues que sí eran trabajo.
 
-No es un umbral único: es una tabla. Y `CONDICIONADA` es accionable porque llega con **la lista de lo que falta**, no con un puntaje.
+La única pregunta de este bloque que decide es **`evidence_sufficient`**, y decide en la dirección
+segura: por debajo de 0,5 la issue no se descarta, se muestra como **DUDA** (I10). Cuando alguna
+vuelva a decidir, será porque una medición nueva lo respalde, no porque el diseño lo suponía.
+
+Esa distinción es la que ordena "dos formas de fallar": de la issue mal armada se ocupa la
+segunda fase, con la lista de lo que le falta; de la que no podemos clasificar nos ocupamos
+nosotros, y por eso se muestra como duda.
 
 ### 7.4. `intent`: fuera del primer pase
 
@@ -851,9 +857,17 @@ Clef   →  interpreta: ¿eso significa authorized, neutral o declined?
 
 La regla no decide: informa. La interpretación del conjunto libre la hace Clef, en la misma petición. Es medible con los 10 casos; si falla, se ajusta la redacción de los criterios, no el mecanismo.
 
-### 7.5. Nodo de alineación (solo `feature` + `neutral`) — *diferido, §2.1.1*
+### 7.5. Nodo de alineación (solo `feature`) — *en el MVP*
 
-Cuando la línea está abierta y el pedido es una feature, se evalúa **si va con el proyecto o es una desviación**. Un bug no pasa por acá (§7.6).
+Cuando el pedido es una feature, se evalúa **si va con el proyecto o es una desviación**. Un bug no
+pasa por acá (§7.6), ni un pedido de documentación: ninguno de los dos tiene nada que preguntarle a
+la dirección del proyecto.
+
+**Estado: implementado.** Es la segunda petición de P1, y solo la pagan las features. El expediente
+es el C, y el brief del proyecto se arma desde el clon —lo que el proyecto dice que es, en su
+README, y lo que viene construyendo, en sus últimos 20 commits—, así que no cuesta ninguna petición
+extra fuera de la del juicio. Cuando el clon no se puede leer, el desenlace lo dice
+(`alignment_unavailable`) en vez de fingir que el proyecto no fija posición.
 
 La pauta no es una opinión: sale de dos fuentes.
 
@@ -864,21 +878,25 @@ La pauta no es una opinión: sale de dos fuentes.
 
 La segunda es la que más rinde: **la dirección de un proyecto se lee gratis en su historial de commits**. Comparar *declarado* contra *revelado* detecta el caso más filoso — la feature que el proyecto viene desmantelando desde hace seis meses.
 
-Una petición, una pregunta:
+Dos preguntas `noul`, en una petición, con umbral **0,6** medido:
 
-| id | tipo | criterios |
-|---|---|---|
-| `alignment` | `choice` | `in_line` · `out_of_scope` · `divergent` · `insufficient_basis` |
+| id | qué juzga |
+|---|---|
+| `only_for_requester` | ¿la petición responde a una situación de quien la pide, tal que a los demás usuarios no les aporte nada? |
+| `fits_direction` | ¿la petición mueve al proyecto en la dirección que su documentación y su historia muestran, o lo aleja? |
 
 ```
-in_line                        (p ≥ 0,60) → CANDIDATA
-out_of_scope                   (p ≥ 0,60) → MARCADA, con la cita del proyecto
-divergent                      (p ≥ 0,60) → MARCADA, con la cita del proyecto
-insufficient_basis  o p < 0,45             → CONDICIONADA: «el proyecto no fija
-                                              posición; preguntá antes de empezar»
+only_for_requester ≥ 0,60                    → MARCADA: sirve solo a quien la pide
+fits_direction     ≥ 0,60                    → CANDIDATA
+resto                                        → CONDICIONADA: «preguntá al mantenedor
+                                                antes de empezar»
 ```
 
-No se descarta: **se marca con la cita**. Negar una feature no es nuestra autoridad, es del owner. Lo que sí podemos hacer es mostrar que `CONTRIBUTING.md:87` dice «no aceptamos plugins de terceros».
+**Lo que el nodo no hace, y hay que decirlo:** no distingue «el proyecto va en contra» de «el
+proyecto no fija posición»; los dos caen en `CONDICIONADA`. Es lo que se midió con estas dos
+preguntas, y separarlos exigiría una tercera que todavía no está medida. Tampoco descarta con cita:
+negar una feature sigue siendo autoridad del owner, y por eso los dos casos piden hablar antes de
+escribir código.
 
 ### 7.6. Guardarraíl: la feature disfrazada de bug
 
@@ -891,14 +909,12 @@ Dos niveles, y no son la misma pregunta:
 | **P1** (guardarraíl barato) | `reports_defect`: ¿reporta un comportamiento **existente** como defectuoso, o pide uno que no existe? | solo el texto | 0 tokens |
 | **P2** (verificación definitiva) | `confirmed_defect`: ¿el código y la documentación confirman que el comportamiento reportado **no es intencional**? | evidencia | caro |
 
-Política de P1:
-
-```
-kind=bug y reports_defect < 0,50  → RECLASIFICAR a feature
-                                     y pasar por el nodo de alineación
-                                     (se informa la reclasificación)
-kind=bug y reports_defect ≥ 0,50  → sigue como bug → CANDIDATA
-```
+Política de P1: **`reports_defect` se mide y se reporta, no recategoriza.** Reclasificar un bug a
+feature movería la issue al nodo de alineación con un umbral que no se validó; el dato queda en el
+informe y la verificación definitiva sigue siendo `confirmed_defect` de P2, que es la que mira el
+código. Lo que P1 sí conserva del guardarraíl es que un `bug` es CANDIDATA sin pasar por alineación:
+el costo de una reclasificación equivocada es una exploración, el de una feature sin dueño es un
+veredicto que nadie pidió.
 
 Política de P2, solo para `kind=bug`:
 
@@ -918,29 +934,39 @@ La cadena se evalúa en este orden, y el orden no es conmutativo.
 |---|---|---|
 | 0 | pre-compuerta determinista: cerrada como completada · cerrada como no planeada · cerrada por otro motivo · PR abierta enlazada · cuerpo vacío | MARCADA, **con el motivo que la resolvió** |
 | 1 | `evidence_sufficient` < 0,5 | **DUDA EN VOZ ALTA** — no se descarta (I10) |
-| 2 | `self_contained` < 0,5 | MARCADA: falta contexto para abordarla |
-| 3 | `kind=bug` y `has_evidence` < 0,5 | MARCADA: sin reproducción no hay bug |
-| 4 | `kind=spam` | MARCADA: no es trabajo de código |
-| 5 | `kind=question` | **DERIVADA**: la segunda ronda está especificada y no implementada (`LIMITES.md` §3) |
-| 6 | `kind=other` (documentación, tests, proceso) | CANDIDATA: es exactamente el trabajo de una primera contribución |
-| 7 | `kind=bug` y `reports_defect` < 0,5 | RECLASIFICADA a feature (§7.6), que sigue por la fila 9 |
-| 8 | `done_defined` < 0,5 o `unambiguous` < 0,5 | CONDICIONADA, **con la lista de lo que falta** |
-| 9 | `kind=feature` (la alineación está diferida, §7.5) | CONDICIONADA: «preguntá al mantenedor» |
-| 10 | la respuesta del servicio omite una pregunta que la cadena necesita | `undecided` (I2): no es un veredicto ni una duda sobre la issue |
+| 2 | `kind=spam` | MARCADA: no es trabajo de código |
+| 3 | `kind=question` | **DERIVADA**: la segunda ronda está especificada y no instalada (`LIMITES.md` §3) |
+| 4 | `kind=bug` | CANDIDATA: un bug es una desviación de lo que el proyecto ya quiere, sin nodo que consultar |
+| 5 | `kind=other` (documentación, tests, proceso) | CANDIDATA: es exactamente el trabajo de una primera contribución |
+| 6 | `kind=feature`: `only_for_requester` ≥ 0,6 | MARCADA: sirve solo a quien la pide (§7.5) |
+| 7 | `kind=feature`: `fits_direction` ≥ 0,6 | CANDIDATA (§7.5) |
+| 8 | `kind=feature`: el resto | CONDICIONADA: «preguntá al mantenedor antes de empezar» (§7.5) |
+| 9 | `kind=feature` sin poder leer la dirección del proyecto | CONDICIONADA: `alignment_unavailable` |
+| 10 | la respuesta omite una pregunta que la cadena necesita, o trae un `kind` fuera de los cinco | `undecided` (I2): no es un veredicto ni una duda sobre la issue |
 | 11 | resto | CANDIDATA |
 
-Tres consecuencias que el código respeta y que conviene leer juntas:
+Cuatro consecuencias que el código respeta y que conviene leer juntas:
 
-- **La pre-compuerta gana a la duda** (fila 0 antes que fila 1): un hecho determinista no depende
-  de poder clasificar el texto.
+- **La pre-compuerta gana a la duda** (fila 0 antes que fila 1): un hecho determinista no depende de
+  poder clasificar el texto.
 - **`MARCADA` no es terminal.** Lleva su motivo y su evidencia, y una ronda posterior con mejor
   material puede revertirla. **`DERIVADA` tampoco**: es una pregunta que el primer pase no resuelve.
 - **Una respuesta incompleta no es una duda sobre la issue** (fila 10). Leerla como «falta una
   condición» inventaría una condición que el servicio nunca dijo.
+- **Las preguntas de calidad de §7.3 no están en la tabla.** Se preguntan y se reportan; aplicar las
+  que no se validaron movía 29 issues fuera de `CANDIDATA` sin respaldo medido.
 
 La tabla vive en `internal/triage/policy.go` y tiene un test por fila. El banco de
-`internal/triage/testdata/bench/` corre **ese mismo código** —las mismas preguntas, la misma
-petición, la misma política—, así que la medición y el producto no pueden divergir.
+`internal/triage/testdata/bench/` corre **ese mismo código** —las mismas preguntas, los mismos
+expedientes, la misma política—, así que la medición y el producto no pueden divergir.
+
+**Coste.** Una issue cuesta una petición; una feature, dos. Con ~0,55 s por petición medidos, el
+presupuesto de E3 (30 issues en menos de 120 s) se cumple con margen: el número de peticiones no es
+la restricción, el tiempo total sí.
+
+**Extensible sin tocar el proyecto.** `question` queda en `DERIVADA` porque la segunda ronda no está
+instalada, y la costura ya existe: un tipo con un método y un campo de configuración. Agregarla no
+toca preguntas, expedientes, journal, banco ni esta tabla.
 
 La UI nunca muestra un estado sin su probabilidad. Los desenlaces de abstención se muestran
 distinto: `DUDA` por `evidence_sufficient` < 0,5 (Clef respondió «no alcanza»), `uncertain` (p <

@@ -30,7 +30,11 @@ Lo que se congela acá son decisiones, no mediciones:
    más preguntas por petición, no más peticiones.
 7. Borde de P1: P1 no responde "qué te falta". Eso es P2 (requisitos en tres baldes,
    lagunas) y P3 (fit como veredicto cerrado sobre esa evidencia).
-8. La redacción y la cadena viven en código, no en este documento: `questions.go` envía las
+8. El presupuesto es tiempo, no cantidad de peticiones: una petición mide ~0,55 s y E3 pide 30
+   issues en menos de 120 s, así que una feature puede pagar la segunda. Lo que sigue siendo gratis
+   son las preguntas dentro de una petición, y por eso las de calidad viajan juntas aunque no
+   decidan.
+9. La redacción y la cadena viven en código, no en este documento: `questions.go` envía las
    preguntas y `policy.go` camina la tabla, y el banco de pruebas corre ese mismo código. Este
    `.md` declara el mecanismo y el porqué; si declarara además la tabla, sería la tercera copia
    y la única que nadie ejecuta.
@@ -242,5 +246,7 @@ different fixes, and the interface distinguishes them:
 - **Triage runs before explore** (I9): an issue that did not pass P1 never spends an
   exploration.
 - **A deterministic fact outranks an abstention** (the G1 precedence above).
-- **Two requests per issue is the ceiling.** More questions per request are free; more
-  requests are not.
+- **The budget is time, not request count.** What matters is E3 (30 issues under 120 s), and one
+  request measures ~0.55 s, so a feature can afford the second one it needs for the alignment node.
+  More questions inside a request are still free, which is why the quality questions travel together
+  even when they do not decide.

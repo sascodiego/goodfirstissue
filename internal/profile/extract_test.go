@@ -242,9 +242,6 @@ func TestExtractReportsARejectedKeyAsItsOwnFailure(t *testing.T) {
 			ExitCode: 1,
 			Stderr:   `{"error":{"message":"invalid_api_key","type":"auth_error"}}`,
 		},
-		"agent answered with the error": {
-			Answer: "Error: 401 invalid_api_key: the key was rejected",
-		},
 		// La forma real: el turno termina bien, sin contenido, y el motivo viaja en el
 		// errorMessage del mensaje. Es lo que PiG emite con una clave mala.
 		"turn ended in error": {
@@ -408,5 +405,23 @@ func TestNewResolvesTheJobHomeToAnAbsolutePath(t *testing.T) {
 	}
 	if strings.Contains(req.Home, "var/pig-profile/var/pig-profile") {
 		t.Errorf("home = %q: resolved twice", req.Home)
+	}
+}
+
+// R1-1/R4: la respuesta es dato. El contrato de extracción exige citas textuales del CV, y un
+// CV de seguridad puede decir «unauthorized» o «invalid api key» sin que nada esté roto. Si la
+// clasificación mira la respuesta, una extracción exitosa se convierte en una clave rechazada
+// falsa: no se guarda nada y la pantalla miente sobre la causa.
+func TestAQuoteThatMentionsAuthWordsIsNotARejectedKey(t *testing.T) {
+	answer := "## Experiencia\n- Rotación de credenciales — nivel: demostrado — evidencia: «la rotación de invalid api key y la respuesta a unauthorized»\n"
+	cv := "Experiencia\n- Llevé la rotación de invalid api key y la respuesta a unauthorized."
+	extractor, _ := newExtractor(t, answer)
+
+	got, err := extractor.Extract(context.Background(), cv)
+	if err != nil {
+		t.Fatalf("Extract() error = %v: una cita del CV se leyó como una clave rechazada", err)
+	}
+	if len(got.Document.Items) != 1 {
+		t.Errorf("items = %d, want the extracted item", len(got.Document.Items))
 	}
 }

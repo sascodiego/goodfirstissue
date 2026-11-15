@@ -204,7 +204,12 @@ func (e *Extractor) ask(ctx context.Context, cv string) (string, error) {
 
 	// The API error may arrive as the agent's own output instead of a typed error: the agent
 	// collapses it. Classifying it first keeps a rejected key from being read as a bad answer.
-	if detail, ok := rejectedKey(out.Stderr + "\n" + out.Error + "\n" + out.Answer); ok {
+	//
+	// Only where the agent speaks about itself: a failed turn and stderr. Never the answer —
+	// the answer is data, it quotes the CV, and a CV about security can legitimately say
+	// "unauthorized"; scanning it would report a rejected key for a good extraction and save
+	// nothing.
+	if detail, ok := rejectedKey(out.Error + "\n" + out.Stderr); ok {
 		return "", &Failure{Kind: KindInvalidKey, Detail: detail}
 	}
 	if !out.Complete() {

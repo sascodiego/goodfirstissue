@@ -20,16 +20,12 @@ func (h *Handler) fitRun(w http.ResponseWriter, r *http.Request) {
 	key := strings.TrimSpace(r.PostFormValue("repo"))
 
 	code := "encaje"
-	switch {
-	case h.fit == nil:
+	if h.fit == nil {
 		code = "encaje-sin-clave"
-	default:
-		if err := h.fit(key); err != nil {
-			slog.Error("encajar el corpus", "repo", key, "err", err)
-			code = "encaje-error"
-		}
+	} else if err := h.fit(key); err != nil {
+		slog.Error("encajar el corpus", "repo", key, "err", err)
+		code = "encaje-error"
 	}
-
 	target := "/?estado=" + code
 	if key != "" {
 		target += "&repo=" + url.QueryEscape(key)

@@ -1,11 +1,12 @@
 # PROYECTO.md — GoodFirstIssue
 
-**Versión:** 2.24
+**Versión:** 2.25
 **Fecha:** 2026-11-15
 **Estado:** Documento rector del MVP para el #2 Hackathon NaN (Reto 4 — tema libre)
 **Reemplaza:** el documento de definición de producto y arquitectura v1.0, en todo lo relativo al **alcance del MVP** (sus secciones 13 y 18). La visión de producto, el análisis del problema y los principios de diseño del original siguen vigentes.
 
 **Historial**
+- **2.25** — **la plantilla del `state` de P3 pasa a describir lo que el código emite.** §9.1 pedía `nivel: profesional` y un campo `fuente:`, y `internal/profile` emite `declarado` · `demostrado` · `inferido` sin `fuente:` desde #8: la divergencia estaba decidida en un documento de feature y el rector no se había enterado (opción A de #13). `## REPOSITORIO` deja de prometer `Tests: yes (go test ./...)` y dice lo que el explore encontró, y `## DESARROLLADOR` es el documento aprobado verbatim, con sus propios encabezados. §9.3 gana la fila que le faltaba: un `ready` por debajo de 0,70 no se recomienda, se muestra `uncertain`.
 - **2.24** — **el coste de P1 se mide y deja de ser una estimación.** Desde 2.19 P1 no son compuertas deterministas: son siete preguntas tipadas a Clef en una petición, más una segunda para features, y Clef cobra tokens. La cifra «~45 s y 0 tokens» describía el diseño anterior y aparecía en cinco lugares del documento y en la justificación de §12; se retira de todos. Corrida medida sobre el corpus de `cobra` pineado en `adbc881`: **20 issues en 4,3 s y 8 peticiones** (~0,54 s por petición), con **13 de 20 resueltas por las pre-compuertas sin consultar al modelo**. La decisión de §12 —«triaje sin LLM generativo, solo Clef»— sigue en pie: lo que cambia es lo que cuesta, no el motor.
 - **2.23** — el guion de la demo y la definición de terminado se corrigen contra lo medido. El embudo de §15 deja los números de diseño y usa los reales de `cobra`: 150 abiertas → 69 marcadas con su motivo (66 por tener una PR abierta) → 31 derivadas → 8 condicionadas → 42 candidatas, en 53 s y 100 peticiones. §16 se parte en tres bloques —bloqueante de demo, pendiente con su bloqueador nombrado, fuera del MVP por decisión registrada— porque la lista anterior pedía cosas que el producto ya decidió no hacer: una feature reclasificada por `reports_defect` (que se pregunta y no decide desde 2.19), un `alignment` con etiquetas que no existen, y `label_honest`, retirado en 2.22.
 - **2.22** — **la etiqueta de dificultad se ignora; no se audita** (§1). Sale `label_honest` de P2 (§8.3), y la etiqueta sale de todo expediente y de todo prompt: se guarda verbatim en el corpus y no se juzga (I6, §4.2). El pitch pasa de «validamos una label» a «buscamos una good first issue». La valoración propia entra como bloque determinista de coherencia P1↔P2 dentro del `state` de P3 (§9.1.1): emite hallazgos, no veredicto. `triage.PolicyVersion` sube a `p1-2` y `explore.Version()` pasa a cubrir el constructor de la tarea (I14).
@@ -1107,7 +1108,8 @@ Body:
 ## REPOSITORIO
 Name: owner/project
 Primary language: go
-Tests: yes (go test ./...)
+Tests: yes (internal/migrations/runner_test.go:TestOrder)
+<la sección «Stack técnico» de la ficha del proyecto, sin su encabezado>
 
 ## ÁREAS DE LA ISSUE
 La issue toca 2 áreas. Agrupan la evidencia; no se puntúan por separado.
@@ -1138,14 +1140,19 @@ Conventions:
 - La issue no especifica qué debe pasar con migraciones ya aplicadas.
 
 ## DESARROLLADOR
-Skills:
-- Go — nivel: profesional — fuente: CV (2 años, backend de pagos) — evidencia: «…»
-- PostgreSQL — nivel: declarado — fuente: CV (mencionado, sin experiencia asociada)
-- React — nivel: demostrado — fuente: portfolio
-
-Availability: 6 h/semana
-Preferences: prefiere tareas acompañadas; quiere aprender Rust
+<el documento de perfil aprobado, verbatim y sin re-parsear (§17.8), con sus propios encabezados>
+## Formación
+- … — nivel: declarado — evidencia: «…»
+## Conocimientos técnicos
+- Go — nivel: demostrado — evidencia: «…»
+- PostgreSQL — nivel: declarado — evidencia: «…»
+## Experiencia
+- … — nivel: declarado — evidencia: «…»
+## Idiomas
+- … — nivel: inferido — supuesto: «…»
 ```
+
+**Lo que el `state` no inventa.** `Tests` no es un comando: es lo que el explore encontró, con `archivo:Test` o el hecho de que no encontró ninguno, porque el corpus no guarda una suite. Cuando falta la ficha del proyecto o el perfil, el `state` lo dice con un marcador nombrado en vez de omitir la sección: una sección ausente se lee como «nos olvidamos», y una vacía se lee como «no había». Los encabezados del perfil viajan dentro de `## DESARROLLADOR` tal como la persona los aprobó.
 
 La etiqueta original **no entra**: no es un dato del juicio, y el veredicto es el nuestro (§1). El expediente de intención tampoco la lleva: no llega a ningún modelo.
 
@@ -1209,6 +1216,7 @@ Se descartaron `gap_severity` y `support_needed` porque medían el mismo eje que
 | p(`fit`) < 0,45 | `uncertain` — no se emite veredicto |
 | `fit` = `ready` y p ≥ 0,70 | `recommended` |
 | `fit` = `ready_with_support` y p ≥ 0,50 | `recommended_with_support` |
+| `fit` = `ready` con 0,45 ≤ p < 0,70, o `ready_with_support` con 0,45 ≤ p < 0,50 | `uncertain` — el juicio no llegó a su propio corte, así que no se muestra como veredicto |
 | `needs_preparation` / `needs_experience` | se muestra `fit` con su probabilidad |
 | Clef falló | `undecided` (I2) |
 
@@ -1622,7 +1630,7 @@ Un archivo de configuración equivocado se descubre al arrancar, no veinte llama
 
 ### 17.8. Hueco detectado: ¿de dónde salen las capacidades del CV?
 
-Al nombrar las acciones apareció algo que el flujo no tenía: **el paso que convierte el CV en texto en una lista de capacidades** con nivel, fuente y evidencia (§9.1). El perfil aparece en la plantilla del `state` de P3, pero nadie lo producía.
+Al nombrar las acciones apareció algo que el flujo no tenía: **el paso que convierte el CV en texto en una lista de capacidades** con nivel declarado/demostrado/inferido y su evidencia (§9.1). El perfil aparece en la plantilla del `state` de P3, pero nadie lo producía.
 
 Queda como acción `profile_extract`, con modelo configurable:
 

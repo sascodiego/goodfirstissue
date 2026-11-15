@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -100,6 +101,62 @@ func TestExtractReusesThePortraitOfTheSameCommitAndSpendsNoRun(t *testing.T) {
 	}
 	if second.Commit != testCommit {
 		t.Errorf("commit = %q", second.Commit)
+	}
+}
+
+// -force: the cache names a question, and a tree that changed without moving the commit is the
+// same question with a different answer. A caller that says so pays a new run, and the answer it
+// gets is the one left behind: the store must not keep serving the older one.
+func TestExtractWithForceRunsAgainAndReplacesTheStoredPortrait(t *testing.T) {
+	a := &agent{}
+	e, _ := newCachedExtractor(t, a)
+	in := projectbrief.Input{Repository: "spf13__cobra", CommitSHA: testCommit, Dir: clone(t)}
+	if _, err := e.Extract(context.Background(), in); err != nil {
+		t.Fatalf("Extract: %v", err)
+	}
+
+	// A second answer that is still a valid portrait: only the prose moved, the citations did
+	// not, so nothing but the cache can tell the two runs apart.
+	const revised = "Una librería de línea de comandos en Go"
+	second := strings.Replace(validAnswer, "Una librería de CLI en Go", revised, 1)
+	if second == validAnswer {
+		t.Fatal("the revised answer is not a revision")
+	}
+	a.out = &pig.Outcome{Answer: second, Total: 3 * time.Second}
+
+	forced := in
+	forced.Force = true
+	res, err := e.Extract(context.Background(), forced)
+	if err != nil {
+		t.Fatalf("Extract: %v", err)
+	}
+	if got := len(a.calls()); got != 2 {
+		t.Fatalf("runs = %d, want 2: an ignored portrait costs a run", got)
+	}
+	if res.Cached {
+		t.Error("a run that had to happen is not cached")
+	}
+	if res.Document.Text != second {
+		t.Error("the forced run returns the answer it paid for")
+	}
+	if res.Took != 3*time.Second {
+		t.Errorf("took = %s, want the cost of the run that actually happened", res.Took)
+	}
+
+	// The portrait the forced run produced is the one stored: asking again without -force is
+	// answered from it, for free.
+	again, err := e.Extract(context.Background(), in)
+	if err != nil {
+		t.Fatalf("Extract: %v", err)
+	}
+	if got := len(a.calls()); got != 2 {
+		t.Errorf("runs = %d, want 2: the replacement is reused", got)
+	}
+	if !again.Cached {
+		t.Error("the replaced portrait is what the store keeps")
+	}
+	if again.Document.Text != second {
+		t.Error("the store still serves the portrait the forced run replaced")
 	}
 }
 

@@ -404,6 +404,9 @@ func (c *Config) Resolve(base string) error {
 	if c.Profile.Home, err = abs(base, c.Profile.Home); err != nil {
 		return err
 	}
+	if c.ProjectBrief.Home, err = abs(base, c.ProjectBrief.Home); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -416,7 +419,7 @@ func abs(base, path string) (string, error) {
 
 // EnsureDirs creates the directories the application owns.
 func (c *Config) EnsureDirs() error {
-	for _, dir := range []string{c.Repos.CloneDir, c.Store.Dir, c.Explore.Home, c.Profile.Home} {
+	for _, dir := range []string{c.Repos.CloneDir, c.Store.Dir, c.Explore.Home, c.Profile.Home, c.ProjectBrief.Home} {
 		if err := os.MkdirAll(dir, 0o755); err != nil {
 			return fmt.Errorf("config: create %s: %w", dir, err)
 		}

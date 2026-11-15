@@ -28,6 +28,9 @@ type Source struct {
 	Root string
 	// Git resolves the commit the clone is checked out at. Nil uses git from PATH.
 	Git *repo.Cloner
+	// Force asks for a new portrait instead of the stored one. It is how a caller reacts to a tree
+	// that changed without a new commit.
+	Force bool
 }
 
 // Source is a BriefSource, checked here so the seam cannot drift unnoticed.
@@ -57,7 +60,7 @@ func (s Source) Portrait(ctx context.Context, repository string) (*Result, error
 	if err != nil {
 		return nil, fmt.Errorf("projectbrief: portrait of %s: %w: clone it first", repository, err)
 	}
-	return s.Extractor.Extract(ctx, Input{Repository: key, CommitSHA: commit, Dir: dir})
+	return s.Extractor.Extract(ctx, Input{Repository: key, CommitSHA: commit, Dir: dir, Force: s.Force})
 }
 
 // Brief renders the portrait for one repository, which is what the alignment node consumes.

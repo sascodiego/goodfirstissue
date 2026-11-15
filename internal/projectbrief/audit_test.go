@@ -32,7 +32,9 @@ func TestExtractAuditsEveryCitationAgainstTheClone(t *testing.T) {
 		t.Fatalf("unsupported = %+v, want the two fabricated citations", res.Unsupported)
 	}
 	for _, item := range res.Unsupported {
-		if item.Evidence.Path != "docs/missing.md" && !(item.Evidence.Path == "Makefile" && item.Evidence.Line == 999) {
+		missing := item.Evidence.Path == "docs/missing.md"
+		pastTheEnd := item.Evidence.Path == "Makefile" && item.Evidence.Line == 999
+		if !missing && !pastTheEnd {
 			t.Errorf("unexpected unsupported claim %+v", item)
 		}
 	}

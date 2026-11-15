@@ -173,7 +173,7 @@ func TestEnsureDirsCreatesTheOwnedDirectories(t *testing.T) {
 	if err := cfg.EnsureDirs(); err != nil {
 		t.Fatalf("EnsureDirs() error = %v", err)
 	}
-	for _, dir := range []string{cfg.Repos.CloneDir, cfg.Store.Dir, cfg.Explore.Home, cfg.Profile.Home} {
+	for _, dir := range []string{cfg.Repos.CloneDir, cfg.Store.Dir, cfg.Explore.Home, cfg.Profile.Home, cfg.ProjectBrief.Home} {
 		if info, err := os.Stat(dir); err != nil || !info.IsDir() {
 			t.Errorf("%s was not created", dir)
 		}

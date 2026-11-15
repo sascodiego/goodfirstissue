@@ -54,6 +54,10 @@ type Input struct {
 	Repository string
 	CommitSHA  string
 	Dir        string
+	// Force ignores a stored portrait and runs again. It is what a caller asks for when the tree
+	// changed without moving the commit: the question is the same and the answer is not. The
+	// fresh answer replaces the stored one, so the next reader is not served the older portrait.
+	Force bool
 }
 
 // validate refuses an input that cannot produce a pinned portrait.
@@ -213,12 +217,15 @@ func (e *Extractor) Extract(ctx context.Context, in Input) (*Result, error) {
 
 	// One run per repository, not per issue (S7): the same tree, the same model and the same
 	// reading rules are the same question, so the answer is reused instead of paid for twice.
+	// A forced run asks again on purpose: the pin cannot see a tree edited without a new commit.
 	key := cacheKey(in.Repository, in.CommitSHA, e.model, Version())
-	if entry, ok := e.lookup(key, in.CommitSHA); ok {
-		// A stored answer is read under the rules of the moment: an entry another reader wrote
-		// costs a run, never an error.
-		if doc, err := Parse(entry.Text); err == nil {
-			return e.result(doc, in, time.Duration(entry.TookMs)*time.Millisecond, true), nil
+	if !in.Force {
+		if entry, ok := e.lookup(key, in.CommitSHA); ok {
+			// A stored answer is read under the rules of the moment: an entry another reader
+			// wrote costs a run, never an error.
+			if doc, err := Parse(entry.Text); err == nil {
+				return e.result(doc, in, time.Duration(entry.TookMs)*time.Millisecond, true), nil
+			}
 		}
 	}
 

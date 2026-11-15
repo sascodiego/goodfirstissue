@@ -3,6 +3,7 @@ package triage
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/sascodiego/nan-hackathon-clef/internal/nan"
@@ -20,11 +21,15 @@ const (
 
 // fakeJudge is the whole transport, replaced by a recorded answer.
 type fakeJudge struct {
-	answers   map[string]nan.Answer
+	answers map[string]nan.Answer
+	// alignment answers the node's questions, when the state is the alignment dossier.
+	alignment map[string]nan.Answer
 	err       error
-	calls     int
-	states    []string
-	questions []map[string]nan.Question
+	// failAlignment fails only the node's request, which is the smaller failure.
+	failAlignment bool
+	calls         int
+	states        []string
+	questions     []map[string]nan.Question
 }
 
 func (f *fakeJudge) Ask(_ context.Context, state string, questions map[string]nan.Question) (map[string]nan.Answer, error) {
@@ -33,6 +38,12 @@ func (f *fakeJudge) Ask(_ context.Context, state string, questions map[string]na
 	f.questions = append(f.questions, questions)
 	if f.err != nil {
 		return nil, f.err
+	}
+	if strings.Contains(state, "PROJECT DIRECTION") {
+		if f.failAlignment {
+			return nil, errors.New("the alignment request failed")
+		}
+		return f.alignment, nil
 	}
 	return f.answers, nil
 }
@@ -265,4 +276,278 @@ func newTestStore(t *testing.T) *store.Store {
 		t.Fatalf("store.New: %v", err)
 	}
 	return st
+}
+
+// fakeBrief is the project's direction, recorded instead of read.
+type fakeBrief struct {
+	body  string
+	err   error
+	calls int
+	repos []string
+}
+
+func (f *fakeBrief) Brief(_ context.Context, repository string) (string, error) {
+	f.calls++
+	f.repos = append(f.repos, repository)
+	if f.err != nil {
+		return "", f.err
+	}
+	return f.body, nil
+}
+
+// fakeSecondRound is the deferred round, installed to prove the seam.
+type fakeSecondRound struct {
+	result Result
+	ok     bool
+	err    error
+	calls  int
+}
+
+func (f *fakeSecondRound) Resolve(_ context.Context, _ Issue, _ Analysis) (Result, bool, error) {
+	f.calls++
+	return f.result, f.ok, f.err
+}
+
+func aFeatureIssue() Issue {
+	issue := aBug()
+	issue.Title = "Add a --json flag to every command"
+	issue.Body = "It would help scripts if every command could print JSON."
+	return issue
+}
+
+func featureAnswers() map[string]nan.Answer {
+	answers := wellFormed()
+	answers[QKind] = choice(KindFeature, 0.9)
+	return answers
+}
+
+func newP1With(t *testing.T, opts Options) *P1 {
+	t.Helper()
+	if opts.Model == "" {
+		opts.Model = testModel
+	}
+	if opts.CommitSHA == "" {
+		opts.CommitSHA = testCommit
+	}
+	p1, err := New(opts)
+	if err != nil {
+		t.Fatalf("New: %v", err)
+	}
+	return p1
+}
+
+// A bug is a deviation from what the project already wants, so there is nothing to ask the
+// project's direction. Spending a request on it would be spending one for nothing.
+func TestABugNeverAsksTheAlignmentNode(t *testing.T) {
+	brief := &fakeBrief{body: "the project's direction"}
+	judge := &fakeJudge{answers: wellFormed()}
+
+	if _, err := newP1With(t, Options{Judge: judge, Brief: brief}).Run(context.Background(), aBug()); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if brief.calls != 0 {
+		t.Fatalf("the brief was read %d times for a bug", brief.calls)
+	}
+	if judge.calls != 1 {
+		t.Fatalf("requests = %d, want 1", judge.calls)
+	}
+}
+
+// The only branch a feature takes: a second request, over the alignment dossier, with the two
+// frozen questions and the project's own direction inside the state.
+func TestAFeatureAsksTheNodeWithTheProjectDirection(t *testing.T) {
+	brief := &fakeBrief{body: "the project is moving toward scriptable output"}
+	judge := &fakeJudge{
+		answers:   featureAnswers(),
+		alignment: map[string]nan.Answer{QOnlyForRequester: noul(0.1), QFitsDirection: noul(0.9)},
+	}
+
+	got, err := newP1With(t, Options{Judge: judge, Brief: brief}).Run(context.Background(), aFeatureIssue())
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if judge.calls != 2 {
+		t.Fatalf("requests = %d, want 2: the substance request and the node's", judge.calls)
+	}
+	if want := AlignmentDossier(aFeatureIssue(), brief.body); judge.states[1] != want {
+		t.Fatalf("the node's state is not the alignment dossier:\n%s", judge.states[1])
+	}
+	if !strings.Contains(judge.states[1], brief.body) {
+		t.Fatal("the project's direction did not reach the node")
+	}
+	if got, want := len(judge.questions[1]), len(AlignmentQuestions()); got != want {
+		t.Fatalf("the node asked %d questions, want %d", got, want)
+	}
+	if got.Outcome != Candidate {
+		t.Fatalf("outcome = %q (%s), want %q", got.Outcome, got.Reason, Candidate)
+	}
+	if len(got.Alignment) == 0 {
+		t.Fatal("the analysis did not keep the node's answers")
+	}
+}
+
+// Without a source for the direction the node cannot be asked, and the verdict says so instead of
+// pretending the project has no position.
+func TestAFeatureWithoutABriefSaysTheNodeWasUnavailable(t *testing.T) {
+	judge := &fakeJudge{answers: featureAnswers()}
+
+	got, err := newP1With(t, Options{Judge: judge}).Run(context.Background(), aFeatureIssue())
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if judge.calls != 1 {
+		t.Fatalf("requests = %d, want 1: the node cannot be asked", judge.calls)
+	}
+	if got.Outcome != Conditional || got.Reason != ReasonAlignmentUnavailable {
+		t.Fatalf("outcome = %q (%s), want %q (%s)", got.Outcome, got.Reason, Conditional, ReasonAlignmentUnavailable)
+	}
+}
+
+// A brief that cannot be read degrades the reading; it does not throw the verdict away. The
+// degradation is reported, because a silent one is a silent lie about how well we read.
+func TestABriefThatCannotBeReadDegradesTheVerdict(t *testing.T) {
+	brief := &fakeBrief{err: errors.New("no clone")}
+	judge := &fakeJudge{answers: featureAnswers()}
+
+	got, err := newP1With(t, Options{Judge: judge, Brief: brief}).Run(context.Background(), aFeatureIssue())
+	if err == nil {
+		t.Fatal("a degraded reading must be reported")
+	}
+	if got.Outcome != Conditional || got.Reason != ReasonAlignmentUnavailable {
+		t.Fatalf("outcome = %q (%s), want %q (%s)", got.Outcome, got.Reason, Conditional, ReasonAlignmentUnavailable)
+	}
+}
+
+func TestAnAlignmentRequestThatFailsDegradesTheVerdict(t *testing.T) {
+	judge := &fakeJudge{answers: featureAnswers(), failAlignment: true}
+
+	got, err := newP1With(t, Options{Judge: judge, Brief: &fakeBrief{body: "direction"}}).Run(context.Background(), aFeatureIssue())
+	if err == nil {
+		t.Fatal("a failed node request must be reported")
+	}
+	if got.Outcome != Conditional || got.Reason != ReasonAlignmentUnavailable {
+		t.Fatalf("outcome = %q (%s), want %q (%s)", got.Outcome, got.Reason, Conditional, ReasonAlignmentUnavailable)
+	}
+}
+
+// The seam, uninstalled: a question is DERIVADA and nothing else happens. This is the state the
+// product ships in.
+func TestAQuestionStaysDerivedWithoutTheSecondRound(t *testing.T) {
+	answers := wellFormed()
+	answers[QKind] = choice(KindQuestion, 0.9)
+	judge := &fakeJudge{answers: answers}
+
+	got, err := newP1With(t, Options{Judge: judge}).Run(context.Background(), aBug())
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if got.Outcome != Derived {
+		t.Fatalf("outcome = %q (%s), want %q", got.Outcome, got.Reason, Derived)
+	}
+}
+
+// The seam, installed: installing the round later is one type and one field, and this test is what
+// makes that claim true instead of aspirational.
+func TestTheSecondRoundCanSettleAQuestion(t *testing.T) {
+	answers := wellFormed()
+	answers[QKind] = choice(KindQuestion, 0.9)
+	judge := &fakeJudge{answers: answers}
+	round := &fakeSecondRound{result: Result{Outcome: Candidate, Probability: 0.8}, ok: true}
+
+	got, err := newP1With(t, Options{Judge: judge, SecondRound: round}).Run(context.Background(), aBug())
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if round.calls != 1 {
+		t.Fatalf("the round ran %d times, want 1", round.calls)
+	}
+	if got.Outcome != Candidate {
+		t.Fatalf("outcome = %q, want the round's %q", got.Outcome, Candidate)
+	}
+	if judge.calls != 1 {
+		t.Fatalf("the first round asked %d times, want 1", judge.calls)
+	}
+}
+
+// A round that cannot settle the issue leaves the first verdict alone: DERIVADA is a valid
+// outcome, not a pending state that a missing answer can erase.
+func TestASecondRoundThatCannotSettleLeavesTheFirstVerdict(t *testing.T) {
+	answers := wellFormed()
+	answers[QKind] = choice(KindQuestion, 0.9)
+
+	got, err := newP1With(t, Options{Judge: &fakeJudge{answers: answers}, SecondRound: &fakeSecondRound{ok: false}}).Run(context.Background(), aBug())
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if got.Outcome != Derived {
+		t.Fatalf("outcome = %q, want %q", got.Outcome, Derived)
+	}
+}
+
+func TestASecondRoundThatFailsDoesNotLoseTheVerdict(t *testing.T) {
+	answers := wellFormed()
+	answers[QKind] = choice(KindQuestion, 0.9)
+	round := &fakeSecondRound{err: errors.New("round failed")}
+
+	got, err := newP1With(t, Options{Judge: &fakeJudge{answers: answers}, SecondRound: round}).Run(context.Background(), aBug())
+	if err == nil {
+		t.Fatal("a failed round must be reported")
+	}
+	if got.Outcome != Derived {
+		t.Fatalf("outcome = %q, want %q", got.Outcome, Derived)
+	}
+}
+
+// The round runs only for what it is for. A bug must not reach it, and neither must a pre-gated
+// issue: both are already settled.
+func TestTheSecondRoundRunsOnlyForADerivedQuestion(t *testing.T) {
+	round := &fakeSecondRound{result: Result{Outcome: Candidate}, ok: true}
+
+	if _, err := newP1With(t, Options{Judge: &fakeJudge{answers: wellFormed()}, SecondRound: round}).Run(context.Background(), aBug()); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	issue := aBug()
+	issue.GitHubState, issue.GitHubStateReason = "CLOSED", "COMPLETED"
+	if _, err := newP1With(t, Options{Judge: &fakeJudge{answers: wellFormed()}, SecondRound: round}).Run(context.Background(), issue); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if round.calls != 0 {
+		t.Fatalf("the round ran %d times for issues it cannot settle", round.calls)
+	}
+}
+
+// A cached verdict keeps the node's answers: the interface shows the same evidence a fresh run
+// showed, and a reuse that dropped it would silently lose the reason for the verdict.
+func TestTheCachedVerdictKeepsTheNodeEvidence(t *testing.T) {
+	journal, err := newTestStore(t).Decisions("spf13/cobra")
+	if err != nil {
+		t.Fatalf("Decisions: %v", err)
+	}
+	opts := func() Options {
+		return Options{
+			Judge: &fakeJudge{
+				answers:   featureAnswers(),
+				alignment: map[string]nan.Answer{QOnlyForRequester: noul(0.1), QFitsDirection: noul(0.9)},
+			},
+			Brief:   &fakeBrief{body: "direction"},
+			Journal: journal,
+		}
+	}
+
+	if _, err := newP1With(t, opts()).Run(context.Background(), aFeatureIssue()); err != nil {
+		t.Fatalf("first run: %v", err)
+	}
+
+	second := opts()
+	second.Judge = &fakeJudge{err: errors.New("the judge must not be called again")}
+	got, err := newP1With(t, second).Run(context.Background(), aFeatureIssue())
+	if err != nil {
+		t.Fatalf("second run: %v", err)
+	}
+	if !got.Cached {
+		t.Fatal("the verdict was not reused")
+	}
+	if _, ok := got.Alignment[QFitsDirection]; !ok {
+		t.Fatal("the cached verdict lost the node's answers")
+	}
 }

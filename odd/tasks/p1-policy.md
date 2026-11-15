@@ -43,10 +43,10 @@ inventar un motivo propio.
 
 | ID | Tarea | Specs | Ruta | Commit |
 |---|---|---|---|---|
-| T1 | Preguntas congeladas en producción, `Version()` y guarda contra `prompt.md` | S1, S2 | inline | — |
-| T2 | Pre-compuertas, tabla de decisión y desenlaces, con un test por fila | S3, S4, S5, S9 | inline | — |
-| T3 | Pipeline: caché del journal, cliente inyectable, I2 | S7, S8 | inline | — |
-| T4 | Recablear el banco al código de producción y borrar sus copias | S1, S2 | inline | — |
+| T1 | Preguntas congeladas en producción, `Version()` y guarda contra `prompt.md` | S1, S2 | inline | `271324e` |
+| T2 | Pre-compuertas, tabla de decisión y desenlaces, con un test por fila | S3, S4, S5, S9 | inline | `2fcbf4d` |
+| T3 | Pipeline: caché del journal, cliente inyectable, I2 | S7, S8 | inline | `4f669cd` |
+| T4 | Recablear el banco al código de producción y borrar sus copias | S1, S2 | worker | — |
 | T5 | `PROYECTO.md` §7.2–§7.7 y notas de `criteria.md`/`LIMITES.md` | S6 | inline | — |
 
 Riesgo: **ítem 3** — `PROYECTO.md` y las etiquetas del banco son contrato que otros leen — e

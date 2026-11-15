@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -58,6 +59,28 @@ func (c *Cloner) Head(ctx context.Context, dir string) (string, error) {
 		return "", fmt.Errorf("repo: git rev-parse returned nothing in %s", dir)
 	}
 	return sha, nil
+}
+
+// RecentSubjects returns the subject line of the last n commits, newest first.
+//
+// It is what reads where a project is actually going, as opposed to what it says it is: the
+// alignment node weighs the two against each other, and the revealed direction is the one that
+// catches a feature the project has been dismantling for months (PROYECTO.md §7.5).
+func (c *Cloner) RecentSubjects(ctx context.Context, dir string, n int) ([]string, error) {
+	if n <= 0 {
+		return nil, fmt.Errorf("repo: a commit count is required, got %d", n)
+	}
+	out, err := c.run(ctx, dir, "log", "--no-decorate", "--oneline", "-"+strconv.Itoa(n))
+	if err != nil {
+		return nil, err
+	}
+	var subjects []string
+	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
+		if line = strings.TrimSpace(line); line != "" {
+			subjects = append(subjects, line)
+		}
+	}
+	return subjects, nil
 }
 
 // IsRepo reports whether dir already holds a Git repository. A worktree records .git as

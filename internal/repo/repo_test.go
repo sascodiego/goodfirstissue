@@ -105,3 +105,43 @@ func TestHeadRejectsEmptyOutput(t *testing.T) {
 		t.Fatal("want an error when git reports no commit")
 	}
 }
+
+// RecentSubjects is what the alignment node reads to see where a project is actually going. It
+// has to return subjects, not hashes with noise: a blank line in the middle must not become an
+// empty commit in the brief.
+func TestRecentSubjectsReadsTheSubjects(t *testing.T) {
+	c := &Cloner{Run: func(_ context.Context, dir string, args ...string) ([]byte, error) {
+		if dir != "/clone" {
+			t.Errorf("git ran in %q, want /clone", dir)
+		}
+		want := "log --no-decorate --oneline -20"
+		if got := strings.Join(args, " "); got != want {
+			t.Errorf("git %q, want %q", got, want)
+		}
+		return []byte("abc1234 fix the parser\n\ndef5678 add a flag\n\n"), nil
+	}}
+
+	got, err := c.RecentSubjects(context.Background(), "/clone", 20)
+	if err != nil {
+		t.Fatalf("RecentSubjects: %v", err)
+	}
+	want := []string{"abc1234 fix the parser", "def5678 add a flag"}
+	if strings.Join(got, "|") != strings.Join(want, "|") {
+		t.Fatalf("subjects = %v, want %v", got, want)
+	}
+}
+
+func TestRecentSubjectsRejectsAnEmptyCount(t *testing.T) {
+	if _, err := (&Cloner{}).RecentSubjects(context.Background(), "/clone", 0); err == nil {
+		t.Fatal("a commit count of zero was accepted: the brief would ask git for nothing")
+	}
+}
+
+func TestRecentSubjectsReportsAGitFailure(t *testing.T) {
+	c := &Cloner{Run: func(context.Context, string, ...string) ([]byte, error) {
+		return nil, errors.New("not a repository")
+	}}
+	if _, err := c.RecentSubjects(context.Background(), "/clone", 20); err == nil {
+		t.Fatal("a failed git call was reported as a success")
+	}
+}

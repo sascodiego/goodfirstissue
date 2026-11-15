@@ -1,8 +1,14 @@
 package pig
 
 import (
+	"context"
+	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 )
 
 func argValue(args []string, flag string) (string, bool) {
@@ -134,4 +140,50 @@ func contains(list []string, want string) bool {
 		}
 	}
 	return false
+}
+
+// S10: idle is measured as silence of the pipe, and the caller can see it live. The
+// one-shot warning is not enough for a screen that has to say "waiting for the model, 12s".
+func TestRunReportsTheCurrentSilenceOnEveryTick(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("the fake agent is a shell script")
+	}
+	dir := t.TempDir()
+	bin := filepath.Join(dir, "fake-pig")
+	if err := os.WriteFile(bin, []byte("#!/bin/sh\nsleep 1\n"), 0o755); err != nil {
+		t.Fatalf("fake agent: %v", err)
+	}
+
+	var mu sync.Mutex
+	var seen []time.Duration
+	out, err := Run(context.Background(), Request{
+		Binary:   bin,
+		Dir:      dir,
+		Model:    "deepseek-v4-flash",
+		Home:     dir,
+		Prompt:   "explore",
+		IdleWarn: 100 * time.Millisecond,
+		IdleKill: 10 * time.Second,
+		Budget:   20 * time.Second,
+		OnProgress: func(silence time.Duration) {
+			mu.Lock()
+			seen = append(seen, silence)
+			mu.Unlock()
+		},
+	})
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	if out.Stalled {
+		t.Fatal("a child that finishes within the limits was reported as stalled")
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(seen) < 2 {
+		t.Fatalf("OnProgress fired %d times for a silent child", len(seen))
+	}
+	if seen[len(seen)-1] <= seen[0] {
+		t.Fatalf("the reported silence did not grow: %v", seen)
+	}
 }

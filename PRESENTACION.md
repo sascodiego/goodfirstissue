@@ -5,6 +5,27 @@
 
 ---
 
+## 0 · Qué corre por atrás
+
+El producto es **un binario Go estático** (~10 MB, sin módulos de terceros), pero no hace todo
+solo: orquesta cuatro herramientas externas y un modelo. Conviene tenerlo claro, porque la
+diferencia entre «esto lo decidió un programa» y «esto lo decidió un modelo» es el proyecto.
+
+| pieza | qué hace | dónde se usa |
+|---|---|---|
+| **`gh`** (GitHub CLI 2.46) | trae las issues abiertas: cuerpo, estado nativo, etiquetas, comentarios, PRs vinculadas | `gfi fetch` |
+| **`git`** | clona el repositorio en el commit exacto del snapshot | `gfi index`, explore |
+| **`codegraph`** | construye el índice del código y sirve el grafo por MCP con `path:line` | `gfi index`, explore |
+| **`pig`** (PiG) | runtime del agente de lectura; habla el endpoint compatible con OpenAI de NaN con los modelos *flash* | explore, extracción del CV |
+| **Clef** (HTTP) | **las decisiones** | triage, alineación, encaje |
+| el propio binario | el botón del encaje reejecuta `gfi fit`: un proceso, no una copia de la lógica | botón *Encajar candidatas* |
+
+Go solo pone el pegamento: `exec.CommandContext` con timeout, salida acotada y un binario que
+se verifica en el preflight. **Ninguna de esas piezas decide nada**: traen datos, clonan, indexan
+o leen. El veredicto sale de un solo lugar, y por eso se puede auditar.
+
+---
+
 ## 1 · Qué es y para qué se usa
 
 **GoodFirstIssue decide si una persona concreta puede resolver una issue concreta de un
@@ -33,7 +54,81 @@ un veredicto inventado sobre una issue que nadie leyó es peor que una abstenci�
 
 ---
 
-## 2 · Dónde y cómo se usa Clef
+## 2 · Por qué Clef, y por qué sin Clef no habría producto
+
+### Los atajos deterministas se midieron, y fallaron
+
+Antes de escribir un prompt, el proyecto intentó resolver esto sin un modelo de decisión. Cada
+intento tiene su medición en `BENCHMARKS.md`:
+
+| atajo | resultado |
+|---|---|
+| un árbol de reglas derivado del texto | el hecho «¿pide algo que hoy no existe?» daba **0,83–0,94 en las dos issues gemelas**, la que se acepta y la que se rechaza: no distingue |
+| leer la intención del proyecto desde el texto | **7 de 188 (3,7 %)** |
+| confiar en la etiqueta de dificultad | en `cobra`, **4 de 4** issues etiquetadas ya tenían una PR abierta |
+| aprobar por el cierre «completada» | solo **58 de 350 (17 %)** tienen una PR que lo respalde |
+
+Lo único que sí es determinista son las **pre-compuertas**: estado nativo, PR abierta, cuerpo
+vacío. Resuelven **66 de 150** issues de `cobra` sin gastar una petición. Ese es el techo del
+programa sin modelo, y está explotado hasta el fondo.
+
+### Lo que se le pide al modelo no es una frase: es una distribución
+
+La cadena ramifica sobre **números** —0,5 para la evidencia, 0,60 para la alineación, 0,70 y
+0,50 para el encaje— y el encaje necesita además **cinco probabilidades a la vez** para poder
+decir «no alcanza» sin mentir. Para #2301:
+
+```
+ready 0,543   ready_with_support 0,247   needs_experience 0,083   …
+```
+
+`ready` ganó, pero **0,543 < 0,70**: el producto devuelve `sin veredicto`. Con una etiqueta sola
+—«ready»— ese caso sería indistinguible de #1373, que salió recomendada con 0,775. **La
+abstención es una capacidad del formato, no una cortesía.**
+
+### El contrato congelado y el pin
+
+Las preguntas viajan **textuales, en una sola petición**, y hay una única copia en el programa:
+el banco de pruebas pregunta lo mismo que el producto, porque no existen dos versiones que puedan
+divergir. El veredicto queda pinneado a:
+
+```
+prompt  = contrato + hash del perfil + hash de la evidencia del explore
+modelo  = clef
+commit  = el del clon
+```
+
+Eso es lo que permite dos cosas que un chatbot no puede: que **dos perfiles convivan** sin pisarse
+(cambia la clave, no el juicio) y que un veredicto viejo **nunca se presente como fresco**.
+
+### El agente de lectura no puede reemplazarlo
+
+P2 lee código y devuelve citas; no emite juicios. Y usa un modelo *flash*, no Clef, justamente
+porque **leer no es decidir**: si el agente decidiera, el veredicto dependería de qué archivos se
+le ocurrió abrir. La separación es deliberada — un solo modelo juzga, el otro aporta pruebas.
+
+### Sin Clef, qué queda
+
+Sigue compilando, y eso es lo incómodo. Queda: las pre-compuertas (~44 % de las issues
+resueltas sin modelo), el filtro por texto, el clon, el grafo de código y una pantalla ordenada.
+O sea, **un buscador con estado**.
+
+La afirmación del producto —«esta persona concreta puede resolver esta issue concreta»— no tiene
+implementación determinista: exige enfrentar un CV escrito en prosa contra una issue escrita en
+prosa, y sostener el resultado con un número. Se puede quitar Clef; lo que desaparece es el
+producto.
+
+### Por qué Clef y no otro modelo
+
+Porque es una **regla constitucional** (I13), no una preferencia: la lista de modelos permitidos
+es una constante en el código, el proceso **no arranca** si un id está fuera de ella, y la
+decisión usa siempre `clef` sin posibilidad de configurarla. Los modelos *flash* quedan para
+leer y extraer. Además, una petición en vuelo por clave, con cola real: el costo se mide y se
+declara en vez de esconderse.
+
+---
+
+## 3 · Dónde y cómo se usa Clef
 
 ### La gráfica
 
@@ -203,7 +298,7 @@ y una comparación o se puede sostener o no se puede. Partirla en «¿sabe Go?»
 
 ---
 
-## 3 · Benchmarks
+## 4 · Benchmarks
 
 Corpus en `internal/triage/testdata/bench/`: **291 casos**, cada uno con dos issues gemelas
 —una redacción que un mantenedor aceptaría y otra que rechazaría—. Composición: 188 issues que
@@ -239,7 +334,7 @@ y una pregunta ya contestada no se vuelve a pagar.
 
 ---
 
-## 4 · Secuencia de comandos
+## 5 · Secuencia de comandos
 
 > **Aclaración para el video:** la ingesta va por consola por una razón de tiempo —la pantalla
 > cubre analizar una candidata y decidir el encaje, que es donde está la decisión—. Los datos,
@@ -296,7 +391,7 @@ se encaja primero, el verbo lo dice: `skipped … no stored exploration`.
 
 ---
 
-## 5 · Un encaje real, de punta a punta
+## 6 · Un encaje real, de punta a punta
 
 Issue **#1373** de `spf13/cobra`, perfil aprobado, corpus pinneado en `adbc8813901b`.
 

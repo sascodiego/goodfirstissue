@@ -360,6 +360,27 @@ main {
   color: var(--state-taken);
 }
 
+/* Leyenda del encaje: los cuatro estados y el orden de la tabla. Sin esto el chip es una
+   palabra más; con esto se lee qué significa cada color y por qué la primera fila es la primera. */
+.fit-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0.85rem 0 0.4rem;
+  font: 11.5px/1.5 var(--sans);
+  color: var(--fg-3);
+}
+
+.legend-note {
+  margin-left: auto;
+  font: 11px var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
 /* ---------- embudo del triaje ---------- */
 
 /* El embudo es la cifra de la pantalla: no cuánto tiene el corpus, sino qué decidió el triaje
@@ -712,6 +733,49 @@ tbody tr:last-child td {
 .st.undecided {
   color: var(--state-taken);
 }
+/* Estado del encaje en la fila. Tres palabras: sin encajar, no encaja, encaja. El verde es el
+   único que autoriza, así que es el único que se resalta. */
+.c-fit {
+  white-space: nowrap;
+}
+
+.fc {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font: 11px var(--mono);
+}
+
+.fc::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.fc.fit-none {
+  color: var(--fg-3);
+}
+
+.fc.fit-hold {
+  color: var(--state-pending);
+}
+
+.fc.fit-no {
+  color: var(--state-taken);
+}
+
+.fc.fit-yes {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.c-fit .fc.fit-yes {
+  border-bottom: 1px solid currentColor;
+}
+
 
 .c-pr,
 .c-date,
@@ -863,6 +927,21 @@ tbody tr:last-child td {
 }
 
 .verdict-strip.candidate .vs-word {
+  color: var(--accent);
+}
+
+
+/* El encaje tiene sus tres estados en la misma banda que el triaje: si el encaje todavía no
+   existe, la banda lo dice con la misma forma y en gris, en vez de dejar un hueco. */
+.verdict-strip.fit-none {
+  border-left-color: var(--fg-3);
+}
+
+.verdict-strip.fit-none .vs-word {
+  color: var(--fg-3);
+}
+
+.verdict-strip .vs-word.fit-yes {
   color: var(--accent);
 }
 

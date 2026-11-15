@@ -11,6 +11,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -327,4 +329,102 @@ func gapsOf(lists ...[]string) []string {
 		}
 	}
 	return out
+}
+
+// attachFitStates puts the fit state on every row of the corpus: no fit, does not fit, fits.
+//
+// Three words and not five because a table is read at a glance; the exact level, its
+// probability and the reason stay in the issue block, one click away. A withheld judgement —
+// the answer won or lost below its own cut — is not a "does not fit": it is shown as no fit
+// yet, and the title says which of the two it is, because collapsing them into "does not fit"
+// would invent a verdict the product refused to give.
+func (h *Handler) attachFitStates(page *pageData) {
+	if h.store == nil || page.Active.Key == "" || page.Active.CommitSHA == "" {
+		return
+	}
+
+	journal, err := h.store.Decisions(page.Active.Key)
+	if err != nil {
+		slog.Error("leer el journal para el estado del encaje", "key", page.Active.Key, "err", err)
+		return
+	}
+
+	document, ok, err := profile.Load(h.store)
+	if err != nil {
+		slog.Error("leer el perfil para el estado del encaje", "err", err)
+		return
+	}
+	if !ok {
+		// Sin perfil aprobado no hay comparación posible: todas quedan sin encajar, y el
+		// bloque de la issue dice cómo producir uno.
+		return
+	}
+
+	exploration := h.fitExploration()
+	for i := range page.Rows {
+		analysis, _, found := fit.Recall(journal, page.Rows[i].Number, config.DecisionModel,
+			page.Active.CommitSHA, document, exploration)
+		if !found {
+			page.Rows[i].FitNote = "no hay encaje guardado de esta issue con este perfil y este commit"
+			continue
+		}
+		page.Rows[i].HasFit = true
+		page.Rows[i].FitP = analysis.Probability
+		switch analysis.Level {
+		case fit.LevelRecommended, fit.LevelRecommendedWithSupport:
+			page.Rows[i].FitText = "Encaja"
+			page.Rows[i].FitClass = "fit-yes"
+			page.Rows[i].FitNote = fitLevelText(analysis.Level)
+		case fit.LevelNeedsPreparation, fit.LevelNeedsExperience:
+			page.Rows[i].FitText = "No encaja " + fitChipP(analysis.Probability)
+			page.Rows[i].FitClass = "fit-no"
+			page.Rows[i].FitNote = fitLevelText(analysis.Level)
+		default:
+			// Hay veredicto guardado y no concluye: el juicio se retuvo, o el perfil no
+			// describe lo que la issue pide. Decir «sin encajar» acá lo volvería
+			// indistinguible de una issue que nadie encajó todavía, que es justo lo que el
+			// chip tiene que separar. Y el número va en el chip: sin él, diez abstenciones
+			// distintas se leen como diez filas iguales.
+			page.Rows[i].FitText = "Sin veredicto " + fitChipP(analysis.Probability)
+			page.Rows[i].FitClass = "fit-hold"
+			page.Rows[i].FitNote = fitLevelText(analysis.Level) + " — " + whyFitHeld(analysis.Result)
+		}
+	}
+}
+
+// whyFitHeld explica en una frase por qué hay encaje guardado y aun así no hay veredicto. Son
+// dos causas distintas y el chip las muestra igual: la frase es lo único que las separa.
+func whyFitHeld(result fit.Result) string {
+	switch {
+	case result.Level == fit.LevelInsufficientInformation:
+		return "el perfil no describe lo que esta issue pide, así que no hay contra qué comparar"
+	case result.Reason == fit.ReasonLowConfidence:
+		return "el juicio no llegó a su umbral y no se redondea"
+	case result.Reason == fit.ReasonEndpointFailed:
+		return "Clef no respondió; una request caída no es un juicio"
+	default:
+		return "no hay veredicto que mostrar"
+	}
+}
+
+// fitChipP is the probability as the chip says it: two decimals and a comma, because the rest
+// of the interface speaks Spanish.
+func fitChipP(p float64) string {
+	return strings.Replace(strconv.FormatFloat(p, 'f', 2, 64), ".", ",", 1)
+}
+
+// sortByFit ordena el corpus por cercanía al sí: primero lo que tiene encaje, de mayor a menor
+// probabilidad; después lo que todavía no se encajó. El orden del snapshot dice qué es nuevo,
+// que no es la pregunta de esta pantalla — la pregunta es por dónde empezar.
+func sortByFit(rows []rowView) []rowView {
+	sort.SliceStable(rows, func(i, j int) bool {
+		if rows[i].HasFit != rows[j].HasFit {
+			return rows[i].HasFit
+		}
+		if rows[i].FitP != rows[j].FitP {
+			return rows[i].FitP > rows[j].FitP
+		}
+		return rows[i].Number > rows[j].Number
+	})
+	return rows
 }

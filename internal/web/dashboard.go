@@ -105,13 +105,25 @@ type statsView struct {
 }
 
 type rowView struct {
-	Number     int
-	Title      string
-	URL        string
-	Labels     []labelView
-	HasLabel   bool
-	State      string
-	StateText  string
+	Number    int
+	Title     string
+	URL       string
+	Labels    []labelView
+	HasLabel  bool
+	State     string
+	StateText string
+	// FitText y FitClass son el estado del encaje en la fila: sin encajar, no encaja, o
+	// encaja. Tres estados porque son los tres que se pueden afirmar de un vistazo; el
+	// bloque de la issue dice cuál de los cinco niveles fue.
+	FitText  string
+	FitClass string
+	// FitNote dice en el title lo que la palabra no puede: si no hay encaje guardado o si el
+	// juicio se retuvo. Tres chips son legibles; cuatro no.
+	FitNote string
+	// FitP y HasFit permiten ordenar por compatibilidad: primero lo encajado, de mayor a menor.
+	// Sin esto la tabla queda en el orden del snapshot y lo que más se acerca queda enterrado.
+	FitP       float64
+	HasFit     bool
 	PR         int
 	HasPR      bool
 	Updated    string
@@ -148,6 +160,8 @@ func (h *Handler) dashboard(w http.ResponseWriter, r *http.Request) {
 	// El boton del encaje solo se dibuja si este binario puede correrlo.
 	data.CanFit = h.fit != nil
 	data.CanIndex = h.index != nil
+	h.attachFitStates(&data)
+	data.Rows = sortByFit(data.Rows)
 	h.render(w, screenDashboard, data)
 }
 
@@ -190,14 +204,15 @@ func buildPageWith(st *store.Store, q url.Values, jobs *queue) (pageData, error)
 			return data, err
 		}
 		data.Repos = append(data.Repos, repoView{
-			Name:     e.Name,
-			Key:      e.Key,
-			Open:     e.TotalOpen,
-			Stored:   e.Issues,
-			Free:     countFree(snap),
-			Analyses: analysesOf(st, e.Key),
-			Active:   e.Key == active.Key,
-			Href:     filter{}.url(e.Key),
+			Name:      e.Name,
+			Key:       e.Key,
+			Open:      e.TotalOpen,
+			Stored:    e.Issues,
+			Free:      countFree(snap),
+			Analyses:  analysesOf(st, e.Key),
+			Active:    e.Key == active.Key,
+			CommitSHA: e.CommitSHA,
+			Href:      filter{}.url(e.Key),
 		})
 	}
 
@@ -238,6 +253,15 @@ func buildPageWith(st *store.Store, q url.Values, jobs *queue) (pageData, error)
 		journal = nil
 	}
 	data.Stats = countStats(st, active.Key, active.CommitSHA, snap.Issues, journal)
+	// El corpus abre en lo que el triaje recomendo, pero solo si hay algo que mostrar: sobre un
+	// corpus sin triajear, una lista vacia no es un default, es una pantalla rota. Por eso la
+	// promocion depende del conteo y no de la URL.
+	if f.State == filterAll && f.Defaulted && data.Stats.Candidate > 0 {
+		f.State = filterCandidate
+		data.Filter = f
+		data.IsCandidate = true
+		data.CandidateHref = f.withState(filterAll).url(active.Key)
+	}
 	data.Labels = distinctLabels(snap.Issues)
 
 	for _, is := range snap.Issues {
@@ -362,6 +386,8 @@ func newRow(is ghdata.Issue, result triage.Result, hasVerdict bool) rowView {
 		Updated:    formatDate(is.UpdatedAt),
 		State:      statePending,
 		StateText:  "sin triajar",
+		FitText:    "Sin Encajar",
+		FitClass:   "fit-none",
 		HasLabel:   len(is.Labels) > 0,
 	}
 	if pr, ok := openPR(is); ok {

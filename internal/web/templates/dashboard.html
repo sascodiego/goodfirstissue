@@ -105,6 +105,14 @@
     {{/* El embudo es la otra pregunta: no qué tiene el corpus, sino qué decidió el triaje sobre
          él. Los números salen del journal, así que un corpus recién traído y todavía sin triajear
          muestra «sin triajar» en vez de ceros que parezcan una decisión. */}}
+    <p class="fit-legend">
+      <span class="fc fit-yes">Encaja</span>
+      <span class="fc fit-no">No encaja</span>
+      <span class="fc fit-hold">Sin veredicto</span> el encaje corrió y el juicio no llegó a su umbral: el número es cuánto lo cree
+      <span class="fc fit-none">Sin Encajar</span> todavía nadie la encajó con este perfil
+      <span class="legend-note">Ordenado por cercanía al sí.</span>
+    </p>
+
     <dl class="funnel">
       <div class="f-open"><dt>abiertas</dt><dd>{{.Total}}</dd></div>
       <div class="f-marked"><dt>marcadas</dt><dd>{{.Stats.Marked}}</dd></div>
@@ -165,6 +173,7 @@
             <th scope="col">Título</th>
             <th scope="col">Etiquetas</th>
             <th scope="col">Estado</th>
+            <th scope="col">Encaje</th>
             <th scope="col">PR</th>
             <th scope="col">Actualizada</th>
             <th scope="col" class="right">Com.</th>

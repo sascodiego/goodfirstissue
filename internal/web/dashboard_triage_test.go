@@ -55,7 +55,8 @@ func TestTheRowShowsTheVerdictTheJournalHolds(t *testing.T) {
 	st := corpus(t)
 	seedVerdict(t, st, 2568, triage.Result{Outcome: triage.Candidate, Probability: 0.82})
 
-	page := body(t, newHandler(t, st), "/?repo=spf13__cobra")
+	// state=all: este test mira los estados de fila, no cual es el default de la pantalla.
+	page := body(t, newHandler(t, st), "/?repo=spf13__cobra&state=all")
 
 	if !strings.Contains(page, ">candidata<") {
 		t.Error("la fila no muestra el veredicto que el journal tiene guardado")
@@ -207,5 +208,34 @@ func TestTheFunnelReachesThePage(t *testing.T) {
 		if !strings.Contains(page, want) {
 			t.Errorf("la cabecera no muestra la columna %q", want)
 		}
+	}
+}
+
+// El corpus abre en lo que el triaje recomendo: quien entra quiere ver las candidatas, no las
+// ciento cincuenta filas con su estado. Pero el default no puede vaciar la pantalla, asi que
+// necesita que haya al menos una, y `state=all` sigue devolviendo todo.
+func TestTheCorpusOpensOnTheCandidates(t *testing.T) {
+	st := corpus(t)
+	seedVerdict(t, st, 2568, triage.Result{Outcome: triage.Candidate, Probability: 0.82})
+
+	// Las filas se distinguen por su clase: el embudo tambien imprime «sin triajar» como
+	// etiqueta de columna, asi que buscar el texto contaria la cabecera.
+	opening := body(t, newHandler(t, st), "/?repo=spf13__cobra")
+	if !strings.Contains(opening, `class="st candidate"`) {
+		t.Error("la pantalla no abrio en las candidatas")
+	}
+	if strings.Contains(opening, `class="st pending"`) {
+		t.Error("la pantalla abrio en el corpus entero y no en lo que el triaje recomendo")
+	}
+
+	all := body(t, newHandler(t, st), "/?repo=spf13__cobra&state=all")
+	if !strings.Contains(all, `class="st pending"`) {
+		t.Error("state=all no devuelve el corpus entero")
+	}
+
+	// Sin triaje el default no se aplica: mostrar cero filas no es un default, es un error.
+	empty := body(t, newHandler(t, corpus(t)), "/?repo=spf13__cobra")
+	if !strings.Contains(empty, `class="st pending"`) {
+		t.Error("un corpus sin triajear quedo con la lista vacia")
 	}
 }

@@ -48,6 +48,14 @@
     </div>
     {{end}}
 
+    {{/* Las dos pasadas de Clef, una debajo de la otra y antes del cuerpo: se leen juntas o no se
+         leen. Si el encaje todavía no existe, la banda lo dice en gris en vez de dejar un hueco. */}}
+    <div class="verdict-strip {{if .HasFit}}{{.Fit.Class}}{{else}}fit-none{{end}}">
+      <span class="vs-word">{{if .HasFit}}{{.Fit.Level}}{{else}}Sin Encajar{{end}}</span>
+      <span class="vs-p">{{if .HasFit}}{{.Fit.Probability}}{{end}}</span>
+      <p class="vs-why">{{if .HasFit}}{{.Fit.Why}}{{else}}Todavía no hay un encaje guardado de esta issue con este perfil y este commit: se corre con el botón <b>Encajar candidatas</b> del corpus.{{end}}</p>
+    </div>
+
     <div class="issue">
       <section class="issue-body" aria-label="Cuerpo de la issue">
         {{if .Issue.HasBody}}{{.Issue.Body}}{{else}}<p class="none">Sin cuerpo: la issue se explica solo en el título.</p>{{end}}

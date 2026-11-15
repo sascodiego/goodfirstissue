@@ -54,6 +54,33 @@ Y dos formas de no decidir, que son parte del producto:
 El detalle de cada request —qué se le manda a Clef, las preguntas con sus opciones, por qué cada
 una y cómo se usa su resultado— está en [`PRESENTACION.md`](PRESENTACION.md).
 
+## Medición
+
+Un producto que decide tiene que poder mostrar contra qué se midió. Todo lo de acá sale de
+correr el producto; el método completo está en [`BENCHMARKS.md`](BENCHMARKS.md).
+
+**Banco ciego de 291 casos** — 188 issues que terminaron con una PR mergeada, 34 rechazadas con
+explicación del mantenedor, el resto casos de borde.
+
+| | resultado |
+|---|---|
+| Precisión de `CANDIDATA` | **91 %** — de cada diez que recomienda, nueve eran trabajo que el proyecto aceptó |
+| Recall sobre trabajo real | **89 %** — de 188 issues que sí eran trabajo, encontró 167 |
+| `DUDA` (`evidence_sufficient` < 0,5) | 17 casos, de los cuales **16 eran rechazos**: **6 %** de precisión |
+
+Ese último número va a contramano y por eso está: cuando el producto duda, casi siempre tiene
+razón en dudar. **La etiqueta del mantenedor estaba mal; el juicio estaba bien.**
+
+**Y los atajos deterministas se midieron antes de descartarlos**, porque si un `if` alcanzaba no
+había producto: un árbol de reglas derivado del texto daba **0,83–0,94 en las dos issues
+gemelas** —la que se acepta y la que se rechaza—, o sea no distinguía. La intención del proyecto
+se leía del texto en **7 de 188 casos (3,7 %)**. Lo determinista ya está explotado hasta su
+techo: las pre-compuertas resuelven **66 de 150** issues de `cobra` sin gastar una petición.
+
+**Sobre corpus reales**: `cobra` 150 issues en 100 peticiones y 53 s, y la segunda corrida
+**0 peticiones y 36 ms** porque cada veredicto declara la pregunta que responde. `gentle-ai` 60
+issues en 62 peticiones. El encaje: 15 veredictos en 2 peticiones.
+
 ## Estado actual
 
 Esqueleto funcionando, producto en construcción. Sin decoración:

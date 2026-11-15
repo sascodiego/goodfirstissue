@@ -875,7 +875,9 @@ secciones con evidencia `archivo:línea`, pineadas al commit del clon, con la di
 conocimiento técnico y conocimiento de proyecto declarada en el propio documento.
 
 **Cuesta una corrida de agente por repositorio y commit, no por issue.** La paga la primera feature
-que llega al nodo y el resto del lote la reusa desde el caché. Cuando el retrato no se puede
+que llega al nodo y el resto del lote la reusa desde el caché. Medido sobre `spf13/cobra` en
+`adbc8813901b`: **2m12,6 s**, 21 afirmaciones y ninguna cita sin respaldo en el clon; el reuso
+cuesta 8 ms y conserva en el reporte el costo de la corrida original. Cuando el retrato no se puede
 producir —el agente se cayó, el clon no está, el árbol cambió a mitad de camino— el nodo lee el
 **brief de respaldo**, que se arma desde el clon con lo que el proyecto dice que es en su README y
 lo que viene construyendo en sus últimos 20 commits, a coste cero, y la corrida lo avisa en stderr:

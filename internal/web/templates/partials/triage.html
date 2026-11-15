@@ -1,5 +1,96 @@
-{{/* Punto de inclusión triage: reporte de triaje (issue [triaje] informe por issue).
-     Vacío a propósito. Una definición vacía no reemplaza un cuerpo existente,
-     así que la issue que traiga ese bloque puede darle contenido sin pelear
-     con este archivo. */}}
-{{define "triage"}}{{end}}
+{{/* El informe de triaje de la pantalla de issue ([triaje], issue #11).
+     Muestra qué decidió P1 sobre esta issue, con su probabilidad y con las preguntas que se
+     hicieron. Si no hay veredicto guardado lo dice y nombra el comando: no ofrece un botón
+     que no existe, porque no hay POST /triage. */}}
+{{define "triage"}}
+<section class="tr" aria-label="Informe de triaje">
+
+  <header class="evid-top">
+    <div>
+      <p class="evid-label">Informe · triaje</p>
+      <h2>Qué decidió el triaje</h2>
+    </div>
+  </header>
+
+  {{if .HasTriage}}
+
+  <p class="evid-pin">
+    guardado el <b>{{.Triage.Analyzed}}</b>
+    · {{.Triage.Latency}} de trabajo
+    · modelo <b>{{.Triage.Model}}</b>
+    · prompt <b>{{.Triage.Prompt}}</b>
+    · commit <b>{{.Triage.Commit}}</b>
+  </p>
+
+  <p class="tr-verdict">
+    <span class="tr-outcome {{.Triage.Class}}">{{.Triage.Outcome}}</span>
+    {{with .Triage.Reason}}<span class="tr-reason">{{.}}</span>{{end}}
+    <span class="tr-prob">{{.Triage.Probability}}</span>
+  </p>
+
+  <p class="tr-why">{{.Triage.Why}}</p>
+
+  {{if .Triage.Missing}}
+  <p class="evid-label">Lo que falta para salir de la duda</p>
+  <ul class="tr-missing">
+    {{range .Triage.Missing}}<li>{{.}}</li>{{end}}
+  </ul>
+  {{end}}
+
+  {{if .Triage.Questions}}
+  <p class="tr-note">
+    {{len .Triage.Questions}} preguntas medidas. La fila marcada decidió el veredicto; las demás
+    sólo se midieron y no son compuertas.
+  </p>
+  <div class="evid-files-wrap">
+    <table class="tr-questions">
+      <caption>Preguntas medidas</caption>
+      <thead>
+        <tr>
+          <th scope="col">Pregunta</th>
+          <th scope="col">Respondió</th>
+          <th scope="col">Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Triage.Questions}}
+        <tr class="tr-q{{if .Decided}} decided{{end}}">
+          <td class="tr-q-name">{{.Text}}{{if .Decided}}<span class="tr-q-mark">decidió</span>{{end}}</td>
+          <td class="tr-q-answer">{{if .Answer}}<span class="tr-choice">{{.Answer}}</span>{{else}}<span class="none">sí o no</span>{{end}}</td>
+          <td class="tr-q-value">{{.Value}}</td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+
+  {{if .Triage.HasKind}}
+  <p class="tr-kind">
+    El triaje leyó <b>{{.Triage.Kind}}</b>{{if .Triage.HasDeclaration}}: el título lo declaraba <b>{{.Triage.Declared}}</b>{{end}}.
+  </p>
+  {{end}}
+
+  {{with .Triage.Contradiction}}<p class="evid-warn">{{.}}</p>{{end}}
+
+  <p class="evid-label">Etiquetas del mantenedor</p>
+  <p class="tr-labels">
+    {{if .Triage.HasLabels}}{{range .Triage.Labels}}<span class="chip">{{.}}</span>{{end}}{{else}}<span class="none">ninguna</span>{{end}}
+  </p>
+  <p class="tr-note">
+    Se copian tal como las escribió el mantenedor. Son su dato, no el insumo de la decisión:
+    el veredicto de si esto es una buena primera contribución es nuestro, y no se audita la
+    etiqueta ni se deja que juzgue (I6).
+  </p>
+
+  {{else}}
+
+  <p class="none">
+    Todavía no hay triaje guardado de esta issue con este modelo, este prompt y este commit.
+    Se corre desde la terminal: <code>gfi triage {{.Active.Name}}</code>
+  </p>
+
+  {{end}}
+
+</section>
+{{end}}

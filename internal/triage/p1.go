@@ -110,15 +110,10 @@ type Analysis struct {
 	At time.Time
 }
 
-// key is the journal identity of this exact question.
+// key is the journal identity of this exact question. The assembly lives in keyFor, beside the
+// reader, so the pass and the screens cannot answer different questions from the same file.
 func (p *P1) key(issue Issue) store.Key {
-	return store.Key{
-		Issue:         issue.Number,
-		Pass:          store.PassTriage,
-		Model:         p.model,
-		PromptVersion: Version(),
-		CommitSHA:     p.commitSHA,
-	}
+	return keyFor(issue.Number, p.model, p.commitSHA)
 }
 
 // stored is what the journal keeps: the verdict and the evidence behind it, so a reuse shows what
@@ -140,10 +135,24 @@ type stored struct {
 func (p *P1) Run(ctx context.Context, issue Issue) (Analysis, error) {
 	analysis := Analysis{Model: p.model, PromptVersion: Version(), CommitSHA: p.commitSHA}
 
-	// A deterministic fact resolves the issue without a dossier and without a request.
+	// A deterministic fact resolves the issue without a dossier and without a request. It is a
+	// verdict all the same, so it is journaled with zero latency and no answers: a report that
+	// reads the journal would otherwise count the issues nobody has to look at as untriaged.
 	if pre := Prescreen(issue); pre.Skip {
 		analysis.Result = Result{Outcome: Marked, Reason: pre.Reason, Probability: 1}
 		analysis.At = p.now().UTC()
+
+		// The journal is pinned to the commit and the prompt, not to the issue's own facts: a
+		// refreshed corpus can bring a linked pull request at the same pin. The fact wins over
+		// the stored verdict (§7.7, row 0 before row 1); an unchanged one keeps its own time,
+		// so the next run says it was reused (I14) instead of presenting it as fresh.
+		if reused, ok := p.lookup(issue); ok && reused.Outcome == Marked && reused.Reason == pre.Reason {
+			reused.Model, reused.PromptVersion, reused.CommitSHA = p.model, Version(), p.commitSHA
+			return reused, nil
+		}
+
+		// The verdict stands even when it cannot be stored, exactly as below.
+		_ = p.remember(issue, analysis, 0)
 		return analysis, nil
 	}
 
@@ -211,31 +220,11 @@ func (p *P1) align(ctx context.Context, issue Issue, answers map[string]nan.Answ
 }
 
 // lookup returns a stored verdict for this exact question, if there is one. A damaged entry is a
-// miss, not a failed analysis: the pipeline asks again instead of reporting a broken journal.
+// miss, not a failed analysis: the pipeline asks again instead of reporting a broken journal. The
+// reading itself lives in Recall, which the screens call too.
 func (p *P1) lookup(issue Issue) (Analysis, bool) {
-	if p.journal == nil {
-		return Analysis{}, false
-	}
-	decision, ok := p.journal.Get(p.key(issue))
-	if !ok {
-		return Analysis{}, false
-	}
-	var entry stored
-	if err := json.Unmarshal(decision.Verdict, &entry); err != nil {
-		return Analysis{}, false
-	}
-	if entry.Result.Outcome == "" {
-		// A stored envelope without a verdict is damage, not an answer: showing it would mean
-		// presenting an empty outcome as a decision.
-		return Analysis{}, false
-	}
-	return Analysis{
-		Result:    entry.Result,
-		Answers:   entry.Answers,
-		Alignment: entry.Alignment,
-		Cached:    true,
-		At:        decision.At,
-	}, true
+	analysis, _, ok := Recall(p.journal, issue.Number, p.model, p.commitSHA)
+	return analysis, ok
 }
 
 func (p *P1) remember(issue Issue, analysis Analysis, latency time.Duration) error {

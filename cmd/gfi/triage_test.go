@@ -397,3 +397,47 @@ func TestAlignmentBriefPrefersThePortraitWhenItCanRun(t *testing.T) {
 		t.Errorf("the portrait's agent home was not configured: %v", err)
 	}
 }
+
+// A pre-gate verdict is a verdict: the second run over a corpus of closed issues reports that
+// the journal answered them, instead of printing zero requests for a corpus it did work on.
+// Without this, the breakdown the report reads disagrees with what the verb did (issue #41).
+func TestTriageCountsAPreResolvedIssueAsAnsweredFromTheJournal(t *testing.T) {
+	st := newStore(t)
+	snap := corpusOf(1)
+	snap.Issues[0].State = "CLOSED"
+	snap.Issues[0].StateReason = "COMPLETED"
+
+	first, out, err := runFixture(t, st, snap, newFakeJudge(), &fakeBrief{body: "# cobra"}, 0)
+	if err != nil {
+		t.Fatalf("first run: %v", err)
+	}
+	if first.Requests != 0 {
+		t.Fatalf("first run made %d requests for an issue a pre-gate resolves\n%s", first.Requests, out)
+	}
+	if first.Cached != 0 {
+		t.Fatalf("first run reported %d cached, want 0\n%s", first.Cached, out)
+	}
+	if first.Outcomes[triage.Marked] != 1 {
+		t.Fatalf("outcomes = %v, want one %q\n%s", first.Outcomes, triage.Marked, out)
+	}
+	if !strings.Contains(out, "requests    0\n") {
+		t.Fatalf("first run did not report that it spent nothing:\n%s", out)
+	}
+
+	second, out, err := runFixture(t, st, snap, newFakeJudge(), &fakeBrief{body: "# cobra"}, 0)
+	if err != nil {
+		t.Fatalf("second run: %v", err)
+	}
+	if second.Requests != 0 {
+		t.Fatalf("second run made %d requests, want 0\n%s", second.Requests, out)
+	}
+	if second.Cached != 1 {
+		t.Fatalf("second run reports %d cached, want 1\n%s", second.Cached, out)
+	}
+	if second.Outcomes[triage.Marked] != 1 {
+		t.Fatalf("the breakdown changed between runs: %v then %v", first.Outcomes, second.Outcomes)
+	}
+	if !strings.Contains(out, "requests    0 (1 answered from the journal)") {
+		t.Fatalf("second run did not say the journal answered it:\n%s", out)
+	}
+}

@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/sascodiego/nan-hackathon-clef/internal/config"
 	"github.com/sascodiego/nan-hackathon-clef/internal/ghdata"
 	"github.com/sascodiego/nan-hackathon-clef/internal/store"
 )
@@ -170,6 +171,53 @@ func TestIssueKeepsRepoContext(t *testing.T) {
 		if !strings.Contains(page, want) {
 			t.Errorf("falta %q: la pantalla perdió el contexto de repositorio", want)
 		}
+	}
+}
+
+// S9/S11: con un veredicto guardado el bloque lo muestra con su probabilidad y su pin; sin
+// él lo dice y nombra el comando, y en ningún caso ofrece un POST /triage que no existe.
+func TestIssueScreenShowsTheTriageAndSaysWhenThereIsNone(t *testing.T) {
+	st := triageStore(t)
+	seedTriage(t, st)
+
+	page := body(t, newHandler(t, st), "/issue/spf13__cobra/2568")
+	for _, want := range []string{
+		`aria-label="Informe de triaje"`,   // el bloque existe
+		"CANDIDATA",                        // el veredicto, con su palabra
+		"0,86",                             // su probabilidad, con coma decimal
+		"Reporta un defecto que ya existe", // una de las preguntas que se hizo
+		"guardado el <b>2026-11-14</b>",    // el pin: cuándo
+		"1.2s",                             // el pin: cuánto costó
+		config.DecisionModel,               // el pin: con qué modelo
+		"kind/bug",                         // la etiqueta del mantenedor, verbatim
+		`class="tr-labels"`,                // y en su propio lugar, marcada como dato
+		"no el insumo de la decisión",      // se dice que la etiqueta no juzga (I6)
+		`class="tr-outcome candidate"`,     // la forma del veredicto, en su clase
+		`class="tr-q decided"`,             // la fila que decidió se distingue de las medidas
+		"7 preguntas medidas",              // las que se hicieron, no una lista fija
+		"Preguntas medidas",                // y el rótulo de la tabla, corto para que no se recorte
+		`evid-files-wrap`,                  // la tabla se corre en horizontal a 360 px
+	} {
+		if !strings.Contains(page, want) {
+			t.Errorf("falta %q en el informe de triaje", want)
+		}
+	}
+	if strings.Contains(page, `action="/triage"`) {
+		t.Error("el bloque ofrece un POST /triage que no existe")
+	}
+
+	empty := body(t, newHandler(t, triageStore(t)), "/issue/spf13__cobra/2568")
+	if strings.Contains(empty, `class="tr-questions"`) {
+		t.Error("sin veredicto guardado el bloque muestra una tabla de preguntas")
+	}
+	if !strings.Contains(empty, "Todavía no hay triaje guardado") {
+		t.Error("sin veredicto guardado el bloque no lo dice")
+	}
+	if !strings.Contains(empty, "gfi triage spf13/cobra") {
+		t.Error("sin veredicto guardado el bloque no nombra el comando")
+	}
+	if strings.Contains(empty, `action="/triage"`) {
+		t.Error("sin veredicto el bloque ofrece un POST /triage que no existe")
 	}
 }
 

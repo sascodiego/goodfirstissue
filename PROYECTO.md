@@ -1680,6 +1680,8 @@ var/store/
 
 **El journal.** Cada `Put` agrega una línea y hace `fsync`: un resultado que se informó no se pierde en un reinicio. Al cargar, el journal se proyecta a un map en memoria, así que consultar es una búsqueda en RAM. Un `flock` protege la escritura entre procesos: el servidor y un comando de CLI pueden agregar a la vez sin intercalar líneas. Una línea final cortada por un crash se descarta —esa línea nunca se reconoció—; una línea corrupta en el medio falla en voz alta. `Compact` reescribe el archivo cuando acumula más del doble de líneas que análisis vivos.
 
+Un veredicto de la pre-compuerta también se journala, con latencia 0 y sin respuestas porque no hubo petición: es un análisis terminado como cualquier otro, y quien lea el journal tiene que poder contarlo. La pre-compuerta gana al veredicto guardado; si el hecho nativo cambió, la fila se reescribe en vez de repetir el motivo viejo.
+
 **La clave del caché (I14).** No es la issue. Es la pregunta completa:
 
 ```

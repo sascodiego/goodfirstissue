@@ -738,6 +738,10 @@ tbody tr:last-child td {
   color: var(--fg-3);
 }
 
+.fc.fit-hold {
+  color: var(--state-pending);
+}
+
 .fc.fit-no {
   color: var(--state-taken);
 }

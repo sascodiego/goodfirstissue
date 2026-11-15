@@ -376,7 +376,28 @@ func (h *Handler) attachFitStates(page *pageData) {
 			page.Rows[i].FitClass = "fit-no"
 			page.Rows[i].FitNote = fitLevelText(analysis.Level)
 		default:
-			page.Rows[i].FitNote = fitLevelText(analysis.Level) + ": el juicio no llegó a su umbral"
+			// Hay veredicto guardado y no concluye: el juicio se retuvo, o el perfil no
+			// describe lo que la issue pide. Decir «sin encajar» acá lo volvería
+			// indistinguible de una issue que nadie encajó todavía, que es justo lo que el
+			// chip tiene que separar.
+			page.Rows[i].FitText = "Sin veredicto"
+			page.Rows[i].FitClass = "fit-hold"
+			page.Rows[i].FitNote = fitLevelText(analysis.Level) + " — " + whyFitHeld(analysis.Result)
 		}
+	}
+}
+
+// whyFitHeld explica en una frase por qué hay encaje guardado y aun así no hay veredicto. Son
+// dos causas distintas y el chip las muestra igual: la frase es lo único que las separa.
+func whyFitHeld(result fit.Result) string {
+	switch {
+	case result.Level == fit.LevelInsufficientInformation:
+		return "el perfil no describe lo que esta issue pide, así que no hay contra qué comparar"
+	case result.Reason == fit.ReasonLowConfidence:
+		return "el juicio no llegó a su umbral y no se redondea"
+	case result.Reason == fit.ReasonEndpointFailed:
+		return "Clef no respondió; una request caída no es un juicio"
+	default:
+		return "no hay veredicto que mostrar"
 	}
 }

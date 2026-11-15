@@ -43,6 +43,10 @@ type Request struct {
 
 	// OnIdle is called once when the child has been silent past IdleWarn.
 	OnIdle func(silence time.Duration)
+	// OnProgress is called on every tick with the current silence, so a caller can show
+	// "waiting for the model, 12s" while the agent is still working. Unlike OnIdle it is
+	// not a warning: it fires for any silence, including the normal ones.
+	OnProgress func(silence time.Duration)
 
 	// Binary overrides the executable. Empty means "pig" from PATH.
 	Binary string
@@ -165,6 +169,9 @@ loop:
 			silence := time.Since(time.Unix(0, lastSeen.Load()))
 			if silence > longest {
 				longest = silence
+			}
+			if req.OnProgress != nil {
+				req.OnProgress(silence)
 			}
 			warn, kill := mon.observe(silence)
 			if warn && req.OnIdle != nil {

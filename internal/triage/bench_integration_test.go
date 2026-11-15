@@ -81,6 +81,16 @@ func (b benchBrief) Brief(_ context.Context, repository string) (string, error) 
 	return string(body), nil
 }
 
+// sortedCounts is a stable order for the report, so two runs diff cleanly.
+func sortedCounts(counts map[string]int) []string {
+	keys := make([]string, 0, len(counts))
+	for key := range counts {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 // why renders the policy's explanation for a verdict. A mark or a doubt carries a reason, a
 // condition carries the list of what would settle it, and the report shows whichever exists:
 // a CONDICIONADA printed as "sin razón" hides the only thing the user can act on.
@@ -148,7 +158,6 @@ func TestBenchMeasuresWording(t *testing.T) {
 		kindHits    int
 		abstentions int
 		scored      int
-		outcomeHits int
 		aligned     int
 	)
 	questionHits := map[string]int{}
@@ -218,9 +227,6 @@ func TestBenchMeasuresWording(t *testing.T) {
 		if analysis.Alignment != nil {
 			aligned++
 		}
-		if run.Outcome == c.Expected.Outcome {
-			outcomeHits++
-		}
 		reason := why(res)
 		byReason[reason]++
 
@@ -283,9 +289,34 @@ func TestBenchMeasuresWording(t *testing.T) {
 		}
 		t.Logf("%-30s n=%3d · obtuvo %3d/%3d", trap, n, outcomeByTrap[trap], n)
 	}
-	t.Logf("cerradas con etiqueta real: %d (fuertes %d · débiles %d)", closed, strong, weak)
-	t.Logf("  obtuvo fuerte %d/%d · débil %d/%d", strongHits, strong, weakHits, weak)
-	t.Logf("desenlace: %d/%d", outcomeHits, len(runs))
+	t.Logf("cerradas con etiqueta real: %d (fuerza fuerte %d · débil %d)", closed, strong, weak)
+	t.Logf("  obtuvo fuerte %d/%d", strongHits, strong)
+	// El bloque ambiguo no tiene desenlace esperado que la política pueda acertar: se reporta
+	// aparte, por distribución, que es lo único que puede decir de sí mismo.
+	blindHits, blind, ambiguous, ambiguousByOutcome := 0, 0, 0, map[string]int{}
+	for _, run := range runs {
+		if !run.Closed {
+			// The hand-labelled open issues are scored question by question above; the blind
+			// sample is the closed corpus, which is the only one with a real resolution.
+			continue
+		}
+		switch run.Expect.Outcome {
+		case string(Candidate), string(Marked):
+			blind++
+			if run.Outcome == run.Expect.Outcome {
+				blindHits++
+			}
+		case "INDETERMINADA":
+			ambiguous++
+			ambiguousByOutcome[run.Outcome]++
+		}
+	}
+	t.Logf("muestra ciega (con resolución real): %d/%d", blindHits, blind)
+	t.Logf("consultaron el nodo de alineación: %d", aligned)
+	t.Logf("bloque ambiguo: %d casos", ambiguous)
+	for _, key := range sortedCounts(ambiguousByOutcome) {
+		t.Logf("  %-14s %d", key, ambiguousByOutcome[key])
+	}
 	for _, key := range sortedReasons(byReason) {
 		t.Logf("  %-28s %d", key, byReason[key])
 	}

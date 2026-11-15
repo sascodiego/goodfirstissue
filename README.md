@@ -30,7 +30,7 @@ Tres pasadas, con un embudo de costo: el recurso caro es el modelo generativo y 
 |---|---|---|---|
 | **P1 · agrupar y triajear** | texto de la issue, etiquetas, comentarios | **solo Clef** | ~45 s y **0 tokens** para 20 issues |
 | **P2 · explore** | + herramientas de código | **agente**: el modelo decide qué mirar y Go ejecuta | caro, solo candidatas |
-| **P3 · encaje** | + perfil del desarrollador | **solo Clef** | ~1,5 s por parte |
+| **P3 · encaje** | + perfil del desarrollador | **solo Clef** | ~1,5 s por issue |
 
 Tres estados de salida, nunca dos: **CANDIDATA**, **CONDICIONADA** (falta una condición externa) y **MARCADA** (no se recomienda, con el motivo y la evidencia a la vista). Ninguna se oculta.
 

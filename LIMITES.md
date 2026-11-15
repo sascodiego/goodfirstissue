@@ -66,7 +66,25 @@ banco hasta que se decida.
 El triaje no se ve en la aplicación todavía (issue #11). Los desenlaces existen como datos y
 como banco de pruebas, no como interfaz.
 
-### 7. Diferidos por alcance, no por tiempo
+### 7. Veredicto por partes: fuera del MVP
+
+El veredicto de encaje es **uno por issue**. Las partes que produce el explore siguen existiendo
+y se muestran, pero agrupan la evidencia: dicen qué áreas toca la issue y qué archivos y
+requisitos cuelgan de cada una. No se puntúan por separado.
+
+- **Qué se pierde**: una issue de tres cambios independientes se juzga por la **unión** de sus
+  requisitos. Alguien que podría hacer la parte 1 sin problema puede recibir `needs_experience`
+  porque las partes 2 y 3 piden cosas que no sabe. El veredicto se vuelve más conservador cuanto
+  más grande la issue.
+- **Qué se conserva**: la evidencia sigue completa en el `state` —todos los archivos, todos los
+  requisitos, las lagunas— y las partes siguen visibles agrupando esa evidencia. Así el veredicto
+  es explicable: se puede leer qué lo empujó y por dónde. Las issues de un solo cambio, que son la
+  mayoría del corpus, no se ven afectadas.
+- **Qué se agrava**: la recomendación de por dónde empezar deja de ser el mecanismo de evaluación
+  y vuelve a ser lo que era, un consejo. La política ya no puede decir «empezá por la 2 de 3».
+- **Dónde está escrito**: `PROYECTO.md` §2.1.1, §8.2, §9 y §9.1.
+
+### 8. Diferidos por alcance, no por tiempo
 
 `confirmed_defect` de P2 y `learning_value` de P3: cortados en §2.1.1 y no tocados acá.
 

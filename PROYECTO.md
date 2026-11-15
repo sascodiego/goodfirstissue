@@ -1,11 +1,12 @@
 # PROYECTO.md — GoodFirstIssue
 
-**Versión:** 2.23
-**Fecha:** 2026-11-13
+**Versión:** 2.24
+**Fecha:** 2026-11-15
 **Estado:** Documento rector del MVP para el #2 Hackathon NaN (Reto 4 — tema libre)
 **Reemplaza:** el documento de definición de producto y arquitectura v1.0, en todo lo relativo al **alcance del MVP** (sus secciones 13 y 18). La visión de producto, el análisis del problema y los principios de diseño del original siguen vigentes.
 
 **Historial**
+- **2.24** — **el coste de P1 se mide y deja de ser una estimación.** Desde 2.19 P1 no son compuertas deterministas: son siete preguntas tipadas a Clef en una petición, más una segunda para features, y Clef cobra tokens. La cifra «~45 s y 0 tokens» describía el diseño anterior y aparecía en cinco lugares del documento y en la justificación de §12; se retira de todos. Corrida medida sobre el corpus de `cobra` pineado en `adbc881`: **20 issues en 4,3 s y 8 peticiones** (~0,54 s por petición), con **13 de 20 resueltas por las pre-compuertas sin consultar al modelo**. La decisión de §12 —«triaje sin LLM generativo, solo Clef»— sigue en pie: lo que cambia es lo que cuesta, no el motor.
 - **2.23** — el guion de la demo y la definición de terminado se corrigen contra lo medido. El embudo de §15 deja los números de diseño y usa los reales de `cobra`: 150 abiertas → 69 marcadas con su motivo (66 por tener una PR abierta) → 31 derivadas → 8 condicionadas → 42 candidatas, en 53 s y 100 peticiones. §16 se parte en tres bloques —bloqueante de demo, pendiente con su bloqueador nombrado, fuera del MVP por decisión registrada— porque la lista anterior pedía cosas que el producto ya decidió no hacer: una feature reclasificada por `reports_defect` (que se pregunta y no decide desde 2.19), un `alignment` con etiquetas que no existen, y `label_honest`, retirado en 2.22.
 - **2.22** — **la etiqueta de dificultad se ignora; no se audita** (§1). Sale `label_honest` de P2 (§8.3), y la etiqueta sale de todo expediente y de todo prompt: se guarda verbatim en el corpus y no se juzga (I6, §4.2). El pitch pasa de «validamos una label» a «buscamos una good first issue». La valoración propia entra como bloque determinista de coherencia P1↔P2 dentro del `state` de P3 (§9.1.1): emite hallazgos, no veredicto. `triage.PolicyVersion` sube a `p1-2` y `explore.Version()` pasa a cubrir el constructor de la tarea (I14).
 - **2.21** — el paso de «¿ya fue atendida antes?» más la agrupación de duplicadas se ubica **después** del triaje y **antes** del explore: el triaje juzga la issue sola y deja candidatas. Del paso, el MVP solo conserva la señal determinista de trabajo abierto por issue (§7.1).
@@ -117,11 +118,11 @@ El sistema no es una secuencia de etapas: es un **embudo**. El recurso caro es e
 
 | Pasada | Insumo | Motor | Coste por unidad |
 |---|---|---|---|
-| **P1 · Triaje** | texto de la issue, metadatos, etiquetas, comentarios | **solo Clef** | ~1,5 s · **0 tokens de LLM** · 1 request |
+| **P1 · Triaje** | texto de la issue, estado nativo, PR abierta vinculada, comentarios | **solo Clef**: siete preguntas tipadas en una petición, una segunda solo para features | **medido**: ~0,54 s por petición; 20 issues en 4,3 s y 8 peticiones, 13 resueltas por las pre-compuertas |
 | **P2 · Explore** | + índice de código | LLM + `codegraph` | caro |
 | **P3 · Encaje** | + perfil del desarrollador | **solo Clef** | ~1,5 s por issue |
 
-Consecuencia estructural: **P1 no necesita modelo generativo**. Un repositorio con 30 issues abiertas se triajea en ~45 s, en serie, con cero tokens de LLM. El primer filtro de toda la aplicación es Clef y nadie más.
+Consecuencia estructural: **P1 no necesita un agente**. Clef responde siete preguntas tipadas en una petición —una segunda solo para features—, sin herramientas ni bucle de decisión, y las pre-compuertas resuelven la mayoría antes de consultarlo: en la corrida medida, 13 de 20 issues no gastaron una sola petición. El primer filtro de toda la aplicación es Clef y nadie más.
 
 ### 2.1. Etapas y presupuesto
 
@@ -201,7 +202,7 @@ Es lo único que convierte un desastre técnico de último momento en un pitch d
 repo ─► [E1 datos + clon] ─► [E2 indexar]
                                   │
    ┌──────────────────────────────▼──────────────────────────────────┐
-   │  P1 · TRIAJEAR — Clef solo, 0 tokens LLM, 0 código              │
+   │  P1 · TRIAJEAR — Clef solo, 7 preguntas, 0 código               │
    │  la issue sola: kind · intent · self_contained · has_evidence · │
    │  unambiguous · done_defined · reports_defect ·                  │
    │  evidence_sufficient                                            │
@@ -309,7 +310,7 @@ Consecuencia de diseño: **las rúbricas no calculan, describen.** Son la estruc
 | Puede abstenerse de forma medible | no | solo retóricamente | **sí, categoría propia** |
 | Latencia | 0 | 3–8 s | **0,1–2 s** |
 | Coste por decisión | 0 | alto | centavos |
-| Sirve para triajear 30 issues | — | no | **sí: ~45 s, 0 tokens** |
+| Sirve para triajear 30 issues | — | no | **sí: ~0,54 s por petición; medido 20 issues en 4,3 s** |
 
 La tabla se demuestra, no se afirma: §12 la convierte en un benchmark de 10 casos.
 
@@ -752,7 +753,7 @@ Las decisiones por pares se cierran con union-find. Un grupo es un conjunto cone
 - `cluster_has_open_work ≥ 0,5` → **MARCADA: ya está siendo trabajada.** Además de Clef hay señal determinista: `state` cerrado con `state_reason=completed`, o una PR abierta enlazada.
 - Los comentarios de mantenedores en las hermanas son evidencia para el nodo de alineación (§7.5).
 
-Coste: ~45 s más sobre el triaje de 30 issues. Cero tokens de modelo generativo.
+Coste: una petición más por feature sobre el triaje. Sobre las 20 issues medidas, una sola lo necesitó.
 
 ### 7.2. Las siete preguntas
 
@@ -912,7 +913,7 @@ Dos niveles, y no son la misma pregunta:
 
 | Nivel | Pregunta | Insumo | Coste |
 |---|---|---|---|
-| **P1** (guardarraíl barato) | `reports_defect`: ¿reporta un comportamiento **existente** como defectuoso, o pide uno que no existe? | solo el texto | 0 tokens |
+| **P1** (guardarraíl barato) | `reports_defect`: ¿reporta un comportamiento **existente** como defectuoso, o pide uno que no existe? | solo el texto | dentro de la misma petición |
 | **P2** (verificación definitiva) | `confirmed_defect`: ¿el código y la documentación confirman que el comportamiento reportado **no es intencional**? | evidencia | caro |
 
 Política de P1: **`reports_defect` se mide y se reporta, no recategoriza.** Reclasificar un bug a
@@ -1312,7 +1313,7 @@ Chequeos por etapa, ejecutables:
 | El benchmark incluye disfraces deliberados | **adoptada** | sin casos adversariales el benchmark certifica una compuerta que falla donde importa |
 | **Agrupar duplicados antes de triajear** | **adoptada** | un duplicado escueto parece una issue mal armada; sin agrupar se descarta una oportunidad real, y se puede recomendar algo que ya tiene PR abierta. **Descartada en 2.21:** el paso va después del triaje y queda fuera del MVP |
 | Triaje antes de explore | **adoptada** | no se gasta el recurso más caro en una issue que no es trabajo (I9) |
-| Triaje sin LLM, solo Clef | **adoptada** | el insumo es texto y preguntas tipadas: ~45 s y 0 tokens para 30 issues |
+| Triaje sin LLM, solo Clef | **adoptada** | el insumo es texto y preguntas tipadas, y no hay agente ni herramientas; el coste medido en 2.24 es ~0,54 s por petición |
 | Calidad de la issue evaluada en P1 | **adoptada** | una issue mal armada le hace perder tiempo al contribuyente |
 | Descomponer en compuertas de un eje en lugar de un `choice` multi-eje | **adoptada** | cinco criterios heterogéneos en una pregunta se solapan por construcción |
 | Líneas cerradas (`authorized`/`declined`) y línea abierta (`neutral`) | **adoptada** | si el mantenedor ya decidió, no hay nada que evaluar |

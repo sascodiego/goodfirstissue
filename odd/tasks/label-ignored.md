@@ -43,12 +43,20 @@ salen del MVP y quedan en `LIMITES.md` como límite post-MVP.
 
 | ID | Specs | Qué | Ruta | Commit |
 |---|---|---|---|---|
-| T1 | S2, S6 | Tests en rojo: ningún expediente de P1 puede llevar la etiqueta; `PolicyVersion` sube y `criteria.md` la declara | inline | 1 |
-| T2 | S2, S6 | Quitar `labelSection` del expediente de intención y la etiqueta de `explore.PromptFor`; `explore.Version()` cubre el constructor | inline | 1 |
-| T3 | S1, S4, S7 | `PROYECTO.md`: tesis, §1.3, §4.2, §7.4, §8.3, §11, §12, §13, §15, §16, §17.7 | inline | 2 |
-| T4 | S5 | `PROYECTO.md` §9.1: el bloque de coherencia dentro del `state` de P3, con sus reglas | inline | 2 |
-| T5 | S7 | `LIMITES.md`: el fact-check de la etiqueta como corte post-MVP; borrar `PassLabelHonest` del contrato | inline | 2 |
-| T6 | S7 | Cerrar #35 con el motivo | inline | — |
+| T1 | S2, S6 | Tests en rojo: ningún expediente de P1 puede llevar la etiqueta; `PolicyVersion` sube y `criteria.md` la declara | inline | `bac07cc` |
+| T2 | S2, S6 | Quitar `labelSection` del expediente de intención y la etiqueta de `explore.PromptFor`; `explore.Version()` cubre el constructor | inline | `bac07cc` |
+| T3 | S1, S4, S7 | `PROYECTO.md`: tesis, §1.3, §2.2, §4.2, §7.2, §7.4, §8.3, §11, §12, §13, §15, §16, §17.7 | inline | `8cc79ea` |
+| T4 | S5 | `PROYECTO.md` §9.1.1: el bloque de coherencia dentro del `state` de P3, con sus reglas | inline | `8cc79ea` |
+| T5 | S7 | `LIMITES.md` §8, `AGENTS.md` (I6 y la trampa de la etiqueta), `criteria.md` | inline | `8cc79ea` |
+| T6 | S7 | Cerrar #35 con el motivo | inline | issue cerrada |
+
+**Verificación**: `make verify` verde (build, test, vet, golangci-lint, design-check). RED observado
+antes de implementar en `TestNoDossierCanCarryLabels` y en `TestThePromptNeverCarriesLabels` /
+`TestVersionCoversTheTaskBuilder`.
+
+**Límite declarado, no medido**: las corridas de explore de `PROYECTO.md` §6.3 se tomaron con la
+etiqueta dentro de la tarea. El insumo cambió y no se volvió a medir porque `NAN_KEY` no está
+configurada. Si la calidad de explore baja, este es el primer sospechoso.
 
 ## Log
 

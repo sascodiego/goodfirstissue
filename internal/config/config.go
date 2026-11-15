@@ -139,7 +139,7 @@ type Clef struct {
 }
 
 // Models maps configurable actions to model IDs. The decision actions (triage,
-// alignment, label_honest, fit) are fixed to clef in code and are not configurable.
+// alignment, fit) are fixed to clef in code and are not configurable.
 type Models struct {
 	Explore        string `json:"explore"`
 	ProfileExtract string `json:"profile_extract"`

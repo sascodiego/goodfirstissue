@@ -5,9 +5,8 @@ import (
 	"testing"
 )
 
-// The two dossiers are the whole point of this file: one must be unable to carry a
-// label, the other must carry it as a claim, and neither may present repository text
-// as anything but evidence.
+// The dossiers are the whole point of this file: a label is another person's opinion, so
+// none of them may carry one, and none may present repository text as anything but evidence.
 
 func sampleIssue() Issue {
 	return Issue{
@@ -49,23 +48,21 @@ func TestSubstanceDossierCarriesNormalisedTitleOnly(t *testing.T) {
 	}
 }
 
-// Intent is the one question that legitimately reads the labels, and it must read them
-// verbatim: normalising them would be inventing a vocabulary no repository promised.
-func TestIntentDossierCarriesLabelsVerbatim(t *testing.T) {
-	got := IntentDossier(sampleIssue())
-	for _, label := range sampleIssue().Labels {
-		if !strings.Contains(got, label) {
-			t.Errorf("intent dossier lost the label %q:\n%s", label, got)
+// The label is not a source of truth and not an object of study: it is another person's
+// opinion about difficulty, and it never reaches a model. Not in the dossier that judges the
+// substance, not in the one that guesses the project's position, not in the one that reads
+// the request against the project's direction (§1).
+func TestNoDossierCanCarryLabels(t *testing.T) {
+	for name, dossier := range map[string]string{
+		"substance": SubstanceDossier(sampleIssue()),
+		"intent":    IntentDossier(sampleIssue()),
+		"alignment": AlignmentDossier(sampleIssue(), "The project is rewriting its runner."),
+	} {
+		for _, label := range sampleIssue().Labels {
+			if strings.Contains(dossier, label) {
+				t.Errorf("%s dossier leaks the label %q:\n%s", name, label, dossier)
+			}
 		}
-	}
-}
-
-// A label handed to the judge without that warning invites it to treat an unverified
-// claim as a fact.
-func TestIntentDossierMarksLabelsAsAClaim(t *testing.T) {
-	got := strings.ToLower(IntentDossier(sampleIssue()))
-	if !strings.Contains(got, "claim") || !strings.Contains(got, "unknown") {
-		t.Errorf("intent dossier does not mark labels as an unknown author's claim:\n%s", got)
 	}
 }
 

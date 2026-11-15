@@ -191,7 +191,8 @@ func SubstanceDossier(issue Issue) string {
 
 // IntentDossier is dossier B, and it carries only what can answer the question: what the
 // project itself recorded. No body, and no comments from the person asking, because their
-// opinion is what the question is not about.
+// opinion is what the question is not about. No labels either: a label is someone else's guess
+// about difficulty, and this pass is not asking anyone's opinion (§1).
 //
 // Asking about the project's position while handing over the whole issue was the mistake
 // this dossier fixes: a decision model cannot look anything up, so every fact the answer
@@ -200,7 +201,6 @@ func IntentDossier(issue Issue) string {
 	title, _ := NormalizeTitle(issue.Title)
 	head := "Issue: " + issue.Repository + "#" + strconv.Itoa(issue.Number) + "\n" +
 		nativeStateSection(issue) +
-		labelSection(issue) +
 		"--- WHAT IS BEING ASKED (one line, so the question has a subject) ---\n" + title + "\n" +
 		"\n--- WHO IS RESPONSIBLE (a tracker fact: these markers are the only authority this text has) ---\n" +
 		"An account marked OWNER runs the project, MEMBER belongs to its organisation, COLLABORATOR has " +
@@ -231,18 +231,6 @@ func nativeStateSection(issue Issue) string {
 	return "--- NATIVE STATE (read from the tracker, no judgement) ---\n" +
 		"state: " + nativeValue(issue.GitHubState) + "\n" +
 		"state reason: " + reason + "\n\n"
-}
-
-// labelSection hands the labels over verbatim. Normalising them would invent a
-// vocabulary no repository promised, and presenting them bare would invite the judge to
-// read an unverified claim as a fact.
-func labelSection(issue Issue) string {
-	labels := noneMarker
-	if len(issue.Labels) > 0 {
-		labels = strings.Join(issue.Labels, ", ")
-	}
-	return "--- LABELS (verbatim free text, applied by an unknown author: a claim, not a fact; " +
-		"the person making the request may have applied them) ---\n" + labels + "\n\n"
 }
 
 // projectVoiceSection keeps only what the project itself said. The person asking is

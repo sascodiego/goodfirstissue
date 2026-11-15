@@ -28,8 +28,8 @@ Tres pasadas, con un embudo de costo: el recurso caro es el modelo generativo y 
 
 | Pasada | Insumo | Motor | Coste |
 |---|---|---|---|
-| **P1 · triajear** | texto de la issue, estado nativo, PR abierta vinculada, comentarios | **solo Clef**: siete preguntas en una petición, más una segunda solo para features | **medido**: 150 issues en 53 s y 100 peticiones. 66 de 150 las resuelven las pre-compuertas, sin consultar al modelo |
-| **P2 · explore** | + herramientas de código | **agente**: el modelo decide qué mirar y Go ejecuta | caro, solo candidatas |
+| **P1 · triajear** | texto de la issue, estado nativo, PR abierta vinculada, comentarios | **solo Clef**: siete preguntas en una petición, más una segunda solo para features | **medido**: 20 issues en 4,3 s y 8 peticiones (~0,54 s por petición). 13 de esas 20 las resuelven las pre-compuertas, sin consultar al modelo |
+| **P2 · explore** | + herramientas de código | **agente**: el modelo decide qué mirar y Go ejecuta | caro; solo candidatas, y hoy es una regla del embudo, no una compuerta que la interfaz imponga: el botón de analizar aparece en cualquier issue ([error conocido, #48](https://github.com/sascodiego/goodfirstissue/issues/48)) |
 | **P3 · encaje** | + perfil del desarrollador | **solo Clef** | ~1,5 s por issue |
 
 Cuatro estados de salida, nunca dos: **CANDIDATA**, **CONDICIONADA** (falta una condición externa), **DERIVADA** (la pregunta necesita los comentarios, y esa ronda está especificada y no instalada) y **MARCADA** (no se recomienda, con el motivo y la evidencia a la vista). Ninguna se oculta.
@@ -55,7 +55,8 @@ Esqueleto funcionando, producto en construcción. Sin decoración:
 | ✅ Cola de análisis desde la pantalla | el botón encola de verdad: hasta tres `pig` en paralelo, cancelar por issue y vaciar la cola |
 | ✅ Evidencia en la pantalla de issue | archivos con `path:line` y su relación, con el pin del análisis a la vista |
 | ✅ Perfil del desarrollador | el CV se extrae con PiG, se auditan las citas contra el texto pegado y el documento se edita antes de juzgar |
-| ✅ Triaje preliminar | `gfi triage` corre las siete preguntas sobre el corpus: 150 issues en 53 s y 100 peticiones, con las pre-compuertas resolviendo 66 sin consultar al modelo |
+| ✅ Triaje preliminar | `gfi triage` corre las siete preguntas sobre el corpus: 150 issues en 53 s y 100 peticiones, y en la corrida de 20 sobre el corpus actual 13 las resolvieron las pre-compuertas sin consultar al modelo |
+| ✅ Informe de triaje en la pantalla de issue | el veredicto con su probabilidad, las preguntas que se hicieron con su respuesta, y el motivo cuando no hay recomendación |
 | ✅ Retrato del proyecto | `gfi brief` describe un repositorio clonado en seis secciones, cada afirmación con su `archivo:línea`, y alimenta el dossier de alineación sin cambiarle la firma |
 | ⏳ Encaje y embudo en pantalla | ver la ruta en `PROYECTO.md` §2.1.2 |
 

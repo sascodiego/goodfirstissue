@@ -71,12 +71,13 @@ README actualizados con el comando nuevo.
 
 | ID | Tarea | Specs | Ruta | Commit |
 |---|---|---|---|---|
-| T1 | vocabulario fijo de secciones con su naturaleza, `Parse` estricto y `Version()` | S1, S2, S5, S13 | inline | pending |
-| T2 | `prompt.md` embebido, `Extract` con `pig` inyectado y `insufficient_information` por sección | S3, S9, S10, S14 | inline | pending |
-| T3 | caché pineado a `commit_sha` y una corrida por repositorio | S4, S7 | inline | pending |
-| T4 | auditoría de citas contra el clon, `Source` que alimenta `AlignmentDossier` | S2, S6 | inline | pending |
-| T5 | `projectbrief` y `models.project_brief` en config, `gfi brief`, ayuda y README | S12, S15 | inline | pending |
-| T6 | `make verify` y cierre del documento | S15 | inline | pending |
+| T1 | vocabulario fijo de secciones con su naturaleza y `Parse` estricto | S1, S2, S5, S13 | inline | `52a75f0` |
+| T2 | `prompt.md` embebido, `Version()`, `Extract` con `pig` inyectado y `insufficient_information` por sección | S3, S9, S10, S14 | inline | `15a2793` |
+| T3 | caché pineado a `commit_sha` y una corrida por repositorio | S4, S7 | inline | `841aa2d` |
+| T4 | auditoría de citas contra el clon, `Source` que alimenta `AlignmentDossier` | S2, S6 | inline | `c8c7636` |
+| T5 | `projectbrief` y `models.project_brief` en config, `PIG_HOME` propio | S12, S13 | inline | `45ae6e4` |
+| T6 | `gfi brief`, `-force`, `PIG_HOME` del trabajo, ayuda y README/§17.7 | S7, S15 | `gentle-ai-worker` + inline | `0121435` |
+| T7 | `make verify` y cierre del documento | S15 | inline | ver L17 |
 
 Riesgo: **ítem 3** — el comando nuevo corre un agente sobre el clon de un tercero, y `config`
 gana una acción generativa: un modelo fuera del allowlist tiene que impedir el arranque, no
@@ -127,3 +128,91 @@ fijas —`TÉCNICO: Stack técnico` y `PROYECTO: <las cinco>`— que `Parse` **v
 constantes del paquete. La declaración no se cree: el mapa sección→naturaleza es una constante en
 código, y si el modelo la contradice el parseo falla. Alternativa descartada: marcar el
 encabezado (`## Stack técnico [técnico]`), que rompe el vocabulario fijo de S1.
+
+L8. Evidencia (TDD en rojo, una por tarea):
+- T1: `go test ./internal/projectbrief/` → «undefined: Parse», «undefined: Sections»
+  («no non-test Go files» antes de eso).
+- T2: «undefined: projectbrief.Extractor», «undefined: projectbrief.Input».
+- T3: «unknown field Store in struct literal of type projectbrief.Options».
+- T4/T5: ver L14.
+
+L9. Decisión (qué es «verificación» acá, contra S10): la evidencia se audita **contra el clon**, no
+contra la traza. `internal/explore` verifica contra la traza porque allí la pregunta es si el
+agente *miró*; acá la pregunta es si la cita *se puede comprobar*, y eso se contesta en el árbol:
+el archivo existe, está dentro del clon, y llega a esa línea. Verificar el transcript daría un
+aviso por cada afirmación derivada de un `grep` sobre el árbol, que es un falso positivo sobre un
+retrato correcto. Lo verificado es más fuerte que lo transcripto: una cita que no existe en el
+árbol se reporta, y ninguna cita que exista se puede inventar.
+
+L10. Evidencia (el test encontró el fixture, no el producto): las pruebas que parchean el caché
+para sembrar una entrada corrupta no sembraban nada, porque `store.Write` envuelve el documento
+en su propio sobre (`{"schema":1,"saved_at":…,"data":{…}}`) y el parche buscaba `entries` en la
+raíz. Se corrigió el helper del test (`patchCache`), no el código: el mutex de caché no tenía
+defecto, y el test que no podía fallar ahora falla si el sobre cambia.
+
+L11. Decisión (mensaje de `validateTools`): el helper pasa a recibir el nombre del campo, porque
+ahora lo usan dos trabajos. El texto del rechazo dejó de nombrar una sola tarea («exploration is
+read-only» → «the agent reads, it never writes»). Es un cambio de mensaje no pedido, mínimo y
+necesario: con dos secciones válidas, el viejo afirmaba algo falso para una de ellas. Ningún test
+ni documento pineaba el texto (verificado con `grep`); la regla de `PROYECTO.md` §17.7 no cambia.
+
+L12. Decisión (`-force`): el retrato se cachea por commit, y un árbol puede cambiar sin que el
+commit se mueva (un clon a medio actualizar, un archivo borrado a mano). `-force` responde la
+misma pregunta por segunda vez; la respuesta nueva reemplaza la guardada.
+
+L13. Evidencia (diferencial sobre el código compartido, antes del cambio): una copia de `fae8940`
+en `mktemp -d` con `gfi config check` da `exit 0` con la configuración válida, `explore.tools grants
+"bash", which can write: exploration is read-only` para una herramienta de escritura, y `unknown
+field "project_brief"` para el bloque nuevo. Los tres se repiten contra el árbol nuevo en T6: lo
+único que puede cambiar es el texto del rechazo (L11), documentado y sin test ni documento que lo
+pinee.
+
+L14. Evidencia (T6, delegado a `gentle-ai-worker` con superficies disjuntas y reanudado por el
+padre): RED observado por el worker — «forced.Force undefined (type projectbrief.Input has no field
+or method Force)» y «undefined: runBrief», los dos paquetes en `[build failed]`; GREEN con
+`go test -count=1 -run 'TestExtractWithForce|TestRunBriefNeeds' ./internal/projectbrief/ ./cmd/...`
+en `ok`. El test de `-force` además afirma lo que importa: la respuesta forzada reemplaza la
+guardada y una lectura posterior sin `-force` devuelve el texto nuevo, con la corrida contada dos
+veces y el costo medido de la corrida forzada.
+
+L15. **Defecto que encontró la revisión del worker, y se cerró acá** (no estaba en el plan de T5 y
+era real): `config.EnsureDirs` y `config.Resolve` no cubrían `project_brief.home`, y nadie escribía
+`pig.WriteConfig` para ese `PIG_HOME`. `projectbrief.New` hacía `filepath.Abs`, pero el home
+quedaba sin `agent/{models.json,mcp.json}`: `gfi brief` arrancaba un `pig` sin provider y fallaba
+después de un minuto de reintentos, por la razón equivocada. Cerrado en tres piezas: el home entra
+en `Resolve` y en `EnsureDirs` (con el test de directorios extendido), y `prepareBriefHome` en
+`cmd/gfi/brief.go` verifica `NAN_KEY` **antes** de nada y genera la configuración del agente desde
+`config.AllowedChatModels`. Tests nuevos: `TestPrepareBriefHomeWritesTheAgentConfiguration` (el
+`models.json` generado lleva el allowlist y `NAN_KEY`) y `TestPrepareBriefHomeNeedsTheKey` (sin
+clave no se escribe nada y el error la nombra).
+
+L16. Evidencia (lint, `make verify` primera corrida): `make verify` salió **0 por culpa del pipe**
+(`make verify | tail` devuelve el código de `tail`), y `golangci-lint` había fallado con dos
+hallazgos reales: `fmt.Fprint` a stdout sin chequear (`errcheck`) — un retrato que llegó a medio
+pipe no es un retrato, ahora se devuelve el error — y una ley de De Morgan en
+`audit_test.go` (`staticcheck`). Corregidos; `golangci-lint run` → `0 issues`. Lección aplicada: la
+terna build+test+lint se lee del log, no del código de salida del pipe.
+
+L17. Evidencia (diferencial de T7, mismo `cwd` y misma configuración): `gfi config check` contra la
+copia de `fae8940` y contra el árbol nuevo da salida **byte a byte idéntica** y `exit 0`. Las dos
+diferencias encontradas y aceptadas: (a) el bloque `project_brief` es aditivo — la copia vieja lo
+rechaza como `unknown field`, que es el comportamiento buscado de `DisallowUnknownFields`; (b) el
+texto del rechazo de herramientas cambió por L11. `models.project_brief = "qwen3.8-max"` → error
+que nombra el campo y el allowlist (I13).
+
+L18. Evidencia (cierre, `make verify` segunda corrida): build OK, `go test ./...` verde (13
+paquetes), `go vet` limpio, `golangci-lint run` → `0 issues`, `gofmt -l .` vacío, `design-check`
+sin diferencias. `VERIFY_EXIT=0` leído del log, no del código de salida del pipe (L16).
+
+L19. Estado del cierre: T1–T7 hechas; seis commits de trabajo y este de cierre. Fuera de alcance lo
+que el issue deja abierto: inyectar el retrato en el prompt de explore (sería un commit de versión
+de prompt aparte, S11) y cablear `gfi triage` al retrato en vez de a `CloneBrief` — hoy
+`AlignmentDossier` se alimenta sin cambios de firma y con el adaptador probado, pero el cableado de
+producción sigue usando el brief gratis de README + subjects, que cuesta cero corridas. Decidir eso
+es una decisión de producto con costo por corrida, no una tarea de este issue.
+
+L20. Límite declarado: el retrato no se corrió contra un repositorio real en este worktree, porque
+`NAN_KEY` no está configurada. Lo que está verificado es el camino completo con dobles (S8): la
+construcción del pedido, el parseo estricto, el pinneo, el caché, la auditoría contra el clon y el
+dossier de alineación. La primera corrida real es el primer `gfi brief` con clave, y su costo queda
+por medir (`PROYECTO.md` §17.7 ya registra que el caché lo anota por repositorio).

@@ -20,6 +20,9 @@ const (
 	DefaultCloneDir   = "var/repos"
 	DefaultStoreDir   = "var/store"
 	DefaultPigHomeDir = "var/pig"
+	// DefaultProfileHomeDir is PiG's home for the CV extraction job. It is a second home
+	// and not a subdirectory of the first: each job regenerates its own configuration.
+	DefaultProfileHomeDir = "var/pig-profile"
 	// 7117 y no 8080: 8080 es el default de media docena de servidores de desarrollo, y dos
 	// procesos peleando por el mismo puerto es la primera hora perdida de una demo. La
 	// interfaz sigue siendo 0.0.0.0 porque el binario corre en un VPS y se mira desde afuera.
@@ -50,6 +53,7 @@ type Config struct {
 	GitHub  GitHub  `json:"github"`
 	Indexer Indexer `json:"indexer"`
 	Explore Explore `json:"explore"`
+	Profile Profile `json:"profile"`
 	Clef    Clef    `json:"clef"`
 	Models  Models  `json:"models"`
 }
@@ -97,6 +101,23 @@ type Explore struct {
 	Budget   Duration `json:"budget"`
 }
 
+// Profile configures the CV extraction job.
+//
+// It delegates to the same headless agent as exploration, but it is a different job: the
+// CV is text, so the run gets no tools and connects no MCP server. The home is separate
+// on purpose — PiG's configuration is regenerated on every run, and two jobs sharing one
+// home would race on that write.
+//
+// The model is not here: it is models.profile_extract, one entry per generative action
+// (§17.7).
+type Profile struct {
+	Binary   string   `json:"binary"`
+	Home     string   `json:"home"`
+	IdleWarn Duration `json:"idle_warn"`
+	IdleKill Duration `json:"idle_kill"`
+	Budget   Duration `json:"budget"`
+}
+
 // Clef configures the decision model endpoint.
 type Clef struct {
 	URL        string   `json:"url"`
@@ -129,6 +150,13 @@ func Default() *Config {
 			Tools:    []string{"read", "ls", "grep", "mcp__codegraph__codegraph_explore"},
 			IdleWarn: Duration(20_000_000_000),
 			IdleKill: Duration(90_000_000_000),
+			Budget:   Duration(180_000_000_000),
+		},
+		Profile: Profile{
+			Binary:   "pig",
+			Home:     DefaultProfileHomeDir,
+			IdleWarn: Duration(30_000_000_000),
+			IdleKill: Duration(120_000_000_000),
 			Budget:   Duration(180_000_000_000),
 		},
 		Clef: Clef{
@@ -223,6 +251,24 @@ func (c *Config) Validate() error {
 			c.Explore.Budget.Get(), c.Explore.IdleKill.Get())
 	}
 
+	if strings.TrimSpace(c.Profile.Binary) == "" {
+		return fmt.Errorf("profile.binary is empty")
+	}
+	if strings.TrimSpace(c.Profile.Home) == "" {
+		return fmt.Errorf("profile.home is empty")
+	}
+	if c.Profile.IdleWarn.Get() <= 0 || c.Profile.IdleKill.Get() <= 0 || c.Profile.Budget.Get() <= 0 {
+		return fmt.Errorf("profile idle and budget durations must be positive")
+	}
+	if c.Profile.IdleKill.Get() <= c.Profile.IdleWarn.Get() {
+		return fmt.Errorf("profile.idle_kill (%s) must be greater than profile.idle_warn (%s)",
+			c.Profile.IdleKill.Get(), c.Profile.IdleWarn.Get())
+	}
+	if c.Profile.Budget.Get() < c.Profile.IdleKill.Get() {
+		return fmt.Errorf("profile.budget (%s) must be at least profile.idle_kill (%s)",
+			c.Profile.Budget.Get(), c.Profile.IdleKill.Get())
+	}
+
 	if strings.TrimSpace(c.Clef.URL) == "" {
 		return fmt.Errorf("clef.url is empty")
 	}
@@ -275,6 +321,9 @@ func (c *Config) Resolve(base string) error {
 	if c.Explore.Home, err = abs(base, c.Explore.Home); err != nil {
 		return err
 	}
+	if c.Profile.Home, err = abs(base, c.Profile.Home); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -287,7 +336,7 @@ func abs(base, path string) (string, error) {
 
 // EnsureDirs creates the directories the application owns.
 func (c *Config) EnsureDirs() error {
-	for _, dir := range []string{c.Repos.CloneDir, c.Store.Dir, c.Explore.Home} {
+	for _, dir := range []string{c.Repos.CloneDir, c.Store.Dir, c.Explore.Home, c.Profile.Home} {
 		if err := os.MkdirAll(dir, 0o755); err != nil {
 			return fmt.Errorf("config: create %s: %w", dir, err)
 		}

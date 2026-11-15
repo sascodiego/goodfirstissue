@@ -20,6 +20,7 @@ import (
 	"github.com/sascodiego/nan-hackathon-clef/internal/ghdata"
 	"github.com/sascodiego/nan-hackathon-clef/internal/indexer"
 	"github.com/sascodiego/nan-hackathon-clef/internal/pig"
+	"github.com/sascodiego/nan-hackathon-clef/internal/profile"
 	"github.com/sascodiego/nan-hackathon-clef/internal/repo"
 	"github.com/sascodiego/nan-hackathon-clef/internal/store"
 	"github.com/sascodiego/nan-hackathon-clef/internal/web"
@@ -141,7 +142,8 @@ func runServer(args []string) error {
 			MaxIssues: cfg.GitHub.MaxIssues,
 			PageSize:  cfg.GitHub.PageSize,
 		},
-		Timeout: cfg.GitHub.Timeout.Get(),
+		Timeout:   cfg.GitHub.Timeout.Get(),
+		Extractor: profileExtractor(cfg, st),
 	})
 	if err != nil {
 		return err
@@ -174,6 +176,40 @@ func runServer(args []string) error {
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
 	return srv.Shutdown(shutdownCtx)
+}
+
+// profileExtractor builds the CV extraction job for the server. It returns nil when the
+// binary must still start: without NAN_KEY there is nothing to authenticate the model with,
+// and a server that refused to boot over a missing key would hide the whole corpus behind it.
+//
+// The agent's configuration is generated in this job's own home, never inherited from a
+// user's ~/.pig, and it is written once at startup because the screen only reads it.
+func profileExtractor(cfg *config.Config, st *store.Store) *profile.Extractor {
+	if err := pig.WriteConfig(cfg.Profile.Home, pig.DefaultConfig(config.AllowedChatModels)); err != nil {
+		slog.Error("configurar PiG para el perfil: la extracción no está disponible", "err", err)
+		return nil
+	}
+	if os.Getenv("NAN_KEY") == "" {
+		slog.Warn("NAN_KEY no está configurada: la extracción del CV no está disponible")
+		return nil
+	}
+
+	extractor, err := profile.New(profile.Options{
+		Run:      pig.Run,
+		Model:    cfg.Models.ProfileExtract,
+		Binary:   cfg.Profile.Binary,
+		Home:     cfg.Profile.Home,
+		IdleWarn: cfg.Profile.IdleWarn.Get(),
+		IdleKill: cfg.Profile.IdleKill.Get(),
+		Budget:   cfg.Profile.Budget.Get(),
+		Store:    st,
+	})
+	if err != nil {
+		slog.Error("la extracción del CV no está disponible", "err", err)
+		return nil
+	}
+	slog.Info("extracción del CV lista", "model", cfg.Models.ProfileExtract, "home", cfg.Profile.Home)
+	return extractor
 }
 
 // loadConfig reads the file when given, applies defaults otherwise, and makes the

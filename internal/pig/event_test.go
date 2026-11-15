@@ -1,6 +1,9 @@
 package pig
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 const (
 	lineStart   = `{"type":"tool_execution_start","toolCallId":"call_1","toolName":"read","args":{"path":"command.go","offset":1590}}`
@@ -85,5 +88,35 @@ func TestToolsUsedIsDeduplicatedInOrder(t *testing.T) {
 		if got[i] != want[i] {
 			t.Fatalf("ToolsUsed() = %v, want %v", got, want)
 		}
+	}
+}
+
+// La API rechazando la clave llega como un mensaje de asistente con stopReason "error" y el
+// motivo en errorMessage: el turno termina bien y sin contenido, así que descartarlo deja una
+// corrida que se ve exitosa y vacía.
+func TestResultConsumeKeepsTheErrorMessage(t *testing.T) {
+	const lineError = `{"type":"message_end","message":{"role":"assistant","content":[],"stopReason":"error","errorMessage":"401: {\"message\":\"Invalid API key.\",\"type\":\"auth_error\",\"code\":\"401\"}"}}`
+
+	var r Result
+	r.consume([]byte(lineError))
+
+	if r.Error == "" {
+		t.Fatal("the error message was dropped: the run looks successful and empty")
+	}
+	if !strings.Contains(r.Error, "Invalid API key") {
+		t.Errorf("error = %q, want the API's own words", r.Error)
+	}
+	if r.Answer != "" {
+		t.Errorf("answer = %q, want none", r.Answer)
+	}
+}
+
+// Un turno sin error no inventa uno.
+func TestResultConsumeLeavesTheErrorEmptyOnSuccess(t *testing.T) {
+	var r Result
+	r.consume([]byte(lineAsk))
+
+	if r.Error != "" {
+		t.Errorf("error = %q, want none", r.Error)
 	}
 }

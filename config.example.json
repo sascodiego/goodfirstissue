@@ -31,6 +31,13 @@
     "idle_kill": "1m30s",
     "budget": "3m0s"
   },
+  "profile": {
+    "binary": "pig",
+    "home": "var/pig-profile",
+    "idle_warn": "30s",
+    "idle_kill": "2m0s",
+    "budget": "3m0s"
+  },
   "clef": {
     "url": "https://api.nan.builders/v1/systemone",
     "timeout": "1m0s",

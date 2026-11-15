@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/sascodiego/nan-hackathon-clef/internal/pig"
+	"github.com/sascodiego/nan-hackathon-clef/internal/store"
 )
 
 // RunFunc is one agent run. pig.Run is the real one; a test injects a fake so no test starts a
@@ -40,6 +41,9 @@ type Options struct {
 	IdleWarn time.Duration
 	IdleKill time.Duration
 	Budget   time.Duration
+	// Store keeps the portraits under projectbrief/cache.json, keyed by the commit they read.
+	// Nil disables caching, which is what a test that counts runs wants.
+	Store *store.Store
 }
 
 // Input names what is being described: one repository, at one commit, in one clone.
@@ -82,6 +86,7 @@ type Extractor struct {
 	idleWarn time.Duration
 	idleKill time.Duration
 	budget   time.Duration
+	store    *store.Store
 
 	// one is the single-in-flight slot. Two runs at once would read the same clone twice and
 	// rewrite the same PIG_HOME twice, which is the shape of a corrupted agent home and a double
@@ -117,6 +122,7 @@ func New(opts Options) (*Extractor, error) {
 		idleWarn: opts.IdleWarn,
 		idleKill: opts.IdleKill,
 		budget:   opts.Budget,
+		store:    opts.Store,
 		one:      make(chan struct{}, 1),
 	}, nil
 }
@@ -202,6 +208,17 @@ func (e *Extractor) Extract(ctx context.Context, in Input) (*Result, error) {
 		}, nil
 	}
 
+	// One run per repository, not per issue (S7): the same tree, the same model and the same
+	// reading rules are the same question, so the answer is reused instead of paid for twice.
+	key := cacheKey(in.Repository, in.CommitSHA, e.model, Version())
+	if entry, ok := e.lookup(key, in.CommitSHA); ok {
+		// A stored answer is read under the rules of the moment: an entry another reader wrote
+		// costs a run, never an error.
+		if doc, err := Parse(entry.Text); err == nil {
+			return e.result(doc, in, time.Duration(entry.TookMs)*time.Millisecond, true), nil
+		}
+	}
+
 	answer, out, err := e.ask(ctx, in)
 	if err != nil {
 		return nil, err
@@ -210,18 +227,29 @@ func (e *Extractor) Extract(ctx context.Context, in Input) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
+	result := e.result(doc, in, out.Total, false)
+	// The portrait stands even when it cannot be cached: the document is what was asked for, and
+	// the cache only saves a future run.
+	_ = e.remember(key, in.CommitSHA, result)
+	return result, nil
+}
+
+// result assembles the answer with the facts a consumer needs, and says why a doubtful portrait
+// is doubtful (I10).
+func (e *Extractor) result(doc *Document, in Input, took time.Duration, cached bool) *Result {
 	result := &Result{
 		Document:      doc,
 		Model:         e.model,
 		PromptVersion: Version(),
 		Commit:        in.CommitSHA,
 		Repository:    in.Repository,
-		Took:          out.Total,
+		Took:          took,
+		Cached:        cached,
 	}
 	if doc.Insufficient() {
 		result.Reason = "the model found nothing in the repository it could point at"
 	}
-	return result, nil
+	return result
 }
 
 // ask is the one agent run.

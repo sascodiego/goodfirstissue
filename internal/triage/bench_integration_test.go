@@ -48,17 +48,37 @@ const (
 // benchRun is one case as the report keeps it: what the judge said, what the policy decided,
 // and the label it is measured against.
 type benchRun struct {
-	Answers  map[string]nan.Answer `json:"answers,omitempty"`
-	Case     string                `json:"case"`
-	Trap     string                `json:"trap"`
-	Expect   Expected              `json:"expect"`
-	Kind     string                `json:"kind"`
-	KindProb map[string]float64    `json:"kind_probabilities,omitempty"`
-	Outcome  string                `json:"outcome"`
-	Reason   string                `json:"reason,omitempty"`
-	Missing  []string              `json:"missing,omitempty"`
-	KindConf float64               `json:"kind_confidence"`
-	Closed   bool                  `json:"closed_label"`
+	Answers   map[string]nan.Answer `json:"answers,omitempty"`
+	Alignment map[string]nan.Answer `json:"alignment,omitempty"`
+	Case      string                `json:"case"`
+	Trap      string                `json:"trap"`
+	Expect    Expected              `json:"expect"`
+	Kind      string                `json:"kind"`
+	KindProb  map[string]float64    `json:"kind_probabilities,omitempty"`
+	Outcome   string                `json:"outcome"`
+	Reason    string                `json:"reason,omitempty"`
+	Missing   []string              `json:"missing,omitempty"`
+	KindConf  float64               `json:"kind_confidence"`
+	Closed    bool                  `json:"closed_label"`
+}
+
+// benchBrief feeds the alignment node the frozen project brief the bank measured with. It is
+// data, not policy: the node, its questions and its threshold all come from production.
+type benchBrief struct{ key string }
+
+func (b benchBrief) Brief(_ context.Context, repository string) (string, error) {
+	key := b.key
+	if key == "" {
+		key = strings.ReplaceAll(repository, "/", "__")
+	}
+	if key == "" {
+		return "", fmt.Errorf("no project named for this case")
+	}
+	body, err := os.ReadFile(filepath.Join(benchDir, "project-brief", key+".md"))
+	if err != nil {
+		return "", fmt.Errorf("brief %q: %w", key, err)
+	}
+	return string(body), nil
 }
 
 // why renders the policy's explanation for a verdict. A mark or a doubt carries a reason, a
@@ -94,15 +114,23 @@ func TestBenchMeasuresWording(t *testing.T) {
 	if err != nil {
 		t.Fatalf("build the decision client: %v", err)
 	}
-	p1, err := New(Options{
-		Judge:     ClientJudge{Client: client, Model: benchModel},
-		Model:     benchModel,
-		CommitSHA: resolveCommit(t),
-		// Nil disables the journal: a cached verdict would hide the request this test counts.
-		Journal: nil,
-	})
-	if err != nil {
-		t.Fatalf("build the first pass: %v", err)
+	commit := resolveCommit(t)
+	// One first pass per case, because the brief is chosen by the case: a synthetic case names
+	// the project it imitates without carrying a repository of its own.
+	p1For := func(c benchCase) *P1 {
+		t.Helper()
+		p1, err := New(Options{
+			Judge:     ClientJudge{Client: client, Model: benchModel},
+			Model:     benchModel,
+			CommitSHA: commit,
+			Brief:     benchBrief{key: c.Project},
+			// Nil disables the journal: a cached verdict would hide the request this test counts.
+			Journal: nil,
+		})
+		if err != nil {
+			t.Fatalf("%s: build the first pass: %v", c.ID, err)
+		}
+		return p1
 	}
 	ctx := t.Context()
 
@@ -121,6 +149,7 @@ func TestBenchMeasuresWording(t *testing.T) {
 		abstentions int
 		scored      int
 		outcomeHits int
+		aligned     int
 	)
 	questionHits := map[string]int{}
 	questionSeen := map[string]int{}
@@ -135,7 +164,7 @@ func TestBenchMeasuresWording(t *testing.T) {
 			// The production pass still runs, because that is what proves the pre-gate resolves
 			// the issue before a question is asked. It never reaches a question, so measuring it
 			// would measure a request the product never sends.
-			analysis, err := p1.Run(ctx, issue)
+			analysis, err := p1For(c).Run(ctx, issue)
 			if err != nil {
 				t.Errorf("%s: pre-gated run: %v", c.ID, err)
 				continue
@@ -157,7 +186,7 @@ func TestBenchMeasuresWording(t *testing.T) {
 		}
 
 		started := time.Now()
-		analysis, err := p1.Run(ctx, issue)
+		analysis, err := p1For(c).Run(ctx, issue)
 		if err != nil {
 			// One bad case must not cost the whole report: the benchmark is the evidence.
 			t.Errorf("%s: triage request: %v", c.ID, err)
@@ -171,20 +200,24 @@ func TestBenchMeasuresWording(t *testing.T) {
 		noul := noulValues(analysis.Answers)
 		res := analysis.Result
 		run := benchRun{
-			Case:     c.ID,
-			Trap:     c.Trap,
-			Expect:   c.Expected,
-			Closed:   c.ClosedLabel,
-			Answers:  analysis.Answers,
-			Kind:     kind,
-			KindProb: analysis.Answers[QKind].Probabilities,
-			KindConf: analysis.Answers[QKind].Confidence,
-			Outcome:  string(res.Outcome),
-			Reason:   res.Reason,
-			Missing:  SortedMissing(res),
+			Case:      c.ID,
+			Trap:      c.Trap,
+			Expect:    c.Expected,
+			Closed:    c.ClosedLabel,
+			Answers:   analysis.Answers,
+			Alignment: analysis.Alignment,
+			Kind:      kind,
+			KindProb:  analysis.Answers[QKind].Probabilities,
+			KindConf:  analysis.Answers[QKind].Confidence,
+			Outcome:   string(res.Outcome),
+			Reason:    res.Reason,
+			Missing:   SortedMissing(res),
 		}
 		runs = append(runs, run)
 
+		if analysis.Alignment != nil {
+			aligned++
+		}
 		if run.Outcome == c.Expected.Outcome {
 			outcomeHits++
 		}
@@ -265,7 +298,7 @@ func TestBenchMeasuresWording(t *testing.T) {
 		t.Logf("  %-20s %d/%d", id, questionHits[id], questionSeen[id])
 	}
 
-	reportConsistency(t, ctx, p1, cases, runs)
+	reportConsistency(t, ctx, p1For, cases, runs)
 	writeBenchReport(t, m, runs)
 }
 
@@ -309,7 +342,7 @@ func resolveCommit(t *testing.T) string {
 // A single run says nothing about whether the wording is stable. The subset that decides the
 // product is asked again through the same first pass, and any disagreement is reported: a
 // question whose answer moves between identical inputs is not a question, it is noise.
-func reportConsistency(t *testing.T, ctx context.Context, p1 *P1, cases []benchCase, first []benchRun) {
+func reportConsistency(t *testing.T, ctx context.Context, p1For func(benchCase) *P1, cases []benchCase, first []benchRun) {
 	t.Helper()
 
 	byID := map[string]benchRun{}
@@ -318,9 +351,10 @@ func reportConsistency(t *testing.T, ctx context.Context, p1 *P1, cases []benchC
 	}
 	for _, id := range consistencySubset {
 		var issue Issue
+		var which benchCase
 		for _, c := range cases {
 			if c.ID == id {
-				issue = c.issue()
+				issue, which = c.issue(), c
 			}
 		}
 		base, ok := byID[id]
@@ -329,7 +363,7 @@ func reportConsistency(t *testing.T, ctx context.Context, p1 *P1, cases []benchC
 			continue
 		}
 		for pass := 2; pass <= consistencyRuns; pass++ {
-			again, err := p1.Run(ctx, issue)
+			again, err := p1For(which).Run(ctx, issue)
 			if err != nil {
 				t.Errorf("%s: consistency request: %v", id, err)
 				continue

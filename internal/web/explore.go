@@ -88,6 +88,12 @@ type StageOutcome struct {
 	At     time.Time
 	// Latency is how long the finished run took, or how long the reused one did.
 	Latency time.Duration
+	// ToolCalls is how many tools the agent called: the cheapest signal that a run did
+	// real work instead of dying on startup.
+	ToolCalls int
+	// Exit is the child's exit code, which is what distinguishes a cut run from one that
+	// refused to start.
+	Exit int
 }
 
 // StageRunner runs one stage. It is injected through Options: no test runs pig, touches
@@ -169,6 +175,7 @@ type stageView struct {
 type queue struct {
 	mu      sync.Mutex
 	stage   StageRunner
+	log     *slog.Logger
 	workers int
 	jobs    map[jobKey]*job
 	pending []jobKey
@@ -177,15 +184,19 @@ type queue struct {
 	base    context.Context
 }
 
-func newQueue(stage StageRunner, workers int) *queue {
+func newQueue(stage StageRunner, workers int, log *slog.Logger) *queue {
 	if workers <= 0 {
 		workers = defaultExploreWorkers
 	}
 	if workers > exploreWorkersCap {
 		workers = exploreWorkersCap
 	}
+	if log == nil {
+		log = slog.Default()
+	}
 	return &queue{
 		stage:   stage,
+		log:     log,
 		workers: workers,
 		jobs:    make(map[jobKey]*job),
 		kick:    make(chan struct{}, 1),
@@ -285,6 +296,8 @@ func (q *queue) work(j *job) {
 			err = errors.New("la cola arrancó un job sin contexto")
 			return
 		}
+		q.log.Info("análisis en curso",
+			"repo", j.key.Repo, "issue", j.key.Issue, "stage", j.key.Stage)
 		out, err = stage(j.ctx, j.request(), progress)
 	}()
 	q.finish(j, out, err)
@@ -294,12 +307,13 @@ func (q *queue) work(j *job) {
 // reporta como listo, porque la corrida que lo respondía ya no existe.
 func (q *queue) finish(j *job, out StageOutcome, err error) {
 	q.mu.Lock()
-	defer q.mu.Unlock()
 
 	if j.cancel != nil {
 		j.cancel()
 	}
 	if j.state == jobCanceled {
+		// Un job cancelado ya se registró al cancelarse: no se reescribe ni se loguea dos veces.
+		q.mu.Unlock()
 		return
 	}
 
@@ -315,6 +329,23 @@ func (q *queue) finish(j *job, out StageOutcome, err error) {
 	default:
 		j.state = jobReady
 		j.latency = out.Latency
+	}
+	state, note, latency := j.state, j.note, j.latency
+	key := j.key
+	q.mu.Unlock()
+
+	// Se loguea fuera del mutex: escribir en stderr no puede frenar la cola.
+	fields := []any{
+		"repo", key.Repo, "issue", key.Issue, "stage", key.Stage,
+		"state", state, "ms", latency.Milliseconds(), "tool_calls", out.ToolCalls,
+	}
+	switch state {
+	case jobError:
+		q.log.Error("análisis fallido", append(fields, "exit", out.Exit, "reason", note)...)
+	case jobReused:
+		q.log.Info("análisis reutilizado", append(fields, "produced_at", out.At.UTC().Format(time.RFC3339))...)
+	default:
+		q.log.Info("análisis listo", fields...)
 	}
 }
 
@@ -355,6 +386,11 @@ func (q *queue) fail(repo string, issue int, stage, note string) {
 		return
 	}
 	q.jobs[key] = &job{key: key, state: jobError, note: note, at: time.Now()}
+
+	// Un rechazo no gasta una corrida y por eso mismo deja rastro: es lo que se busca
+	// cuando alguien dice que el botón no anda.
+	q.log.Warn("análisis no encolado",
+		"repo", key.Repo, "issue", key.Issue, "stage", stage, "reason", note)
 }
 
 // cancel stops one row's stage: la marca cancelada, saca de la cola lo pendiente y corta el
@@ -369,18 +405,21 @@ func (q *queue) cancel(repo string, issue int) bool {
 	}
 
 	q.mu.Lock()
-	defer q.mu.Unlock()
-
-	canceled := false
+	canceled := 0
 	for key := range q.jobs {
 		if key.Repo != repo || key.Issue != issue {
 			continue
 		}
 		if q.cancelLocked(q.jobs[key]) {
-			canceled = true
+			canceled++
 		}
 	}
-	return canceled
+	q.mu.Unlock()
+
+	if canceled > 0 {
+		q.log.Info("análisis cancelado", "repo", repo, "issue", issue, "cancelados", canceled)
+	}
+	return canceled > 0
 }
 
 // cancelLocked marca cancelado lo que todavía se puede detener. Un job ya terminado no se
@@ -422,8 +461,6 @@ func (q *queue) drain(repo string) int {
 	}
 
 	q.mu.Lock()
-	defer q.mu.Unlock()
-
 	dropped := 0
 	for _, key := range append([]jobKey(nil), q.pending...) {
 		if key.Repo != repo {
@@ -439,6 +476,11 @@ func (q *queue) drain(repo string) int {
 		j.at = time.Now()
 		dropped++
 	}
+	q.mu.Unlock()
+
+	if dropped > 0 {
+		q.log.Info("cola vaciada", "repo", repo, "descartados", dropped)
+	}
 	return dropped
 }
 
@@ -452,7 +494,6 @@ func (q *queue) cancelAll(repo string) int {
 	stopped := q.drain(repo)
 
 	q.mu.Lock()
-	defer q.mu.Unlock()
 	for key, j := range q.jobs {
 		if key.Repo != repo || j.state != jobRunning {
 			continue
@@ -465,6 +506,9 @@ func (q *queue) cancelAll(repo string) int {
 		j.at = time.Now()
 		stopped++
 	}
+	q.mu.Unlock()
+
+	q.log.Info("cola cancelada entera", "repo", repo, "cancelados", stopped)
 	return stopped
 }
 
@@ -592,6 +636,8 @@ func (h *Handler) exploreSelected(w http.ResponseWriter, r *http.Request) {
 	// El tope se mira antes de gastar cualquier otra comprobación: 51 issues no se encolan
 	// ni se analizan, y la pantalla lo dice con cuántas se pidieron (S14).
 	if len(numbers) > exploreMaxIssues {
+		h.log.Warn("pedido de análisis rechazado",
+			"repo", entry.Key, "pedidas", len(numbers), "tope", exploreMaxIssues)
 		redirectBack(w, r, entry.Key, "limite", len(numbers))
 		return
 	}
@@ -628,6 +674,10 @@ func (h *Handler) exploreSelected(w http.ResponseWriter, r *http.Request) {
 			queued++
 		}
 	}
+
+	h.log.Info("pedido de análisis",
+		"repo", entry.Key, "pedidas", len(numbers), "encoladas", queued,
+		"workers", h.queue.workerCount())
 
 	// Vuelve enseguida: la corrida sigue en la cola, y la pantalla la muestra al pedirla.
 	redirectBack(w, r, entry.Key, "analizando", queued)
@@ -853,6 +903,7 @@ func (h *Handler) stageRunner(ctx context.Context, req StageRequest, progress fu
 		IdleKill:  h.explore.IdleKill,
 		Budget:    h.explore.Budget,
 		OnSilence: progress,
+		Logger:    h.log,
 	}
 
 	res, err := sess.Analyze(ctx, in)
@@ -865,12 +916,18 @@ func (h *Handler) stageRunner(ctx context.Context, req StageRequest, progress fu
 			out.At = res.Previous.At
 			out.Latency = time.Duration(res.Previous.LatencyMs) * time.Millisecond
 		}
+		if res.Record != nil {
+			out.ToolCalls = res.Record.Metrics.ToolCalls
+		}
 		return out, nil
 	}
 
 	record := res.Record
 	latency := time.Duration(record.Metrics.TotalMs) * time.Millisecond
-	outcome := StageOutcome{Latency: latency}
+	outcome := StageOutcome{Latency: latency, ToolCalls: record.Metrics.ToolCalls}
+	if res.Outcome != nil {
+		outcome.Exit = res.Outcome.ExitCode
+	}
 
 	// El registro quedó guardado igual: la corrida existió y sus métricas son evidencia
 	// (I10). Lo que no existe es un resultado que la fila pueda llamar «listo».

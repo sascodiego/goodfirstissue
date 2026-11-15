@@ -37,6 +37,10 @@ type profilePage struct {
 	// HasAgent es falso en un binario que arrancó sin agente usable. La pantalla se sirve
 	// igual y lo dice; solo los POST responden que no está.
 	HasAgent bool
+	// Live mantiene el layout igual que en la issue: la cola vive en el dashboard, así que
+	// esta pantalla nunca se refresca sola. El campo existe porque el layout lo consulta en
+	// toda página, y un modelo sin él rompe el render.
+	Live bool
 
 	HasCV     bool
 	CV        string

@@ -93,6 +93,11 @@ navegar no la corta: volvés y sigue donde estaba.
   cada fila dice qué correr para arreglarlo.
 - El triaje preliminar es la compuerta de P1 y todavía no está conectado: hoy se analiza lo
   que selecciones. La cola ya es por etapa, así que el triaje entra como una etapa más.
+- **Cada transición deja una línea en stderr** (JSON opcional con `slog`, por defecto texto):
+  `pedido de análisis` con lo pedido y lo encolado, `análisis en curso`, `análisis listo` con
+  `ms` y `tool_calls`, `análisis reutilizado` con cuándo se produjo, `análisis fallido` con
+  `exit` y el motivo, y `WARN` para cada rechazo. Es lo que queda cuando la pestaña ya se
+  cerró.
 
 Si lo vas a dejar público, que sea detrás del proxy y no desnudo: la app no tiene
 autenticación y el alta de repositorios escribe en el store y gasta el rate limit del token

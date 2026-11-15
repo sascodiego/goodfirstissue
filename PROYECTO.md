@@ -1412,6 +1412,7 @@ Una lista donde todo es «sí» no informa nada. Estos tres bloques separan lo q
 - `label_honest`: la etiqueta **se ignora, no se audita** (`#40`, I6).
 - `confirmed_defect` y `learning_value` (§2.1.1).
 - Tercer repositorio (§2.1.1).
+- **La compuerta I9 en la interfaz**: explorar no exige un veredicto `CANDIDATA`, así que el botón de analizar aparece también en las `MARCADA` (`LIMITES.md` §9, issue #48). Es un error conocido de la hackathon, no una limitación de diseño: el pipeline lo respeta, la aplicación todavía no lo impone.
 
 ---
 

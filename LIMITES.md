@@ -117,6 +117,35 @@ peticiones, y emite hallazgos —nunca un veredicto— para que Clef siga siendo
 ecosistema de etiquetas». `BENCHMARKS.md` §3 la reporta como hallazgo del estudio de corpus, no como
 salida del producto.
 
+### 9. La compuerta I9 en la interfaz: no está implementada
+
+**Error conocido de la hackathon, no limitación de diseño.** I9 dice que nunca se gasta un
+explore en una issue que no pasó la compuerta de P1. El pipeline lo respeta cuando alguien lo
+corre a mano en ese orden; **la aplicación no lo impone**.
+
+- `internal/web/evidence.go:69` decide si hay botón de analizar con cola, entorno y `NAN_KEY`.
+  **El veredicto de triaje no participa**: el botón aparece en una `MARCADA` igual que en una
+  `CANDIDATA`.
+- `POST /explore` acepta cualquier `repo` + `issue`, sin mirar el journal.
+- `stageTriage` en `internal/web/explore.go:33` es un **rótulo del escalón** que pinta el
+  dashboard, no una compuerta.
+
+Medido en la corrida de #38 sobre `spf13/cobra` (pin `adbc881`, 20 issues): **13 de 20 quedaron
+`MARCADA` por `already_working`** — tienen una PR abierta desde hace meses. Son exactamente las
+issues que I9 existe para no explorar, y hoy la interfaz las ofrece como cualquier otra.
+
+**Por qué no se arregla para la demo.** No es una línea: hay que sacar el botón cuando el
+veredicto guardado no es `CANDIDATA`, rechazar el `POST` con el motivo en el cuerpo —ocultar el
+botón no es una compuerta, el endpoint es la superficie real— y aplicar la misma regla a la
+selección múltiple del dashboard, que tiene que decir cuántas descartó. Cambia lo que el usuario
+puede hacer, no solo lo que ve.
+
+**Cómo se comporta hoy, y qué no hacer en la demo**: el veredicto se muestra en el bloque de
+triaje y el botón de analizar sigue disponible en todas. No hay que presentar el embudo como si la
+compuerta estuviera puesta.
+
+Seguimiento: issue #48, con los criterios de aceptación.
+
 ## Límites técnicos medidos
 
 No son cortes: son cosas que probamos y no funcionan como suponíamos.

@@ -41,6 +41,8 @@ no documentado es una tarea).
 
 - **Qué se pierde**: 12 de las 188 issues que el proyecto terminó con una PR mergeada eran
   preguntas, y quedan derivadas en vez de candidatas.
+- **Cómo se ve en el producto**: la issue sale `DERIVADA`, un desenlace propio del primer pase:
+  ni candidata ni descartada. Es lo que muestra la tabla de `PROYECTO.md` §7.7.
 - **El arreglo**: la ronda dos, que es una petición más por issue.
 
 ### 4. Autoría de las etiquetas: verificada en la API, no incorporada
@@ -66,8 +68,12 @@ como banco de pruebas, no como interfaz.
 
 ### 7. Diferidos por alcance, no por tiempo
 
-Nodo de alineación documental (`PROYECTO.md` §7.5), `confirmed_defect` de P2 y
-`learning_value` de P3: cortados en §2.1.1 y no tocados acá.
+`confirmed_defect` de P2 y `learning_value` de P3: cortados en §2.1.1 y no tocados acá.
+
+**El nodo de alineación salió de esta lista**: se implementó y se midió en la PR del benchmark, y
+desde entonces es la segunda petición de P1 para las features (`PROYECTO.md` §7.5). Los briefs con
+los que se midió quedaron en `internal/triage/testdata/bench/project-brief/`, y producción los arma
+desde el clon.
 
 ## Límites técnicos medidos
 

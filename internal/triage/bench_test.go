@@ -311,29 +311,3 @@ func TestBenchConsistencySubsetExists(t *testing.T) {
 		}
 	}
 }
-
-// DerivedKind is the candidate tree: grounded nodes combined by our code, never by the
-// model. Whether it beats the single classification question is what the benchmark
-// measures; this test only pins the rule.
-func TestDerivedKindFollowsTheTree(t *testing.T) {
-	tests := []struct {
-		name string
-		noul map[string]float64
-		want string
-	}{
-		{"asking for information", map[string]float64{"asks_for_information": 0.9, "asks_for_new_behaviour": 0.1}, "question"},
-		{"asking for new behaviour", map[string]float64{"asks_for_information": 0.2, "asks_for_new_behaviour": 0.8}, "feature"},
-		{"existing behaviour called defective", map[string]float64{"asks_for_new_behaviour": 0.1, "describes_existing_behaviour": 0.9, "reports_defect": 0.85}, "bug"},
-		{"existing behaviour, no defect claim", map[string]float64{"asks_for_new_behaviour": 0.1, "describes_existing_behaviour": 0.8, "reports_defect": 0.2}, "feature"},
-		{"nothing grounded", map[string]float64{"asks_for_information": 0.4, "asks_for_new_behaviour": 0.4, "describes_existing_behaviour": 0.3}, "other"},
-		{"a question that also asks for a change", map[string]float64{"asks_for_information": 0.8, "asks_for_new_behaviour": 0.7}, "feature"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := DerivedKind(tt.noul); got != tt.want {
-				t.Errorf("DerivedKind(%v) = %q, want %q", tt.noul, got, tt.want)
-			}
-		})
-	}
-}

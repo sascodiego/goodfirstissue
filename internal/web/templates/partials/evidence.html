@@ -1,5 +1,129 @@
-{{/* Punto de inclusión evidence: archivos, call paths y tests ([explore]).
-     Vacío a propósito. Una definición vacía no reemplaza un cuerpo existente,
-     así que la issue que traiga ese bloque puede darle contenido sin pelear
-     con este archivo. */}}
-{{define "evidence"}}{{end}}
+{{/* El bloque de evidencia de la pantalla de issue ([explore], issue #12).
+     Muestra lo que ya se analizó sobre el árbol pineado; si no hay nada, lo dice y ofrece
+     analizarla. Nunca presenta un «observed» que la traza no respalde como si lo fuera. */}}
+{{define "evidence"}}
+<section class="evid" aria-label="Evidencia del código">
+
+  <header class="evid-top">
+    <div>
+      <p class="evid-label">Evidencia · explore</p>
+      <h2>Qué toca esta issue</h2>
+    </div>
+    {{if .CanAnalyze}}
+    <form class="inline" method="post" action="/explore" data-busy>
+      <input type="hidden" name="repo" value="{{.Active.Key}}">
+      <input type="hidden" name="issue" value="{{.Issue.Number}}">
+      <button class="btn" type="submit">{{if .HasEvidence}}Volver a analizar{{else}}Analizar esta issue{{end}}</button>
+    </form>
+    {{end}}
+  </header>
+
+  {{if .HasEvidence}}
+
+  <p class="evid-pin">
+    guardado el <b>{{.Evidence.Analyzed}}</b>
+    · {{.Evidence.Latency}} de trabajo
+    · modelo <b>{{.Evidence.Model}}</b>
+    · prompt <b>{{.Evidence.Prompt}}</b>
+    · commit <b>{{.Evidence.Commit}}</b>
+  </p>
+
+  {{with .Evidence.Partial}}<p class="evid-warn">{{.}}</p>{{end}}
+
+  <p class="evid-intent">{{.Evidence.Intent}}</p>
+
+  {{if .Evidence.HasFiles}}
+  <table class="evid-files">
+    <caption>Archivos · <b>{{.Evidence.Observed}}</b> observados de {{len .Evidence.Files}}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Archivo</th>
+        <th scope="col">Relación</th>
+        <th scope="col">Por qué</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Evidence.Files}}
+      <tr>
+        <td class="evid-path">
+          <code>{{.Path}}{{with .Line}}:{{.}}{{end}}</code>
+          {{with .Symbol}}<span class="evid-sym">{{.}}</span>{{end}}
+        </td>
+        <td><span class="rel {{.Relation}}">{{.Relation}}</span></td>
+        <td class="evid-reason">{{.Reason}}{{if .Downgraded}}<span class="evid-note">{{.Note}}</span>{{end}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="none">El análisis no produjo archivos: la evidencia no alcanzó para ubicar el cambio.</p>
+  {{end}}
+
+  {{if .Evidence.CallPaths}}
+  <p class="evid-label">Caminos de llamada</p>
+  <ul class="evid-paths">
+    {{range .Evidence.CallPaths}}
+    <li>{{range $i, $step := .}}{{if $i}} <span class="arrow">→</span> {{end}}<code>{{$step}}</code>{{end}}</li>
+    {{end}}
+  </ul>
+  {{end}}
+
+  {{if .Evidence.Tests}}
+  <p class="evid-label">Tests que cubren el área</p>
+  <ul class="evid-tests">
+    {{range .Evidence.Tests}}<li><code>{{.}}</code></li>{{end}}
+  </ul>
+  {{end}}
+
+  <div class="evid-reqs">
+    <div>
+      <p class="evid-label">Hay que saber hacer</p>
+      {{if .Evidence.Knowledge}}<ul>{{range .Evidence.Knowledge}}<li>{{.}}</li>{{end}}</ul>{{else}}<p class="none">nada específico</p>{{end}}
+    </div>
+    <div>
+      <p class="evid-label">Hay que saber de este proyecto</p>
+      {{if .Evidence.Project}}<ul>{{range .Evidence.Project}}<li>{{.}}</li>{{end}}</ul>{{else}}<p class="none">nada específico</p>{{end}}
+    </div>
+    <div>
+      <p class="evid-label">Cómo se contribuye acá</p>
+      {{if .Evidence.Process}}<ul>{{range .Evidence.Process}}<li>{{.}}</li>{{end}}</ul>{{else}}<p class="none">nada específico</p>{{end}}
+    </div>
+  </div>
+
+  {{if .Evidence.Violations}}
+  <p class="evid-warn">
+    {{len .Evidence.Violations}} archivo(s) se afirmaron <b>observed</b> sin respaldo en la
+    traza de esa corrida. Se muestran como <b>probable</b>: lo que una herramienta no
+    devolvió en esa corrida no se puede presentar como visto.
+  </p>
+  {{end}}
+
+  {{if or .Evidence.Unknowns .Evidence.Missing}}
+  <div class="evid-doubts">
+    {{if .Evidence.Unknowns}}
+    <div>
+      <p class="evid-label">Lo que no se pudo determinar</p>
+      <ul>{{range .Evidence.Unknowns}}<li>{{.}}</li>{{end}}</ul>
+    </div>
+    {{end}}
+    {{if .Evidence.Missing}}
+    <div>
+      <p class="evid-label">Lo que la issue no dice</p>
+      <ul>{{range .Evidence.Missing}}<li>{{.}}</li>{{end}}</ul>
+    </div>
+    {{end}}
+  </div>
+  {{end}}
+
+  {{else}}
+
+  <p class="none">
+    Todavía no hay evidencia guardada de esta issue con este modelo, este prompt y este
+    commit. Analizarla tarda alrededor de dos minutos y corre en el servidor: podés seguir
+    navegando mientras tanto.
+  </p>
+
+  {{end}}
+
+</section>
+{{end}}

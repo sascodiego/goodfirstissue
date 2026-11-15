@@ -60,9 +60,25 @@
         <form class="inline" method="post" action="/repos/{{.Active.Key}}/refresh" data-busy>
           <button class="btn" type="submit">Refrescar</button>
         </form>
-        <button class="btn primary" type="button" id="analizar" disabled aria-describedby="analizar-nota">
-          Analizar <span id="sel-count">0</span> seleccionadas
-        </button>
+        {{/* El formulario del análisis vive fuera de la tabla y las casillas se le enganchan
+             con form="analizar": así cada fila puede tener su propio formulario de cancelar
+             sin anidar formularios, que el navegador no perdona. */}}
+        <form class="inline" method="post" action="/explore" id="analizar" data-busy>
+          <input type="hidden" name="repo" value="{{.Active.Key}}">
+          <button class="btn primary" type="submit" id="analizar-btn" disabled aria-describedby="analizar-nota">
+            Analizar <span id="sel-count">0</span> seleccionadas
+          </button>
+        </form>
+        {{if .Live}}
+        <form class="inline" method="post" action="/explore/clear">
+          <input type="hidden" name="repo" value="{{.Active.Key}}">
+          <button class="btn" type="submit" title="Descarta lo que espera; lo que corre sigue">Vaciar la cola</button>
+        </form>
+        <form class="inline" method="post" action="/explore/cancel-all">
+          <input type="hidden" name="repo" value="{{.Active.Key}}">
+          <button class="btn danger" type="submit" title="Corta también lo que está corriendo">Cancelar todo</button>
+        </form>
+        {{end}}
       </div>
     </header>
 
@@ -73,6 +89,14 @@
       <div><dt>sin comentarios</dt><dd>{{.Stats.WithoutComment}}</dd></div>
       <div><dt>análisis</dt><dd>{{.Stats.Analyses}}</dd></div>
     </dl>
+
+    {{if .Live}}
+    <p class="queue-bar" aria-live="polite">
+      <span class="run running" data-live="1">{{.Running}} en curso</span>
+      {{if .Queued}}<span class="run queued">{{.Queued}} en cola</span>{{end}}
+      <span class="queue-eta">{{.Estimate}} a {{.Workers}} en paralelo · podés cambiar de pantalla y volver</span>
+    </p>
+    {{end}}
 
     <form class="filters" method="get" action="/">
       <input type="hidden" name="repo" value="{{.Active.Key}}">
@@ -117,29 +141,12 @@
             <th scope="col">PR</th>
             <th scope="col">Actualizada</th>
             <th scope="col" class="right">Com.</th>
+            <th scope="col">Análisis</th>
+            <th scope="col" class="c-cancel"></th>
           </tr>
         </thead>
-        <tbody>
-          {{range .Rows}}
-          <tr>
-            <td class="c-sel">
-              <input type="checkbox" class="row-sel" data-issue="{{.Number}}"
-                     aria-label="Seleccionar #{{.Number}}">
-            </td>
-            <td class="c-num">{{.Number}}</td>
-            <td class="c-ttl"><a href="/issue/{{$.Active.Key}}/{{.Number}}">{{.Title}}</a></td>
-            <td class="c-lbl">
-              {{if .HasLabel}}{{range .Labels}}<span class="chip{{if .Hit}} hit{{end}}">{{.Text}}</span>{{end}}
-              {{else}}<span class="none">ninguna</span>{{end}}
-            </td>
-            <td class="c-state"><span class="st {{.State}}">{{.StateText}}</span></td>
-            <td class="c-pr{{if not .HasPR}} dash{{end}}">{{if .HasPR}}#{{.PR}}{{else}}—{{end}}</td>
-            <td class="c-date">{{.Updated}}</td>
-            <td class="c-com{{if .NoComments}} dash{{end}}">{{.Comments}}</td>
-          </tr>
-          {{else}}
-          <tr class="no-rows"><td colspan="8">Ninguna issue coincide con este filtro.</td></tr>
-          {{end}}
+        <tbody id="filas">
+          {{template "rows" .}}
         </tbody>
       </table>
     </div>
@@ -148,8 +155,11 @@
       <span>{{.Shown}} de {{.Total}} · pinneado a {{.Commit}}</span>
       <p id="analizar-nota">
         {{if eq .Total 0}}El corpus de este repositorio está vacío: corré <code>gfi fetch {{.Active.Name}}</code>.{{end}}
-        El análisis por issue todavía no está conectado: llega con <code>internal/triage</code>.
-        El estado de cada fila es un hecho medido (PR abierta) o la ausencia de triaje.
+        El análisis corre en el servidor, no en la pestaña: podés irte a otra pantalla y
+        volver, y lo que estaba en curso sigue estándolo. Lo ya analizado con el mismo
+        prompt, modelo y commit se reutiliza y se anuncia con su fecha.
+        El triaje preliminar es la compuerta de P1 y todavía no está conectado (llega con
+        #11): hoy se analiza lo que selecciones.
       </p>
     </footer>
 

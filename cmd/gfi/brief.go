@@ -103,6 +103,12 @@ func runBrief(args []string) error {
 	fmt.Fprintf(os.Stderr, "describing %s with %s\n", repoKey, cfg.Models.ProjectBrief)
 	res, err := src.Portrait(context.Background(), repoKey)
 	if err != nil {
+		// An answer that followed no contract is shown: the run already cost minutes, and the
+		// document is what tells the next attempt what went wrong.
+		var failure *projectbrief.Failure
+		if errors.As(err, &failure) && failure.Answer != "" {
+			fmt.Fprintf(os.Stderr, "\nthe model answered something that is not a portrait:\n---\n%s\n---\n", failure.Answer)
+		}
 		return err
 	}
 

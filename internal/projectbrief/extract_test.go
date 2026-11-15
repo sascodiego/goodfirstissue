@@ -364,3 +364,25 @@ func replaceOnce(t *testing.T, answer, old, replacement string) string {
 func outcomeOf(answer string) *pig.Outcome {
 	return &pig.Outcome{Answer: answer, Total: 41 * time.Second}
 }
+
+// A run costs minutes: when the answer follows no contract, the answer comes back with the failure
+// so the next attempt can be diagnosed instead of being run blind.
+func TestExtractHandsBackTheAnswerItCouldNotRead(t *testing.T) {
+	answer := "El proyecto es una librería de CLI.\nNo sigue el contrato.\n"
+	a := &agent{out: outcomeOf(answer)}
+	e := newExtractor(t, a)
+
+	_, err := e.Extract(context.Background(), projectbrief.Input{
+		Repository: "spf13__cobra", CommitSHA: testCommit, Dir: clone(t),
+	})
+	var failure *projectbrief.Failure
+	if !errors.As(err, &failure) {
+		t.Fatalf("err = %v, want a Failure", err)
+	}
+	if failure.Answer != answer {
+		t.Errorf("answer = %q, want the model's own text", failure.Answer)
+	}
+	if !strings.Contains(failure.Detail, "line 1") {
+		t.Errorf("detail = %q, want the parser's line", failure.Detail)
+	}
+}

@@ -260,3 +260,28 @@ decisión (con clave → `Primary` puesto y el home del agente configurado; sin 
 `Fallback` es `CloneBrief` sobre el directorio de clones y **nada** se escribe en el home).
 Costo documentado en `PROYECTO.md` §7.5 y `README.md`: §7.5 decía «no cuesta ninguna petición
 extra» y eso dejó de ser cierto, así que ahí está el número y la condición.
+
+L24. **Evidencia de corrida real** (primera vez con `NAN_KEY`, worktree con `.env`): el retrato se
+corrió contra `spf13/cobra` clonado en `adbc8813901b`.
+- **La primera corrida falló, y por algo que ningún doble podía mostrar**: el modelo envolvió la
+  respuesta en un bloque de código y `Parse` la rechazó en la línea 1. 2m0s de agente tirados sin
+  documento. Dos defectos, no uno: (a) una cerca que envuelve el documento es ruido de transporte,
+  no contenido — `unfence` lee a través de **un** par de cercas y nada más, y el texto sigue
+  viajando verbatim; (b) el fallo era **indiagnosticable**: `Extract` tiraba la respuesta, así que
+  la segunda corrida costaba otros dos minutos a ciegas. Ahora `Failure.Answer` devuelve lo que el
+  modelo escribió y `gfi brief` lo imprime a stderr entre líneas de guiones.
+- **Segunda corrida: exit 0, 2m12.6s**, documento de 34 líneas, **21 afirmaciones, 0 sin
+  respaldo** (todas las citas existen en el clon con esa línea). Calidad observable: la sección
+  `Dirección: qué acepta y qué no` encontró que los cambios incompatibles se aceptan en `master`
+  pero no en las ramas de release, y que los reportes de vulnerabilidad de dependencias upstream
+  no se aceptan (`CONDUCT.md:19,23`, `SECURITY.md:57`) — exactamente la señal que el nodo necesita.
+- **Reuso: 0.008s** contra los 2m12.6s, documento idéntico byte a byte, y el costo de la corrida
+  original conservado en el reporte (`took 2m12.6s`), no cero.
+- **El cableado, en vivo**: `gfi triage` con el retrato ya cacheado — 10 issues, 3.5s, 4 peticiones,
+  `0 degraded`, y **ningún aviso de respaldo en stderr**: el nodo leyó el retrato, no el README. La
+  issue #2491 (`feature`) pasó por alineación con `fits_direction 0.781` · `only_for_requester
+  0.187` → CANDIDATA. Prueba hermética: se corrió con un store copiado y sin journal, así que la
+  alineación fue fresca; si el retrato hubiera fallado, el `slog.Warn` de `OnFailure` habría
+  aparecido en stderr.
+- **Costo medido para `PROYECTO.md` §7.5**: una corrida de 2m12.6s por repositorio y commit, pagada
+  por la primera feature; el resto del lote paga milisegundos.

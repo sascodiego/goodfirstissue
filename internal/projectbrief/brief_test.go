@@ -207,3 +207,37 @@ func TestDocumentGroupsItemsBySection(t *testing.T) {
 		t.Errorf("a doubtful section cites nothing, got %d", got)
 	}
 }
+
+// A model that wraps the document in a code fence is answering the question and adding transport
+// noise. The content stays strict; one wrapping pair of fences is read through.
+func TestParseAcceptsAnAnswerWrappedInACodeFence(t *testing.T) {
+	for name, answer := range map[string]string{
+		"plain fence":       "```\n" + validAnswer + "```\n",
+		"markdown fence":    "```markdown\n" + validAnswer + "```\n",
+		"fence and padding": "\n\n```md\n" + validAnswer + "```\n\n",
+	} {
+		t.Run(name, func(t *testing.T) {
+			doc, err := projectbrief.Parse(answer)
+			if err != nil {
+				t.Fatalf("Parse: %v", err)
+			}
+			if len(doc.Items) != 7 {
+				t.Errorf("items = %d, want 7", len(doc.Items))
+			}
+			if doc.Text != answer {
+				t.Error("the answer still travels verbatim: the fence is read through, not edited out")
+			}
+		})
+	}
+}
+
+// Only a wrapping pair is noise. An unbalanced fence is still a broken answer, and so is prose
+// between the fences: tolerating anything more would start accepting documents nobody can audit.
+func TestParseRejectsAnUnbalancedFence(t *testing.T) {
+	if _, err := projectbrief.Parse("```\n" + validAnswer); err == nil {
+		t.Fatal("an opening fence with no closing one must not parse")
+	}
+	if _, err := projectbrief.Parse("```\n" + validAnswer + "```\nProsa al final.\n"); err == nil {
+		t.Fatal("prose outside the fence must not parse")
+	}
+}

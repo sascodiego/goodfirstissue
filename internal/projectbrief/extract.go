@@ -172,6 +172,9 @@ type Failure struct {
 	Kind FailureKind
 	// Detail is the agent's own words, kept as evidence for the screen. Never empty.
 	Detail string
+	// Answer is what the model wrote when it answered something that is not a portrait. A run
+	// costs minutes, so throwing its output away would make the next run just as blind.
+	Answer string
 	Err    error
 }
 
@@ -235,7 +238,9 @@ func (e *Extractor) Extract(ctx context.Context, in Input) (*Result, error) {
 	}
 	doc, err := Parse(answer)
 	if err != nil {
-		return nil, err
+		// The answer is handed back with the failure: a run costs minutes, and an operator who
+		// cannot see what the model wrote can only run it again blind.
+		return nil, &Failure{Kind: KindAgent, Detail: err.Error(), Answer: answer, Err: err}
 	}
 	result := e.result(doc, in, out.Total, false)
 	// The portrait stands even when it cannot be cached: the document is what was asked for, and

@@ -70,9 +70,13 @@ func Parse(answer string) (*Document, error) {
 	if strings.TrimSpace(answer) == "" {
 		return nil, errors.New("projectbrief: the answer is empty")
 	}
+	// One wrapping pair of code fences is transport noise, not content: a model that fences the
+	// document is answering the question. Anything more than a wrapping pair stays an error,
+	// because the point of the strict reading is that the content is auditable.
+	body := unfence(answer)
 	// The whole answer may be one word: a clone with nothing to describe is a portrait that
 	// says so, not an error.
-	if strings.EqualFold(strings.TrimSpace(answer), Insufficient) {
+	if strings.EqualFold(strings.TrimSpace(body), Insufficient) {
 		return &Document{Text: answer, Unsupported: namesOf(NatureTechnical, NatureProject)}, nil
 	}
 
@@ -86,7 +90,7 @@ func Parse(answer string) (*Document, error) {
 		next    int
 		current string
 	)
-	for i, raw := range strings.Split(answer, "\n") {
+	for i, raw := range strings.Split(body, "\n") {
 		line := strings.TrimSpace(raw)
 		switch {
 		case line == "":
@@ -180,6 +184,28 @@ func Parse(answer string) (*Document, error) {
 		}
 	}
 	return doc, nil
+}
+
+// unfence reads through one pair of code fences wrapping the whole answer, and nothing more. The
+// document travels verbatim either way: the fence is read through, never edited out, because the
+// text a consumer receives is the model's own answer.
+func unfence(answer string) string {
+	lines := strings.Split(strings.TrimSpace(answer), "\n")
+	if len(lines) < 3 || !isFence(lines[0]) || !isFence(lines[len(lines)-1]) {
+		return answer
+	}
+	return strings.Join(lines[1:len(lines)-1], "\n")
+}
+
+// isFence reports whether a line is nothing but a fence, optionally with a language tag. A line of
+// prose that happens to open with three backticks is not a fence.
+func isFence(line string) bool {
+	line = strings.TrimSpace(line)
+	if !strings.HasPrefix(line, "```") {
+		return false
+	}
+	tag := strings.TrimPrefix(line, "```")
+	return !strings.ContainsAny(tag, " \t`")
 }
 
 // declare checks one split line against the code's own classification. The declaration is written

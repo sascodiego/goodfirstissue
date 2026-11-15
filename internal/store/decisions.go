@@ -20,11 +20,10 @@ type Pass string
 // runs another model. They are named here so a stored verdict says which question it
 // answers.
 const (
-	PassTriage      Pass = "triage"
-	PassAlignment   Pass = "alignment"
-	PassLabelHonest Pass = "label_honest"
-	PassFit         Pass = "fit"
-	PassExplore     Pass = "explore"
+	PassTriage    Pass = "triage"
+	PassAlignment Pass = "alignment"
+	PassFit       Pass = "fit"
+	PassExplore   Pass = "explore"
 )
 
 // Key identifies one finished piece of analysis.

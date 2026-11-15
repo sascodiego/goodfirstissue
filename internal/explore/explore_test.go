@@ -1,6 +1,8 @@
 package explore
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"os"
 	"path/filepath"
 	"strings"
@@ -123,19 +125,30 @@ func TestPrepareWritesTheSkill(t *testing.T) {
 	}
 }
 
-func TestPromptKeepsLabelsVerbatim(t *testing.T) {
-	got := PromptFor("spf13/cobra", "abc123", 1272, "Hidden Commands", "body text",
-		[]string{"good-first-issue", "\u2709 help wanted"})
-	for _, want := range []string{"spf13/cobra", "abc123", "#1272", "Hidden Commands", "good-first-issue", "✉ help wanted", "body text"} {
+// The label is another person's opinion about difficulty and the exploration is a fact-finding
+// pass, so the task never carries it. What the issue asks for is in the body; what the code
+// requires is in the code (§1).
+func TestThePromptNeverCarriesLabels(t *testing.T) {
+	got := PromptFor("spf13/cobra", "abc123", 1272, "Hidden Commands", "body text")
+	for _, want := range []string{"spf13/cobra", "abc123", "#1272", "Hidden Commands", "body text"} {
 		if !strings.Contains(got, want) {
 			t.Errorf("prompt missing %q:\n%s", want, got)
 		}
 	}
+	for _, unwanted := range []string{"label", "Label"} {
+		if strings.Contains(got, unwanted) {
+			t.Errorf("the task still talks about %q:\n%s", unwanted, got)
+		}
+	}
 }
 
-func TestPromptSaysNoneWhenUnlabelled(t *testing.T) {
-	if !strings.Contains(PromptFor("a/b", "sha", 1, "t", "b", nil), "(none)") {
-		t.Error("an unlabelled issue must say so explicitly")
+// I14: a verdict is pinned to the question it answers. The task builder is half of that
+// question, so a change in how the task is assembled has to move the fingerprint — otherwise a
+// result produced with the labels comes back as if it had been produced without them.
+func TestVersionCoversTheTaskBuilder(t *testing.T) {
+	bare := sha256.Sum256([]byte(Prompt + "\x00" + Skill))
+	if Version() == hex.EncodeToString(bare[:])[:12] {
+		t.Fatal("the fingerprint covers only prompt.md and the skill: a change in the task builder keeps the same version")
 	}
 }
 

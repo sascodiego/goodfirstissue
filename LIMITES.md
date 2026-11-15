@@ -93,6 +93,30 @@ desde entonces es la segunda petición de P1 para las features (`PROYECTO.md` §
 los que se midió quedaron en `internal/triage/testdata/bench/project-brief/`, y producción los arma
 desde el clon.
 
+### 8. El fact-check de la etiqueta: fuera del MVP
+
+**El producto no audita la etiqueta de dificultad.** No emite juicio sobre si dice la verdad: la
+ignora. El veredicto de si una issue es una buena primera contribución lo emite P3 sobre la
+evidencia de P2 (`PROYECTO.md` §1, §9), y la etiqueta no entra en ningún expediente ni en ningún
+prompt.
+
+Eso cierra una línea de trabajo entera, y el motivo es doble:
+
+- **De producto.** Validar la opinión de un mantenedor no es asunto del sistema, y validarla cuesta
+  tokens que el MVP no tiene. La etiqueta se guarda verbatim en el corpus porque es un dato, y no
+  se juzga.
+- **De tiempo.** §2.1 cierra en 16 h contra ≈15,5 h de foco y ya está 0,5 h arriba. Un pase más por
+  modelo no entra: `internal/label` con su prompt, criterios, `Version()`, journal, un test por
+  criterio y un banco con veredicto de referencia humano antes de correr son 2–3 h.
+
+**Lo que sí quedó adentro, y es lo que reemplaza esa función**: el bloque determinista de coherencia
+P1↔P2 dentro del `state` de P3 (`PROYECTO.md` §9.1.1). Compara hechos ya calculados, cuesta cero
+peticiones, y emite hallazgos —nunca un veredicto— para que Clef siga siendo el que decide.
+
+**Lo que se pierde y queda como límite post-MVP**: una métrica explícita de «cuánto miente el
+ecosistema de etiquetas». `BENCHMARKS.md` §3 la reporta como hallazgo del estudio de corpus, no como
+salida del producto.
+
 ## Límites técnicos medidos
 
 No son cortes: son cosas que probamos y no funcionan como suponíamos.

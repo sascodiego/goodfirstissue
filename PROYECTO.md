@@ -1,11 +1,12 @@
 # PROYECTO.md — GoodFirstIssue
 
-**Versión:** 2.19
+**Versión:** 2.22
 **Fecha:** 2026-11-13
 **Estado:** Documento rector del MVP para el #2 Hackathon NaN (Reto 4 — tema libre)
 **Reemplaza:** el documento de definición de producto y arquitectura v1.0, en todo lo relativo al **alcance del MVP** (sus secciones 13 y 18). La visión de producto, el análisis del problema y los principios de diseño del original siguen vigentes.
 
 **Historial**
+- **2.22** — **la etiqueta de dificultad se ignora; no se audita** (§1). Sale `label_honest` de P2 (§8.3), y la etiqueta sale de todo expediente y de todo prompt: se guarda verbatim en el corpus y no se juzga (I6, §4.2). El pitch pasa de «validamos una label» a «buscamos una good first issue». La valoración propia entra como bloque determinista de coherencia P1↔P2 dentro del `state` de P3 (§9.1.1): emite hallazgos, no veredicto. `triage.PolicyVersion` sube a `p1-2` y `explore.Version()` pasa a cubrir el constructor de la tarea (I14).
 - **2.21** — el paso de «¿ya fue atendida antes?» más la agrupación de duplicadas se ubica **después** del triaje y **antes** del explore: el triaje juzga la issue sola y deja candidatas. Del paso, el MVP solo conserva la señal determinista de trabajo abierto por issue (§7.1).
 - **2.20** — la agrupación de duplicados **sale del MVP por tiempo** (`LIMITES.md` §1). **I12 se reformula**:
   la unidad de evaluación es la issue sola. No se reescribe la entrada 2.1: registra lo que se decidió entonces.
@@ -40,22 +41,24 @@
 
 ## 1. Qué se construye
 
-Una aplicación que **verifica si la etiqueta de dificultad de una issue dice la verdad**, y decide si una persona concreta cubre los requisitos técnicos que esa issue exige.
+Una aplicación que **decide si una issue es una buena primera contribución** —con la evidencia del código a la vista— y si una persona concreta cubre los requisitos técnicos que esa issue exige.
 
 La afirmación central, en una línea:
 
-> **La etiqueta miente.** `good first issue` hace promesas implícitas y las verificamos una por una contra el código.
+> **La etiqueta no decide: nosotros decidimos.** Que alguien haya escrito `good first issue` es su opinión sobre la dificultad; el veredicto sale de lo que la issue exige del código, verificado contra el árbol.
 
-Las promesas de la etiqueta, separadas por si están en disputa:
+**La etiqueta no se audita: se ignora.** El producto no emite juicio sobre si la etiqueta dice la verdad. La etiqueta no entra en ningún expediente, no llega a ningún modelo y no mueve ninguna decisión (I6). Se guarda verbatim en el corpus, porque el corpus registra lo que el mantenedor escribió y nada más. El producto *es* el juicio que el mantenedor no da.
 
-| Promesa implícita | Pregunta | Estado |
+Los criterios con los que juzgamos, separados por si están en disputa:
+
+| Criterio | Pregunta | Estado |
 |---|---|---|
 | Es un trabajo, no una consulta | ¿pide un cambio en el código, o es una pregunta, una discusión, un duplicado? | firme |
 | Está especificada | ¿define qué comportamiento se espera y qué significaría estar terminada? | firme |
 | Es auto-contenida | ¿es un solo cambio coherente, o son varios independientes? | firme |
 | No exige conocimiento profundo del proyecto ni del proceso | ¿cuánto contexto del proyecto y del proceso hace falta? | **en disputa** |
 
-La cuarta queda fuera del veredicto y se registra como atributo `onboarding_cost`. Ver §1.2.
+El cuarto queda fuera del veredicto y se registra como atributo `onboarding_cost`. Ver §1.2.
 
 El producto tiene una sola pantalla protagonista: una issue, un perfil, un veredicto con probabilidades y la evidencia que lo sustenta.
 
@@ -79,9 +82,9 @@ El argumento, en la versión más fuerte:
 
 Este principio tiene una consecuencia incómoda y deliberada: un sistema así **no puede decir «no estás listo» a alguien que sabe programar**. Puede decir «esto exige saber X y tu perfil no muestra X», que es información técnica, no un juicio sobre la trayectoria de nadie.
 
-**La promesa 4, en disputa.** Se sostiene la posición contraria: que `good first issue` **no habla de una persona sino de la issue**, y que «buen punto de entrada» implica por definición bajo prerrequisito de contexto, porque si no la etiqueta no significa nada. Esa es una afirmación *sobre la issue*, verificable sin tocar la aptitud de nadie.
+**El criterio 4, en disputa.** Se sostiene la posición contraria: que «buena primera contribución» **no habla de una persona sino de la issue**, y que «buen punto de entrada» implica por definición bajo prerrequisito de contexto, porque si no la recomendación no significa nada. Esa es una afirmación *sobre la issue*, verificable sin tocar la aptitud de nadie.
 
-No se resuelve redactando mejor: se resuelve midiendo (§12). Mientras tanto, la promesa 4 queda fuera del veredicto y se registra como atributo `onboarding_cost`.
+No se resuelve redactando mejor: se resuelve midiendo (§12). Mientras tanto, el criterio 4 queda fuera del veredicto y se registra como atributo `onboarding_cost`.
 
 ### 1.3. Antecedentes y diferenciación
 
@@ -101,7 +104,7 @@ Lo que este MVP agrega sobre esos trabajos:
 1. **Evidencia anclada a un commit concreto y verificada contra el árbol.** Los trabajos previos derivan características del texto de la issue, de sus metadatos y de la historia del repositorio. Acá la evidencia es una referencia a archivo y línea que se puede abrir, con la regla de que una relación no observada no puede afirmarse (§8.2).
 2. **Probabilidad y abstención explícita.** El patrón habitual en este espacio es emitir un puntaje o un porcentaje sin calibrar. Acá se emite una probabilidad con umbral definido y existe una salida propia para «no alcanza la evidencia» (§7.7).
 3. **Un modelo de decisión como capa de decisión**, no un LLM generativo: reproducible, barato, rápido y auditable (§3.1).
-4. **La verificación de la etiqueta como afirmación central**, no el descubrimiento de issues.
+4. **El veredicto lo emite la evidencia, no el mantenedor.** La etiqueta de dificultad no entra en el cálculo: el sistema decide por su cuenta si la issue es una buena primera contribución (§1).
 
 Consecuencia para el pitch: no vender novedad conceptual. Vender calidad de decisión y evidencia verificable.
 
@@ -244,7 +247,7 @@ repo ─► [E1 datos + clon] ─► [E2 indexar]
    ┌────────────────────────────────────────────────▼───────────────┐
    │  P2 · EXPLORE — LLM + codegraph (solo candidatas)              │
    │  evidencia · requisitos en 3 baldes · lagunas · partes         │
-   │  gates: label_honest · confirmed_defect (bugs) · guarda 16k    │
+   │  gates: confirmed_defect (bugs) · guarda 16k                     │
    └────────────────────────────────┬───────────────────────────────┘
                                     ▼
    ┌────────────────────────────────▼───────────────────────────────┐
@@ -343,9 +346,9 @@ Medido el 2026-11-13 sobre ocho repositorios:
 | `sindresorhus/got` | `good for beginner`, `✭ help wanted ✭` |
 | `pallets/click`, `psf/requests`, `encode/httpx` | **ninguna** |
 
-Cuatro escrituras para la misma idea y tres repositorios donde no existe. No cambia el criterio de selección —no se filtra por etiqueta— pero obliga a algo en el juicio: cuando la etiqueta entra al `state` se copia tal como está, y se le dice a Clef que es **texto libre escrito por el mantenedor**, no un campo de un enum.
+Cuatro escrituras para la misma idea y tres repositorios donde no existe. No cambia el criterio de selección —no se filtra por etiqueta— y tampoco cambia el juicio: la etiqueta no entra en ningún expediente (§1). Se guarda verbatim al lado de la issue porque es un dato del corpus, no una señal del producto.
 
-Y mide el tamaño del problema que el producto ataca: si la etiqueta ni siquiera se escribe igual entre proyectos, no puede ser el criterio de nada.
+Y mide el tamaño del problema que el producto ataca: si la etiqueta ni siquiera se escribe igual entre proyectos, no puede ser el criterio de nada. Ese es el motivo por el que el veredicto es nuestro.
 
 Por repositorio se persisten: URL, rama, SHA, inventario y **todas** las issues abiertas con su texto original intacto y la etiqueta cruda al lado.
 
@@ -797,7 +800,7 @@ declared_kind    = la categoría que el autor declaró, como hecho (o null)
 ```
 
 - A Clef se le pasa `title_normalized`. Nunca el original.
-- `declared_kind` no es una señal: es un **atributo reportado**, igual que `label_honest`.
+- `declared_kind` no es una señal: es un **atributo reportado**, igual que la etiqueta de dificultad.
 - Cuando `declared_kind` ≠ `kind` con p ≥ 0,6, la UI lo muestra: **el autor también puede mentir**, y es el mismo detector de mentiras de §1 aplicado al título en vez de a la etiqueta.
 
 Coste: un `TrimPrefix` sobre una lista cerrada. Los dos controles muestran que limpiar **no** degrada los casos honestos (0,93 → 0,94).
@@ -834,8 +837,8 @@ nosotros, y por eso se muestra como duda.
 **Decisión medida, no preferencia.** Preguntar por la posición del proyecto en el primer pase
 acertaba **3,7 %** sobre 188 issues con resolución conocida, y el diagnóstico fue que la pregunta
 no estaba mal redactada sino mal alimentada: se le pasaba la issue entera. Queda para la segunda
-fase, con el expediente de intención (estado nativo, etiquetas verbatim y comentarios de cuentas
-responsables), ya especificada y sin implementar (`LIMITES.md` §2).
+fase, con el expediente de intención (estado nativo y comentarios de cuentas responsables), ya
+especificada y sin implementar (`LIMITES.md` §2).
 
 **Qué cuesta.** El primer pase **no detecta rechazos en prosa**: de 34 issues que sus proyectos
 rechazaron, marca 0. Dieciséis salen `CANDIDATA`, o sea el 8,7 % de las candidatas que emite es
@@ -853,7 +856,7 @@ intent = neutral      → LÍNEA ABIERTA.  ← acá hay algo que ganar
 **Las etiquetas son texto libre** — `accepted`, `✅ accepted`, `status/accepted`, `triage:accepted`, `wontfix`, `not planned` — y no se pueden enumerar. Lo que sí es determinista y gratis: `state`, `stateReason` (`not_planned` es un valor nativo de GitHub) y si un mantenedor comentó (§5.3).
 
 ```
-regla  →  hechos: {state, state_reason, maintainer_commented, labels[]}
+regla  →  hechos: {state, state_reason, maintainer_commented}
 Clef   →  interpreta: ¿eso significa authorized, neutral o declined?
 ```
 
@@ -1049,10 +1052,9 @@ Reglas duras:
 
 | id | tipo | cuándo | criterios |
 |---|---|---|---|
-| `label_honest` | `noul` | siempre | ¿la etiqueta de dificultad dice la verdad sobre el trabajo que esta issue exige? |
 | `confirmed_defect` | `noul` | solo `kind=bug` — **diferido, §2.1.1** | ¿el código y la documentación confirman que el comportamiento reportado no es intencional? |
 
-`label_honest` evalúa las promesas firmes de §1 (es un trabajo, está especificada, es auto-contenida). La promesa 4 está en disputa y se mide aparte (§12).
+**No hay una pregunta que audite la etiqueta de dificultad.** El producto no opina sobre si la etiqueta dice la verdad: no la lee. El veredicto de si la issue es una buena primera contribución es de P3 (§9), sobre la evidencia de P2, y la coherencia entre lo que P1 declaró y lo que P2 midió se reporta de forma determinista en el `state` de P3 (§9.1).
 
 ### 8.4. Guarda de 16 000 tokens — **nodo abierto**
 
@@ -1134,7 +1136,36 @@ Availability: 6 h/semana
 Preferences: prefiere tareas acompañadas; quiere aprender Rust
 ```
 
-La etiqueta original **no entra**: si entra, Clef hereda el sesgo que el producto existe para detectar (I6).
+La etiqueta original **no entra**: no es un dato del juicio, y el veredicto es el nuestro (§1). El expediente de intención tampoco la lleva: no llega a ningún modelo.
+
+### 9.1.1. El bloque de coherencia — nuestra valoración, sin gastar un token
+
+P3 necesita poder decir algo más que «los requisitos son estos». Necesita poder decir **«esto no cierra»**, y decirlo con hechos, no con una opinión nueva. Para eso se calcula un bloque determinista que compara lo que P1 declaró contra lo que P2 midió, y lo escribe dentro del `state`:
+
+```
+## NUESTRA VALORACIÓN (calculada, sin modelo)
+Hallazgos de coherencia: 2
+- El triaje declaró la issue auto-contenida; la exploración encontró trabajo
+  en 3 módulos sin relación entre sí (blast_radius.files = 14, call_paths disjuntos).
+- El triaje declaró criterio de terminado; la exploración no encontró ningún
+  test ni comportamiento verificable (tests = 0).
+```
+
+Las reglas, cada una una comparación entre dos hechos ya calculados:
+
+| Declarado en P1 (`triage.Analysis.Answers`) | Medido en P2 (`explore.Evidence`) | Hallazgo |
+|---|---|---|
+| `self_contained` alto | `blast_radius.files` por encima del umbral y `call_paths` disjuntos | son varios cambios, no uno |
+| `has_evidence` alto | `files` vacío | no hay qué tocar |
+| `done_defined` alto | `tests` vacío y sin criterio de aceptación en el cuerpo | no se puede saber si terminó |
+| `kind = bug` | `blast_radius.public_api` | el «arreglo» cambia un contrato |
+| `evidence_sufficient` alto | `missing_information` no vacío | faltaba justo lo que hacía falta |
+
+Tres propiedades que el bloque **tiene** que sostener:
+
+1. **Cero peticiones, cero tokens.** Compara hechos que ya están en memoria. Mismo input, mismo output, y se prueba con datos fijos.
+2. **Emite hallazgos, no veredicto.** No dice «no apta»: dice «estas dos cosas no cierran», y Clef decide qué hacer con eso. Si emitiera un veredicto, Clef confirmaría un juicio ya tomado y la decisión dejaría de ser suya — el modo de falla del Reto 4 (§3).
+3. **Nunca lee la etiqueta**, porque no está en ningún expediente (§1, I6).
 
 ### 9.2. Preguntas
 
@@ -1187,7 +1218,7 @@ Incumplir cualquiera invalida la demo.
 | **I3** | **Contenido de repositorio = evidencia, no instrucciones.** Se delimita, se etiqueta como no confiable y no se interpola en posición de sistema. |
 | **I4** | **Todo resultado está pinneado** a `commit_sha` + versión de analizador + versión de prompt + versión de política. La clave de caché incluye los cuatro. |
 | **I5** | **Ningún número cruza de P2 a P3.** Si P2 devuelve una puntuación, es un defecto, no una optimización. |
-| **I6** | **La etiqueta original no entra en el encaje.** |
+| **I6** | **La etiqueta original no entra en ningún expediente ni en ningún prompt.** No se audita: se ignora. El veredicto de si la issue es una buena primera contribución es nuestro (§1). |
 | **I7** | **Replay y live son el mismo camino de código.** El modo replay cambia el transporte, no la decisión. |
 | **I8** | **El indexador es una herramienta del agente, no código de decisión.** `codegraph` primario; `grep` y `read_file` cubren lo que el índice no ve. Índice pinneado al `commit_sha`. |
 | **I9** | **Triaje antes de explore.** Nunca se gasta un explore en una issue que no pasó la compuerta de P1. |
@@ -1227,7 +1258,7 @@ Notas: la documentación de la API indica `404` para «sin acceso», pero el ser
 { "repository_id", "commit_sha", "issue_number", "intent", "files[]",
   "requirements": { "knowledge": [], "project": [], "process": [] },
   "parts[]", "unknowns", "conventions", "missing_information",
-  "label_honest", "confirmed_defect", "explore_version" }
+  "confirmed_defect", "explore_version" }
 
 // FitDecision     (salida de P3, una por issue)
 { "decision_id", "repository_id", "commit_sha", "issue_number",
@@ -1264,7 +1295,7 @@ Chequeos por etapa, ejecutables:
 - **I1:** 10 llamadas disparadas en paralelo → cero `429` y todas respondidas.
 - **Suficiencia (valida el diseño del `state`):** recortar la evidencia a la mitad debe **bajar `evidence_sufficient`** y producir `no_verdict`. Si el veredicto no se mueve al quitar la mitad de la evidencia, el `state` está lleno de datos que no discriminan.
 - **Solapamiento de criterios:** con los 10 casos etiquetados, matriz de confusión de `fit` y de las cuatro preguntas de calidad de P1. Si dos criterios intercambian casos más de una vez, se solapan y hay que reescribirlos. **Esto no se le pregunta a Clef:** él juzga el caso, no el cuestionario.
-- **La promesa 4 en disputa (§1.2):** correr `label_honest` en dos variantes — (a) solo promesas 1-3, (b) las cuatro — sobre los mismos 10 casos, y comparar contra el juicio humano. Convierte una discusión de valores en un dato, con una variante de prompt sobre el mismo benchmark.
+- **El criterio 4 en disputa (§1.2):** correr la valoración propia en dos variantes — (a) criterios 1-3, (b) los cuatro — sobre los mismos 10 casos, y comparar contra el juicio humano. Convierte una discusión de valores en un dato, con una variante de prompt sobre el mismo benchmark.
 
 ---
 
@@ -1274,7 +1305,9 @@ Chequeos por etapa, ejecutables:
 |---|---|---|
 | Rúbricas como estructura del `state`, no como aritmética | **adoptada** | con scores numéricos, Clef queda reemplazable por 30 líneas (§3) |
 | Normalizar el título antes de preguntar (`title_normalized`) | **adoptada** | medido: el prefijo `Bug:` hace que Clef clasifique una feature como bug con 0,91; limpiarlo la clasifica bien con 0,76–0,80 y **no** degrada los casos honestos (0,93 → 0,94) |
-| `declared_kind` como atributo reportado, no como señal | **adoptada** | el prefijo del autor es una afirmación, no evidencia: mismo patrón que `label_honest` |
+| `declared_kind` como atributo reportado, no como señal | **adoptada** | el prefijo del autor es una afirmación, no evidencia: mismo patrón que la etiqueta de dificultad |
+| La etiqueta de dificultad no entra en ningún expediente ni en ningún prompt | **adoptada** | es la opinión de un tercero sobre la dificultad y el veredicto es nuestro (§1); se guarda verbatim en el corpus y no se juzga |
+| Bloque de coherencia determinista P1↔P2 dentro del `state` de P3 | **adoptada** | da la valoración propia sin gastar un token y sin que Clef confirme un juicio ya tomado (§9.1.1) |
 | El benchmark incluye disfraces deliberados | **adoptada** | sin casos adversariales el benchmark certifica una compuerta que falla donde importa |
 | **Agrupar duplicados antes de triajear** | **adoptada** | un duplicado escueto parece una issue mal armada; sin agrupar se descarta una oportunidad real, y se puede recomendar algo que ya tiene PR abierta. **Descartada en 2.21:** el paso va después del triaje y queda fuera del MVP |
 | Triaje antes de explore | **adoptada** | no se gasta el recurso más caro en una issue que no es trabajo (I9) |
@@ -1291,10 +1324,11 @@ Chequeos por etapa, ejecutables:
 | Stack: Go, binario único, `net/http` + `html/template` | **adoptada** | un solo lenguaje, sin `node_modules`, sin microservicios |
 | Lista constitucional de modelos: `clef` + cinco flash | **adoptada** | los modelos grandes consumen la suscripción; la lista es constante en código y falla cerrada (I13) |
 | Un modelo por acción, elegido en `config.json` | **adoptada** | el usuario decide qué modelo usa cada acción generativa; las de decisión quedan fijas en `clef` para no romper el Reto 4 |
-| La promesa 4 de la etiqueta | **en disputa** | §1.2; se dirime con el benchmark de §12 |
+| El criterio 4 («no exige conocimiento profundo») | **en disputa** | §1.2; se dirime con el benchmark de §12 |
 | Guarda de 16k | **abierta** | §8.4, con propuestas registradas |
 | Una issue multi-cambio se evalúa por partes (`part_id` en `FitDecision`) | **descartada** | cortada por tiempo (§2.1.1): el veredicto por unión de requisitos castiga a quien podría hacer una parte y no las otras. Las `parts` se conservan como agrupación de evidencia y el veredicto es uno por issue (§9, `LIMITES.md` §7) |
 | Construir un indexador propio | **descartada** | peor recall y 3 h de trabajo no diferenciado frente a `codegraph` |
+| Auditar la etiqueta de dificultad (`label_honest`) | **descartada** | valida la opinión de otro sobre la dificultad, que no es asunto del producto, y el MVP no tiene horas para un pase más por modelo (`LIMITES.md` §8) |
 | `gap_severity` y `support_needed` | **descartadas** | medían el mismo eje que `fit` |
 | Preguntarle a Clef si dos `criteria` se solapan | **descartada** | Clef juzga el caso, no el cuestionario |
 | Extracción de DOCX | **descartada** | el MVP acepta texto, PDF y URL (§17.8.1); DOCX queda fuera |
@@ -1312,7 +1346,7 @@ Chequeos por etapa, ejecutables:
 | Formato de persistencia | E1 | archivos JSON por `(repo, sha, issue)`; revisar solo si duele |
 | Concurrencia máxima del modelo de chat | E4 | comenzar en 2, medir |
 | Umbrales de §7.7 y §9.3 | E3/E5 | ajustar solo contra el benchmark de §12 |
-| La promesa 4 de la etiqueta | cierre del producto | experimento de §12 |
+| El criterio 4 («no exige conocimiento profundo») | cierre del producto | experimento de §12 |
 | Formas de entrada del CV (PDF, URL) | post-demo | **diferidas por tiempo**: el MVP usa texto pegado (§17.8.1) |
 | Nodo de alineación, tercera pantalla, `confirmed_defect`, `learning_value` | post-demo | cortados para entrar en el presupuesto; orden de retorno en §2.1.1 |
 
@@ -1323,7 +1357,7 @@ Chequeos por etapa, ejecutables:
 | | Qué se ve | El momento de la demo |
 |---|---|---|
 | **S1 · Repo** | El embudo: 47 abiertas → 5 no son trabajo → 12 features sin el sí del mantenedor → 30 candidatas → 1 condicionada. Cada una con su distintivo; ninguna oculta. | «mirá lo que filtra sola, sin modelo de lenguaje» |
-| **S2 · Issue** | Evidencia clickeable, requisitos en tres baldes, lagunas, partes, y el fact-check de la etiqueta | «`good first issue`, pero requiere conocer el sistema de migraciones» |
+| **S2 · Issue** | Evidencia clickeable, requisitos en tres baldes, lagunas, partes, y nuestra valoración de la issue | «requiere conocer el sistema de migraciones, y la issue no lo dice» |
 | **S3 · Veredicto** | Requisitos vs perfil, con probabilidades, y las áreas de la issue como evidencia | «con este CV, entra; con el otro CV, no» |
 
 S2 y S3 pueden colapsar en una sola pantalla si el reloj aprieta (§2.1.1): el contenido es el mismo, cambia dónde se muestra.
@@ -1336,7 +1370,7 @@ EN VIVO (~2 s por paso)
   1. El embudo de S1 completo, con los números.
   2. Una issue con PR abierta, marcada como ya tomada.
   3. Una issue MARCADA y por qué (con la cita del proyecto).
-  4. Una `good first issue` que resulta no serlo, con la evidencia.
+  4. Una issue que no recomendamos para arrancar, con la evidencia y los hallazgos de coherencia.
   5. Pegar un CV → veredicto. Pegar otro CV → otro veredicto. Misma evidencia.
   6. Cortar la red → la app muestra `undecided`. «No decidí» es parte del producto.
 CIERRE         La tabla de §12 en pantalla: Clef contra reglas y contra LLM directo.
@@ -1353,7 +1387,7 @@ La pantalla que gana el jurado no es la del veredicto: es **S1**. El embudo se e
 - [ ] Al menos un caso demostrable de issue MARCADA por `cluster_has_open_work`.
 - [ ] Al menos un caso demostrable de feature reclasificada por `reports_defect`.
 - [ ] Al menos un caso demostrable de `alignment` = `out_of_scope` o `divergent`, con la cita del proyecto.
-- [ ] Al menos un caso demostrable de `label_honest` < 0,5 con evidencia clickeable.
+- [ ] Al menos un caso demostrable de una issue que no recomendamos para arrancar, con la evidencia clickeable y los hallazgos de coherencia a la vista.
 - [ ] Las candidatas tienen `EvidencePackage` válido, con partes que particionan la evidencia.
 - [ ] Al menos 5 decisiones de encaje con perfiles distintos.
 - [ ] Los chequeos de §12 pasan.
@@ -1513,7 +1547,6 @@ Para P2 se elige una de las cinco flash con salida JSON estricta. **Pendiente: c
 |---|---|---|
 | `triage` | P1: compuertas y calidad sobre la issue sola | `clef` — fijo |
 | `alignment` | nodo de alineación (§7.5) | `clef` — fijo |
-| `label_honest` | P2: fact-check de la etiqueta (§8.3) | `clef` — fijo |
 | `confirmed_defect` | P2: verificación del bug (§8.3) | `clef` — fijo |
 | `fit` | P3: encaje (§9.2) | `clef` — fijo |
 | `profile_extract` | CV en texto → capacidades | **configurable** |

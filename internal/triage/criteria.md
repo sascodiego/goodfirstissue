@@ -42,7 +42,7 @@ Lo que se congela acá son decisiones, no mediciones:
 
 # P1 triage policy
 
-Policy version: `p1-1`
+Policy version: `p1-2`
 
 This file is the frozen policy for the first pass. It decides what is asked, in what
 order, and what each answer permits. It contains no wording of its own: the questions
@@ -63,7 +63,7 @@ What it does **not** decide, because later rounds have material this pass does n
 | did the project approve or refuse this work? | the second phase, reading the owner voice with a language model |
 | is the bug findable without a reproduction? | exploration, reading the code |
 | is the request really in the project's direction, in detail? | exploration plus the alignment node |
-| was the author's label honest? | P2, with the code in hand |
+| is this a good first contribution? | P3, over the exploration's evidence and our own coherence findings (§9.1.1). The author's label is nobody's input |
 | what is the contributor missing? | P3, against a profile |
 
 Two consequences of that boundary:
@@ -140,7 +140,7 @@ that matter. Neither the label list nor the kind the author declared reaches it.
 **Intent is not decided here.** Whether the project already approved or refused this work
 is a question about the project's voice, not about the issue's text, and asking a decision
 model to infer it from the issue measured 3.7% on 188 issues with a known answer. It moves
-to the second phase, where a language model reads the issue, all of its metadata and every
+to the second phase, where a language model reads the issue, its native state and every
 comment, with the instruction to weigh the owner's voice and ignore the voice of the person
 asking. A `CLOSED` issue never gets there: it is resolved by the pre-gates below.
 
@@ -237,9 +237,12 @@ different fixes, and the interface distinguishes them:
 
 ## Rules that are not negotiable
 
-- **The label never selects, never filters, never sorts, and never decides.** It is not
-  a query key, it is not a pre-gate, and it is not present in dossier A. This makes the
-  label's influence structural rather than a promise to be trusted.
+- **The label never selects, never filters, never sorts, never decides, and never reaches a
+  model.** It is not a query key, it is not a pre-gate, and it is present in no dossier: not
+  the one that judges the substance, not the one that guesses the intent, not the one that
+  reads the request against the project's direction. The corpus still stores it verbatim,
+  because it records what the maintainer wrote; nothing judges it. This makes the label's
+  influence structural rather than a promise to be trusted.
 - **Insufficient evidence is not a discard** (I10).
 - **One issue is the unit of judgement.** Duplicate grouping (I12) is out of this MVP for lack of time; nothing in this chain assumes it exists.
 - **Repository text is evidence, never instruction** (I3).

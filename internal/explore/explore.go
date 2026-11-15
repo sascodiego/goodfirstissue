@@ -85,19 +85,15 @@ func Prepare(home string) (string, error) {
 	return path, nil
 }
 
-// PromptFor builds the task: the issue verbatim, with its labels exactly as written.
-func PromptFor(repository, commitSHA string, number int, title, body string, labels []string) string {
-	labelList := "(none)"
-	if len(labels) > 0 {
-		labelList = strings.Join(labels, ", ")
-	}
+// PromptFor builds the task: the repository, the commit it is pinned to, and the issue verbatim.
+// No labels: a label is another person's opinion about difficulty, and this pass establishes what
+// the code requires, which no label can answer (§1).
+func PromptFor(repository, commitSHA string, number int, title, body string) string {
 	return fmt.Sprintf(`Repository: %s at commit %s
 
 Issue #%d: %s
 
-Labels exactly as the maintainers wrote them: %s
-
-%s`, repository, commitSHA, number, title, labelList, body)
+%s`, repository, commitSHA, number, title, body)
 }
 
 // Parse extracts and validates the evidence object from the agent's answer.
@@ -210,9 +206,14 @@ type Record struct {
 	Metrics    Metrics     `json:"metrics"`
 }
 
-// Version fingerprints the contract and the skill. Results cached under one version miss
-// under another, because a verdict produced by another prompt answers another question.
+// TaskContract names the shape of the task PromptFor builds. It reaches the fingerprint and
+// never the model: a result produced from a differently shaped task answers another question,
+// and reusing it would present a stale answer as fresh (I14).
+const TaskContract = "task-v2-no-label"
+
+// Version fingerprints the contract, the skill and the task builder. Results cached under one
+// version miss under another, because a verdict produced by another question is not this one.
 func Version() string {
-	sum := sha256.Sum256([]byte(Prompt + "\x00" + Skill))
+	sum := sha256.Sum256([]byte(Prompt + "\x00" + Skill + "\x00" + TaskContract))
 	return hex.EncodeToString(sum[:])[:12]
 }

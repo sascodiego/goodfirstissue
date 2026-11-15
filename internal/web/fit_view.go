@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"strconv"
 	"strings"
 	"time"
 
@@ -372,15 +373,16 @@ func (h *Handler) attachFitStates(page *pageData) {
 			page.Rows[i].FitClass = "fit-yes"
 			page.Rows[i].FitNote = fitLevelText(analysis.Level)
 		case fit.LevelNeedsPreparation, fit.LevelNeedsExperience:
-			page.Rows[i].FitText = "No encaja"
+			page.Rows[i].FitText = "No encaja " + fitChipP(analysis.Probability)
 			page.Rows[i].FitClass = "fit-no"
 			page.Rows[i].FitNote = fitLevelText(analysis.Level)
 		default:
 			// Hay veredicto guardado y no concluye: el juicio se retuvo, o el perfil no
 			// describe lo que la issue pide. Decir «sin encajar» acá lo volvería
 			// indistinguible de una issue que nadie encajó todavía, que es justo lo que el
-			// chip tiene que separar.
-			page.Rows[i].FitText = "Sin veredicto"
+			// chip tiene que separar. Y el número va en el chip: sin él, diez abstenciones
+			// distintas se leen como diez filas iguales.
+			page.Rows[i].FitText = "Sin veredicto " + fitChipP(analysis.Probability)
 			page.Rows[i].FitClass = "fit-hold"
 			page.Rows[i].FitNote = fitLevelText(analysis.Level) + " — " + whyFitHeld(analysis.Result)
 		}
@@ -400,4 +402,10 @@ func whyFitHeld(result fit.Result) string {
 	default:
 		return "no hay veredicto que mostrar"
 	}
+}
+
+// fitChipP is the probability as the chip says it: two decimals and a comma, because the rest
+// of the interface speaks Spanish.
+func fitChipP(p float64) string {
+	return strings.Replace(strconv.FormatFloat(p, 'f', 2, 64), ".", ",", 1)
 }

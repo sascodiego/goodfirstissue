@@ -83,6 +83,19 @@ en la app con el corpus de `var/store`.
 
 **Estrategia de entrega.** Tres slices: **A** `6684669`, el paquete `internal/fit` (1924 líneas con tests y el documento); **B** el verbo y el bloque, que dependen de A; **C** `PROYECTO` 2.25 y el e2e. A sola no cambia nada visible —es una política con sus tests— y B no compila sin A, así que van encadenados: PR de A contra `main`, y B contra la rama de A. A pasa el presupuesto de 400 líneas y se declara en el PR.
 
+**Al mergear, main ya se movió.** La base del slice A es `f7ce2c2`; cuando se abrió su PR, `main`
+estaba dos commits adelante (`e4f7d9a`, PR #50, que tocó `design/app.css`, `internal/web/static/app.css`,
+`internal/web/triage_view.go` y el dashboard). Procedimiento, en este orden:
+
+1. `git fetch origin` y comparar `origin/main` con la base registada acá. Si avanzó, mergear `origin/main`
+   en `feat/13-fit-core`, resolver, `make verify` y pushear. A solo toca `internal/fit`, `odd/` y
+   `PROYECTO.md`, así que el choque esperado es nulo — pero se verifica, no se supone.
+2. Recién entonces mergear el PR A.
+3. Con A en `main`, **retargetear el PR B a `main`** y mergear `origin/main` en `feat/13-fit`. Acá el
+   choque sí es probable: B toca `design/app.css` y `internal/web/static/app.css`, que es exactamente
+   lo que tocó #50. Se resuelve quedándose con las dos reglas, y se vuelve a correr `make verify` y
+   `make design-check` —que es el que detecta si el espejo del CSS quedó desparejo—.
+
 **Ruta**: T1–T4 son un paquete y una conducta —la pasada— y van a un worker; T5 es otro worker
 porque depende del modelo anterior y toca la pantalla. T0, T6 y T7 quedan inline.
 
@@ -105,3 +118,21 @@ L6. Evidencia del re-escopeo, con `archivo:línea`: `internal/fit/` no existe; `
 `define` vacío; `issue.go` no proyecta nada para fit; `store.PassFit` (`decisions.go:25`) no tiene
 usuario de producción; `explore.Evidence` no tiene `parts` (`explore.go:63-76`); no existe ningún
 marcador `[evaluable]`; y `smallest_slice` no aparece ni en `PROYECTO.md` ni en `internal/`.
+
+L7. Decisiones tomadas sobre el reporte del slice B. **El verbo solo evalúa `CANDIDATA` con una
+exploración guardada**: es el orden del embudo (P1 recomienda, P2 mira el código, P3 decide) y sin
+exploración el `state` no tiene requisitos que puedan pesar. Se imprime en el resumen (`skipped N`,
+con el motivo) en vez de saltearse en silencio.
+
+L8. **La identidad del explore entra en la clave del veredicto**, no solo el perfil. El reporte del
+slice B destapó que `PromptVersion` fingerprintaba el contrato y el CV pero no la exploración: una
+issue re-explorada con otro prompt, al mismo commit, seguía haciendo hit y el bloque emparejaba un
+veredicto viejo con evidencia nueva. Se arregló en el único momento barato —todavía no había una
+sola fila de fit guardada—. `Options.Exploration` es obligatorio, fail-closed, cuando hay journal, y
+viaja dentro de `PromptVersion`; `store.Key` sigue intacto.
+
+L9. **Acoplamiento conocido, anotado y no escondido**: `explore.Session.Key` fija
+`explore.Version()` por dentro, así que la clave de la exploración ahora se arma en tres lugares —
+el paquete de explore, `cmd/gfi` y la pantalla— porque los tres necesitan decir «esta otra
+identidad». Si la forma de esa clave cambia, los tres tienen que cambiar juntos. La alternativa era
+nombrar la exploración en `store.Key`, que esta ronda prohíbe.

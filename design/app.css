@@ -1764,3 +1764,106 @@ tbody tr:last-child td {
   line-height: 1.5;
   color: var(--fg-3);
 }
+
+/* El informe de encaje de una issue: el nivel contra el perfil aprobado, con lo que pesó y lo
+   que sólo es costo de onboarding. */
+.fit {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+.fit-verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0;
+}
+/* El nivel es el veredicto, así que cada fila de §9.3 tiene su forma: quien mira distingue la
+   recomendación del «no hay veredicto» antes de leer la frase. */
+.fit-level {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  font: 600 11px var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--fg-2);
+}
+.fit-level.recommended {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.fit-level.recommended_with_support {
+  color: var(--state-pending);
+  border-color: color-mix(in oklab, var(--state-pending) 55%, var(--line-2));
+}
+.fit-level.needs_preparation {
+  color: var(--state-blocked);
+  border-color: color-mix(in oklab, var(--state-blocked) 55%, var(--line-2));
+}
+/* Las dos brechas y las tres ausencias de veredicto no comparten borde: una brecha es una
+   respuesta, y una ausencia no. */
+.fit-level.needs_experience {
+  color: var(--state-blocked);
+  border-style: dashed;
+}
+.fit-level.uncertain {
+  color: var(--state-noise);
+  border-style: dashed;
+}
+.fit-level.insufficient_information {
+  color: var(--fg-3);
+  border-style: dotted;
+}
+.fit-level.undecided {
+  color: var(--state-taken);
+  border-style: dotted;
+}
+/* La probabilidad acompaña al nivel donde §9.3 la pide; nunca ocupa su lugar. */
+.fit-prob {
+  font: 600 13px var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.fit-why {
+  margin: 0.5rem 0 0;
+  max-width: 62ch;
+  font-size: 0.95rem;
+  color: var(--fg-2);
+}
+.fit-withheld {
+  margin: 0.4rem 0 0;
+  max-width: 62ch;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+.fit-breakdown {
+  margin-top: 0.35rem;
+}
+.fit-reqs,
+.fit-onboarding,
+.fit-gaps {
+  margin: 0;
+  padding-left: 1.05rem;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.fit-reqs li,
+.fit-onboarding li {
+  margin-bottom: 0.3rem;
+}
+/* El onboarding se lee como costo y no como compuerta: el balde va rotulado antes que el ítem. */
+.fit-bucket {
+  font: 600 9.5px var(--mono);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.fit-note {
+  margin: 0.5rem 0 0;
+  max-width: 62ch;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--fg-3);
+}

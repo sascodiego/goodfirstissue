@@ -145,6 +145,9 @@ type Result struct {
 	Took time.Duration
 	// Reason explains a doubtful portrait in one line: doubt has to be spoken (I10).
 	Reason string
+	// Unsupported is every claim the clone does not back: the file is not there or does not have
+	// that line. They stay in the document and are reported beside it, never cut out.
+	Unsupported []Item
 }
 
 // FailureKind is the state a failed run shows. It is not a verdict on the project: the clone was
@@ -249,6 +252,9 @@ func (e *Extractor) result(doc *Document, in Input, took time.Duration, cached b
 	if doc.Insufficient() {
 		result.Reason = "the model found nothing in the repository it could point at"
 	}
+	// The audit runs on every path, cached or fresh: whether the tree still backs a claim is a
+	// fact about the tree, not about who paid for the answer.
+	result.Unsupported = doc.Audit(in.Dir)
 	return result
 }
 

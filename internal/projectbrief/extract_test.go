@@ -3,6 +3,7 @@ package projectbrief_test
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -53,16 +54,41 @@ func (a *agent) calls() []pig.Request {
 	return append([]pig.Request(nil), a.reqs...)
 }
 
-// clone is a directory that looks like a repository with something in it.
+// clone is a directory that looks like a repository holding what the baseline answer cites, with
+// more lines than it cites: the portrait of an intact clone is fully supported.
 func clone(t *testing.T) string {
 	t.Helper()
 	dir := t.TempDir()
+	fillClone(t, dir)
+	return dir
+}
+
+// fillClone writes the files the baseline answer cites into an existing directory.
+func fillClone(t *testing.T, dir string) {
+	t.Helper()
 	if err := os.MkdirAll(filepath.Join(dir, ".git"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	write(t, dir, "README.md", "# cobra\n\nA CLI library.\n")
-	write(t, dir, "go.mod", "module example.com/cobra\n\ngo 1.22\n")
-	return dir
+	for name, count := range map[string]int{
+		"README.md":       6,
+		"go.mod":          6,
+		"docs/history.md": 20,
+		"Makefile":        20,
+		"cmd/root.go":     20,
+		"CONTRIBUTING.md": 60,
+		"MAINTAINERS.md":  20,
+	} {
+		write(t, dir, name, numberedLines(count))
+	}
+}
+
+// numberedLines is a file of n lines, so a citation of line n is the last one it has.
+func numberedLines(n int) string {
+	var b strings.Builder
+	for i := 1; i <= n; i++ {
+		fmt.Fprintf(&b, "line %d\n", i)
+	}
+	return b.String()
 }
 
 func write(t *testing.T, dir, name, body string) {
@@ -322,4 +348,19 @@ func TestNewRequiresThePartsOfARun(t *testing.T) {
 			t.Errorf("%s: New must refuse", name)
 		}
 	}
+}
+
+// replaceOnce swaps one citation for another, which is how a test fabricates the claim a strict
+// audit has to catch.
+func replaceOnce(t *testing.T, answer, old, replacement string) string {
+	t.Helper()
+	if !strings.Contains(answer, old) {
+		t.Fatalf("%q is not in the answer", old)
+	}
+	return strings.Replace(answer, old, replacement, 1)
+}
+
+// outcomeOf is a completed run that answered with text.
+func outcomeOf(answer string) *pig.Outcome {
+	return &pig.Outcome{Answer: answer, Total: 41 * time.Second}
 }

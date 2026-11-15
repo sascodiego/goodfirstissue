@@ -985,3 +985,288 @@ tbody tr:last-child td {
   opacity: 0.45;
   cursor: progress;
 }
+
+/* ── Cola de análisis y evidencia · issue #12 ───────────────────────────────
+   La cola vive en el servidor; esto solo la muestra. Cada estado tiene color y
+   palabra, porque un punto de color solo no dice «cancelado» ni «reutilizado». */
+
+.c-run {
+  min-width: 10.5rem;
+}
+.run {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  font: 500 11.5px var(--sans);
+  line-height: 1.5;
+  color: var(--fg-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.run::before {
+  content: "";
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.75;
+}
+.run.queued {
+  color: var(--state-blocked);
+}
+.run.running {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.run.ready {
+  color: var(--accent);
+}
+.run.reused {
+  color: var(--fg);
+}
+.run.error {
+  color: #f0836f;
+  border-color: #4a2420;
+}
+.run.canceled,
+.run.none {
+  color: var(--fg-3);
+  border-style: dashed;
+}
+@keyframes run-pulse {
+  50% {
+    opacity: 0.2;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .run.running::before {
+    animation: run-pulse 1.4s ease-in-out infinite;
+  }
+}
+.run-note {
+  display: block;
+  margin-top: 0.2rem;
+  max-width: 20rem;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--fg-3);
+  white-space: normal;
+}
+.c-cancel {
+  width: 2rem;
+}
+.row-cancel {
+  display: inline;
+}
+.row-cancel button {
+  width: 1.35rem;
+  height: 1.35rem;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--fg-3);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+}
+.row-cancel button:hover {
+  color: #f0836f;
+  border-color: #4a2420;
+}
+.btn.danger {
+  color: #f0836f;
+}
+.btn.danger:hover {
+  border-color: #4a2420;
+}
+.queue-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.queue-eta {
+  font: 500 11.5px var(--sans);
+  color: var(--fg-3);
+}
+
+/* La evidencia de una issue: lo que el explore ya produjo, con su pin a la vista. */
+.evid {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+.evid-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.evid-top h2 {
+  margin: 0.1rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.evid-label {
+  margin: 1.25rem 0 0.4rem;
+  font: 600 10.5px var(--sans);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.evid-top .evid-label {
+  margin: 0;
+}
+.evid-pin {
+  margin: 0.75rem 0 0;
+  font: 500 11.5px var(--mono);
+  color: var(--fg-3);
+}
+.evid-pin b {
+  color: var(--fg-2);
+  font-weight: 600;
+}
+.evid-intent {
+  margin: 0.9rem 0 0;
+  max-width: 62ch;
+  font-size: 0.95rem;
+  color: var(--fg);
+}
+.evid-warn {
+  margin: 0.9rem 0 0;
+  padding: 0.55rem 0.7rem;
+  border-left: 3px solid var(--state-blocked);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font-size: 12px;
+  color: var(--fg-2);
+}
+.evid-files {
+  width: 100%;
+  margin-top: 1.1rem;
+  border-collapse: collapse;
+}
+.evid-files caption {
+  margin-bottom: 0.5rem;
+  text-align: left;
+  font-size: 11.5px;
+  color: var(--fg-3);
+}
+.evid-files th {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  font: 600 10.5px var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.evid-files td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  font-size: 12.5px;
+}
+.evid-path code {
+  font: 500 12px var(--mono);
+  color: var(--fg);
+  word-break: break-all;
+}
+.evid-sym {
+  display: block;
+  margin-top: 0.15rem;
+  font: 500 11px var(--mono);
+  color: var(--fg-3);
+}
+.evid-reason {
+  color: var(--fg-2);
+  line-height: 1.45;
+}
+.evid-note {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 11px;
+  color: var(--state-blocked);
+}
+.rel {
+  display: inline-block;
+  padding: 0.05rem 0.35rem;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  font: 600 10.5px var(--mono);
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+.rel.observed {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.rel.probable {
+  color: var(--state-blocked);
+  border-color: #4a3a1c;
+}
+.rel.unverified {
+  color: var(--fg-3);
+  border-style: dashed;
+}
+.evid-paths,
+.evid-tests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.evid-paths li,
+.evid-tests li {
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font-size: 11.5px;
+}
+.evid-paths .arrow {
+  color: var(--fg-3);
+}
+.evid-paths code,
+.evid-tests code {
+  font: 500 11.5px var(--mono);
+  color: var(--fg-2);
+}
+.evid-reqs,
+.evid-doubts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.evid-doubts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.evid-reqs ul,
+.evid-doubts ul {
+  margin: 0;
+  padding-left: 1.05rem;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.evid-reqs li,
+.evid-doubts li {
+  margin-bottom: 0.3rem;
+}
+@media (max-width: 900px) {
+  .evid-reqs,
+  .evid-doubts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+  }
+}

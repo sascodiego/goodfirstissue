@@ -27,7 +27,18 @@ type issuePage struct {
 	Active   repoView
 	Corpus   string
 	Commit   string
-	Issue    issueView
+	// CommitSHA es el pin completo: el bloque de evidencia busca el análisis con esta clave,
+	// así que necesita el identificador entero y no el corto del rail.
+	CommitSHA string
+	Issue     issueView
+	// Evidence es el bloque de evidencia guardada, y HasEvidence dice si hay algo que leer.
+	Evidence    evidenceView
+	HasEvidence bool
+	// CanAnalyze dice si esta pantalla puede ofrecer el botón de analizar: hay cola, hay
+	// modelo y hay clave. Ofrecerlo sin eso sería prometer otra cosa.
+	CanAnalyze bool
+	// Live mantiene el layout igual que en el dashboard: una issue no tiene cola propia.
+	Live bool
 }
 
 // issueView es una issue preparada para leerla: el cuerpo y los comentarios ya
@@ -82,6 +93,8 @@ func (h *Handler) issue(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.attachEvidence(&data)
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	h.render(w, screenIssue, data)
 }
@@ -125,6 +138,7 @@ func buildIssuePage(st *store.Store, repo, rawNumber string) (issuePage, error) 
 		return data, errUnknownIssue
 	}
 
+	data.CommitSHA = snap.Repository.CommitSHA
 	data.Issue = newIssueView(is)
 	data.Title = fmt.Sprintf("#%d %s · %s", is.Number, is.Title, shell.Active.Name)
 	return data, nil

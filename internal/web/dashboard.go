@@ -10,15 +10,19 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/sascodiego/nan-hackathon-clef/internal/config"
 	"github.com/sascodiego/nan-hackathon-clef/internal/ghdata"
 	"github.com/sascodiego/nan-hackathon-clef/internal/store"
+	"github.com/sascodiego/nan-hackathon-clef/internal/triage"
 )
 
-// Estados de una fila. Solo dos se pueden afirmar hoy, y ninguna es un veredicto:
-// "taken" es un hecho medido (hay una PR abierta vinculada) y "pending" es la
-// ausencia de triaje. Los estados que dependen de Clef —no es trabajo,
-// condicionada— llegan cuando exista internal/triage; inventarlos acá violaría
-// I2 (nunca un veredicto por defecto) e I10 (nunca descartar por falta de prueba).
+// Estados de una fila. Los que empiezan con «state» son los que la pantalla puede afirmar
+// sin veredicto: «taken» es un hecho medido (hay una PR abierta vinculada) y «pending» es la
+// ausencia de triaje. Los demás salen del journal y su clase la decide outcomeClass, que es la
+// misma que usa el bloque de la issue: un solo mapeo para las dos pantallas.
+//
+// Un veredicto solo se muestra si está guardado. Inventarlo acá violaría I2 (nunca un veredicto
+// por defecto) e I10 (nunca descartar por falta de prueba).
 const (
 	stateTaken   = "taken"
 	statePending = "pending"
@@ -66,12 +70,29 @@ type pageData struct {
 
 // statsView son las cifras del encabezado. Todas se cuentan sobre el corpus
 // guardado, no sobre el filtro activo: el filtro dice qué se mira, no cuánto hay.
+//
+// Las cinco primeras son hechos del snapshot. Las del embudo son otra pregunta: qué
+// decidió el triaje, y salen del journal, no del corpus. Un issue puede estar «libre»
+// (no tiene PR) y a la vez «candidata» (el triaje lo recomendó), así que mezclarlas
+// en un solo número sería responder dos preguntas con una cifra.
 type statsView struct {
 	Free           int
 	Taken          int
 	WithoutLabel   int
 	WithoutComment int
 	Analyses       int
+
+	// El embudo, en el orden en que el triaje descarta: cuántas llegan, cuántas se
+	// marcan con su motivo, cuántas quedan derivadas, cuántas condicionadas y
+	// cuántas sobreviven como candidatas. Untriaged no es un veredicto: es la
+	// ausencia de uno, y se cuenta aparte para no confundirla con una decisión.
+	Marked      int
+	Derived     int
+	Conditional int
+	Candidate   int
+	Doubt       int
+	Undecided   int
+	Untriaged   int
 }
 
 type rowView struct {
@@ -191,14 +212,23 @@ func buildPageWith(st *store.Store, q url.Values, jobs *queue) (pageData, error)
 	}
 	data.Language = snap.Repository.PrimaryLanguage
 	data.Total = len(snap.Issues)
-	data.Stats = countStats(st, active.Key, snap.Issues)
+	// El journal se lee una vez por página. Un journal ilegible no inventa veredictos: la
+	// pantalla cae al hecho del snapshot (hay PR o no) y dice «sin triajar» en el resto, que
+	// es exactamente lo que sabe.
+	journal, err := st.Decisions(active.Key)
+	if err != nil {
+		slog.Error("leer el journal del corpus", "key", active.Key, "err", err)
+		journal = nil
+	}
+	data.Stats = countStats(st, active.Key, active.CommitSHA, snap.Issues, journal)
 	data.Labels = distinctLabels(snap.Issues)
 
 	for _, is := range snap.Issues {
 		if !f.matches(is) {
 			continue
 		}
-		data.Rows = append(data.Rows, newRow(is))
+		result, hasVerdict := verdictOf(journal, is.Number, active.CommitSHA)
+		data.Rows = append(data.Rows, newRow(is, result, hasVerdict))
 	}
 	data.Shown = len(data.Rows)
 
@@ -249,7 +279,46 @@ func toggleNoLabelURL(f filter, key string) string {
 	return f.withNoLabel().url(key)
 }
 
-func newRow(is ghdata.Issue) rowView {
+// verdictOf es la única forma en que esta pantalla se entera de lo que decidió el triaje.
+// Le pregunta al paquete triage, que es dueño de la identidad de la pregunta (I4, I14): una
+// pantalla que armara su propia clave terminaría preguntando algo que la pasada nunca contestó.
+func verdictOf(journal *store.Decisions, number int, commit string) (triage.Result, bool) {
+	analysis, _, ok := triage.Recall(journal, number, config.DecisionModel, commit)
+	if !ok {
+		return triage.Result{}, false
+	}
+	return analysis.Result, true
+}
+
+// observe suma una issue al embudo. Cuenta por desenlace, que es el mismo cajón que imprime el
+// resumen del CLI; la fila conserva la palabra fina. Contar por la palabra de la fila haría de
+// «tomada» y «marcada» dos cajones que el resumen no tiene, y entonces el embudo diría un número
+// que el CLI no puede confirmar.
+func (s *statsView) observe(result triage.Result, hasVerdict bool) {
+	if !hasVerdict {
+		s.Untriaged++
+		return
+	}
+	switch result.Outcome {
+	case triage.Marked:
+		s.Marked++
+	case triage.Derived:
+		s.Derived++
+	case triage.Conditional:
+		s.Conditional++
+	case triage.Candidate:
+		s.Candidate++
+	case triage.Doubt:
+		s.Doubt++
+	case triage.Undecided:
+		s.Undecided++
+	}
+}
+
+// newRow arma una fila. El veredicto guardado gana sobre el hecho del snapshot: es la decisión,
+// con su pin. La columna de la PR es independiente y se muestra igual, porque el número de la PR
+// es un hecho del corpus, no un veredicto.
+func newRow(is ghdata.Issue, result triage.Result, hasVerdict bool) rowView {
 	r := rowView{
 		Number:     is.Number,
 		Title:      is.Title,
@@ -267,13 +336,17 @@ func newRow(is ghdata.Issue) rowView {
 		r.PR = pr
 		r.HasPR = true
 	}
+	if hasVerdict {
+		r.State = outcomeClass(result.Outcome)
+		r.StateText = outcomeLabel(result)
+	}
 	for _, l := range is.Labels {
 		r.Labels = append(r.Labels, labelView{Text: l, Hit: declaresDifficulty(l)})
 	}
 	return r
 }
 
-func countStats(st *store.Store, key string, issues []ghdata.Issue) statsView {
+func countStats(st *store.Store, key, commit string, issues []ghdata.Issue, journal *store.Decisions) statsView {
 	var s statsView
 	for _, is := range issues {
 		if hasOpenPR(is) {
@@ -287,6 +360,8 @@ func countStats(st *store.Store, key string, issues []ghdata.Issue) statsView {
 		if is.CommentCount == 0 {
 			s.WithoutComment++
 		}
+		result, hasVerdict := verdictOf(journal, is.Number, commit)
+		s.observe(result, hasVerdict)
 	}
 	s.Analyses = analysesOf(st, key)
 	return s

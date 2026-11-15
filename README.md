@@ -58,7 +58,8 @@ Esqueleto funcionando, producto en construcción. Sin decoración:
 | ✅ Triaje preliminar | `gfi triage` corre las siete preguntas sobre el corpus: 150 issues en 53 s y 100 peticiones, y en la corrida de 20 sobre el corpus actual 13 las resolvieron las pre-compuertas sin consultar al modelo |
 | ✅ Informe de triaje en la pantalla de issue | el veredicto con su probabilidad, las preguntas que se hicieron con su respuesta, y el motivo cuando no hay recomendación |
 | ✅ Retrato del proyecto | `gfi brief` describe un repositorio clonado en seis secciones, cada afirmación con su `archivo:línea`, y alimenta el dossier de alineación sin cambiarle la firma |
-| ⏳ Encaje y embudo en pantalla | ver la ruta en `PROYECTO.md` §2.1.2 |
+| ✅ Embudo en pantalla | el dashboard lee el journal y muestra las 150 issues con el veredicto que está guardado: 69 marcadas, 31 derivadas, 11 condicionadas, 39 candidatas |
+| ⏳ Veredicto de encaje | falta la decisión final contra el perfil; ver la ruta en `PROYECTO.md` §2.1.2 |
 
 ## Correr
 

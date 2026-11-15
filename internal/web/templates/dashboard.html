@@ -90,6 +90,20 @@
       <div><dt>análisis</dt><dd>{{.Stats.Analyses}}</dd></div>
     </dl>
 
+    {{/* El embudo es la otra pregunta: no qué tiene el corpus, sino qué decidió el triaje sobre
+         él. Los números salen del journal, así que un corpus recién traído y todavía sin triajear
+         muestra «sin triajar» en vez de ceros que parezcan una decisión. */}}
+    <dl class="funnel">
+      <div class="f-open"><dt>abiertas</dt><dd>{{.Total}}</dd></div>
+      <div class="f-marked"><dt>marcadas</dt><dd>{{.Stats.Marked}}</dd></div>
+      <div class="f-derived"><dt>derivadas</dt><dd>{{.Stats.Derived}}</dd></div>
+      <div class="f-conditional"><dt>condicionadas</dt><dd>{{.Stats.Conditional}}</dd></div>
+      <div class="f-candidate"><dt>candidatas</dt><dd>{{.Stats.Candidate}}</dd></div>
+      {{if .Stats.Doubt}}<div class="f-doubt"><dt>sin evidencia</dt><dd>{{.Stats.Doubt}}</dd></div>{{end}}
+      {{if .Stats.Undecided}}<div class="f-undecided"><dt>sin veredicto</dt><dd>{{.Stats.Undecided}}</dd></div>{{end}}
+      {{if .Stats.Untriaged}}<div class="f-untriaged"><dt>sin triajar</dt><dd>{{.Stats.Untriaged}}</dd></div>{{end}}
+    </dl>
+
     {{if .Live}}
     <p class="queue-bar" aria-live="polite">
       <span class="run running" data-live="1">{{.Running}} en curso</span>

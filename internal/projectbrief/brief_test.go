@@ -1,6 +1,7 @@
-package projectbrief
+package projectbrief_test
 
 import (
+	"github.com/sascodiego/nan-hackathon-clef/internal/projectbrief"
 	"strings"
 	"testing"
 )
@@ -32,7 +33,7 @@ const validAnswer = "TÉCNICO: Stack técnico\n" +
 	"insufficient_information\n"
 
 func TestParseReadsTheFixedSkeleton(t *testing.T) {
-	doc, err := Parse(validAnswer)
+	doc, err := projectbrief.Parse(validAnswer)
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
@@ -43,7 +44,7 @@ func TestParseReadsTheFixedSkeleton(t *testing.T) {
 		t.Fatalf("items = %d, want 7", len(doc.Items))
 	}
 	first := doc.Items[0]
-	if first.Section != SectionWhat || first.Claim != "Una librería de CLI en Go" ||
+	if first.Section != projectbrief.SectionWhat || first.Claim != "Una librería de CLI en Go" ||
 		first.Evidence.Path != "README.md" || first.Evidence.Line != 3 {
 		t.Errorf("first item = %+v", first)
 	}
@@ -54,7 +55,7 @@ func TestParseReadsTheFixedSkeleton(t *testing.T) {
 	if got := doc.Items[3].Claim; got != "`go test ./...` es el comando de test" {
 		t.Errorf("claim = %q", got)
 	}
-	if got, want := doc.Unsupported, []string{SectionLimits}; len(got) != 1 || got[0] != want[0] {
+	if got, want := doc.Unsupported, []string{projectbrief.SectionLimits}; len(got) != 1 || got[0] != want[0] {
 		t.Errorf("unsupported = %v, want %v", got, want)
 	}
 	if doc.Insufficient() {
@@ -66,23 +67,23 @@ func TestParseReadsTheFixedSkeleton(t *testing.T) {
 func TestSectionsDeclareOneNatureEach(t *testing.T) {
 	technical := map[string]bool{}
 	project := map[string]bool{}
-	for _, section := range Sections {
+	for _, section := range projectbrief.Sections {
 		switch section.Nature {
-		case NatureTechnical:
+		case projectbrief.NatureTechnical:
 			technical[section.Name] = true
-		case NatureProject:
+		case projectbrief.NatureProject:
 			project[section.Name] = true
 		default:
 			t.Fatalf("section %q has nature %q", section.Name, section.Nature)
 		}
 	}
-	if len(technical) != 1 || !technical[SectionStack] {
-		t.Errorf("technical sections = %v, want only %q", technical, SectionStack)
+	if len(technical) != 1 || !technical[projectbrief.SectionStack] {
+		t.Errorf("technical sections = %v, want only %q", technical, projectbrief.SectionStack)
 	}
-	if len(technical)+len(project) != len(Sections) {
+	if len(technical)+len(project) != len(projectbrief.Sections) {
 		t.Errorf("a section carries two natures or none")
 	}
-	if project[SectionStack] || !project[SectionDirection] {
+	if project[projectbrief.SectionStack] || !project[projectbrief.SectionDirection] {
 		t.Errorf("project sections = %v", project)
 	}
 }
@@ -91,14 +92,14 @@ func TestParseRejectsADeclarationThatContradictsTheCode(t *testing.T) {
 	answer := strings.Replace(validAnswer,
 		"TÉCNICO: Stack técnico",
 		"TÉCNICO: Stack técnico, Dirección: qué acepta y qué no", 1)
-	if _, err := Parse(answer); err == nil {
+	if _, err := projectbrief.Parse(answer); err == nil {
 		t.Fatal("a declaration that claims a project section is technical must not parse")
 	}
 }
 
 func TestParseRejectsAnUnknownSection(t *testing.T) {
 	answer := strings.Replace(validAnswer, "## Límites de lo observable", "## Riesgos", 1)
-	_, err := Parse(answer)
+	_, err := projectbrief.Parse(answer)
 	if err == nil {
 		t.Fatal("an improvised heading has nowhere to go")
 	}
@@ -110,7 +111,7 @@ func TestParseRejectsAnUnknownSection(t *testing.T) {
 func TestParseRejectsAMissingSection(t *testing.T) {
 	answer := strings.Replace(validAnswer,
 		"## Límites de lo observable\ninsufficient_information\n", "", 1)
-	if _, err := Parse(answer); err == nil {
+	if _, err := projectbrief.Parse(answer); err == nil {
 		t.Fatal("a portrait without its last section must not parse")
 	}
 }
@@ -126,7 +127,7 @@ func TestParseRejectsASectionOutOfOrder(t *testing.T) {
 		"## Convenciones y cómo se construye\n- Al lado — evidencia: CONTRIBUTING.md:1\n" +
 		"## Dirección: qué acepta y qué no\n- Acepta — evidencia: MAINTAINERS.md:1\n" +
 		"## Límites de lo observable\ninsufficient_information\n"
-	if _, err := Parse(answer); err == nil {
+	if _, err := projectbrief.Parse(answer); err == nil {
 		t.Fatal("the sections must arrive in the fixed order")
 	}
 }
@@ -134,14 +135,14 @@ func TestParseRejectsASectionOutOfOrder(t *testing.T) {
 func TestParseRejectsProse(t *testing.T) {
 	answer := strings.Replace(validAnswer, "- Un paquete por comando — evidencia: cmd/root.go:10",
 		"El proyecto separa cada comando en su paquete.", 1)
-	if _, err := Parse(answer); err == nil {
+	if _, err := projectbrief.Parse(answer); err == nil {
 		t.Fatal("a paragraph has nowhere to go")
 	}
 }
 
 func TestParseRejectsAnItemWithoutEvidence(t *testing.T) {
 	answer := strings.Replace(validAnswer, " — evidencia: cmd/root.go:10", "", 1)
-	if _, err := Parse(answer); err == nil {
+	if _, err := projectbrief.Parse(answer); err == nil {
 		t.Fatal("without evidence it is the model's opinion, not a portrait")
 	}
 }
@@ -150,7 +151,7 @@ func TestParseRejectsEvidenceThatIsNotPathAndLine(t *testing.T) {
 	for _, evidence := range []string{"cmd/root.go", "cmd/root.go:", "cmd/root.go:cero", "cmd/root.go:0",
 		"cmd/root.go:-2", "/etc/passwd:1", "../secreto.go:4", "cmd/../../fuera.go:2", ""} {
 		answer := strings.Replace(validAnswer, "evidencia: cmd/root.go:10", "evidencia: "+evidence, 1)
-		if _, err := Parse(answer); err == nil {
+		if _, err := projectbrief.Parse(answer); err == nil {
 			t.Errorf("evidence %q must not parse", evidence)
 		}
 	}
@@ -160,21 +161,21 @@ func TestParseRejectsASectionThatNeitherCitesNorDoubts(t *testing.T) {
 	answer := strings.Replace(validAnswer,
 		"## Límites de lo observable\ninsufficient_information\n",
 		"## Límites de lo observable\n", 1)
-	if _, err := Parse(answer); err == nil {
+	if _, err := projectbrief.Parse(answer); err == nil {
 		t.Fatal("a silent section is indistinguishable from a bug (I10)")
 	}
 }
 
 func TestParseAcceptsADoubtfulPortrait(t *testing.T) {
-	doc, err := Parse(Insufficient)
+	doc, err := projectbrief.Parse(projectbrief.Insufficient)
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
 	if !doc.Insufficient() {
 		t.Error("insufficient_information for the whole answer means every section is doubtful")
 	}
-	if len(doc.Unsupported) != len(Sections) {
-		t.Errorf("unsupported = %v, want all %d sections", doc.Unsupported, len(Sections))
+	if len(doc.Unsupported) != len(projectbrief.Sections) {
+		t.Errorf("unsupported = %v, want all %d sections", doc.Unsupported, len(projectbrief.Sections))
 	}
 	if len(doc.Items) != 0 {
 		t.Errorf("a doubtful portrait cites nothing, got %d items", len(doc.Items))
@@ -182,7 +183,7 @@ func TestParseAcceptsADoubtfulPortrait(t *testing.T) {
 }
 
 func TestParseRejectsAnEmptyAnswer(t *testing.T) {
-	if _, err := Parse("   \n\n"); err == nil {
+	if _, err := projectbrief.Parse("   \n\n"); err == nil {
 		t.Fatal("an empty answer is an error, not a portrait")
 	}
 }
@@ -190,19 +191,19 @@ func TestParseRejectsAnEmptyAnswer(t *testing.T) {
 // The empty-root judge that reads this document must be able to ask which items cross with the
 // CV without re-reading prose.
 func TestDocumentGroupsItemsBySection(t *testing.T) {
-	doc, err := Parse(validAnswer)
+	doc, err := projectbrief.Parse(validAnswer)
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
-	if got := len(doc.ItemsIn(SectionStack)); got != 2 {
-		t.Errorf("items in %q = %d, want 2", SectionStack, got)
+	if got := len(doc.ItemsIn(projectbrief.SectionStack)); got != 2 {
+		t.Errorf("items in %q = %d, want 2", projectbrief.SectionStack, got)
 	}
-	for _, item := range doc.ItemsIn(SectionStack) {
-		if NatureOf(item.Section) != NatureTechnical {
+	for _, item := range doc.ItemsIn(projectbrief.SectionStack) {
+		if projectbrief.NatureOf(item.Section) != projectbrief.NatureTechnical {
 			t.Errorf("%q cited an item of the wrong nature", item.Section)
 		}
 	}
-	if got := len(doc.ItemsIn(SectionLimits)); got != 0 {
+	if got := len(doc.ItemsIn(projectbrief.SectionLimits)); got != 0 {
 		t.Errorf("a doubtful section cites nothing, got %d", got)
 	}
 }

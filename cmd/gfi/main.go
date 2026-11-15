@@ -143,6 +143,19 @@ func runServer(args []string) error {
 		},
 		Timeout:   cfg.GitHub.Timeout.Get(),
 		Extractor: profileExtractor(cfg, st),
+		// La cola corre la misma sesión que `gfi explore`: la pantalla y la consola
+		// comparten la clave del journal, así que lo analizado por una sirve a la otra.
+		Workers: cfg.Explore.Workers,
+		Explore: web.ExploreOptions{
+			Model:    cfg.Explore.Model,
+			Models:   config.AllowedChatModels,
+			Tools:    cfg.Explore.Tools,
+			Home:     cfg.Explore.Home,
+			Binary:   cfg.Explore.Binary,
+			IdleWarn: cfg.Explore.IdleWarn.Get(),
+			IdleKill: cfg.Explore.IdleKill.Get(),
+			Budget:   cfg.Explore.Budget.Get(),
+		},
 	})
 	if err != nil {
 		return err

@@ -14,11 +14,16 @@ S1. **El veredicto nunca aparece sin su probabilidad.** «Nunca un estado sin su
 `Result.Outcome` con `Result.Probability`. Un hecho determinista reporta 1 porque es certeza, no
 probabilidad.
 
-S2. **Las preguntas son las que se preguntaron, en el orden congelado.** `Answers` es la fuente,
-no una lista fija: siete de substancia (`kind`, `self_contained`, `has_evidence`, `unambiguous`,
-`done_defined`, `reports_defect`, `evidence_sufficient`) y, solo si el nodo de alineación corrió,
+S2. **Las preguntas son las que se preguntaron, en el orden congelado.** No es una lista fija:
+siete de substancia (`kind`, `self_contained`, `has_evidence`, `unambiguous`, `done_defined`,
+`reports_defect`, `evidence_sufficient`) y, solo si el nodo de alineación corrió,
 `only_for_requester` y `fits_direction`. «Un bug muestra siete, una feature nueve. Nadie ve una
 pregunta que no se hizo.» No se afirma un número fijo en pantalla.
+
+Corrección registrada en la implementación: las dos de alineación **no viven en `Answers`** sino en
+`Analysis.Alignment`, que es un mapa aparte (`triage.Recall` devuelve los dos). Las filas se arman
+del orden congelado consultando primero uno y después el otro; sin eso una feature nunca podría
+mostrar nueve.
 
 S3. **Cada respuesta viaja con su valor.** Una respuesta `choice` muestra la etiqueta elegida y
 su `Confidence`; una `noul` muestra su valor. La pregunta que decidió el veredicto se distingue
@@ -34,8 +39,14 @@ S5. **`MARCADA` muestra el motivo que la resolvió**, y los cinco del pre-gate s
 `already_done`, `declined`, `already_working`, `closed`, `no_content`.
 
 S6. **El `kind` declarado por el autor se contrasta con el leído.** Si `NormalizeTitle` encontró
-una declaración y difiere de `Result.Kind` con `Probability >= 0,6`, se muestra: «El autor también
-puede mentir.» Con probabilidad menor, no se presenta como contradicción.
+una declaración y difiere de `Result.Kind` con probabilidad `>= 0,6`, se muestra: «El autor también
+puede mentir.» Por debajo, no se presenta como contradicción.
+
+Corrección registrada en la implementación: el corte cae sobre la **confianza de la respuesta del
+`kind`**, no sobre `Result.Probability`. En una feature, `Result.Probability` es la probabilidad del
+nodo de alineación, que mide otra cosa: usarla ponía dos números distintos sobre el mismo juicio
+(la fila del `kind` arriba decía 0,86 y la contradicción citaba 0,68) y dejaba que un nodo muy seguro
+levantara una contradicción sobre una lectura del `kind` de 0,40.
 
 S7. **La etiqueta original aparece verbatim y marcada como dato del mantenedor**, nunca como
 insumo de la decisión (I6). No se audita ni se juzga.
@@ -59,18 +70,24 @@ punto de inclusión ya existe en `issue.html:70`.
 | ID | Specs | Qué | Ruta | Commit |
 |---|---|---|---|---|
 | T0 | — | Re-escopeo de #11: cuerpo nuevo y comentario con lo retirado y por qué | inline | issue #11, comentario 6889206172 |
-| T1 | S8, S2 | `triage.Recall`: lectura pública del journal; `P1.lookup` delega en él. Test con clave armada a mano | inline | pendiente |
-| T2 | S1, S2, S3, S4, S5, S6, S7 | `internal/web/triage_view.go`: `triageView`, `attachTriage`, `newTriageView` y las etiquetas de pregunta. Tests por regla | inline | pendiente |
-| T3 | S10, S11 | `templates/partials/triage.html` y el CSS en `design/app.css` con su espejo | inline | pendiente |
-| T4 | S9, S11 | Enganche: `Triage`/`HasTriage` en `issuePage` y la llamada en `h.issue`. Test de pantalla | inline | pendiente |
-| T5 | todas | `make verify` y la lectura real a 360 px | inline | pendiente |
+| T1 | S8, S2 | `triage.Recall`: lectura pública del journal; `P1.lookup` delega en él. Test con clave armada a mano | inline | `08ca593` |
+| T2 | S1, S2, S3, S4, S5, S6, S7 | `internal/web/triage_view.go`: `triageView`, `attachTriage`, `newTriageView` y las etiquetas de pregunta. Tests por regla | worker | `d16c06c` |
+| T3 | S10, S11 | `templates/partials/triage.html` y el CSS en `design/app.css` con su espejo | worker | `d16c06c` |
+| T4 | S9, S11 | Enganche: `Triage`/`HasTriage` en `issuePage` y la llamada en `h.issue`. Test de pantalla | worker | `d16c06c` |
+| T5 | todas | `make verify` y la lectura real a 360 px | inline | `d16c06c` |
 
 **Verificación**: RED por regla antes de implementar cada test, y `make verify` completo (build,
 tests, `go vet`, `golangci-lint`, gate de `gofmt`, design-check). El check de 360 px se mira, no se
 declara.
 
-**Ruta**: inline. Las tareas son secuenciales —el modelo necesita `Recall`, el parcial necesita el
-modelo, el enganche necesita el parcial— y ninguna alcanza sola el peso de un subagente.
+**Lo que encontró el check a 360 px**, y que ningún test cubría: la frase que explicaba la tabla
+vivía dentro del `<caption>`, así que heredaba el ancho de la tabla y quedaba cortada detrás del
+scroll. Se movió a un párrafo arriba y el `caption` quedó corto. Además `.tr-questions` bajó de
+`26rem` a `21rem` de `min-width`: a 360 px la tabla ahora entra sin correr —la pregunta se parte en
+dos líneas— y el envoltorio sigue corriendo por debajo de eso. Medido en el navegador: overflow de
+página 0, tabla sin scroll a 390 px, y la fila del `decidió` en 49 px de alto.
+
+**Ruta**: T2–T4 van a un solo worker: el modelo, el parcial y el enganche son una sola conducta —un bloque que se ve— y separarlos obligaría a tres escritores sobre el mismo archivo. T1 y T5 quedan inline.
 
 ## Log
 
@@ -89,7 +106,14 @@ requerira una orimera pasada para re scoppear la issue, luego un odd para ponerl
 
 L5. «si» — se publica el cuerpo re-escopeado de #11 y su comentario de registro.
 
-L6. Decisiones que fija L4, y quedan fuera de discusión salvo evidencia nueva: (a) preguntas y
+L6. Revisión del entregable del worker: su reporte marcó dos lugares donde la spec y el código no
+coincidían. S2 nombraba `Answers` para las preguntas de alineación, que en realidad viven en
+`Analysis.Alignment`. S6 cortaba sobre `Result.Probability`, que en una feature es la probabilidad
+del nodo de alineación: se corrigió a la confianza de la respuesta del `kind`, con un test que
+falla si la probabilidad del nodo vuelve a levantar la contradicción. Las dos correcciones quedaron
+en S2 y S6.
+
+L7. Decisiones que fija L4, y quedan fuera de discusión salvo evidencia nueva: (a) preguntas y
 abstenciones se alinean al código real, no al texto viejo; (b) el grupo de duplicados queda fuera
 del MVP y lo absorbe #23 cuando exista; (c) no se maqueta artboard: se extiende la pantalla de
 issue que ya está en templates.

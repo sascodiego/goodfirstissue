@@ -34,6 +34,10 @@ type issuePage struct {
 	// Evidence es el bloque de evidencia guardada, y HasEvidence dice si hay algo que leer.
 	Evidence    evidenceView
 	HasEvidence bool
+	// Triage es el informe de triaje guardado, y HasTriage dice si hay un veredicto que leer.
+	// Sin él el bloque lo dice y nombra el comando en vez de quedar vacío (S9).
+	Triage    triageView
+	HasTriage bool
 	// CanAnalyze dice si esta pantalla puede ofrecer el botón de analizar: hay cola, hay
 	// modelo y hay clave. Ofrecerlo sin eso sería prometer otra cosa.
 	CanAnalyze bool
@@ -93,6 +97,7 @@ func (h *Handler) issue(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.attachTriage(&data)
 	h.attachEvidence(&data)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

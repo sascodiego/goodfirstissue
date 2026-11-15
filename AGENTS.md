@@ -130,7 +130,7 @@ Si una tarea parece requerir violar uno de estos, **parar y preguntar**. No es u
 - La sección de imágenes de `docs/api.md` está sin verificar («Pendiente de verificar»). No asumir que se pueden adjuntar.
 - **Nunca indexar en vivo durante la demo.** `codegraph init` tarda segundos en un repo pequeño y más de un minuto en uno de 50 MB. Los índices se construyen en E0.
 - `codegraph` deja un lock file y puede levantar un daemon; si `init` se bloquea, `codegraph unlock <path>`.
-- `relatedFiles` y `entryPoints` del índice son la única base válida para marcar un archivo como `observed`. Fuera de ahí, máximo `probable`.
+- `observed` exige que la traza de esa corrida lo respalde (`PROYECTO.md` §8.2): `codegraph_explore`, `grep` y `read` cuentan, porque juzgar la relevancia es trabajo del modelo, no del índice. Un `observed` sin respaldo en la traza se muestra como `probable` y se dice por qué; `internal/explore/Verify` es el que lo detecta. (La versión anterior de esta línea decía que solo `relatedFiles`/`entryPoints` del índice valían: contradecía §8.2 y dejaba afuera los 41 de 66 archivos que el índice no indexó.)
 - **El CV entra como texto pegado, PDF o URL** (`PROYECTO.md` §17.8.1). Es un requisito registrado, no una decisión de diseño: **el cómo está abierto**. No elegir una solución de extracción de PDF ni de descarga por URL sin consultar.
 - `.gitignore` ignora `.env.*`; el archivo de ejemplo es `env.example` a propósito.
 - El comando del README para `examples/clef.sh` usa comillas rectas. Copiar de los archivos, no del chat.

@@ -140,10 +140,24 @@ type stored struct {
 func (p *P1) Run(ctx context.Context, issue Issue) (Analysis, error) {
 	analysis := Analysis{Model: p.model, PromptVersion: Version(), CommitSHA: p.commitSHA}
 
-	// A deterministic fact resolves the issue without a dossier and without a request.
+	// A deterministic fact resolves the issue without a dossier and without a request. It is a
+	// verdict all the same, so it is journaled with zero latency and no answers: a report that
+	// reads the journal would otherwise count the issues nobody has to look at as untriaged.
 	if pre := Prescreen(issue); pre.Skip {
 		analysis.Result = Result{Outcome: Marked, Reason: pre.Reason, Probability: 1}
 		analysis.At = p.now().UTC()
+
+		// The journal is pinned to the commit and the prompt, not to the issue's own facts: a
+		// refreshed corpus can bring a linked pull request at the same pin. The fact wins over
+		// the stored verdict (§7.7, row 0 before row 1); an unchanged one keeps its own time,
+		// so the next run says it was reused (I14) instead of presenting it as fresh.
+		if reused, ok := p.lookup(issue); ok && reused.Outcome == Marked && reused.Reason == pre.Reason {
+			reused.Model, reused.PromptVersion, reused.CommitSHA = p.model, Version(), p.commitSHA
+			return reused, nil
+		}
+
+		// The verdict stands even when it cannot be stored, exactly as below.
+		_ = p.remember(issue, analysis, 0)
 		return analysis, nil
 	}
 

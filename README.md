@@ -28,11 +28,11 @@ Tres pasadas, con un embudo de costo: el recurso caro es el modelo generativo y 
 
 | Pasada | Insumo | Motor | Coste |
 |---|---|---|---|
-| **P1 · agrupar y triajear** | texto de la issue, etiquetas, comentarios | **solo Clef** | ~45 s y **0 tokens** para 20 issues |
+| **P1 · triajear** | texto de la issue, estado nativo, PR abierta vinculada, comentarios | **solo Clef**: siete preguntas en una petición, más una segunda solo para features | **medido**: 150 issues en 53 s y 100 peticiones. 66 de 150 las resuelven las pre-compuertas, sin consultar al modelo |
 | **P2 · explore** | + herramientas de código | **agente**: el modelo decide qué mirar y Go ejecuta | caro, solo candidatas |
 | **P3 · encaje** | + perfil del desarrollador | **solo Clef** | ~1,5 s por issue |
 
-Tres estados de salida, nunca dos: **CANDIDATA**, **CONDICIONADA** (falta una condición externa) y **MARCADA** (no se recomienda, con el motivo y la evidencia a la vista). Ninguna se oculta.
+Cuatro estados de salida, nunca dos: **CANDIDATA**, **CONDICIONADA** (falta una condición externa), **DERIVADA** (la pregunta necesita los comentarios, y esa ronda está especificada y no instalada) y **MARCADA** (no se recomienda, con el motivo y la evidencia a la vista). Ninguna se oculta.
 
 Y dos formas de no decidir, que son parte del producto:
 
@@ -54,7 +54,9 @@ Esqueleto funcionando, producto en construcción. Sin decoración:
 | ✅ Árbol de decisiones y diseño del flujo | [`PROYECTO.md`](PROYECTO.md) |
 | ✅ Cola de análisis desde la pantalla | el botón encola de verdad: hasta tres `pig` en paralelo, cancelar por issue y vaciar la cola |
 | ✅ Evidencia en la pantalla de issue | archivos con `path:line` y su relación, con el pin del análisis a la vista |
-| ⏳ Triaje preliminar y encaje | ver la ruta en `PROYECTO.md` §2.1.2 |
+| ✅ Perfil del desarrollador | el CV se extrae con PiG, se auditan las citas contra el texto pegado y el documento se edita antes de juzgar |
+| ✅ Triaje preliminar | `gfi triage` corre las siete preguntas sobre el corpus: 150 issues en 53 s y 100 peticiones, con las pre-compuertas resolviendo 66 sin consultar al modelo |
+| ⏳ Encaje y embudo en pantalla | ver la ruta en `PROYECTO.md` §2.1.2 |
 
 ## Correr
 

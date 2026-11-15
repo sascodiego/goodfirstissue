@@ -115,7 +115,7 @@ El sistema no es una secuencia de etapas: es un **embudo**. El recurso caro es e
 |---|---|---|---|
 | **P1 · Triaje** | texto de la issue, metadatos, etiquetas, comentarios | **solo Clef** | ~1,5 s · **0 tokens de LLM** · 1 request |
 | **P2 · Explore** | + índice de código | LLM + `codegraph` | caro |
-| **P3 · Encaje** | + perfil del desarrollador | **solo Clef** | ~1,5 s por parte |
+| **P3 · Encaje** | + perfil del desarrollador | **solo Clef** | ~1,5 s por issue |
 
 Consecuencia estructural: **P1 no necesita modelo generativo**. Un repositorio con 30 issues abiertas se triajea en ~45 s, en serie, con cero tokens de LLM. El primer filtro de toda la aplicación es Clef y nadie más.
 
@@ -148,6 +148,7 @@ Registrado con su costo, para que volver a meterlo sea una decisión y no un olv
 | Tercera pantalla de detalle | 1 h | la evidencia se muestra inline en el veredicto; el contenido es el mismo |
 | `confirmed_defect` (P2) | 0,5 h | el guardarraíl queda solo con `reports_defect`; medido, funciona con el título limpio (§7.2.1) |
 | `learning_value` (P3) | 0,5 h | se pierde el eje de crecimiento; no cambia ningún veredicto |
+| Veredicto por parte en P3 | 0,5 h | una issue de tres cambios independientes se juzga por la **unión** de sus requisitos: quien podría hacer la parte 1 recibe `needs_experience` por la 2 y la 3. El veredicto se vuelve más conservador cuanto más grande la issue (`LIMITES.md` §7) |
 | Tercer repositorio | 0,5 h | menos variedad en el embudo, no menos historia |
 | Benchmark de 10 → 6 casos | 0,5 h | dos disfraces adversariales en vez de tres |
 
@@ -165,7 +166,7 @@ El orden importa tanto como el contenido: hay trabajo con incógnitas **externas
 | 2 | **P1 · triaje** (E3) | 2,5 | 6,5 | las 20 issues clasificadas, cero llamadas al modelo de chat, < 120 s, y un test por cada fila de §7.7 |
 | 3 | **UI · embudo** (parte de UI) | 2,0 | 8,5 | el embudo muestra los números reales del corpus, no fixtures |
 | 4 | **P2 · explore** (E4) | 1,5 | 10,0 | cada candidata tiene `EvidencePackage` válido, con partes que particionan la evidencia |
-| 5 | **`profile_extract` + P3 · encaje** (E5) | 2,0 | 12,0 | 5 veredictos con perfiles distintos, por parte |
+| 5 | **`profile_extract` + P3 · encaje** (E5) | 2,0 | 12,0 | 5 veredictos con perfiles distintos, uno por issue |
 | 6 | **UI · veredicto, cola y degradación** | 2,5 | 14,5 | la ruta `undecided` es demostrable cortando la red |
 | 7 | **Benchmark, README y video de respaldo** | 1,5 | 16,0 | 6 casos con 2 disfraces, README con cómo correrlo, video de 90 s grabado |
 
@@ -247,11 +248,11 @@ repo ─► [E1 datos + clon] ─► [E2 indexar]
    └────────────────────────────────┬───────────────────────────────┘
                                     ▼
    ┌────────────────────────────────▼───────────────────────────────┐
-   │  P3 · ENCAJE — Clef solo, 1 request por parte                  │
+   │  P3 · ENCAJE — Clef solo, 1 request por issue                  │
    │  fit · learning_value                                          │
    └────────────────────────────────┬───────────────────────────────┘
                                     ▼
-              veredicto por parte + «empezá por la 2 de 3»
+              veredicto por issue + «con este CV, entra; con el otro, no»
               (la CONDICIONADA llega hasta acá, en la lista principal,
                encabezada por su condición)
 ```
@@ -1040,6 +1041,7 @@ Reglas duras:
 - **Prohibido** cualquier campo de dificultad, complejidad, riesgo o recomendación. Eso es de P3.
 - `requirements` son **hechos sobre el trabajo**, no juicios sobre personas. Tres baldes separados porque se consiguen distinto: `knowledge` (lo que hay que saber hacer), `project` (lo que hay que saber de este proyecto), `process` (cómo se contribuye acá). Un experto en Go en su primera PR falla en baldes distintos que un veterano del proyecto, y el veredicto tiene que poder decirlo.
 - Las `parts` **particionan la evidencia**: cada archivo va a una parte, o se marca `shared`. Una parte que no es mergeable sola no es una parte: es un paso. Si la issue es un solo cambio, hay una parte.
+- Las `parts` **se conservan y se usan**: el explore las sigue emitiendo exactamente igual, y entran al `state` de P3 (§9.1) y al informe como **agrupación de la evidencia**. Lo que no existe en el MVP es un **veredicto por parte**: P3 emite uno por issue (§9, `LIMITES.md` §7).
 - Archivos fuera del repositorio, rutas absolutas o symlinks que escapan: se descartan.
 
 ### 8.3. Preguntas de P2
@@ -1062,7 +1064,7 @@ Reglas duras:
 - cuerpos de código: 2 × 40 líneas
 - extractos de documentación: máximo 3 × 5 líneas
 
-**Propuesta T2 — Partir**: si aún no entra y hay N partes, cada parte se evalúa en **su propia petición**, con un `state` que contiene solo su evidencia. No es un parche: el encaje es por parte de todos modos.
+**Propuesta T2 — Partir**: si aún no entra y hay N partes, cada parte se evalúa en **su propia petición**, con un `state` que contiene solo su evidencia. No es un parche: la partición ocurre **antes** del veredicto —cada parte se trata como una issue— y la unidad de evaluación sigue siendo una sola issue por petición.
 
 **Propuesta T3 — `scoped_out`**: si una sola parte excede el presupuesto, no se evalúa y se informa:
 
@@ -1076,11 +1078,11 @@ Reglas duras:
 
 ## 9. E5 — Encaje (P3)
 
-**Clef solo. Una petición por parte.** El veredicto es por parte; el titular es la mejor parte para esa persona: «podés empezar por la 2 de 3».
+**Clef solo. Una petición por issue, un veredicto por issue.** La issue es la unidad de evaluación: las `parts` que produce el explore (§8.2) entran al `state` y al informe como **agrupación de la evidencia** —qué áreas toca la issue, y qué archivos y requisitos cuelgan de cada una—, no como unidades de veredicto. El titular responde una sola pregunta, si esta persona puede tomar esta issue, y no elige por dónde empezar. El costo está declarado en §2.1.1 y en `LIMITES.md` §7.
 
 ### 9.1. Plantilla del `state`
 
-Texto plano con encabezados. Sin JSON ni sintaxis que Clef tenga que parsear.
+Texto plano con encabezados. Sin JSON ni sintaxis que Clef tenga que parsear. Las áreas agrupan la evidencia; el veredicto es uno solo para la issue. `depends_on` sigue describiendo el orden entre áreas y no cambia el veredicto.
 
 ```
 ## ISSUE
@@ -1093,17 +1095,26 @@ Name: owner/project
 Primary language: go
 Tests: yes (go test ./...)
 
-## PARTE 2 DE 3
-Title: <título de la parte>
+## ÁREAS DE LA ISSUE
+La issue toca 2 áreas. Agrupan la evidencia; no se puntúan por separado.
 
-## EVIDENCIA
+### Área 1 — <título de la parte>
 Files:
 - internal/migrations/runner.go [observed] — define el orden de aplicación.
-- internal/migrations/rollback_test.go [observed] — cubre solo el caso simple.
 
 Requirements:
 - knowledge: ciclo de migraciones en bases relacionales          [evaluable]
 - project: el orden de aplicación vive en internal/migrations/runner.go:44   [contexto]
+
+### Área 2 — <título de la parte>
+Files:
+- internal/migrations/rollback_test.go [observed] — cubre solo el caso simple.
+
+Requirements:
+- knowledge: leer tests de un paquete ajeno                        [evaluable]
+
+## EVIDENCIA DE TODA LA ISSUE
+Requirements:
 - process: PR con tests; CI corre go test ./...                    [contexto]
 
 Conventions:
@@ -1217,9 +1228,9 @@ Notas: la documentación de la API indica `404` para «sin acceso», pero el ser
   "parts[]", "unknowns", "conventions", "missing_information",
   "label_honest", "confirmed_defect", "explore_version" }
 
-// FitDecision     (salida de P3, una por parte)
+// FitDecision     (salida de P3, una por issue)
 { "decision_id", "repository_id", "commit_sha", "issue_number",
-  "part_id", "developer_id", "answers", "policy_version", "prompt_version",
+  "developer_id", "answers", "policy_version", "prompt_version",
   "outcome", "outcome_reason", "created_at" }
 ```
 
@@ -1276,12 +1287,12 @@ Chequeos por etapa, ejecutables:
 | Una sola consulta GraphQL por repo + caché en disco | **adoptada** | 1 request en vez de 30; la demo queda hermética |
 | Sin escala de dificultad; requisitos en tres baldes | **adoptada** | una recta única obliga a ubicar a la persona en un punto que no existe |
 | La aptitud es técnica y solo técnica | **adoptada** | incluir el contexto del proyecto castiga a la persona por ser nueva (§1.2) |
-| Una issue multi-cambio se evalúa por partes | **adoptada** | se puede aportar en una parte y no en todas |
 | Stack: Go, binario único, `net/http` + `html/template` | **adoptada** | un solo lenguaje, sin `node_modules`, sin microservicios |
 | Lista constitucional de modelos: `clef` + cinco flash | **adoptada** | los modelos grandes consumen la suscripción; la lista es constante en código y falla cerrada (I13) |
 | Un modelo por acción, elegido en `config.json` | **adoptada** | el usuario decide qué modelo usa cada acción generativa; las de decisión quedan fijas en `clef` para no romper el Reto 4 |
 | La promesa 4 de la etiqueta | **en disputa** | §1.2; se dirime con el benchmark de §12 |
 | Guarda de 16k | **abierta** | §8.4, con propuestas registradas |
+| Una issue multi-cambio se evalúa por partes (`part_id` en `FitDecision`) | **descartada** | cortada por tiempo (§2.1.1): el veredicto por unión de requisitos castiga a quien podría hacer una parte y no las otras. Las `parts` se conservan como agrupación de evidencia y el veredicto es uno por issue (§9, `LIMITES.md` §7) |
 | Construir un indexador propio | **descartada** | peor recall y 3 h de trabajo no diferenciado frente a `codegraph` |
 | `gap_severity` y `support_needed` | **descartadas** | medían el mismo eje que `fit` |
 | Preguntarle a Clef si dos `criteria` se solapan | **descartada** | Clef juzga el caso, no el cuestionario |
@@ -1312,7 +1323,7 @@ Chequeos por etapa, ejecutables:
 |---|---|---|
 | **S1 · Repo** | El embudo: 47 abiertas → 5 no son trabajo → 12 features sin el sí del mantenedor → 30 candidatas → 1 condicionada. Cada una con su distintivo; ninguna oculta. | «mirá lo que filtra sola, sin modelo de lenguaje» |
 | **S2 · Issue** | Evidencia clickeable, requisitos en tres baldes, lagunas, partes, y el fact-check de la etiqueta | «`good first issue`, pero requiere conocer el sistema de migraciones» |
-| **S3 · Veredicto** | Requisitos vs perfil, parte por parte, con probabilidades | «con este CV, parte 1 y 3; con el otro CV, ninguna» |
+| **S3 · Veredicto** | Requisitos vs perfil, con probabilidades, y las áreas de la issue como evidencia | «con este CV, entra; con el otro CV, no» |
 
 S2 y S3 pueden colapsar en una sola pantalla si el reloj aprieta (§2.1.1): el contenido es el mismo, cambia dónde se muestra.
 
@@ -1405,7 +1416,7 @@ internal/explore/        ✅ contrato de salida embebido, parseo estricto, valid
 internal/nan/            ✅ cliente HTTP: /v1/systemone con cola 1-en-vuelo, /v1/chat/completions en paralelo
 internal/profile/        ✅ CV pegado → documento con evidencia y supuestos explícitos, delegado a PiG, caché por pregunta
 internal/triage/         P1: preguntas, política §7.7 — agrupación y estado histórico diferidos (§7.1)
-internal/fit/            P3: estado por parte, preguntas, política §9.3
+internal/fit/            P3: estado por issue, preguntas, política §9.3
 internal/store/          ✅ JSON atómico, envoltura de esquema, snapshots, registro de repos, journal de decisiones
 internal/repo/           ✅ clonado shallow idempotente y SHA de HEAD
 internal/web/            ✅ handlers, estáticos y plantillas embebidos
@@ -1503,7 +1514,7 @@ Para P2 se elige una de las cinco flash con salida JSON estricta. **Pendiente: c
 | `alignment` | nodo de alineación (§7.5) | `clef` — fijo |
 | `label_honest` | P2: fact-check de la etiqueta (§8.3) | `clef` — fijo |
 | `confirmed_defect` | P2: verificación del bug (§8.3) | `clef` — fijo |
-| `fit` | P3: encaje por parte (§9.2) | `clef` — fijo |
+| `fit` | P3: encaje (§9.2) | `clef` — fijo |
 | `profile_extract` | CV en texto → capacidades | **configurable** |
 | `explore` | P2: evidencia a partir del código (§8) | **configurable** |
 

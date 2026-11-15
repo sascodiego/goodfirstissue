@@ -15,6 +15,11 @@ func (h *Handler) Routes() http.Handler {
 	mux.HandleFunc("GET /issue/{repo}/{number}", h.issue)
 	mux.HandleFunc("POST /repos", h.addRepo)
 	mux.HandleFunc("POST /repos/{repo}/refresh", h.refreshRepo)
+	mux.HandleFunc("POST /explore", h.exploreSelected)
+	mux.HandleFunc("POST /explore/cancel", h.exploreCancel)
+	mux.HandleFunc("POST /explore/clear", h.exploreClear)
+	mux.HandleFunc("POST /explore/cancel-all", h.exploreCancelAll)
+	mux.HandleFunc("GET /explore/rows", h.exploreRows)
 	mux.Handle("GET /static/", http.StripPrefix("/static/", h.static))
 	return mux
 }

@@ -2,10 +2,12 @@ package web
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/sascodiego/nan-hackathon-clef/internal/ghdata"
@@ -40,10 +42,23 @@ type pageData struct {
 	Total   int
 	// Estado es la frase que confirma el alta o el refresco. Sale de una lista blanca de
 	// códigos, nunca del texto que venga en la URL.
-	Estado   string
-	Commit   string
-	Fetched  string
-	Language string
+	Estado string
+	// EstadoN es el número que acompaña al aviso de la URL: cuántas se encolaron,
+	// cuántas se descartaron o cuántas se pidieron. Existe solo cuando el código lo usa.
+	EstadoN    int
+	HasEstadoN bool
+	Commit     string
+	Fetched    string
+	Language   string
+	// La cola de análisis del repositorio activo: cuánto espera, cuánto corre y cuánto se
+	// promete que falta. Es estado del proceso, no del corpus.
+	Queued   int
+	Running  int
+	Workers  int
+	Estimate string
+	// Live es true mientras la cola tiene trabajo: sin JS el layout se refresca por
+	// <noscript>, y con JS la tabla se cambia sola.
+	Live bool
 	// Toggles del filtro, ya resueltos como URL para que funcionen sin JS.
 	FreeHref    string
 	NoLabelHref string
@@ -72,6 +87,9 @@ type rowView struct {
 	Updated    string
 	Comments   int
 	NoComments bool
+	// Stages es la escalera de etapas de la fila, la que corre la cola. Hoy solo explore
+	// está cableada; las demás dicen «no aplica» en vez de inventar un estado (I2).
+	Stages []stageView
 }
 
 type labelView struct {
@@ -83,7 +101,7 @@ type labelView struct {
 
 // dashboard sirve la pantalla del corpus.
 func (h *Handler) dashboard(w http.ResponseWriter, r *http.Request) {
-	data, err := buildPage(h.store, r.URL.Query())
+	data, err := buildPageWith(h.store, r.URL.Query(), h.queue)
 	switch {
 	case errors.Is(err, errUnknownRepo):
 		// Un repo que no está en el corpus no se sustituye por otro en silencio:
@@ -100,9 +118,18 @@ func (h *Handler) dashboard(w http.ResponseWriter, r *http.Request) {
 	h.render(w, screenDashboard, data)
 }
 
-// buildPage arma la pantalla. Un store nil o vacío no es un error: es la app
-// recién instalada, y la pantalla lo dice en vez de mentir con ceros.
+// buildPage arma la pantalla sin la cola: es lo que usan las demás pantallas para heredar
+// el mismo rail y el mismo contexto de repositorio.
 func buildPage(st *store.Store, q url.Values) (pageData, error) {
+	return buildPageWith(st, q, nil)
+}
+
+// buildPageWith arma la pantalla del corpus con el estado de la cola.
+//
+// Un store nil o vacío no es un error: es la app recién instalada, y la pantalla lo dice en
+// vez de mentir con ceros. Una cola nil tampoco es un error: cada fila muestra la escalera
+// con «sin analizar», igual que un proceso recién arrancado.
+func buildPageWith(st *store.Store, q url.Values, jobs *queue) (pageData, error) {
 	data := pageData{Title: "GoodFirstIssue"}
 	f := parseFilter(q)
 	data.Filter = f
@@ -144,6 +171,11 @@ func buildPage(st *store.Store, q url.Values) (pageData, error) {
 	data.HasRepo = true
 	data.Active = data.Repos[indexOfRepo(data.Repos, active.Key)]
 	data.Estado = estadoText(q.Get("estado"))
+	// El número viaja en la URL junto al código del aviso. Un valor que no sea un número no
+	// se muestra: la pantalla no repite texto que vino de afuera.
+	if n, err := strconv.Atoi(q.Get("n")); err == nil && n >= 0 {
+		data.EstadoN, data.HasEstadoN = n, true
+	}
 	data.FreeHref = toggleStateURL(f, active.Key)
 	data.NoLabelHref = toggleNoLabelURL(f, active.Key)
 	data.Commit = shortSHA(active.CommitSHA)
@@ -170,6 +202,16 @@ func buildPage(st *store.Store, q url.Values) (pageData, error) {
 	}
 	data.Shown = len(data.Rows)
 
+	// La escalera de cada fila es lo que la cola sabe; no se guarda en el snapshot porque no
+	// es un hecho del corpus sino del proceso.
+	for i := range data.Rows {
+		data.Rows[i].Stages = jobs.ladder(active.Key, data.Rows[i].Number)
+	}
+	data.Queued, data.Running = jobs.counts(active.Key)
+	data.Workers = jobs.workerCount()
+	data.Estimate = estimateText(data.Queued, data.Running, data.Workers)
+	data.Live = data.Queued+data.Running > 0
+
 	return data, nil
 }
 
@@ -181,6 +223,14 @@ func estadoText(code string) string {
 		return "Se agregó"
 	case "refresco":
 		return "Refrescado"
+	case "analizando":
+		return "Analizando"
+	case "limite":
+		return fmt.Sprintf("El tope es %d issues por pedido: no se encoló ninguna", exploreMaxIssues)
+	case "cancelado":
+		return "Cancelado"
+	case "vaciada":
+		return "Cola vaciada"
 	}
 	return ""
 }

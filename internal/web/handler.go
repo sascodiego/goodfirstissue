@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/sascodiego/nan-hackathon-clef/internal/ghdata"
@@ -42,6 +43,18 @@ type Options struct {
 	Fetcher Fetcher
 	GitHub  ghdata.Options
 	Timeout time.Duration
+
+	// Stage runs one stage of the explore queue. Tests inject a double here, so no test
+	// needs pig, the network or a clone; nil means the real runner built from Explore.
+	Stage StageRunner
+	// Getenv reads the environment. Tests inject a double; nil means os.Getenv.
+	Getenv func(string) string
+	// Workers is how many stages run at once. Zero means the default three, and the
+	// ceiling stays at three whatever the caller asks for (S3).
+	Workers int
+	// Explore is what the real stage needs to run the agent: the model, the allowlist and
+	// the paths. An empty Model means the queue is not configured.
+	Explore ExploreOptions
 }
 
 // Handler sirve las pantallas y los activos estáticos.
@@ -52,9 +65,15 @@ type Handler struct {
 	fetcher Fetcher
 	github  ghdata.Options
 	timeout time.Duration
+	// queue is server state, not request state: navigating away does not stop an analysis
+	// and coming back shows it as it is.
+	queue   *queue
+	explore ExploreOptions
+	getenv  func(string) string
 }
 
-// NewHandler parsea las plantillas y prepara el servidor de estáticos.
+// NewHandler parsea las plantillas y prepara el servidor de estáticos, además de la cola
+// de análisis y su despachador.
 // Un store nil es válido: la pantalla muestra el estado «sin corpus» en vez de
 // fallar, que es lo que ve alguien que recién compila el binario. Un fetcher nil
 // también: las pantallas se sirven igual y solo el alta responde que no está
@@ -72,14 +91,32 @@ func NewHandler(opts Options) (*Handler, error) {
 	if timeout <= 0 {
 		timeout = defaultFetchTimeout
 	}
-	return &Handler{
+	getenv := opts.Getenv
+	if getenv == nil {
+		getenv = os.Getenv
+	}
+
+	h := &Handler{
 		screens: screens,
 		static:  http.FileServerFS(assets),
 		store:   opts.Store,
 		fetcher: opts.Fetcher,
 		github:  opts.GitHub,
 		timeout: timeout,
-	}, nil
+		explore: opts.Explore,
+		getenv:  getenv,
+	}
+
+	// Un runner inyectado gana: así un test nunca corre pig. Sin runner inyectado se usa
+	// el real, que resuelve el corpus y arranca la sesión de internal/explore.
+	stage := opts.Stage
+	if stage == nil {
+		stage = h.stageRunner
+	}
+	h.queue = newQueue(stage, opts.Workers)
+	h.queue.start()
+
+	return h, nil
 }
 
 // render ejecuta una pantalla con su layout. Cada una tiene su propio set, así

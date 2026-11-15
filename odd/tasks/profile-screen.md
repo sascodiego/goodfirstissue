@@ -90,4 +90,10 @@ L11. Decisiones de implementación dentro del plan sellado:
 
 L12. Evidencia (TDD en rojo, observada antes de cada grupo): «unknown field Extractor in struct literal of type Options» (plomería); «POST con cv \"\": status = 501, want 400», «status = 501, want 303», «la pantalla no dice \"insufficient_information\"», «no hay bloque propio para la clave rechazada», «GET /profile status = 501, want 200», «el rail de / no lleva al perfil». Verde: los 16 tests de la pantalla y `go test ./...` completo.
 
+L14. Hallazgos de la verificación independiente (`gentle-ai-verify`), con su disposición:
+
+- **Un fallo del store al guardar la edición se llevaba el texto** (real, bajo). `POST /profile/document` respondía un 500 en texto plano, así que lo que la persona había escrito desaparecía del navegador. Corregido: la edición vuelve al `textarea` con el estado de error. Test en rojo observado: «status = 500, want 200: el fallo del store no es una respuesta sin pantalla»; el test fuerza el fallo con el directorio de solo lectura y se salta como root, donde los permisos no impiden escribir.
+- Reenviar el mismo CV agrega una revisión idéntica (nota, no defecto): «una entrada por CV pegado» cuenta el envío como evento, y así lo pide S13. Queda escrito para que nadie lo lea como un bug.
+- La clasificación del 401 se apoya en el texto del agente y sus tests usan un runner falso: el comportamiento real de PiG ante una clave mala no está verificado en esta máquina, porque `NAN_KEY` no está configurada. Es el mismo riesgo asumido de #8, ahora en la capa de la corrida.
+
 L13. Evidencia (checks): `make verify` exit 0 (build, `go test ./...`, `go vet`, `golangci-lint` 0 issues, `gofmt`, `make design-check` con los dos `app.css` idénticos byte a byte).

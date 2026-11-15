@@ -21,6 +21,7 @@ const (
 	agentFailTitle          = "El agente no completó la extracción."
 	unreadableDocumentTitle = "El documento no se puede leer."
 	nothingToSaveTitle      = "No hay nada para guardar."
+	storeFailureTitle       = "No se pudo guardar el perfil."
 )
 
 // profilePage es lo único que ve templates/profile.html.
@@ -207,7 +208,11 @@ func (h *Handler) saveProfileDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := profile.Save(h.store, edited); err != nil {
-		h.failProfilePage(w, "guardar el perfil editado", err)
+		// El texto vuelve al formulario: llevarse la edición por un fallo del store sería el
+		// peor final posible para la pantalla que existe para corregir el documento.
+		slog.Error("guardar el perfil editado", "err", err)
+		page.State = &profileState{Class: "err", Title: storeFailureTitle, Detail: err.Error()}
+		h.renderProfile(w, page)
 		return
 	}
 	http.Redirect(w, r, "/profile?estado=guardado", http.StatusSeeOther)

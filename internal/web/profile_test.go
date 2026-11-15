@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"sync"
 	"testing"
@@ -557,5 +558,39 @@ func TestProfileStateCodesAreWhitelisted(t *testing.T) {
 	}
 	if page := body(t, h, "/profile?estado=lo-que-sea"); strings.Contains(page, "lo-que-sea") {
 		t.Error("la pantalla repite un código que no está en la lista blanca")
+	}
+}
+
+// Si el store falla justo al guardar, lo que la persona escribió no se pierde: vuelve al
+// textarea con el estado de error. Un 500 en texto plano se llevaría su edición, que es
+// exactamente lo que esta pantalla existe para no hacer.
+func TestProfileEditSurvivesAStoreFailure(t *testing.T) {
+	if os.Geteuid() == 0 {
+		t.Skip("como root los permisos del directorio no impiden escribir")
+	}
+	st := profileStore(t)
+	seedProfile(t, st, screenCV, screenDocument)
+	h := newProfileHandler(t, st, &fakeAgent{})
+
+	// El documento se lee sin problema; la escritura atómica necesita crear un archivo en
+	// el directorio, y ahí es donde este store deja de poder guardar.
+	dir := st.Path("profile")
+	if err := os.Chmod(dir, 0o500); err != nil {
+		t.Fatalf("preparar el store de solo lectura: %v", err)
+	}
+	t.Cleanup(func() { _ = os.Chmod(dir, 0o755) })
+
+	edited := strings.Replace(screenDocument, "Inglés técnico", "Inglés técnico avanzado", 1)
+	rec := post(t, h, "/profile/document", url.Values{"documento": {edited}})
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want 200: el fallo del store no es una respuesta sin pantalla", rec.Code)
+	}
+	page := rec.Body.String()
+	if !strings.Contains(page, "No se pudo guardar") {
+		t.Errorf("la pantalla no dice que no se guardó:\n%s", page)
+	}
+	editable := region(t, page, `id="documento"`, "</textarea>")
+	if !strings.Contains(editable, "Inglés técnico avanzado") {
+		t.Errorf("la edición se perdió cuando el store falló:\n%s", editable)
 	}
 }

@@ -1,13 +1,19 @@
 # GoodFirstIssue
 
-> **La etiqueta miente. La verificamos contra el código.**
+> **La etiqueta no decide: decide Clef.**
 
-Una aplicación que decide dos cosas sobre una issue de un proyecto Open Source:
+Una aplicación que responde la única pregunta que importa cuando alguien quiere hacer su
+primer aporte a un proyecto open source:
 
-1. **¿La etiqueta de dificultad dice la verdad?** `good first issue` hace promesas implícitas —es un trabajo, está especificada, es auto-contenida— y muchas veces no las cumple.
-2. **¿Esta persona concreta cubre los requisitos técnicos que la issue exige?** Comparando requisitos contra capacidades, no contra una escala inventada de dificultad.
+**¿esta persona concreta puede resolver esta issue concreta?**
 
-Construida para el **#2 Hackathon NaN · Reto 4**, donde la regla es que **Clef** —un modelo de decisión, no de texto— tome la decisión central.
+No clasifica issues por dificultad ni audita la etiqueta `good first issue`: la **ignora**. Una
+etiqueta es la conjetura de un mantenedor hecha con la información que tenía, y muchas veces ya
+está agotada. GoodFirstIssue lee la issue, lee el código y después cruza ese juicio con el perfil
+real de quien se ofrece.
+
+Construida para el **#2 Hackathon NaN · Reto 4**, donde la regla es que **Clef** —un modelo de
+decisión, no de texto— tome la decisión central. Y la toma en tres momentos distintos.
 
 ## El problema que ataca
 
@@ -18,9 +24,13 @@ Construida para el **#2 Hackathon NaN · Reto 4**, donde la regla es que **Clef*
 | «Bug: falta el modo oscuro» | es un pedido de funcionalidad con el formato de un bug |
 | una issue abierta y disponible | tiene una PR abierta desde marzo |
 
-Ninguna de esas cuatro se detecta mirando etiquetas o lenguajes. Todas se detectan leyendo el código y el hilo.
+Ninguna de esas cuatro se detecta mirando etiquetas o lenguajes. Todas se detectan leyendo el
+código y el hilo.
 
-Y por eso la etiqueta nunca filtra: el corpus son **todas** las issues abiertas. Si filtráramos por etiqueta solo podríamos auditar las que ya la tienen, que es exactamente donde el problema no se ve.
+En `spf13/cobra` hay exactamente **4 issues** con etiqueta de dificultad. Las **4** ya tienen una
+PR abierta. La etiqueta no mentía: estaba agotada. Por eso el corpus son **todas** las issues
+abiertas —en `cobra`, 262, de las que se traen 150— y no un filtro por etiqueta, que solo podría
+mirar donde el problema no se ve.
 
 ## Cómo decide
 
@@ -28,18 +38,21 @@ Tres pasadas, con un embudo de costo: el recurso caro es el modelo generativo y 
 
 | Pasada | Insumo | Motor | Coste |
 |---|---|---|---|
-| **P1 · triajear** | texto de la issue, estado nativo, PR abierta vinculada, comentarios | **solo Clef**: siete preguntas en una petición, más una segunda solo para features | **medido**: 20 issues en 4,3 s y 8 peticiones (~0,54 s por petición). 13 de esas 20 las resuelven las pre-compuertas, sin consultar al modelo |
-| **P2 · explore** | + herramientas de código | **agente**: el modelo decide qué mirar y Go ejecuta | caro; solo candidatas, y hoy es una regla del embudo, no una compuerta que la interfaz imponga: el botón de analizar aparece en cualquier issue ([error conocido, #48](https://github.com/sascodiego/goodfirstissue/issues/48)) |
-| **P3 · encaje** | + perfil del desarrollador | **solo Clef** | ~1,5 s por issue |
+| **P1 · triaje** | texto de la issue, estado nativo, PR vinculada, comentarios | **solo Clef**: 7 preguntas en una petición, más 2 de alineación solo para features | `cobra`: **150 issues, 100 peticiones, 53 s**. **66 de 150** las resuelven las pre-compuertas sin consultar al modelo |
+| **P2 · explore** | + grafo de código | **agente de lectura** (`pig` + modelo flash): decide qué mirar y devuelve archivos con `path:line`. **No emite veredictos** | el caro; solo candidatas |
+| **P3 · encaje** | + perfil aprobado del desarrollador | **solo Clef**: 1 pregunta con 5 opciones | `cobra`: 15 encajes en 2 peticiones, 1,7 s |
 
 Cuatro estados de salida, nunca dos: **CANDIDATA**, **CONDICIONADA** (falta una condición externa), **DERIVADA** (la pregunta necesita los comentarios, y esa ronda está especificada y no instalada) y **MARCADA** (no se recomienda, con el motivo y la evidencia a la vista). Ninguna se oculta.
 
 Y dos formas de no decidir, que son parte del producto:
 
-- `undecided` — Clef no respondió. La app **no** emite veredicto por defecto.
+- **sin veredicto** — Clef no respondió, o el juicio no llegó a su propio umbral. La app **no**
+  emite un veredicto por defecto. Con `ready` en 0,543 devuelve *sin veredicto*, no «sí»: el piso
+  es 0,45 y el corte de `ready` es 0,70, y son números distintos.
 - **duda en voz alta** — la evidencia no alcanza. Se dice, no se descarta.
 
-El grafo completo de decisiones está en [`diagrams/decision-tree.png`](diagrams/decision-tree.png).
+El detalle de cada request —qué se le manda a Clef, las preguntas con sus opciones, por qué cada
+una y cómo se usa su resultado— está en [`PRESENTACION.md`](PRESENTACION.md).
 
 ## Estado actual
 
@@ -47,7 +60,7 @@ Esqueleto funcionando, producto en construcción. Sin decoración:
 
 | | |
 |---|---|
-| ✅ Servidor con plantillas y estáticos embebidos | binario estático de ~8 MB, sin dependencias externas |
+| ✅ Servidor con plantillas y estáticos embebidos | binario estático de 9,7 MB, sin dependencias externas |
 | ✅ Cero módulos de terceros | `go list -m all` devuelve solo este módulo |
 | ✅ Tool calling verificado | `/v1/chat/completions` devuelve `finish_reason: "tool_calls"` en los cinco modelos permitidos |
 | ✅ Preflight de prerequisitos | `./scripts/preflight.sh` |
@@ -55,11 +68,13 @@ Esqueleto funcionando, producto en construcción. Sin decoración:
 | ✅ Cola de análisis desde la pantalla | el botón encola de verdad: hasta tres `pig` en paralelo, cancelar por issue y vaciar la cola |
 | ✅ Evidencia en la pantalla de issue | archivos con `path:line` y su relación, con el pin del análisis a la vista |
 | ✅ Perfil del desarrollador | el CV se extrae con PiG, se auditan las citas contra el texto pegado y el documento se edita antes de juzgar |
-| ✅ Triaje preliminar | `gfi triage` corre las siete preguntas sobre el corpus: 150 issues en 53 s y 100 peticiones, y en la corrida de 20 sobre el corpus actual 13 las resolvieron las pre-compuertas sin consultar al modelo |
+| ✅ Triaje preliminar | `gfi triage` corre las siete preguntas sobre el corpus: 150 issues en 53 s y 100 peticiones, de las cuales 66 las resolvieron las pre-compuertas sin consultar al modelo |
 | ✅ Informe de triaje en la pantalla de issue | el veredicto con su probabilidad, las preguntas que se hicieron con su respuesta, y el motivo cuando no hay recomendación |
 | ✅ Retrato del proyecto | `gfi brief` describe un repositorio clonado en seis secciones, cada afirmación con su `archivo:línea`, y alimenta el dossier de alineación sin cambiarle la firma |
 | ✅ Embudo en pantalla | el dashboard lee el journal y muestra las 150 issues con el veredicto que está guardado: 69 marcadas, 31 derivadas, 11 condicionadas, 39 candidatas |
-| ⏳ Veredicto de encaje | falta la decisión final contra el perfil; ver la ruta en `PROYECTO.md` §2.1.2 |
+| ✅ Encaje en pantalla | el botón **Encajar candidatas** corre la tercera pasada sobre el corpus y el bloque de la issue muestra nivel, probabilidad y pin. Antes solo se podía desde la consola |
+| ✅ Índice desde la pantalla | el botón **Indexar** clona y construye el grafo de código: un repositorio recién agregado ya no queda trabado esperando una terminal |
+| ✅ El veredicto primero | la pantalla de issue abre con una tira de veredicto y el cuerpo de la issue debajo; los informes completos, después |
 
 ## Correr
 
